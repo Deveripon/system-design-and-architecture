@@ -57,7 +57,7 @@ export const AssignmentSection = React.memo(
                     <div
                         className='flex flex-wrap items-center justify-between gap-3 cursor-pointer group'
                         onClick={() => setIsExpanded(!isExpanded)}>
-                        <SubHeader index={index} title='Assignment & Homework' />
+                        <SubHeader index={index} title='Assignments' />
                         <button className='flex items-center gap-2 px-4 py-2 border border-border bg-muted/5 group-hover:bg-muted/20 group-hover:border-primary/50 transition-all font-mono text-[10px] uppercase tracking-widest text-muted-foreground whitespace-nowrap'>
                             {isExpanded ? 'Hide Details' : 'View Details'}
                             <ChevronDown

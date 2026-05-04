@@ -15,8 +15,12 @@ export function MobileNav() {
 
     // Close on route change
     useEffect(() => {
-        setIsOpen(false);
-    }, [pathname]);
+        if (isOpen) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setIsOpen(false);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // Prevent body scroll when open
     useEffect(() => {
@@ -34,7 +38,10 @@ export function MobileNav() {
         <>
             {/* Mobile top bar */}
             <header className='md:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 h-14 bg-background/95 backdrop-blur-sm border-b border-border'>
-                <Link href='/' className='flex items-center gap-2'>
+                <Link
+                    href='/'
+                    onClick={() => setIsOpen(false)}
+                    className='flex items-center gap-2'>
                     <span className='font-mono text-[10px] text-primary tracking-[0.2em] uppercase'>
                         System Design
                     </span>
@@ -110,6 +117,9 @@ export function MobileNav() {
                                                         <Link
                                                             key={topic.id}
                                                             href={`/topic/${topic.id}`}
+                                                            onClick={() =>
+                                                                setIsOpen(false)
+                                                            }
                                                             className={cn(
                                                                 'flex items-center gap-3 px-3 py-2.5 text-sm transition-all duration-200 group',
                                                                 isActive

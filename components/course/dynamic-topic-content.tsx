@@ -24,19 +24,19 @@ export function DynamicTopicContent({ data }: { data: TopicData }) {
                             {data.introduction.badge}
                         </span>
                     </div>
-                    <h1 className='text-3xl md:text-5xl md:text-6xl font-black uppercase tracking-tighter mb-6 md:mb-8 leading-none'>
+                    <h1 className='text-3xl sm:text-4xl md:text-6xl font-black uppercase tracking-tighter mb-6 md:mb-8 leading-none'>
                         {data.introduction.title}
                     </h1>
-                    <p className='text-xl text-muted-foreground leading-relaxed max-w-3xl mb-12'>
+                    <p className='text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mb-8 md:mb-12'>
                         {data.introduction.description}
                     </p>
 
-                    <div className='p-8 border border-border bg-card/50 relative overflow-hidden group'>
+                    <div className='p-6 md:p-8 border border-border bg-card/50 relative overflow-hidden group'>
                         <div className='absolute top-0 left-0 w-1 h-full bg-primary/50' />
-                        <p className='text-lg font-medium leading-relaxed relative z-10 italic'>
+                        <p className='text-base md:text-lg font-medium leading-relaxed relative z-10 italic'>
                             &quot;{data.introduction.quote.text}&quot;
                         </p>
-                        <div className='mt-4 text-sm font-mono text-muted-foreground'>
+                        <div className='mt-4 text-xs md:text-sm font-mono text-muted-foreground'>
                             — {data.introduction.quote.author},{' '}
                             <span className='text-accent'>
                                 {data.introduction.quote.role}
@@ -55,7 +55,7 @@ export function DynamicTopicContent({ data }: { data: TopicData }) {
                             title={section.subHeader.title}
                             className='mb-8'
                         />
-                        <h2 className='text-4xl font-black uppercase tracking-tighter mb-8 leading-none'>
+                        <h2 className='text-2xl sm:text-3xl md:text-4xl font-black uppercase tracking-tighter mb-6 md:mb-8 leading-none'>
                             {section.title}
                         </h2>
 

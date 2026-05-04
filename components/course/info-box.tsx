@@ -29,7 +29,7 @@ export function InfoBox({ variant, title, children }: InfoBoxProps) {
     return (
         <div
             className={cn(
-                'my-12 p-8 border border-border bg-card relative group',
+                'my-8 md:my-12 p-6 md:p-8 border border-border bg-card relative group',
                 'before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1',
                 variant === INFO_BOX_VARIANTS.CONCEPT
                     ? 'before:bg-blue-500'
@@ -39,15 +39,15 @@ export function InfoBox({ variant, title, children }: InfoBoxProps) {
                         ? 'before:bg-red-500'
                         : 'before:bg-purple-500'
             )}>
-            <div className='flex items-center gap-4 mb-6'>
-                <div className='w-10 h-10 border border-border flex items-center justify-center bg-background'>
+            <div className='flex items-center gap-3 md:gap-4 mb-4 md:mb-6'>
+                <div className='w-8 h-8 md:w-10 md:h-10 border border-border flex items-center justify-center bg-background shrink-0'>
                     {icons[variant]}
                 </div>
-                <h4 className='text-[10px] font-mono font-black uppercase tracking-[0.3em] opacity-80'>
+                <h4 className='text-[9px] md:text-[10px] font-mono font-black uppercase tracking-[0.2em] md:tracking-[0.3em] opacity-80'>
                     {title}
                 </h4>
             </div>
-            <div className='text-base leading-relaxed font-medium'>
+            <div className='text-sm md:text-base leading-relaxed font-medium'>
                 {children}
             </div>
         </div>

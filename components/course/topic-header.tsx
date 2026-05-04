@@ -27,7 +27,7 @@ export function TopicHeader({
           {title}
         </h1>
 
-        <div className="flex flex-wrap gap-px bg-border border border-border mt-2 md:mt-4 w-fit">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-px bg-border border border-border mt-2 md:mt-4 w-full sm:w-fit">
           <Badge label="Duration" value={time} />
           <Badge label="Level" value={level} />
           <Badge label="Focus" value={type} />
@@ -39,9 +39,9 @@ export function TopicHeader({
 
 function Badge({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-1 px-6 py-3 bg-card min-w-[140px]">
-      <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-muted-foreground">{label}</span>
-      <span className="text-xs font-bold uppercase tracking-tight">{value}</span>
+    <div className="flex flex-col gap-1 px-4 md:px-6 py-2 md:py-3 bg-card flex-1 sm:min-w-[140px]">
+      <span className="text-[8px] md:text-[9px] font-mono font-bold uppercase tracking-widest text-muted-foreground">{label}</span>
+      <span className="text-[10px] md:text-xs font-bold uppercase tracking-tight">{value}</span>
     </div>
   );
 }

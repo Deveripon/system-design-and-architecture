@@ -30,28 +30,28 @@ export function CodeBlock({ code, language, filename }: CodeBlockProps) {
   };
 
   return (
-    <div className="my-12 border border-border bg-[#05080f]">
-      <div className="flex items-center justify-between px-6 py-3 border-b border-border bg-muted/20">
-        <div className="flex items-center gap-3">
-          <Terminal className="w-4 h-4 text-primary" />
-          <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-muted-foreground">
+    <div className="my-8 md:my-12 border border-border bg-[#05080f] overflow-hidden">
+      <div className="flex items-center justify-between px-4 md:px-6 py-2 md:py-3 border-b border-border bg-muted/20">
+        <div className="flex items-center gap-2 md:gap-3">
+          <Terminal className="w-3 h-3 md:w-4 md:h-4 text-primary" />
+          <span className="text-[9px] md:text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-muted-foreground truncate max-w-[150px] sm:max-w-none">
             {filename || language}
           </span>
         </div>
         <button 
           onClick={copyToClipboard}
-          className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
+          className="text-[9px] md:text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors whitespace-nowrap"
         >
           {copied ? "Copied!" : "Copy"}
         </button>
       </div>
-      <div className="relative text-[13px] leading-relaxed">
+      <div className="relative text-xs md:text-[13px] leading-relaxed overflow-x-auto">
         <SyntaxHighlighter 
           language={getPrismLanguage(language)} 
           style={vscDarkPlus}
           customStyle={{
             margin: 0,
-            padding: '1.25rem',
+            padding: '1rem md:1.25rem',
             background: 'transparent',
             border: 'none',
           }}
