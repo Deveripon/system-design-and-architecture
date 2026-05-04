@@ -404,23 +404,23 @@ export const courseData = [
                     'Distributed system এ কী হচ্ছে বোঝার জন্য — 3 pillars of observability।',
                 details:
                     'Centralized logging, Infrastructure/Application metrics, and Distributed request tracing across services।',
-                tools: ['Prometheus', 'Grafana', 'ELK Stack'],
+                tools: ['Prometheus', 'Grafana', 'Jaeger', 'ELK Stack'],
                 useCases: [
-                    'Debugging issues: Tracing',
-                    'Health monitoring: Metrics',
-                    'Audit/Analysis: Logging',
+                    'Debugging issues: Jaeger Tracing',
+                    'Health monitoring: Prometheus/Grafana',
+                    'Audit/Analysis: ELK Stack',
                 ],
             },
             {
                 id: 'cloud-arch',
-                title: 'Cloud Architecture & IaC',
+                title: 'Cloud Architecture & IaC (AWS, Terraform, Serverless)',
                 icon: CloudUpload,
                 tag: 'MODERN',
                 summary:
                     'AWS/GCP/Azure, serverless, Infrastructure as Code — modern deployment।',
                 details:
                     'Cloud-native design patterns, Serverless vs Containers, and Automating infrastructure with code।',
-                tools: ['Terraform', 'CDK', 'Pulumi'],
+                tools: ['Terraform', 'CDK', 'AWS'],
                 useCases: [
                     'Automated scaling: Cloud',
                     'Consistent infra: Terraform',
@@ -428,8 +428,8 @@ export const courseData = [
                 ],
             },
             {
-                id: 'event-driven',
-                title: 'Event-Driven & CQRS',
+                id: 'cqrs-event-sourcing',
+                title: 'CQRS & Event Sourcing',
                 icon: Repeat,
                 tag: 'ADVANCED',
                 summary:
@@ -440,6 +440,38 @@ export const courseData = [
                     'Financial systems: Event Sourcing',
                     'High-performance reads: CQRS',
                     'Audit trails: Event Store',
+                ],
+            },
+            {
+                id: 'deployment-patterns',
+                title: 'Deployment Patterns (Blue-Green, Canary, Rolling)',
+                icon: RefreshCw,
+                tag: 'DEVOPS',
+                summary:
+                    'Zero-downtime deployment strategies and managing release risks।',
+                details:
+                    'Implementing Blue-Green for safe rollbacks, Canary for risk mitigation, and Rolling updates for scale।',
+                tools: ['Kubernetes', 'ArgoCD', 'Spinnaker'],
+                useCases: [
+                    'Zero downtime updates: Blue-Green',
+                    'Testing with live traffic: Canary',
+                    'Gradual rollout: Rolling',
+                ],
+            },
+            {
+                id: 'advanced-ds',
+                title: 'Advanced Data Structures (Bloom Filter, HyperLogLog, Count-Min Sketch)',
+                icon: Database,
+                tag: 'EXPERT',
+                summary:
+                    'Probabilistic data structures for massive scale and low memory footprint।',
+                details:
+                    'Bloom Filters for fast membership testing, HyperLogLog for unique counts, Count-Min Sketch for frequency at massive scale।',
+                tools: ['RedisBloom', 'Apache DataSketches'],
+                useCases: [
+                    'Username availability: Bloom Filter',
+                    'Unique daily visitors: HyperLogLog',
+                    'Trending topics: Count-Min Sketch',
                 ],
             },
         ],

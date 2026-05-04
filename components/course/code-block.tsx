@@ -1,6 +1,10 @@
+"use client";
+
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Copy, Terminal } from "lucide-react";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
 interface CodeBlockProps {
   code: string;
@@ -15,6 +19,14 @@ export function CodeBlock({ code, language, filename }: CodeBlockProps) {
     navigator.clipboard.writeText(code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const getPrismLanguage = (lang: string) => {
+    const l = lang.toLowerCase();
+    if (l.includes('node') || l.includes('javascript') || l === 'js') return 'javascript';
+    if (l.includes('typescript') || l === 'ts') return 'typescript';
+    if (l === 'yml') return 'yaml';
+    return l;
   };
 
   return (
@@ -33,10 +45,22 @@ export function CodeBlock({ code, language, filename }: CodeBlockProps) {
           {copied ? "Copied!" : "Copy"}
         </button>
       </div>
-      <div className="relative">
-        <pre className="p-5 font-mono text-[13px] leading-relaxed overflow-x-auto text-slate-300">
-          <code>{code}</code>
-        </pre>
+      <div className="relative text-[13px] leading-relaxed">
+        <SyntaxHighlighter 
+          language={getPrismLanguage(language)} 
+          style={vscDarkPlus}
+          customStyle={{
+            margin: 0,
+            padding: '1.25rem',
+            background: 'transparent',
+            border: 'none',
+          }}
+          codeTagProps={{
+            style: { fontFamily: 'var(--font-mono)' }
+          }}
+        >
+          {code}
+        </SyntaxHighlighter>
       </div>
     </div>
   );

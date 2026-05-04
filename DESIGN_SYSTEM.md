@@ -48,7 +48,10 @@ Never manually build a section header. Always use the `<SubHeader>` component.
   - Content should have generous padding (`p-8` or `p-12`).
 
 ## 6. Micro-Interactions & Backgrounds
-- **Animations**: Keep them strictly utilitarian. Use Tailwind's `transition-all duration-200` for hover states. 
+- **Hover Animations**: Keep them strictly utilitarian. Use Tailwind's `transition-all duration-200` for simple hover states.
+- **Complex UI Animations (Framer Motion)**: For mounting/unmounting elements (like accordions) or programmatically controlling the scroll position, ALWAYS use `framer-motion`.
+  - **Easing Standard**: All Framer Motion animations must utilize the custom architectural easing curve: `ease: [0.16, 1, 0.3, 1]`. This mimics a high-tension spring, providing a premium, physically grounded snap.
+  - **Accordions**: Use `<AnimatePresence initial={false}>` and `<motion.div>` animating `height: 0` to `height: 'auto'`.
 - **Hero Background**: The hero section uses `animate-stars` and `animate-stars-slow` (defined in `globals.css`) to create an upward-floating particle effect.
 - **Grid Patterns**: The global page background uses a CSS `linear-gradient` to draw a `40px` by `40px` grid using `var(--primary)` at very low opacity (`opacity-[0.05] dark:opacity-[0.03]`).
 
@@ -63,3 +66,4 @@ Never manually build a section header. Always use the `<SubHeader>` component.
 - [ ] Is it wrapped in `<BorderCross>` if it's a major section?
 - [ ] Does it support both Light and Dark mode using `dark:` variants?
 - [ ] Are interactive elements using subtle micro-animations (e.g. `translate-x-0.5`) rather than aggressive color fills?
+- [ ] Are complex animations (accordions, scroll jumps) utilizing Framer Motion with the standard `ease: [0.16, 1, 0.3, 1]`?

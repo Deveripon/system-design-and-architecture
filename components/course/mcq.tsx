@@ -23,7 +23,7 @@ interface MCQProps {
   questions: Question[];
 }
 
-export function MCQ({ questions }: MCQProps) {
+export function MCQ({ questions = [] }: MCQProps) {
   const [selectedOptions, setSelectedOptions] = React.useState<Record<number, string>>({});
   const [showResults, setShowResults] = React.useState(false);
 

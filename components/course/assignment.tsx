@@ -1,3 +1,4 @@
+import { CheckCircle2 } from "lucide-react";
 import { SubHeader } from "./sub-header";
 
 interface AssignmentProps {
@@ -8,7 +9,7 @@ interface AssignmentProps {
   deliverables: string[];
 }
 
-export function Assignment({ title, time, difficulty, tasks, deliverables }: AssignmentProps) {
+export function Assignment({ title, time, difficulty, tasks = [], deliverables = [] }: AssignmentProps) {
   return (
     <section className="my-24 border border-border bg-card overflow-hidden">
       <div className="p-10 border-b border-border bg-muted/20 flex flex-col md:flex-row md:items-center justify-between gap-6">

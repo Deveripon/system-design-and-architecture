@@ -1,11 +1,13 @@
 import { BorderCross } from '@/components/course/border-cross';
 import { Roadmap } from '@/components/course/roadmap';
 import { SubHeader } from '@/components/course/sub-header';
+import { ExploreButton } from '@/components/explore-button';
 import { ModeToggle } from '@/components/mode-toggle';
+import Link from 'next/link';
 
 export default function Home() {
     return (
-        <div className='min-h-screen bg-background relative overflow-hidden'>
+        <div className='min-h-screen bg-background relative overflow-clip'>
             {/* Grid background */}
             <div
                 className='fixed inset-0 pointer-events-none opacity-[0.05] dark:opacity-[0.03]'
@@ -44,15 +46,13 @@ export default function Home() {
                         </p>
 
                         <div className='mt-16'>
-                            <button className='px-10 py-4 bg-primary text-primary-foreground font-black uppercase tracking-[0.2em] text-xs hover:bg-foreground hover:text-background dark:hover:bg-white dark:hover:text-black transition-all border border-primary'>
-                                Explore Roadmap
-                            </button>
+                            <ExploreButton />
                         </div>
                     </div>
                 </BorderCross>
 
                 {/* Curriculum Section */}
-                <section className='mb-40 mt-40'>
+                <section id='roadmap' className='mb-40 mt-40'>
                     <div className='mb-16 px-5'>
                         <SubHeader
                             index='002'
@@ -98,7 +98,7 @@ export default function Home() {
                             ].map((tip, idx) => (
                                 <div
                                     key={tip.title}
-                                    className='p-12 border-r border-b border-border bg-muted/5 hover:bg-primary/5 dark:hover:bg-white/[0.02] transition-colors last:border-r-0 md:even:border-r-border'>
+                                    className='p-12 border-r border-b border-border bg-muted/5 hover:bg-primary/5 dark:hover:bg-white/2 transition-colors last:border-r-0 md:even:border-r-border'>
                                     <span className='font-mono text-[10px] text-muted-foreground/40 mb-6 block font-black'>
                                         0{idx + 1}
                                     </span>
@@ -136,5 +136,4 @@ export default function Home() {
         </div>
     );
 }
-
 

@@ -114,8 +114,13 @@
   * {
     @apply border-border;
   }
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
   body {
     @apply bg-background text-foreground selection:bg-primary/30;
+    overflow-x: hidden;
     font-feature-settings: "rlig" 1, "calt" 1;
     /* Firefox */
     scrollbar-width: thin;
@@ -252,6 +257,21 @@
   @keyframes stars-up {
     from { background-position: 0 0; }
     to { background-position: 0 -200px; }
+  }
+
+  /* Custom minimalist scrollbar for sidebar */
+  .sidebar-scroll::-webkit-scrollbar {
+    width: 2px;
+  }
+  .sidebar-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .sidebar-scroll::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 0px;
+  }
+  .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
   }
 }
 

@@ -3,6 +3,7 @@
 
 import { courseData } from '@/lib/course-data';
 import { cn } from '@/lib/utils';
+import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -23,11 +24,26 @@ export function Roadmap() {
         <div className='border-t border-l border-border'>
             {courseData.map((phase, phaseIdx) => {
                 const phaseColors = [
-                    { accent: 'bg-emerald-500', text: 'text-emerald-600 dark:text-emerald-400' },
-                    { accent: 'bg-blue-500', text: 'text-blue-600 dark:text-blue-400' },
-                    { accent: 'bg-purple-500', text: 'text-purple-600 dark:text-purple-400' },
-                    { accent: 'bg-orange-500', text: 'text-orange-600 dark:text-orange-400' },
-                    { accent: 'bg-yellow-500', text: 'text-yellow-600 dark:text-yellow-400' },
+                    {
+                        accent: 'bg-emerald-500',
+                        text: 'text-emerald-600 dark:text-emerald-400',
+                    },
+                    {
+                        accent: 'bg-blue-500',
+                        text: 'text-blue-600 dark:text-blue-400',
+                    },
+                    {
+                        accent: 'bg-purple-500',
+                        text: 'text-purple-600 dark:text-purple-400',
+                    },
+                    {
+                        accent: 'bg-orange-500',
+                        text: 'text-orange-600 dark:text-orange-400',
+                    },
+                    {
+                        accent: 'bg-yellow-500',
+                        text: 'text-yellow-600 dark:text-yellow-400',
+                    },
                 ];
                 const colors = phaseColors[phaseIdx % phaseColors.length];
 
@@ -38,7 +54,7 @@ export function Roadmap() {
                         <div
                             onClick={() => togglePhase(phase.id)}
                             className={cn(
-                                'flex items-center gap-4 p-6 cursor-pointer transition-all hover:bg-primary/5 dark:hover:bg-white/[0.02] bg-muted/20'
+                                'flex items-center gap-4 p-6 cursor-pointer transition-all hover:bg-primary/5 dark:hover:bg-white/2 bg-muted/20'
                             )}>
                             <div className={cn('w-1 h-8', colors.accent)} />
                             <div className='flex flex-col'>
@@ -66,17 +82,29 @@ export function Roadmap() {
                             />
                         </div>
 
-                        {expandedPhases.includes(phase.id) && (
-                            <div className='grid grid-cols-1 md:grid-cols-2 border-t border-border'>
-                                {phase.topics.map(topic => (
-                                    <TopicCard
-                                        key={topic.id}
-                                        topic={topic}
-                                        phaseIdx={phaseIdx}
-                                    />
-                                ))}
-                            </div>
-                        )}
+                        <AnimatePresence initial={false}>
+                            {expandedPhases.includes(phase.id) && (
+                                <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{
+                                        duration: 0.5,
+                                        ease: [0.16, 1, 0.3, 1],
+                                    }}
+                                    className='overflow-hidden'>
+                                    <div className='grid grid-cols-1 md:grid-cols-2 border-t border-border'>
+                                        {phase.topics.map(topic => (
+                                            <TopicCard
+                                                key={topic.id}
+                                                topic={topic}
+                                                phaseIdx={phaseIdx}
+                                            />
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
                 );
             })}
@@ -129,57 +157,66 @@ function TopicCard({ topic }: { topic: any; phaseIdx: number }) {
                 </Link>
             </div>
 
-            {isExpanded && (
-                <div className='mt-8 pt-8 border-t border-border space-y-8 animate-in fade-in slide-in-from-top-4 duration-300'>
-                    <div className='space-y-3'>
-                        <h4 className='text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary'>
-                            Learning Objectives
-                        </h4>
-                        <div className='p-4 border border-border bg-background text-sm text-muted-foreground leading-relaxed italic'>
-                            &quot;{topic.details}&quot;
-                        </div>
-                    </div>
+            <AnimatePresence initial={false}>
+                {isExpanded && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                        className='overflow-hidden'>
+                        <div className='mt-8 pt-8 border-t border-border space-y-8'>
+                            <div className='space-y-3'>
+                                <h4 className='text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary'>
+                                    Learning Objectives
+                                </h4>
+                                <div className='p-4 border border-border bg-background text-sm text-muted-foreground leading-relaxed italic'>
+                                    &quot;{topic.details}&quot;
+                                </div>
+                            </div>
 
-                    {topic.tools && (
-                        <div className='space-y-4'>
-                            <h4 className='text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary'>
-                                Tech Stack
-                            </h4>
-                            <div className='grid grid-cols-2 gap-2'>
-                                {topic.tools.map((tool: string) => (
-                                    <div
-                                        key={tool}
-                                        className='px-3 py-2 border border-border bg-muted/5 text-[11px] text-foreground font-mono font-bold uppercase'>
-                                        {tool}
+                            {topic.tools && (
+                                <div className='space-y-4'>
+                                    <h4 className='text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary'>
+                                        Tech Stack
+                                    </h4>
+                                    <div className='grid grid-cols-2 gap-2'>
+                                        {topic.tools.map((tool: string) => (
+                                            <div
+                                                key={tool}
+                                                className='px-3 py-2 border border-border bg-muted/5 text-[11px] text-foreground font-mono font-bold uppercase'>
+                                                {tool}
+                                            </div>
+                                        ))}
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                                </div>
+                            )}
 
-                    {topic.useCases && (
-                        <div className='space-y-4'>
-                            <h4 className='text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary'>
-                                Real-world Scenarios
-                            </h4>
-                            <div className='space-y-2'>
-                                {topic.useCases.map(
-                                    (useCase: string, idx: number) => (
-                                        <div
-                                            key={idx}
-                                            className='flex items-start gap-4 p-3 border border-border text-xs text-muted-foreground leading-relaxed bg-muted/5'>
-                                            <span className='text-primary font-mono font-bold'>
-                                                0{idx + 1}
-                                            </span>
-                                            {useCase}
-                                        </div>
-                                    )
-                                )}
-                            </div>
+                            {topic.useCases && (
+                                <div className='space-y-4'>
+                                    <h4 className='text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary'>
+                                        Real-world Scenarios
+                                    </h4>
+                                    <div className='space-y-2'>
+                                        {topic.useCases.map(
+                                            (useCase: string, idx: number) => (
+                                                <div
+                                                    key={idx}
+                                                    className='flex items-start gap-4 p-3 border border-border text-xs text-muted-foreground leading-relaxed bg-muted/5'>
+                                                    <span className='text-primary font-mono font-bold'>
+                                                        0{idx + 1}
+                                                    </span>
+                                                    {useCase}
+                                                </div>
+                                            )
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                    )}
-                </div>
-            )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

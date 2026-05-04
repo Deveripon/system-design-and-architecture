@@ -9,7 +9,7 @@ interface StepFlowProps {
   steps: Step[];
 }
 
-export function StepFlow({ steps }: StepFlowProps) {
+export function StepFlow({ steps = [] }: StepFlowProps) {
   return (
     <div className="my-16 border-t border-l border-border grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
       {steps.map((step, idx) => (
