@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
+  <br />
+  <h1>⚙️ System Design Mastery</h1>
+  <p>
+    <strong>A high-fidelity, blueprint-inspired learning platform for mastering system design and distributed architecture.</strong>
+  </p>
+  <p>
+    <a href="https://github.com/Deveripon/system-design-and-architecture/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT" /></a>
+    <a href="https://github.com/Deveripon/system-design-and-architecture/pulls"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" /></a>
+    <img src="https://img.shields.io/badge/Next.js-15-black?logo=next.js" alt="Next.js" />
+    <img src="https://img.shields.io/badge/Tailwind-v4-06B6D4?logo=tailwindcss" alt="Tailwind CSS" />
+  </p>
+</div>
 
-## Getting Started
+<br />
 
-First, run the development server:
+## 📖 Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+**System Design Mastery** is an open-source educational platform designed to teach complex software architecture, distributed systems, and scalability concepts. 
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The platform features a signature **"Blueprint" UI design language**—utilizing zero-radius corners, monospace typography, infinite grid backgrounds, and a seamless dark/light mode implementation that feels like professional engineering software.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ✨ Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Interactive Learning Roadmap**: A structured curriculum spanning from basic scalability to advanced event-driven architectures.
+- **Blueprint-Inspired UI**: A raw, technical aesthetic built with absolute precision (`DESIGN_SYSTEM.md`).
+- **Dark & Light Mode**: Native theme switching with pixel-perfect contrast ratios for both environments.
+- **Interactive Assessments**: Built-in MCQs, technical assignments, and scenario-based learning nodes.
+- **Zero-Radius Components**: Completely sharp, engineering-grade component design using Tailwind CSS v4.
 
-## Learn More
+## 🛠 Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **UI Components**: [Shadcn UI](https://ui.shadcn.com/) (Customized heavily for zero-radius design)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Theming**: `next-themes`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚀 Getting Started
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+To run the platform locally, follow these steps:
 
-## Deploy on Vercel
+### Prerequisites
+- Node.js (v18+)
+- `pnpm` or `bun`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Installation
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Deveripon/system-design-and-architecture.git
+   cd system-design-and-architecture
+   ```
+
+2. Install dependencies:
+   ```bash
+   pnpm install
+   # or
+   bun install
+   ```
+
+3. Start the development server:
+   ```bash
+   pnpm dev
+   # or
+   bun dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## 🎨 Design System
+
+We take our UI seriously. The application strictly follows a "Blueprint" aesthetic. Before making any frontend changes, please read the [Design System Guidelines](DESIGN_SYSTEM.md) to understand our typography, spacing, and styling rules.
+
+## 🤝 Contributing
+
+We welcome contributions! Whether you want to add new system design topics, fix bugs, or improve the UI, please check out our [Contributing Guidelines](CONTRIBUTING.md) to get started.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+<div align="center">
+  <i>Built for Scale · © 2026 devripon</i>
+</div>

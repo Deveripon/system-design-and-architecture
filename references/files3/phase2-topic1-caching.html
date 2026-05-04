@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 2 · Topic 1 — Caching Strategy & Redis</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05080f;
+  --surface: #090e1a;
+  --card: #0c1220;
+  --border: #162035;
+  --border2: #1e2d4a;
+  --accent: #3b82f6;
+  --accent-glow: rgba(59,130,246,0.15);
+  --green: #10b981;
+  --green-glow: rgba(16,185,129,0.12);
+  --orange: #f97316;
+  --red: #ef4444;
+  --yellow: #eab308;
+  --purple: #8b5cf6;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --muted2: #94a3b8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans Bengali', sans-serif;
+  line-height: 1.7;
+  font-size: 15px;
+}
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:999;
+  opacity:0.4;
+}
+.sidebar {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: 240px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 24px 0;
+  overflow-y: auto;
+  z-index: 100;
+}
+.sidebar-logo {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.sidebar-logo .phase-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 4px;
+}
+.sidebar-logo .course-title {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.nav-section { padding: 0 12px; margin-bottom: 8px; }
+.nav-section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--muted);
+  padding: 0 8px;
+  margin-bottom: 6px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--muted2);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+.nav-item:hover { background: var(--card); color: var(--text); }
+.nav-item.active { background: var(--accent-glow); color: var(--accent); }
+.nav-item .nav-icon { font-size: 14px; flex-shrink:0; }
+.nav-item .nav-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  margin-left: auto;
+}
+.progress-bar {
+  position: fixed;
+  top: 0; left: 240px; right: 0;
+  height: 2px;
+  background: var(--border);
+  z-index: 200;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--green));
+  width: 0%;
+  transition: width 0.1s;
+}
+.main { margin-left: 240px; min-height: 100vh; }
+.content { max-width: 780px; margin: 0 auto; padding: 48px 40px 120px; }
+.topic-header { margin-bottom: 48px; }
+.breadcrumb {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.breadcrumb span { color: var(--accent); }
+.topic-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: block;
+}
+h1.topic-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #fff 30%, #93c5fd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.topic-meta { display: flex; gap: 16px; flex-wrap: wrap; }
+.meta-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 2px;
+  border: 1px solid;
+}
+.meta-chip.time { border-color: rgba(59,130,246,0.3); color: var(--accent); background: var(--accent-glow); }
+.meta-chip.level { border-color: rgba(16,185,129,0.3); color: var(--green); background: var(--green-glow); }
+.meta-chip.type { border-color: rgba(139,92,246,0.3); color: var(--purple); background: rgba(139,92,246,0.08); }
+.section { margin-bottom: 48px; scroll-margin-top: 24px; }
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--accent);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+h2.section-title {
+  font-family: 'Fraunces', serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #f1f5f9;
+}
+h3.sub-title {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 24px 0 10px;
+  color: #cbd5e1;
+}
+p { margin-bottom: 14px; color: #cbd5e1; }
+.info-box {
+  border-radius: 6px;
+  padding: 18px 20px;
+  margin: 20px 0;
+  border-left: 3px solid;
+  font-size: 14px;
+}
+.info-box.concept { background: rgba(59,130,246,0.06); border-color: var(--accent); }
+.info-box.warning { background: rgba(249,115,22,0.06); border-color: var(--orange); }
+.info-box.tip { background: rgba(16,185,129,0.06); border-color: var(--green); }
+.info-box.important { background: rgba(234,179,8,0.06); border-color: var(--yellow); }
+.info-box .box-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+.info-box.concept .box-label { color: var(--accent); }
+.info-box.warning .box-label { color: var(--orange); }
+.info-box.tip .box-label { color: var(--green); }
+.info-box.important .box-label { color: var(--yellow); }
+.compare-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+.compare-table th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 12px 16px;
+  text-align: left;
+  background: var(--card);
+  border-bottom: 2px solid var(--border2);
+  color: var(--muted2);
+}
+.compare-table td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  color: #94a3b8;
+  vertical-align: top;
+  line-height: 1.6;
+}
+.compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+.compare-table td:first-child {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+}
+.tag-yes { color: var(--green); font-weight: 600; }
+.tag-no { color: var(--red); }
+.tag-med { color: var(--yellow); }
+.diagram {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 30px 20px;
+  margin: 24px 0;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  overflow-x: auto;
+}
+.diagram svg { max-width: 100%; }
+.code-block {
+  background: #030608;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  margin: 20px 0;
+  overflow: hidden;
+}
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+.code-lang { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+.code-file { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+pre { padding: 20px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.8; color: #e2e8f0; }
+.kw { color: #93c5fd; }
+.fn { color: #6ee7b7; }
+.str { color: #fcd34d; }
+.cm { color: #475569; font-style: italic; }
+.num { color: #f9a8d4; }
+.var { color: #e2e8f0; }
+.scenario-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 20px 0; }
+.scenario-card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 18px; }
+.scenario-card .s-title { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.scenario-card p { font-size: 13px; color: var(--muted2); margin: 0; }
+.mcq-section { background: var(--surface); border: 1px solid var(--border2); border-radius: 8px; padding: 28px; margin: 30px 0; }
+.mcq-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.mcq-icon { font-size: 24px; }
+.mcq-header h2 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; }
+.mcq-score { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--muted); }
+.mcq-score span { color: var(--accent); font-size: 18px; font-weight: 700; }
+.question-block { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+.question-block:last-of-type { border-bottom: none; margin-bottom: 0; }
+.q-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.q-text { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.5; font-family: 'Noto Sans Bengali', sans-serif; }
+.options { display: flex; flex-direction: column; gap: 8px; }
+.option {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 14px; border-radius: 4px;
+  border: 1px solid var(--border); cursor: pointer;
+  transition: all 0.15s; font-size: 14px;
+  color: var(--muted2); font-family: 'Noto Sans Bengali', sans-serif;
+}
+.option:hover { border-color: var(--accent); color: var(--text); background: var(--accent-glow); }
+.option.correct { border-color: var(--green); background: var(--green-glow); color: #6ee7b7; }
+.option.wrong { border-color: var(--red); background: rgba(239,68,68,0.08); color: #fca5a5; }
+.option-key { font-family: 'JetBrains Mono', monospace; font-size: 11px; background: var(--border2); padding: 2px 7px; border-radius: 2px; flex-shrink: 0; margin-top: 1px; }
+.explanation { display: none; margin-top: 12px; padding: 12px 14px; background: rgba(16,185,129,0.06); border-left: 2px solid var(--green); border-radius: 0 4px 4px 0; font-size: 13px; color: #94a3b8; line-height: 1.7; font-family: 'Noto Sans Bengali', sans-serif; }
+.explanation.visible { display: block; }
+.explanation strong { color: var(--green); }
+.mcq-submit { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; padding: 12px 24px; background: var(--accent); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; letter-spacing: 1px; transition: all 0.15s; }
+.mcq-submit:hover { background: #2563eb; transform: translateY(-1px); }
+.result-banner { display: none; margin-top: 20px; padding: 16px 20px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; }
+.result-banner.visible { display: block; }
+.result-banner.pass { background: var(--green-glow); border: 1px solid var(--green); color: var(--green); }
+.result-banner.fail { background: rgba(249,115,22,0.08); border: 1px solid var(--orange); color: var(--orange); }
+.assignment-section { background: linear-gradient(135deg, rgba(59,130,246,0.04), rgba(139,92,246,0.04)); border: 1px solid rgba(59,130,246,0.2); border-radius: 8px; padding: 28px; margin: 30px 0; }
+.assignment-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.assignment-icon { font-size: 28px; }
+.assignment-header h2 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; }
+.assignment-meta { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.a-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 10px; border-radius: 2px; }
+.a-chip.time { background: rgba(234,179,8,0.1); color: var(--yellow); border: 1px solid rgba(234,179,8,0.2); }
+.a-chip.level { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.task-list { counter-reset: tasks; list-style: none; display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+.task-list li { counter-increment: tasks; display: flex; gap: 14px; padding: 16px; background: var(--card); border-radius: 6px; border: 1px solid var(--border); font-size: 14px; color: var(--muted2); }
+.task-list li::before { content: counter(tasks); font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--accent); background: var(--accent-glow); border: 1px solid rgba(59,130,246,0.3); border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.task-list li strong { color: var(--text); display: block; margin-bottom: 4px; }
+.deliverable-box { background: rgba(16,185,129,0.04); border: 1px solid rgba(16,185,129,0.2); border-radius: 6px; padding: 18px 20px; }
+.d-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--green); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; font-weight: 700; }
+.deliverable-box ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.deliverable-box ul li { font-size: 13px; color: var(--muted2); padding-left: 16px; position: relative; }
+.deliverable-box ul li::before { content: '→'; position: absolute; left: 0; color: var(--green); }
+.project-section { background: linear-gradient(135deg, rgba(16,185,129,0.04), rgba(59,130,246,0.04)); border: 1px solid rgba(16,185,129,0.2); border-radius: 8px; padding: 28px; margin: 30px 0; }
+.project-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.project-header h2 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; }
+.project-body p { font-size: 14px; }
+.step-flow { display: flex; flex-direction: column; gap: 0; }
+.step-item { display: flex; gap: 16px; position: relative; padding-bottom: 24px; }
+.step-item:last-child { padding-bottom: 0; }
+.step-item:not(:last-child)::after { content:''; position:absolute; left:12px; top:28px; bottom:0; width:1px; background:var(--border2); }
+.step-circle { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: white; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; z-index: 1; }
+.step-content h4 { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.step-content p { font-size: 13px; color: var(--muted2); margin: 0; }
+.next-cta { display: flex; align-items: center; justify-content: space-between; padding: 24px 28px; background: var(--card); border: 1px solid var(--border2); border-radius: 8px; margin-top: 48px; cursor: pointer; transition: all 0.2s; }
+.next-cta:hover { border-color: var(--accent); background: rgba(59,130,246,0.05); }
+.next-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 6px; }
+.next-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; }
+.next-arrow { font-size: 24px; color: var(--accent); }
+code { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: var(--card); padding: 2px 7px; border-radius: 3px; border: 1px solid var(--border); color: #93c5fd; }
+.highlight-row td { background: rgba(59,130,246,0.05) !important; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 2 · Core Components</span>
+    <div class="course-title">System Design Mastery</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">এই Topic এ</div>
+    <a class="nav-item active" href="#concept"><span class="nav-icon">💡</span> Core Concept <span class="nav-num">01</span></a>
+    <a class="nav-item" href="#why"><span class="nav-icon">❓</span> Why it Matters <span class="nav-num">02</span></a>
+    <a class="nav-item" href="#how"><span class="nav-icon">⚙️</span> How it Works <span class="nav-num">03</span></a>
+    <a class="nav-item" href="#strategies"><span class="nav-icon">🗂️</span> Cache Strategies <span class="nav-num">04</span></a>
+    <a class="nav-item" href="#redis"><span class="nav-icon">🔴</span> Redis Deep Dive <span class="nav-num">05</span></a>
+    <a class="nav-item" href="#code"><span class="nav-icon">💻</span> Code Examples <span class="nav-num">06</span></a>
+    <a class="nav-item" href="#usecases"><span class="nav-icon">🏢</span> Real World <span class="nav-num">07</span></a>
+    <a class="nav-item" href="#interview"><span class="nav-icon">🎯</span> Interview Q&A <span class="nav-num">08</span></a>
+    <a class="nav-item" href="#mcq"><span class="nav-icon">📝</span> MCQ Quiz <span class="nav-num">09</span></a>
+    <a class="nav-item" href="#assignment"><span class="nav-icon">📋</span> Assignment <span class="nav-num">10</span></a>
+    <a class="nav-item" href="#project"><span class="nav-icon">🚀</span> Project <span class="nav-num">11</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px;">
+    <div class="nav-section-label">Phase 2 Topics</div>
+    <a class="nav-item active" href="#"><span class="nav-icon">🔴</span> T1: Caching & Redis</a>
+    <a class="nav-item" href="phase2-topic2-load-balancing.html"><span class="nav-icon">⚖️</span> T2: Load Balancing</a>
+    <a class="nav-item" href="phase2-topic3-message-queues.html"><span class="nav-icon">📨</span> T3: Message Queues</a>
+    <a class="nav-item" href="phase2-topic4-api-design.html"><span class="nav-icon">🔌</span> T4: API Design</a>
+    <a class="nav-item" href="phase2-topic5-db-sharding.html"><span class="nav-icon">🗄️</span> T5: DB Sharding</a>
+    <a class="nav-item" href="phase2-topic6-cdn.html"><span class="nav-icon">🌐</span> T6: CDN & Storage</a>
+  </div>
+</aside>
+
+<main class="main">
+<div class="content">
+
+  <!-- Header -->
+  <div class="topic-header">
+    <div class="breadcrumb">
+      System Design Mastery <span>/</span> Phase 2: Core Components <span>/</span> Topic 1
+    </div>
+    <span class="topic-num">Phase 2 · Topic 01</span>
+    <h1 class="topic-title">Caching Strategy<br>& Redis Deep Dive</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ 3-4 ঘণ্টা</span>
+      <span class="meta-chip level">📊 Junior → Mid Level</span>
+      <span class="meta-chip type">🔴 Redis · Memcached · CDN</span>
+    </div>
+  </div>
+
+  <!-- Core Concept -->
+  <div class="section" id="concept">
+    <div class="section-label">01 — Core Concept</div>
+    <h2 class="section-title">Cache কী এবং কেন দরকার?</h2>
+
+    <p>ধরো তুমি প্রতিদিন office যাও। বাসা থেকে office যেতে ৩০ মিনিট লাগে। কিন্তু তুমি যদি office এর কাছেই থাকো — তাহলে ৫ মিনিটেই পৌঁছাও। <strong>Cache হলো সেই কাছের বাসা</strong> — frequently used data কে database এর বদলে memory তে রেখে দ্রুত serve করা।</p>
+
+    <div class="info-box concept">
+      <div class="box-label">💡 Definition</div>
+      <strong>Cache</strong> হলো একটি high-speed data storage layer যেখানে frequently accessed data temporarily store করা হয়, যাতে পরেরবার ওই data দরকার হলে original (slow) source এর বদলে cache থেকে পাওয়া যায়। এটি database query কমায়, latency কমায়, এবং throughput বাড়ায়।
+    </div>
+
+    <h3 class="sub-title">Cache ছাড়া কী হয়?</h3>
+    <p>ধরো একটা news website এ "Top 10 News" section আছে। প্রতি second ১০,০০০ user এই page visit করছে। Cache ছাড়া প্রতিটা request এ database query করতে হবে — যার মানে ১০,০০০ × database query per second! Database crash করবে, site slow হবে, user চলে যাবে।</p>
+
+    <div class="diagram">
+      <svg width="680" height="200" viewBox="0 0 680 200">
+        <!-- Without Cache -->
+        <text x="10" y="20" fill="#64748b" font-family="JetBrains Mono" font-size="11" font-weight="700">WITHOUT CACHE</text>
+        <rect x="10" y="35" width="100" height="40" rx="4" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="60" y="60" fill="#94a3b8" font-family="JetBrains Mono" font-size="11" text-anchor="middle">User</text>
+        <line x1="110" y1="55" x2="180" y2="55" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="4"/>
+        <text x="145" y="48" fill="#ef4444" font-family="JetBrains Mono" font-size="9" text-anchor="middle">DB Query!</text>
+        <rect x="180" y="35" width="120" height="40" rx="4" fill="#0c1220" stroke="#ef4444"/>
+        <text x="240" y="56" fill="#ef4444" font-family="JetBrains Mono" font-size="11" text-anchor="middle">🗄️ Database</text>
+        <text x="240" y="70" fill="#64748b" font-family="JetBrains Mono" font-size="9" text-anchor="middle">~200ms</text>
+        <text x="145" y="110" fill="#ef4444" font-family="JetBrains Mono" font-size="10" text-anchor="middle">10,000 queries/sec → SLOW!</text>
+
+        <!-- With Cache -->
+        <text x="370" y="20" fill="#64748b" font-family="JetBrains Mono" font-size="11" font-weight="700">WITH CACHE</text>
+        <rect x="370" y="35" width="80" height="40" rx="4" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="410" y="60" fill="#94a3b8" font-family="JetBrains Mono" font-size="11" text-anchor="middle">User</text>
+        <line x1="450" y1="55" x2="500" y2="55" stroke="#10b981" stroke-width="1.5"/>
+        <text x="475" y="48" fill="#10b981" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Cache!</text>
+        <rect x="500" y="30" width="100" height="50" rx="4" fill="rgba(16,185,129,0.1)" stroke="#10b981"/>
+        <text x="550" y="52" fill="#10b981" font-family="JetBrains Mono" font-size="11" text-anchor="middle">⚡ Cache</text>
+        <text x="550" y="68" fill="#64748b" font-family="JetBrains Mono" font-size="9" text-anchor="middle">~1ms</text>
+        <line x1="600" y1="55" x2="640" y2="55" stroke="#475569" stroke-width="1" stroke-dasharray="3"/>
+        <text x="650" y="60" fill="#475569" font-family="JetBrains Mono" font-size="10">DB</text>
+        <text x="490" y="110" fill="#10b981" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Cache HIT → 200x faster!</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Why it Matters -->
+  <div class="section" id="why">
+    <div class="section-label">02 — Why It Matters</div>
+    <h2 class="section-title">কেন Cache জানা দরকার?</h2>
+
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">⚡ Performance</div>
+        <p>Database থেকে data fetch করতে ১০০-৫০০ms লাগে। Cache থেকে লাগে ১ms এরও কম। ১০০x-৫০০x speedup পাওয়া সম্ভব।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">💰 Cost Saving</div>
+        <p>Database server expensive। Cache ব্যবহার করলে DB queries কমে, server load কমে, hosting cost কমে। Facebook cache দিয়ে প্রতি বছর কোটি টাকা বাঁচায়।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">📈 Scalability</div>
+        <p>Database horizontally scale করা কঠিন। কিন্তু cache layer add করলে DB এর উপর load না বাড়িয়ে traffic handle করা যায়।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🛡️ Availability</div>
+        <p>DB temporarily down হলেও cached data serve করা যায়। Users কিছুটা হলেও response পাবে — complete outage হবে না।</p>
+      </div>
+    </div>
+
+    <div class="info-box important">
+      <div class="box-label">📊 Real Numbers</div>
+      Twitter প্রতি second ৬,০০০+ tweets serve করে। Cache ছাড়া এটা impossible। Amazon এর research বলে — প্রতি ১০০ms latency বাড়লে sales ১% কমে। Google ৫০০ms slow হলে ২০% কম searches হয়।
+    </div>
+  </div>
+
+  <!-- How it Works -->
+  <div class="section" id="how">
+    <div class="section-label">03 — How It Works</div>
+    <h2 class="section-title">Cache কীভাবে কাজ করে?</h2>
+
+    <h3 class="sub-title">Cache Hit vs Cache Miss</h3>
+    <p>Cache এর সবচেয়ে important concept হলো <strong>Cache Hit</strong> এবং <strong>Cache Miss</strong>।</p>
+
+    <div class="diagram">
+      <svg width="650" height="260" viewBox="0 0 650 260">
+        <!-- Cache HIT Flow -->
+        <text x="20" y="22" fill="#10b981" font-family="JetBrains Mono" font-size="11" font-weight="700">CACHE HIT ✓</text>
+        <rect x="20" y="35" width="80" height="36" rx="4" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="60" y="58" fill="#94a3b8" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Client</text>
+        <path d="M100 53 L160 53" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="130" y="46" fill="#64748b" font-family="JetBrains Mono" font-size="8">request</text>
+        <rect x="160" y="30" width="100" height="46" rx="4" fill="rgba(16,185,129,0.1)" stroke="#10b981"/>
+        <text x="210" y="52" fill="#10b981" font-family="JetBrains Mono" font-size="10" text-anchor="middle">⚡ Cache</text>
+        <text x="210" y="66" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">KEY FOUND!</text>
+        <path d="M210 76 L210 110 L100 110 L100 90" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4" marker-end="url(#arrow2)"/>
+        <text x="155" y="125" fill="#10b981" font-family="JetBrains Mono" font-size="9" text-anchor="middle">return data (~1ms)</text>
+
+        <!-- Cache MISS Flow -->
+        <text x="20" y="162" fill="#f97316" font-family="JetBrains Mono" font-size="11" font-weight="700">CACHE MISS ✗ → DB Fallback</text>
+        <rect x="20" y="175" width="80" height="36" rx="4" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="60" y="198" fill="#94a3b8" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Client</text>
+        <path d="M100 193 L160 193" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <rect x="160" y="170" width="100" height="46" rx="4" fill="rgba(249,115,22,0.08)" stroke="#f97316"/>
+        <text x="210" y="192" fill="#f97316" font-family="JetBrains Mono" font-size="10" text-anchor="middle">⚡ Cache</text>
+        <text x="210" y="206" fill="#fca5a5" font-family="JetBrains Mono" font-size="9" text-anchor="middle">NOT FOUND</text>
+        <path d="M260 193 L330 193" stroke="#f97316" stroke-width="1.5" stroke-dasharray="4" marker-end="url(#arrow)"/>
+        <text x="295" y="186" fill="#64748b" font-family="JetBrains Mono" font-size="8">query DB</text>
+        <rect x="330" y="170" width="100" height="46" rx="4" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="380" y="192" fill="#94a3b8" font-family="JetBrains Mono" font-size="10" text-anchor="middle">🗄️ Database</text>
+        <text x="380" y="206" fill="#64748b" font-family="JetBrains Mono" font-size="9" text-anchor="middle">~200ms</text>
+        <path d="M330 205 L270 205 L270 220 L210 220" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow2)"/>
+        <text x="330" y="240" fill="#10b981" font-family="JetBrains Mono" font-size="9" text-anchor="middle">store in cache + return</text>
+        <defs>
+          <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#3b82f6"/></marker>
+          <marker id="arrow2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#10b981"/></marker>
+        </defs>
+      </svg>
+    </div>
+
+    <h3 class="sub-title">Cache Eviction Policies</h3>
+    <p>Cache এর memory সীমিত। পুরানো data বাদ দেওয়ার জন্য আলাদা strategy আছে:</p>
+
+    <table class="compare-table">
+      <tr><th>Policy</th><th>Full Name</th><th>কীভাবে কাজ করে</th><th>কখন ব্যবহার</th></tr>
+      <tr>
+        <td>LRU</td>
+        <td>Least Recently Used</td>
+        <td>সবচেয়ে পুরানো ব্যবহার করা item বাদ দেয়</td>
+        <td class="tag-yes">সবচেয়ে common, default choice</td>
+      </tr>
+      <tr>
+        <td>LFU</td>
+        <td>Least Frequently Used</td>
+        <td>সবচেয়ে কম ব্যবহার হওয়া item বাদ দেয়</td>
+        <td class="tag-med">Hot items keep করতে</td>
+      </tr>
+      <tr>
+        <td>TTL</td>
+        <td>Time To Live</td>
+        <td>নির্দিষ্ট সময় পর auto-expire হয়</td>
+        <td class="tag-yes">Session, OTP, rate limiting</td>
+      </tr>
+      <tr>
+        <td>FIFO</td>
+        <td>First In First Out</td>
+        <td>সবার আগে যা ঢুকেছে তা প্রথমে বাদ</td>
+        <td class="tag-no">Rarely optimal</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Cache Strategies -->
+  <div class="section" id="strategies">
+    <div class="section-label">04 — Cache Strategies</div>
+    <h2 class="section-title">৪টি প্রধান Caching Pattern</h2>
+
+    <h3 class="sub-title">1. Cache-Aside (Lazy Loading)</h3>
+    <p>Application নিজেই cache manage করে। Data দরকার হলে আগে cache check করে, না পেলে DB থেকে আনে এবং cache এ রাখে। সবচেয়ে popular pattern।</p>
+
+    <div class="diagram">
+      <svg width="620" height="100" viewBox="0 0 620 100">
+        <rect x="10" y="30" width="90" height="40" rx="4" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="55" y="55" fill="#94a3b8" font-family="JetBrains Mono" font-size="10" text-anchor="middle">App</text>
+        <text x="130" y="50" fill="#64748b" font-family="JetBrains Mono" font-size="9" text-anchor="middle">1. Check?</text>
+        <path d="M100 50 L160 50" stroke="#3b82f6" stroke-width="1.5"/>
+        <rect x="160" y="30" width="100" height="40" rx="4" fill="rgba(16,185,129,0.1)" stroke="#10b981"/>
+        <text x="210" y="55" fill="#10b981" font-family="JetBrains Mono" font-size="10" text-anchor="middle">⚡ Redis</text>
+        <text x="290" y="40" fill="#64748b" font-family="JetBrains Mono" font-size="8">Miss? 2. Query</text>
+        <path d="M260 50 L340 50" stroke="#f97316" stroke-width="1" stroke-dasharray="3"/>
+        <rect x="340" y="30" width="100" height="40" rx="4" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="390" y="55" fill="#94a3b8" font-family="JetBrains Mono" font-size="10" text-anchor="middle">🗄️ DB</text>
+        <path d="M390 70 L390 85 L210 85 L210 70" stroke="#10b981" stroke-width="1" stroke-dasharray="3"/>
+        <text x="300" y="97" fill="#10b981" font-family="JetBrains Mono" font-size="8">3. Store in Cache</text>
+      </svg>
+    </div>
+
+    <div class="info-box tip">
+      <div class="box-label">✅ Cache-Aside এর সুবিধা</div>
+      Cache failure হলেও app কাজ করে (DB fallback আছে)। Only requested data cache হয়। Read-heavy apps এর জন্য perfect।
+    </div>
+
+    <h3 class="sub-title">2. Write-Through</h3>
+    <p>Data write করার সময় একসাথে Cache এবং DB — দুটোতেই লেখা হয়। Cache সবসময় fresh থাকে।</p>
+
+    <div class="diagram">
+      <svg width="500" height="80" viewBox="0 0 500 80">
+        <rect x="10" y="20" width="80" height="40" rx="4" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="50" y="45" fill="#94a3b8" font-family="JetBrains Mono" font-size="10" text-anchor="middle">App</text>
+        <text x="50" y="12" fill="#3b82f6" font-family="JetBrains Mono" font-size="9" text-anchor="middle">WRITE</text>
+        <path d="M90 40 L150 30" stroke="#10b981" stroke-width="1.5"/>
+        <path d="M90 40 L150 55" stroke="#10b981" stroke-width="1.5"/>
+        <rect x="150" y="12" width="100" height="36" rx="4" fill="rgba(16,185,129,0.1)" stroke="#10b981"/>
+        <text x="200" y="35" fill="#10b981" font-family="JetBrains Mono" font-size="10" text-anchor="middle">⚡ Cache</text>
+        <rect x="150" y="52" width="100" height="26" rx="4" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="200" y="69" fill="#94a3b8" font-family="JetBrains Mono" font-size="9" text-anchor="middle">🗄️ DB</text>
+        <text x="290" y="30" fill="#10b981" font-family="JetBrains Mono" font-size="9">Both updated!</text>
+        <text x="290" y="45" fill="#64748b" font-family="JetBrains Mono" font-size="9">Always consistent ✓</text>
+      </svg>
+    </div>
+
+    <h3 class="sub-title">3. Write-Behind (Write-Back)</h3>
+    <p>আগে শুধু Cache এ লেখা হয়, পরে asynchronously DB তে sync হয়। খুব fast কিন্তু cache crash হলে data loss এর risk আছে।</p>
+
+    <h3 class="sub-title">4. Read-Through</h3>
+    <p>Cache নিজেই DB থেকে data load করে। App শুধু Cache কে জিজ্ঞেস করে — Cache Miss হলে Cache নিজেই DB তে যায়।</p>
+
+    <table class="compare-table">
+      <tr><th>Pattern</th><th>Read Speed</th><th>Write Speed</th><th>Consistency</th><th>Best For</th></tr>
+      <tr><td>Cache-Aside</td><td class="tag-yes">Fast</td><td class="tag-med">Normal</td><td class="tag-med">Eventual</td><td>Read-heavy apps</td></tr>
+      <tr><td>Write-Through</td><td class="tag-yes">Fast</td><td class="tag-no">Slow</td><td class="tag-yes">Strong</td><td>Write consistency needed</td></tr>
+      <tr><td>Write-Behind</td><td class="tag-yes">Fast</td><td class="tag-yes">Very Fast</td><td class="tag-no">Weak</td><td>High-write, loss-tolerant</td></tr>
+      <tr><td>Read-Through</td><td class="tag-yes">Fast</td><td class="tag-med">Normal</td><td class="tag-med">Eventual</td><td>Simplified app logic</td></tr>
+    </table>
+  </div>
+
+  <!-- Redis Deep Dive -->
+  <div class="section" id="redis">
+    <div class="section-label">05 — Redis Deep Dive</div>
+    <h2 class="section-title">Redis — এর ভেতরে কী আছে?</h2>
+
+    <p>Redis (Remote Dictionary Server) হলো সবচেয়ে popular in-memory data store। এটা শুধু cache না — এটা data structure server। Redis ব্যবহার করে Twitter, GitHub, Stack Overflow, Airbnb সহ হাজারো company।</p>
+
+    <div class="info-box concept">
+      <div class="box-label">🔴 Redis এর বিশেষত্ব</div>
+      Redis single-threaded হলেও প্রতি second ১ million+ operations handle করতে পারে কারণ সব data RAM এ থাকে। I/O operations asynchronous। Simple operations O(1) time complexity।
+    </div>
+
+    <h3 class="sub-title">Redis Data Structures</h3>
+    <p>Redis শুধু key-value store না — এটা ৫টি আলাদা data structure support করে:</p>
+
+    <table class="compare-table">
+      <tr><th>Type</th><th>Command Example</th><th>Use Case</th></tr>
+      <tr><td>String</td><td><code>SET user:1 "John"</code></td><td>Session token, counter, simple cache</td></tr>
+      <tr><td>Hash</td><td><code>HSET user:1 name "John" age 25</code></td><td>User profile, object store</td></tr>
+      <tr><td>List</td><td><code>LPUSH feed:1 "tweet123"</code></td><td>Activity feed, message queue, log</td></tr>
+      <tr><td>Set</td><td><code>SADD tags:post1 "redis"</code></td><td>Unique visitors, tagging, friends list</td></tr>
+      <tr><td>Sorted Set</td><td><code>ZADD leaderboard 100 "user1"</code></td><td>Leaderboard, rate limiting, timeline</td></tr>
+    </table>
+
+    <h3 class="sub-title">Redis Persistence</h3>
+    <p>Redis in-memory হলেও data হারানো যাবে না — তাই দুটো persistence option আছে:</p>
+
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">RDB (Snapshot)</div>
+        <p>নির্দিষ্ট interval এ পুরো dataset এর snapshot নেয়। Fast restart, কিন্তু শেষ snapshot এর পর এর data হারাতে পারে।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">AOF (Append Only File)</div>
+        <p>প্রতিটা write operation log করে। Near-zero data loss, কিন্তু file বড় হয়, restart একটু slow।</p>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Redis vs Memcached</h3>
+    <table class="compare-table">
+      <tr><th>Feature</th><th>Redis</th><th>Memcached</th></tr>
+      <tr><td>Data Types</td><td class="tag-yes">String, Hash, List, Set, ZSet</td><td class="tag-no">Only String</td></tr>
+      <tr><td>Persistence</td><td class="tag-yes">RDB + AOF</td><td class="tag-no">No</td></tr>
+      <tr><td>Replication</td><td class="tag-yes">Master-Slave</td><td class="tag-no">No</td></tr>
+      <tr><td>Pub/Sub</td><td class="tag-yes">Yes</td><td class="tag-no">No</td></tr>
+      <tr><td>Multi-threading</td><td class="tag-no">Single (mostly)</td><td class="tag-yes">Multi</td></tr>
+      <tr><td>Use Case</td><td class="tag-yes">Complex, feature-rich</td><td class="tag-med">Simple, ultra-fast cache</td></tr>
+    </table>
+  </div>
+
+  <!-- Code Examples -->
+  <div class="section" id="code">
+    <div class="section-label">06 — Code Examples</div>
+    <h2 class="section-title">হাতে-কলমে Code</h2>
+
+    <h3 class="sub-title">Python — Basic Redis Operations</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Python</span><span class="code-file">redis_basics.py</span></div>
+      <pre><span class="kw">import</span> redis
+<span class="kw">import</span> json
+
+<span class="cm"># Redis connection</span>
+r = redis.<span class="fn">Redis</span>(host=<span class="str">'localhost'</span>, port=<span class="num">6379</span>, decode_responses=<span class="kw">True</span>)
+
+<span class="cm"># ── String Operations ──────────────────────────</span>
+r.<span class="fn">set</span>(<span class="str">'user:1:name'</span>, <span class="str">'Rahim Ahmed'</span>)
+r.<span class="fn">set</span>(<span class="str">'user:1:name'</span>, <span class="str">'Rahim Ahmed'</span>, ex=<span class="num">3600</span>)  <span class="cm"># TTL: 1 hour</span>
+
+name = r.<span class="fn">get</span>(<span class="str">'user:1:name'</span>)
+<span class="fn">print</span>(name)  <span class="cm"># Rahim Ahmed</span>
+
+<span class="cm"># ── Hash Operations (Object Store) ─────────────</span>
+r.<span class="fn">hset</span>(<span class="str">'user:1'</span>, mapping={
+    <span class="str">'name'</span>: <span class="str">'Rahim Ahmed'</span>,
+    <span class="str">'email'</span>: <span class="str">'rahim@example.com'</span>,
+    <span class="str">'age'</span>: <span class="str">'28'</span>
+})
+
+user = r.<span class="fn">hgetall</span>(<span class="str">'user:1'</span>)
+<span class="fn">print</span>(user)  <span class="cm"># {'name': 'Rahim Ahmed', 'email': ..., 'age': '28'}</span>
+
+<span class="cm"># ── Counter (views, likes) ─────────────────────</span>
+r.<span class="fn">incr</span>(<span class="str">'post:42:views'</span>)   <span class="cm"># increment by 1</span>
+r.<span class="fn">incrby</span>(<span class="str">'post:42:views'</span>, <span class="num">10</span>)
+views = r.<span class="fn">get</span>(<span class="str">'post:42:views'</span>)
+
+<span class="cm"># ── Sorted Set — Leaderboard ───────────────────</span>
+r.<span class="fn">zadd</span>(<span class="str">'game:leaderboard'</span>, {
+    <span class="str">'player1'</span>: <span class="num">5000</span>,
+    <span class="str">'player2'</span>: <span class="num">7500</span>,
+    <span class="str">'player3'</span>: <span class="num">3200</span>
+})
+
+<span class="cm"># Top 3 players</span>
+top3 = r.<span class="fn">zrevrange</span>(<span class="str">'game:leaderboard'</span>, <span class="num">0</span>, <span class="num">2</span>, withscores=<span class="kw">True</span>)
+<span class="fn">print</span>(top3)  <span class="cm"># [('player2', 7500.0), ('player1', 5000.0), ...]</span></pre>
+    </div>
+
+    <h3 class="sub-title">Node.js — Cache-Aside Pattern (Real World)</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Node.js</span><span class="code-file">cacheService.js</span></div>
+      <pre><span class="kw">const</span> redis = <span class="fn">require</span>(<span class="str">'redis'</span>);
+<span class="kw">const</span> { Pool } = <span class="fn">require</span>(<span class="str">'pg'</span>);  <span class="cm">// PostgreSQL</span>
+
+<span class="kw">const</span> client = redis.<span class="fn">createClient</span>({ url: <span class="str">'redis://localhost:6379'</span> });
+<span class="kw">const</span> db = <span class="kw">new</span> <span class="fn">Pool</span>({ connectionString: process.env.DATABASE_URL });
+
+<span class="cm">// Cache-Aside Pattern implementation</span>
+<span class="kw">async function</span> <span class="fn">getUserById</span>(userId) {
+  <span class="kw">const</span> cacheKey = <span class="str">`user:</span>${userId}<span class="str">`</span>;
+
+  <span class="cm">// Step 1: Cache check করো</span>
+  <span class="kw">const</span> cached = <span class="kw">await</span> client.<span class="fn">get</span>(cacheKey);
+  <span class="kw">if</span> (cached) {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'✅ Cache HIT'</span>);
+    <span class="kw">return</span> JSON.<span class="fn">parse</span>(cached);
+  }
+
+  <span class="cm">// Step 2: Cache Miss → DB query</span>
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'❌ Cache MISS → Querying DB'</span>);
+  <span class="kw">const</span> result = <span class="kw">await</span> db.<span class="fn">query</span>(
+    <span class="str">'SELECT * FROM users WHERE id = $1'</span>, [userId]
+  );
+  <span class="kw">const</span> user = result.rows[<span class="num">0</span>];
+
+  <span class="cm">// Step 3: Cache এ store করো (TTL: 1 hour)</span>
+  <span class="kw">if</span> (user) {
+    <span class="kw">await</span> client.<span class="fn">setEx</span>(cacheKey, <span class="num">3600</span>, JSON.<span class="fn">stringify</span>(user));
+  }
+
+  <span class="kw">return</span> user;
+}
+
+<span class="cm">// Cache Invalidation — data update হলে cache মুছো</span>
+<span class="kw">async function</span> <span class="fn">updateUser</span>(userId, data) {
+  <span class="kw">await</span> db.<span class="fn">query</span>(
+    <span class="str">'UPDATE users SET name=$1, email=$2 WHERE id=$3'</span>,
+    [data.name, data.email, userId]
+  );
+  <span class="cm">// Cache invalidate করো</span>
+  <span class="kw">await</span> client.<span class="fn">del</span>(<span class="str">`user:</span>${userId}<span class="str">`</span>);
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'🗑️ Cache invalidated for user:'</span>, userId);
+}</pre>
+    </div>
+
+    <h3 class="sub-title">Rate Limiting with Redis</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Node.js</span><span class="code-file">rateLimiter.js</span></div>
+      <pre><span class="cm">// API Rate Limiting: 100 requests per minute per user</span>
+<span class="kw">async function</span> <span class="fn">checkRateLimit</span>(userId) {
+  <span class="kw">const</span> key = <span class="str">`rate:</span>${userId}<span class="str">:</span>${Math.<span class="fn">floor</span>(Date.<span class="fn">now</span>() / <span class="num">60000</span>)}<span class="str">`</span>;
+
+  <span class="kw">const</span> pipeline = client.<span class="fn">multi</span>();
+  pipeline.<span class="fn">incr</span>(key);
+  pipeline.<span class="fn">expire</span>(key, <span class="num">60</span>);  <span class="cm">// 60 seconds TTL</span>
+
+  <span class="kw">const</span> [count] = <span class="kw">await</span> pipeline.<span class="fn">exec</span>();
+
+  <span class="kw">if</span> (count > <span class="num">100</span>) {
+    <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">'Rate limit exceeded. Try again in 1 minute.'</span>);
+  }
+
+  <span class="kw">return</span> { allowed: <span class="kw">true</span>, remaining: <span class="num">100</span> - count };
+}</pre>
+    </div>
+  </div>
+
+  <!-- Real World Use Cases -->
+  <div class="section" id="usecases">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real World Use Cases</h2>
+
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">🐦 Twitter</div>
+        <p>User timeline cache করে Redis এ। @elonmusk এর tweet ১ বিলিয়ন মানুষ দেখে — প্রতিবার DB query impossible। Redis cluster ব্যবহার করে।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🛒 Amazon</div>
+        <p>Product details, price, inventory — সব cache করা। Shopping cart টা Redis এ রাখে। Session management এর জন্য।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🎮 Gaming</div>
+        <p>Leaderboard Redis Sorted Sets দিয়ে। Real-time score update, top players instantly দেখা — Redis ZSet এর perfect use case।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🔐 Auth Systems</div>
+        <p>JWT token blacklist, OTP store, session data — সব Redis এ। TTL দিয়ে auto-expire। Token revoke করতে Redis DEL command।</p>
+      </div>
+    </div>
+
+    <div class="info-box warning">
+      <div class="box-label">⚠️ Cache Stampede Problem</div>
+      একটা popular key expire হলে হঠাৎ হাজারো request একসাথে DB তে যায় — এটাকে Cache Stampede বা Thundering Herd বলে। Solution: <strong>Mutex Lock</strong> (শুধু একটা request DB তে যাবে, বাকিরা wait করবে) অথবা <strong>Probabilistic early expiration</strong> (expire এর একটু আগেই refresh করা)।
+    </div>
+  </div>
+
+  <!-- Interview Questions -->
+  <div class="section" id="interview">
+    <div class="section-label">08 — Interview Prep</div>
+    <h2 class="section-title">Common Interview Questions</h2>
+
+    <div class="info-box concept">
+      <div class="box-label">❓ Q1: Cache Invalidation কীভাবে করবে?</div>
+      <strong>উত্তর:</strong> ৩টি approach: (১) TTL — নির্দিষ্ট সময় পর auto-expire। (২) Event-driven — data update হলে cache.del() করো। (৩) Write-Through — সবসময় DB এবং Cache একসাথে update করো। বলো — "এটা system এর consistency requirement এর উপর নির্ভর করে।"
+    </div>
+
+    <div class="info-box concept">
+      <div class="box-label">❓ Q2: Cache Hit Rate কীভাবে বাড়াবে?</div>
+      <strong>উত্তর:</strong> (১) Cache size বাড়াও (২) Eviction policy সঠিক choose করো (LRU সাধারণত ভালো) (৩) TTL carefully set করো — খুব কম হলে miss বেশি, খুব বেশি হলে stale data। (৪) Hot data identify করে আগেই warm-up করো।
+    </div>
+
+    <div class="info-box concept">
+      <div class="box-label">❓ Q3: Redis single-threaded হয়েও কীভাবে এত fast?</div>
+      <strong>উত্তর:</strong> সব data RAM এ থাকে (disk I/O নেই)। Event loop দিয়ে async I/O। Simple data structures (O(1) operations)। Network overhead minimize করতে pipelining। CPU bottleneck কম কারণ operations খুব simple।
+    </div>
+
+    <div class="info-box concept">
+      <div class="box-label">❓ Q4: Cache কোথায় রাখবে — Client-side নাকি Server-side?</div>
+      <strong>উত্তর:</strong> Client-side (browser cache, CDN) — static assets এর জন্য। Server-side (Redis, Memcached) — dynamic data, session, computed results। উভয়ই হতে পারে — multi-layer caching strategy।
+    </div>
+  </div>
+
+  <!-- MCQ -->
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🧠</span>
+      <h2>MCQ Quiz — Caching & Redis</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">Cache Hit মানে কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Cache এ data না পাওয়া, DB তে যেতে হবে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Cache এ data পাওয়া গেছে, DB তে যেতে হবে না</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Cache server crash করেছে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Cache memory full হয়ে গেছে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Cache Hit মানে requested data cache এ পাওয়া গেছে। এই ক্ষেত্রে DB তে যেতে হয় না। Cache Miss এর উল্টো।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">LRU eviction policy কীভাবে কাজ করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> সবচেয়ে কম বার ব্যবহার করা item বাদ দেয়</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> সবার আগে যা ঢুকেছে তা বাদ দেয়</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> সবচেয়ে পুরানো সময়ে ব্যবহার করা item বাদ দেয়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Random item বাদ দেয়</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — LRU = Least Recently Used। যে item সবচেয়ে বেশি সময় আগে ব্যবহার হয়েছে, সেটা evict হয়। ধরো A কে ৫ মিনিট আগে, B কে ১ মিনিট আগে access করা হয়েছে — A বাদ যাবে।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">Cache-Aside pattern এ data miss হলে কী হয়?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Application DB থেকে data আনে এবং cache এ store করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Cache নিজেই DB থেকে data load করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Error throw হয় এবং request fail করে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> সরাসরি empty response return হয়</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Cache-Aside এ Application নিজেই cache manage করে। Miss হলে app DB তে যায়, data আনে, তারপর cache এ store করে future requests এর জন্য।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">Redis এ Sorted Set কোন use case এর জন্য perfect?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> User profile store করতে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Message queue implement করতে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Simple string cache করতে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Leaderboard এবং ranked data store করতে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Redis Sorted Set প্রতিটা member এর সাথে একটা score রাখে এবং auto-sorted থাকে। ZADD দিয়ে score দাও, ZREVRANGE দিয়ে top players পাও — O(log n) এ।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">Write-Through caching এর একটি বড় disadvantage কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Data inconsistency হয়</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Write operation slow হয় কারণ Cache এবং DB দুটোতেই লিখতে হয়</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Cache miss বেশি হয়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Memory বেশি লাগে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Write-Through এ প্রতিটা write এ Cache এবং DB দুটোতেই লেখা হয়। এতে write latency বাড়ে। কিন্তু সুবিধা হলো data সবসময় consistent থাকে।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">Redis এবং Memcached এর মধ্যে প্রধান পার্থক্য কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Redis free, Memcached paid</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Memcached faster, Redis slower</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Redis multiple data types এবং persistence support করে, Memcached শুধু String</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Redis distributed, Memcached single server only</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Redis এর সবচেয়ে বড় advantage হলো rich data types (String, Hash, List, Set, Sorted Set) এবং persistence (RDB/AOF)। Memcached শুধু String support করে এবং persistence নেই।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">TTL (Time To Live) cache এ কী কাজ করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> নির্দিষ্ট সময় পর cache entry automatically delete হয়</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Cache কতক্ষণ active থাকবে তা measure করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Cache server এর uptime track করে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Request এর response time measure করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — TTL হলো একটা expiry time। Redis এ SET key value EX 3600 মানে ১ ঘণ্টা পর এই key auto-delete হবে। OTP, session token এর জন্য perfect।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">Cache Stampede (Thundering Herd) কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Cache server overload হয়ে crash করা</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Multiple cache server একসাথে fail করা</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Cache memory full হয়ে যাওয়া</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Popular cache key expire হলে একসাথে অনেক request DB তে যাওয়া</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — একটা popular key expire হলে হঠাৎ হাজারো request একসাথে DB তে hit করে। DB overwhelm হয়। Solution: Mutex lock বা probabilistic early expiration।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">Redis HSET command কোন data structure এ data store করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> String</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Hash</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> List</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Sorted Set</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — HSET = Hash SET। Redis Hash হলো field-value pairs এর collection। User object এর মতো structured data store করতে perfect। HGET দিয়ে specific field পাওয়া যায়।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">একটা banking app design করছো যেখানে account balance সবসময় accurate হতে হবে। কোন caching strategy সবচেয়ে উপযুক্ত?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Write-Behind — fast writes দরকার</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Cache-Aside — সহজ implement করা</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Write-Through — data সবসময় consistent থাকবে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Cache use না করা — banking এ cache risky</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Banking app এ data consistency সবচেয়ে important। Write-Through এ প্রতিটা transaction এ Cache এবং DB simultaneously update হয়, তাই stale data এর সুযোগ নেই। Write slow হলেও এখানে consistency > speed।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT &amp; CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <!-- Assignment -->
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ২-৩ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <p style="margin-bottom:16px; font-size:14px; color:#94a3b8;">নিচের tasks গুলো complete করো। Concept বোঝার পাশাপাশি practically explore করো।</p>
+    <ul class="task-list">
+      <li>
+        <strong>Strategy Selection:</strong> নিচের ৪টা scenario তে কোন caching strategy (Cache-Aside, Write-Through, Write-Behind) ব্যবহার করবে এবং কেন লেখো: (ক) Social media post like count (খ) Bank account balance (গ) E-commerce product catalog (ঘ) Real-time stock price।
+      </li>
+      <li>
+        <strong>Redis Explore করো:</strong> Redis CLI install করো (অথবা try.redis.io) এবং নিচের commands try করো: SET, GET, TTL, EXPIRE, HSET, HGETALL, LPUSH, LRANGE, ZADD, ZRANGE। প্রতিটার output screenshot নাও।
+      </li>
+      <li>
+        <strong>Code Writing:</strong> উপরে দেওয়া Python/Node.js cache-aside code টা নিজে type করো এবং modify করো যেন product details (product_id, name, price) cache করে। TTL ৩০ মিনিট।
+      </li>
+      <li>
+        <strong>Eviction Policy Analysis:</strong> ধরো তোমার cache এ ১০০টা slot আছে। ১০১তম item আসলে কোনটা বাদ যাবে — LRU, LFU, FIFO policy তে ব্যাখ্যা করো। একটা সহজ example নিয়ে manually trace করো।
+      </li>
+      <li>
+        <strong>Research:</strong> Redis Cluster কী? কীভাবে data multiple nodes এ distribute হয়? ৫-৬ লাইনে নিজের ভাষায় লেখো।
+      </li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>Strategy selection এর written justification (৪টা scenario)</li>
+        <li>Redis CLI commands এর screenshots</li>
+        <li>Modified cache code (product details)</li>
+        <li>Eviction policy manual trace</li>
+        <li>Redis Cluster summary</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project -->
+  <div class="project-section" id="project">
+    <div class="project-header">
+      <span style="font-size:24px">🚀</span>
+      <h2>Hands-On Project Task</h2>
+    </div>
+    <div class="project-body">
+      <p style="font-size:14px; color:#94a3b8; margin-bottom:20px;">Redis দিয়ে একটা Simple News Feed Cache System বানাও।</p>
+      <h3 style="font-family:'Fraunces',serif; font-size:18px; margin-bottom:16px; color:#f1f5f9;">News Feed Caching with Redis</h3>
+      <p style="font-size:14px; color:#94a3b8; margin-bottom:20px;">একটা Express.js API বানাবো যেটা news articles কে Redis এ cache করে। DB হিসেবে simple JSON file use করবো।</p>
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-circle">1</div>
+          <div class="step-content">
+            <h4>Setup করো</h4>
+            <p><code>npm install express redis</code> — তারপর Redis start করো: <code>redis-server</code></p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">2</div>
+          <div class="step-content">
+            <h4>Fake DB বানাও</h4>
+            <p>articles.json file এ ১০টা fake news article রাখো (id, title, content, author)।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">3</div>
+          <div class="step-content">
+            <h4>Cache-Aside API implement করো</h4>
+            <p>GET /articles/:id route — আগে Redis check, miss হলে JSON file থেকে load, তারপর Redis এ store।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">4</div>
+          <div class="step-content">
+            <h4>Response time measure করো</h4>
+            <p>First request (cache miss) এবং second request (cache hit) এর time compare করো। Cache hit কত times faster?</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">5</div>
+          <div class="step-content">
+            <h4>Cache Invalidation add করো</h4>
+            <p>PUT /articles/:id route — update করলে cache invalidate হবে।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">6</div>
+          <div class="step-content">
+            <h4>Bonus: TTL add করো</h4>
+            <p>News articles ১ ঘণ্টা পর expire হবে। TTL track করে response header এ পাঠাও।</p>
+          </div>
+        </div>
+      </div>
+      <div class="code-block" style="margin-top:20px">
+        <div class="code-header"><span class="code-lang">Node.js</span><span class="code-file">server.js (starter)</span></div>
+        <pre><span class="kw">const</span> express = <span class="fn">require</span>(<span class="str">'express'</span>);
+<span class="kw">const</span> redis = <span class="fn">require</span>(<span class="str">'redis'</span>);
+<span class="kw">const</span> fs = <span class="fn">require</span>(<span class="str">'fs'</span>);
+
+<span class="kw">const</span> app = <span class="fn">express</span>();
+<span class="kw">const</span> client = redis.<span class="fn">createClient</span>();
+
+app.<span class="fn">get</span>(<span class="str">'/articles/:id'</span>, <span class="kw">async</span> (req, res) => {
+  <span class="kw">const</span> { id } = req.params;
+  <span class="kw">const</span> start = Date.<span class="fn">now</span>();
+
+  <span class="cm">// TODO: Cache-Aside implement করো</span>
+  <span class="cm">// 1. Redis check: client.get(`article:${id}`)</span>
+  <span class="cm">// 2. Hit হলে return, miss হলে JSON file পড়ো</span>
+  <span class="cm">// 3. Cache এ store করো TTL সহ</span>
+
+  res.<span class="fn">json</span>({ data: article, time: <span class="str">`</span>${Date.<span class="fn">now</span>() - start}<span class="str">ms`</span> });
+});
+
+app.<span class="fn">listen</span>(<span class="num">3000</span>, () => <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'🚀 Server on :3000'</span>));</pre>
+      </div>
+      <div class="info-box tip" style="margin-top:16px">
+        <div class="box-label">🎯 এটা করলে যা শিখবে</div>
+        Cache Hit/Miss practically দেখবে। Response time এর পার্থক্য নিজের চোখে দেখবে। Cache Invalidation কীভাবে কাজ করে সেটা বুঝবে। এই একটা project interview তে confidently বলতে পারবে।
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-label">Lesson Summary</div>
+    <h2 class="section-title">আজকে যা শিখলাম</h2>
+    <table class="compare-table">
+      <tr><th>Concept</th><th>এক লাইনে</th></tr>
+      <tr><td>Cache</td><td>Fast memory তে data রেখে DB query কমানো</td></tr>
+      <tr><td>Cache-Aside</td><td>App নিজেই cache manage করে, miss হলে DB fallback</td></tr>
+      <tr><td>Write-Through</td><td>Write এ Cache ও DB দুটোই update — consistent কিন্তু slow</td></tr>
+      <tr><td>LRU</td><td>Least Recently Used — পুরানো item বাদ দাও</td></tr>
+      <tr><td>TTL</td><td>Time To Live — auto-expire করো</td></tr>
+      <tr><td>Redis</td><td>In-memory + multiple data types + persistence</td></tr>
+      <tr><td>Cache Stampede</td><td>Popular key expire → সবাই একসাথে DB তে — Thundering Herd</td></tr>
+    </table>
+  </div>
+
+  <!-- Next CTA -->
+  <div class="next-cta" onclick="window.location='phase2-topic2-load-balancing.html'">
+    <div>
+      <div class="next-label">Next Topic →</div>
+      <div class="next-title">⚖️ Load Balancing (L4/L7 & Algorithms)</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+
+</div>
+</main>
+
+<script>
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scroll = doc.scrollTop || document.body.scrollTop;
+  const height = doc.scrollHeight - doc.clientHeight;
+  document.getElementById('progressFill').style.width = (scroll / height * 100) + '%';
+});
+
+let answered = {};
+document.querySelectorAll('.option').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const block = this.closest('.question-block');
+    const qId = Array.from(document.querySelectorAll('.question-block')).indexOf(block);
+    if (answered[qId]) return;
+    answered[qId] = this.dataset.val;
+    block.querySelectorAll('.option').forEach(o => {
+      o.style.pointerEvents = 'none';
+      if (o.dataset.val === block.dataset.correct) o.classList.add('correct');
+      else if (o.dataset.val === this.dataset.val) o.classList.add('wrong');
+    });
+    block.querySelector('.explanation').classList.add('visible');
+  });
+});
+
+function submitMCQ() {
+  let correct = 0;
+  const blocks = document.querySelectorAll('.question-block');
+  blocks.forEach((block, i) => { if (answered[i] === block.dataset.correct) correct++; });
+  const unanswered = blocks.length - Object.keys(answered).length;
+  if (unanswered > 0) { alert(`এখনও ${unanswered}টা প্রশ্নের উত্তর দাওনি!`); return; }
+  document.getElementById('scoreDisplay').textContent = correct;
+  const banner = document.getElementById('resultBanner');
+  banner.classList.add('visible');
+  if (correct >= 7) { banner.classList.add('pass'); banner.textContent = `🎉 দারুণ! ${correct}/10 সঠিক। পরের topic এ যেতে পারো!`; }
+  else { banner.classList.add('fail'); banner.textContent = `📖 ${correct}/10 সঠিক। Concept গুলো আবার পড়ো। ৭/১০ পেলেই pass।`; }
+}
+
+document.querySelectorAll('.nav-item[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    document.getElementById(link.getAttribute('href').slice(1))?.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>

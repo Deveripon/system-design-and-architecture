@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 4 · System 3 — YouTube/Netflix Design</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05080f; --surface: #090e1a; --card: #0c1220; --border: #162035; --border2: #1e2d4a;
+  --accent: #ef4444; --accent-glow: rgba(239,68,68,0.15);
+  --green: #10b981; --green-glow: rgba(16,185,129,0.12);
+  --orange: #f97316; --red: #ef4444; --yellow: #eab308; --purple: #8b5cf6;
+  --text: #e2e8f0; --muted: #64748b; --muted2: #94a3b8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Sans Bengali', sans-serif; line-height: 1.7; font-size: 15px; }
+body::after { content:''; position:fixed; inset:0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events:none; z-index:999; opacity:0.4; }
+.sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: var(--surface); border-right: 1px solid var(--border); padding: 24px 0; overflow-y: auto; z-index: 100; }
+.sidebar-logo { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.sidebar-logo .phase-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; display: block; margin-bottom: 4px; }
+.sidebar-logo .course-title { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; line-height: 1.3; }
+.nav-section { padding: 0 12px; margin-bottom: 8px; }
+.nav-section-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); padding: 0 8px; margin-bottom: 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 4px; font-size: 13px; color: var(--muted2); cursor: pointer; transition: all 0.15s; text-decoration: none; }
+.nav-item:hover { background: var(--card); color: var(--text); }
+.nav-item.active { background: rgba(239,68,68,0.1); color: var(--accent); }
+.nav-item .nav-icon { font-size: 14px; flex-shrink:0; }
+.nav-item .nav-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); margin-left: auto; }
+.progress-bar { position: fixed; top: 0; left: 240px; right: 0; height: 2px; background: var(--border); z-index: 200; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--orange)); width: 0%; transition: width 0.1s; }
+.main { margin-left: 240px; min-height: 100vh; }
+.content { max-width: 780px; margin: 0 auto; padding: 48px 40px 120px; }
+.topic-header { margin-bottom: 48px; }
+.breadcrumb { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.breadcrumb span { color: var(--accent); }
+.topic-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; display: block; }
+h1.topic-title { font-family: 'Fraunces', serif; font-size: clamp(32px, 5vw, 48px); font-weight: 900; line-height: 1.1; margin-bottom: 16px; background: linear-gradient(135deg, #fff 30%, #fca5a5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.topic-meta { display: flex; gap: 16px; flex-wrap: wrap; }
+.meta-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 12px; border-radius: 2px; border: 1px solid; }
+.meta-chip.time { border-color: rgba(239,68,68,0.3); color: var(--accent); background: var(--accent-glow); }
+.meta-chip.level { border-color: rgba(16,185,129,0.3); color: var(--green); background: var(--green-glow); }
+.meta-chip.type { border-color: rgba(139,92,246,0.3); color: var(--purple); background: rgba(139,92,246,0.08); }
+.section { margin-bottom: 48px; scroll-margin-top: 24px; }
+.section-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+h2.section-title { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 700; margin-bottom: 16px; color: #f1f5f9; }
+h3.sub-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; margin: 24px 0 10px; color: #cbd5e1; }
+p { margin-bottom: 14px; color: #cbd5e1; }
+.info-box { border-radius: 6px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; font-size: 14px; }
+.info-box.concept { background: rgba(239,68,68,0.06); border-color: var(--accent); }
+.info-box.warning { background: rgba(249,115,22,0.06); border-color: var(--orange); }
+.info-box.tip { background: rgba(16,185,129,0.06); border-color: var(--green); }
+.info-box.important { background: rgba(234,179,8,0.06); border-color: var(--yellow); }
+.info-box .box-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; font-weight: 700; }
+.info-box.concept .box-label { color: var(--accent); }
+.info-box.warning .box-label { color: var(--orange); }
+.info-box.tip .box-label { color: var(--green); }
+.info-box.important .box-label { color: var(--yellow); }
+.compare-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+.compare-table th { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; padding: 12px 16px; text-align: left; background: var(--card); border-bottom: 2px solid var(--border2); color: var(--muted2); }
+.compare-table td { padding: 11px 16px; border-bottom: 1px solid var(--border); color: #94a3b8; vertical-align: top; line-height: 1.6; }
+.compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+.compare-table td:first-child { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text); white-space: nowrap; }
+.tag-yes { color: var(--green); font-weight: 600; }
+.tag-no { color: var(--red); }
+.tag-med { color: var(--yellow); }
+.diagram { background: var(--card); border: 1px solid var(--border2); border-radius: 8px; padding: 30px 20px; margin: 24px 0; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; overflow-x: auto; }
+.diagram svg { max-width: 100%; }
+.code-block { background: #030608; border: 1px solid var(--border2); border-radius: 6px; margin: 20px 0; overflow: hidden; }
+.code-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--card); border-bottom: 1px solid var(--border); }
+.code-lang { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+.code-file { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+pre { padding: 20px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.8; color: #e2e8f0; }
+.kw { color: #93c5fd; } .fn { color: #6ee7b7; } .str { color: #fcd34d; } .cm { color: #475569; font-style: italic; } .num { color: #f9a8d4; } .var { color: #e2e8f0; }
+.scenario-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 20px 0; }
+.scenario-card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 18px; }
+.scenario-card .s-title { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.scenario-card p { font-size: 13px; color: var(--muted2); margin: 0; }
+.req-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.req-card { background: var(--card); border: 1px solid var(--border2); border-radius: 6px; padding: 20px; }
+.req-card .r-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
+.req-card.functional .r-title { color: var(--green); }
+.req-card.nonfunc .r-title { color: var(--purple); }
+.req-card ul { list-style: none; padding: 0; }
+.req-card ul li { font-size: 13px; color: var(--muted2); padding: 5px 0 5px 18px; position: relative; border-bottom: 1px solid var(--border); font-family: 'Noto Sans Bengali', sans-serif; }
+.req-card ul li:last-child { border-bottom: none; }
+.req-card ul li::before { content: '→'; position: absolute; left: 0; color: var(--muted); font-size: 12px; }
+.estimation-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0; }
+.est-card { background: var(--card); border: 1px solid var(--border2); border-radius: 6px; padding: 16px; text-align: center; }
+.est-num { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 700; color: var(--accent); display: block; margin-bottom: 4px; }
+.est-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+.tech-stack { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+.tech-tag { font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 6px 14px; border-radius: 3px; border: 1px solid; }
+.tech-tag.db { border-color: rgba(239,68,68,0.3); color: var(--accent); background: var(--accent-glow); }
+.tech-tag.cache { border-color: rgba(234,179,8,0.3); color: var(--yellow); background: rgba(234,179,8,0.06); }
+.tech-tag.lang { border-color: rgba(16,185,129,0.3); color: var(--green); background: var(--green-glow); }
+.tech-tag.infra { border-color: rgba(139,92,246,0.3); color: var(--purple); background: rgba(139,92,246,0.08); }
+.tech-tag.queue { border-color: rgba(249,115,22,0.3); color: var(--orange); background: rgba(249,115,22,0.08); }
+.tradeoff-row { display: flex; gap: 12px; margin: 10px 0; align-items: flex-start; }
+.tradeoff-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 10px; border-radius: 2px; flex-shrink: 0; }
+.tradeoff-label.pro { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.tradeoff-label.con { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+.tradeoff-text { font-size: 13px; color: var(--muted2); line-height: 1.6; font-family: 'Noto Sans Bengali', sans-serif; }
+.mcq-section { background: var(--surface); border: 1px solid var(--border2); border-radius: 8px; padding: 28px; margin: 30px 0; }
+.mcq-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.mcq-icon { font-size: 24px; }
+.mcq-header h2 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; }
+.mcq-score { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--muted); }
+.mcq-score span { color: var(--accent); font-size: 18px; font-weight: 700; }
+.question-block { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+.question-block:last-of-type { border-bottom: none; margin-bottom: 0; }
+.q-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.q-text { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.5; font-family: 'Noto Sans Bengali', sans-serif; }
+.options { display: flex; flex-direction: column; gap: 8px; }
+.option { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-radius: 4px; border: 1px solid var(--border); cursor: pointer; transition: all 0.15s; font-size: 14px; color: var(--muted2); font-family: 'Noto Sans Bengali', sans-serif; }
+.option:hover { border-color: var(--accent); color: var(--text); background: var(--accent-glow); }
+.option.correct { border-color: var(--green); background: var(--green-glow); color: #6ee7b7; }
+.option.wrong { border-color: var(--red); background: rgba(239,68,68,0.08); color: #fca5a5; }
+.option-key { font-family: 'JetBrains Mono', monospace; font-size: 11px; background: var(--border2); padding: 2px 7px; border-radius: 2px; flex-shrink: 0; margin-top: 1px; }
+.explanation { display: none; margin-top: 12px; padding: 12px 14px; background: rgba(16,185,129,0.06); border-left: 2px solid var(--green); border-radius: 0 4px 4px 0; font-size: 13px; color: #94a3b8; line-height: 1.7; font-family: 'Noto Sans Bengali', sans-serif; }
+.explanation.visible { display: block; }
+.explanation strong { color: var(--green); }
+.mcq-submit { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; padding: 12px 24px; background: var(--accent); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; letter-spacing: 1px; transition: all 0.15s; }
+.mcq-submit:hover { background: #dc2626; transform: translateY(-1px); }
+.result-banner { display: none; margin-top: 20px; padding: 16px 20px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; }
+.result-banner.visible { display: block; }
+.result-banner.pass { background: var(--green-glow); border: 1px solid var(--green); color: var(--green); }
+.result-banner.fail { background: rgba(249,115,22,0.08); border: 1px solid var(--orange); color: var(--orange); }
+.assignment-section { background: linear-gradient(135deg, rgba(239,68,68,0.04), rgba(139,92,246,0.04)); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; padding: 28px; margin: 30px 0; }
+.assignment-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.assignment-icon { font-size: 28px; }
+.assignment-header h2 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; }
+.assignment-meta { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.a-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 10px; border-radius: 2px; }
+.a-chip.time { background: rgba(234,179,8,0.1); color: var(--yellow); border: 1px solid rgba(234,179,8,0.2); }
+.a-chip.level { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.task-list { counter-reset: tasks; list-style: none; margin-bottom: 20px; }
+.task-list li { counter-increment: tasks; padding: 14px 14px 14px 50px; position: relative; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--muted2); line-height: 1.7; font-family: 'Noto Sans Bengali', sans-serif; }
+.task-list li:last-child { border-bottom: none; }
+.task-list li::before { content: counter(tasks); position: absolute; left: 14px; top: 14px; width: 24px; height: 24px; background: var(--accent-glow); border: 1px solid rgba(239,68,68,0.3); border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.task-list li strong { color: var(--text); }
+.deliverable-box { background: var(--card); border: 1px solid var(--border2); border-radius: 6px; padding: 16px 18px; margin-top: 16px; }
+.deliverable-box .d-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--purple); margin-bottom: 10px; }
+.deliverable-box ul { list-style: none; padding: 0; }
+.deliverable-box ul li { font-size: 13px; color: var(--muted2); padding: 4px 0 4px 18px; position: relative; font-family: 'Noto Sans Bengali', sans-serif; }
+.deliverable-box ul li::before { content: '◆'; position: absolute; left: 0; font-size: 8px; color: var(--purple); top: 6px; }
+.next-cta { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--border2); border-radius: 8px; padding: 20px 24px; margin-top: 48px; text-decoration: none; color: var(--text); transition: border-color 0.2s; cursor: pointer; }
+.next-cta:hover { border-color: var(--accent); }
+.next-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+.next-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; }
+.next-arrow { font-size: 24px; color: var(--accent); }
+@media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } .content { padding: 24px 16px 80px; } .scenario-grid, .req-grid, .estimation-grid { grid-template-columns: 1fr; } .progress-bar { left: 0; } }
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 04 · Real World Systems</span>
+    <div class="course-title">System Design<br>Mastery Course</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Phase 4 Systems</div>
+    <a href="#" class="nav-item"><span class="nav-icon">🔗</span><span>URL Shortener</span><span class="nav-num">01</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🐦</span><span>Twitter/X</span><span class="nav-num">02</span></a>
+    <a href="#" class="nav-item active"><span class="nav-icon">📺</span><span>YouTube</span><span class="nav-num">03</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">💬</span><span>WhatsApp</span><span class="nav-num">04</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🛒</span><span>Amazon</span><span class="nav-num">05</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🔍</span><span>Search</span><span class="nav-num">06</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🚗</span><span>Uber</span><span class="nav-num">07</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px">
+    <div class="nav-section-label">This Lesson</div>
+    <a href="#requirements" class="nav-item"><span class="nav-icon">📋</span><span>Requirements</span></a>
+    <a href="#estimation" class="nav-item"><span class="nav-icon">🔢</span><span>Estimation</span></a>
+    <a href="#architecture" class="nav-item"><span class="nav-icon">🏗️</span><span>Architecture</span></a>
+    <a href="#deepdive" class="nav-item"><span class="nav-icon">🔬</span><span>Deep Dive</span></a>
+    <a href="#database" class="nav-item"><span class="nav-icon">🗄️</span><span>Database</span></a>
+    <a href="#scaling" class="nav-item"><span class="nav-icon">📈</span><span>Scaling</span></a>
+    <a href="#techstack" class="nav-item"><span class="nav-icon">⚙️</span><span>Tech Stack</span></a>
+    <a href="#mcq" class="nav-item"><span class="nav-icon">✅</span><span>MCQ Test</span></a>
+    <a href="#assignment" class="nav-item"><span class="nav-icon">📝</span><span>Assignment</span></a>
+  </div>
+</nav>
+
+<main class="main">
+<div class="content">
+
+  <div class="topic-header" id="requirements">
+    <div class="breadcrumb">Phase 4 — Real World Systems <span>›</span> System 03</div>
+    <span class="topic-num">SYSTEM 03 / 07</span>
+    <h1 class="topic-title">YouTube /<br>Netflix Design</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ ৯০-১২০ মিনিট</span>
+      <span class="meta-chip level">📊 Junior Level</span>
+      <span class="meta-chip type">🎬 Video Streaming</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Why This System</div>
+    <h2 class="section-title">Video Streaming কেন আলাদা?</h2>
+    <p>YouTube প্রতি মিনিটে 500 ঘণ্টার video upload হয়। Netflix-এর internet traffic-এর ১৫% শুধু Netflix-এর। এই দুটো system-এ সবচেয়ে বড় challenge হলো <strong>video storage, processing, এবং delivery</strong> — এটা regular web app থেকে সম্পূর্ণ আলাদা।</p>
+    <div class="info-box concept">
+      <div class="box-label">📌 Key Insight</div>
+      Video streaming = <strong>massive storage</strong> + <strong>video transcoding</strong> + <strong>adaptive bitrate streaming</strong> + <strong>global CDN</strong>। একটা 1-hour video কে 10+ different formats/qualities-এ encode করতে হয়।
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Requirements</div>
+    <h2 class="section-title">Features কী কী?</h2>
+    <div class="req-grid">
+      <div class="req-card functional">
+        <div class="r-title">✅ Functional Requirements</div>
+        <ul>
+          <li>Video upload করা</li>
+          <li>Video stream করা (watch)</li>
+          <li>Video search করা</li>
+          <li>Like, comment, subscribe</li>
+          <li>Video recommendations</li>
+          <li>Resume from where left off</li>
+          <li>Multiple quality (360p/720p/1080p/4K)</li>
+        </ul>
+      </div>
+      <div class="req-card nonfunc">
+        <div class="r-title">⚡ Non-Functional Requirements</div>
+        <ul>
+          <li>2 billion+ monthly active users</li>
+          <li>Video starts in < 2 seconds</li>
+          <li>No buffering (smooth playback)</li>
+          <li>99.9% availability</li>
+          <li>Uploaded video available within 1 min</li>
+          <li>Support any device (mobile/TV/web)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="estimation">
+    <div class="section-label">Back-of-Envelope Estimation</div>
+    <h2 class="section-title">YouTube-এর Numbers</h2>
+    <div class="estimation-grid">
+      <div class="est-card"><span class="est-num">500hrs</span><span class="est-label">Video uploaded/min</span></div>
+      <div class="est-card"><span class="est-num">2B</span><span class="est-label">Monthly Active Users</span></div>
+      <div class="est-card"><span class="est-num">1B hrs</span><span class="est-label">Watched daily</span></div>
+      <div class="est-card"><span class="est-num">10x</span><span class="est-label">Storage multiplier (transcoding)</span></div>
+      <div class="est-card"><span class="est-num">~500MB</span><span class="est-label">Per minute video (1080p)</span></div>
+      <div class="est-card"><span class="est-num">1 EB+</span><span class="est-label">Total video storage</span></div>
+    </div>
+    <div class="info-box important">
+      <div class="box-label">🔢 Storage Calculation</div>
+      500 hrs/min × 60 min = 30,000 hrs/hr upload। প্রতি ঘণ্টা video ≈ 1GB (compressed) × 10 formats = 10GB/hr of video। Daily: 30,000 × 24 × 10GB = 7.2 petabytes/day! এই scale-এ dedicated storage infrastructure দরকার।
+    </div>
+  </div>
+
+  <div class="section" id="architecture">
+    <div class="section-label">High Level Architecture</div>
+    <h2 class="section-title">YouTube-এর Two Flows</h2>
+    <p>YouTube-এ দুটো completely আলাদা path: <strong>Upload path</strong> এবং <strong>Stream path</strong>।</p>
+
+    <div class="diagram">
+      <svg width="700" height="360" viewBox="0 0 700 360">
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#64748b"/></marker>
+          <marker id="arrR" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#ef4444"/></marker>
+          <marker id="arrG" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#10b981"/></marker>
+        </defs>
+
+        <!-- UPLOAD FLOW label -->
+        <text x="10" y="20" fill="#ef4444" font-family="JetBrains Mono" font-size="10" font-weight="700">── UPLOAD FLOW ──</text>
+
+        <!-- Creator -->
+        <rect x="10" y="35" width="70" height="40" rx="4" fill="#0c1220" stroke="#1e2d4a" stroke-width="1.5"/>
+        <text x="45" y="53" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">CREATOR</text>
+        <text x="45" y="66" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Uploads</text>
+
+        <path d="M 80 55 L 120 55" stroke="#ef4444" stroke-width="1.5" marker-end="url(#arrR)"/>
+
+        <!-- Upload API -->
+        <rect x="120" y="35" width="90" height="40" rx="4" fill="#0c1220" stroke="#ef4444" stroke-width="1.5"/>
+        <text x="165" y="53" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="9">UPLOAD</text>
+        <text x="165" y="66" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="9">SERVICE</text>
+
+        <path d="M 210 55 L 250 55" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+
+        <!-- Raw Storage -->
+        <rect x="250" y="35" width="90" height="40" rx="4" fill="#0c1220" stroke="#eab308" stroke-width="1.5"/>
+        <text x="295" y="53" text-anchor="middle" fill="#eab308" font-family="JetBrains Mono" font-size="9">RAW</text>
+        <text x="295" y="66" text-anchor="middle" fill="#eab308" font-family="JetBrains Mono" font-size="8">BLOB STORE</text>
+
+        <path d="M 340 55 L 380 55" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+
+        <!-- Message Queue -->
+        <rect x="380" y="35" width="80" height="40" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.2"/>
+        <text x="420" y="53" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="9">KAFKA</text>
+        <text x="420" y="66" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Queue</text>
+
+        <path d="M 460 55 L 500 55" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+
+        <!-- Transcoding Workers -->
+        <rect x="500" y="25" width="100" height="60" rx="4" fill="#0c1220" stroke="#f97316" stroke-width="1.5"/>
+        <text x="550" y="48" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="9">TRANSCODING</text>
+        <text x="550" y="61" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="9">WORKERS</text>
+        <text x="550" y="74" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">360p/720p/1080p/4K</text>
+
+        <path d="M 550 85 L 550 115" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+
+        <!-- Processed Storage -->
+        <rect x="500" y="115" width="100" height="40" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="550" y="133" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">PROCESSED</text>
+        <text x="550" y="146" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">S3 Storage</text>
+
+        <path d="M 550 155 L 550 185" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+
+        <!-- CDN -->
+        <rect x="460" y="185" width="180" height="50" rx="4" fill="#0c1220" stroke="#1d9bf0" stroke-width="2"/>
+        <text x="550" y="206" text-anchor="middle" fill="#1d9bf0" font-family="JetBrains Mono" font-size="10" font-weight="700">GLOBAL CDN</text>
+        <text x="550" y="222" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">CloudFront / Akamai (150+ Edge Locations)</text>
+
+        <!-- STREAM FLOW label -->
+        <text x="10" y="275" fill="#10b981" font-family="JetBrains Mono" font-size="10" font-weight="700">── STREAM FLOW ──</text>
+
+        <!-- Viewer -->
+        <rect x="10" y="290" width="70" height="40" rx="4" fill="#0c1220" stroke="#1e2d4a" stroke-width="1.5"/>
+        <text x="45" y="308" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">VIEWER</text>
+        <text x="45" y="321" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Watches</text>
+
+        <path d="M 80 310 L 120 310" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrG)"/>
+
+        <!-- API Server -->
+        <rect x="120" y="290" width="90" height="40" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="165" y="308" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">API SERVER</text>
+        <text x="165" y="321" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Get CDN URL</text>
+
+        <path d="M 210 310 L 250 310" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+
+        <!-- Metadata DB -->
+        <rect x="250" y="290" width="100" height="40" rx="4" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="300" y="308" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="9">METADATA</text>
+        <text x="300" y="321" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">MySQL + Redis</text>
+
+        <!-- Arrow to CDN from viewer -->
+        <path d="M 80 320 L 460 220" stroke="#10b981" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrG)"/>
+        <text x="270" y="285" fill="#10b981" font-family="JetBrains Mono" font-size="8">Direct CDN stream</text>
+      </svg>
+    </div>
+
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">📤 Upload Flow</div>
+        <p>Creator uploads → raw storage → Kafka trigger → transcoding workers → multiple quality versions → CDN এ push।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">▶️ Stream Flow</div>
+        <p>Viewer requests → API gets CDN URL → Viewer directly streams from nearest CDN edge node। API server video bits transmit করে না।</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="deepdive">
+    <div class="section-label">Deep Dive</div>
+    <h2 class="section-title">Video Processing Pipeline</h2>
+
+    <h3 class="sub-title">🎬 Transcoding — সবচেয়ে গুরুত্বপূর্ণ Step</h3>
+    <p>একটা raw video upload হলে সেটাকে অনেকগুলো format-এ convert করতে হয়। এটাকে <strong>transcoding</strong> বলে।</p>
+
+    <table class="compare-table">
+      <tr><th>Output Format</th><th>Resolution</th><th>Bitrate</th><th>Use Case</th></tr>
+      <tr><td>360p</td><td>640×360</td><td>~400 Kbps</td><td>Slow mobile/2G</td></tr>
+      <tr><td>480p</td><td>854×480</td><td>~700 Kbps</td><td>Mobile 3G</td></tr>
+      <tr><td>720p HD</td><td>1280×720</td><td>~2.5 Mbps</td><td>Normal streaming</td></tr>
+      <tr><td>1080p FHD</td><td>1920×1080</td><td>~5 Mbps</td><td>Good connection</td></tr>
+      <tr><td>4K UHD</td><td>3840×2160</td><td>~20 Mbps</td><td>Netflix/Fast internet</td></tr>
+    </table>
+
+    <div class="info-box tip">
+      <div class="box-label">💡 Adaptive Bitrate Streaming (ABR)</div>
+      Player automatically quality switch করে network speed অনুযায়ী। Netflix/YouTube HLS (HTTP Live Streaming) বা DASH protocol use করে। Video small chunks (2-10 sec) এ ভাগ হয়। Slow network → 360p, Fast → 1080p auto switch।
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Python</span>
+        <span class="code-file">transcoding_worker.py</span>
+      </div>
+      <pre><span class="kw">import</span> subprocess
+<span class="kw">import</span> boto3
+
+<span class="kw">def</span> <span class="fn">transcode_video</span>(raw_video_path: <span class="var">str</span>, video_id: <span class="var">str</span>):
+    qualities = [
+        {<span class="str">"name"</span>: <span class="str">"360p"</span>,  <span class="str">"width"</span>: <span class="num">640</span>,  <span class="str">"height"</span>: <span class="num">360</span>,  <span class="str">"bitrate"</span>: <span class="str">"400k"</span>},
+        {<span class="str">"name"</span>: <span class="str">"720p"</span>,  <span class="str">"width"</span>: <span class="num">1280</span>, <span class="str">"height"</span>: <span class="num">720</span>,  <span class="str">"bitrate"</span>: <span class="str">"2500k"</span>},
+        {<span class="str">"name"</span>: <span class="str">"1080p"</span>, <span class="str">"width"</span>: <span class="num">1920</span>, <span class="str">"height"</span>: <span class="num">1080</span>, <span class="str">"bitrate"</span>: <span class="str">"5000k"</span>},
+    ]
+    s3 = boto3.client(<span class="str">'s3'</span>)
+    output_files = []
+
+    <span class="kw">for</span> q <span class="kw">in</span> qualities:
+        output_path = <span class="str">f"/tmp/{video_id}_{q['name']}.mp4"</span>
+        <span class="cm"># FFmpeg দিয়ে transcode করো</span>
+        subprocess.run([
+            <span class="str">"ffmpeg"</span>, <span class="str">"-i"</span>, raw_video_path,
+            <span class="str">"-vf"</span>, <span class="str">f"scale={q['width']}:{q['height']}"</span>,
+            <span class="str">"-b:v"</span>, q[<span class="str">'bitrate'</span>],
+            <span class="str">"-c:v"</span>, <span class="str">"libx264"</span>, <span class="str">"-c:a"</span>, <span class="str">"aac"</span>,
+            output_path
+        ])
+        <span class="cm"># S3-এ upload করো</span>
+        s3_key = <span class="str">f"videos/{video_id}/{q['name']}.mp4"</span>
+        s3.upload_file(output_path, <span class="str">"my-video-bucket"</span>, s3_key)
+        output_files.append(s3_key)
+
+    <span class="kw">return</span> output_files  <span class="cm"># CDN-এ push করা হবে</span></pre>
+    </div>
+
+    <h3 class="sub-title">📊 Video Chunking — HLS Protocol</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">HLS</span>
+        <span class="code-file">master.m3u8 (Playlist file)</span>
+      </div>
+      <pre><span class="cm"># Master playlist — player এটা দেখে quality choose করে</span>
+#EXTM3U
+#EXT-X-VERSION:3
+
+<span class="cm"># 360p stream</span>
+#EXT-X-STREAM-INF:BANDWIDTH=<span class="num">400000</span>,RESOLUTION=<span class="str">640x360</span>
+https://cdn.youtube.com/video123/<span class="str">360p/playlist.m3u8</span>
+
+<span class="cm"># 720p stream</span>
+#EXT-X-STREAM-INF:BANDWIDTH=<span class="num">2500000</span>,RESOLUTION=<span class="str">1280x720</span>
+https://cdn.youtube.com/video123/<span class="str">720p/playlist.m3u8</span>
+
+<span class="cm"># 1080p stream</span>
+#EXT-X-STREAM-INF:BANDWIDTH=<span class="num">5000000</span>,RESOLUTION=<span class="str">1920x1080</span>
+https://cdn.youtube.com/video123/<span class="str">1080p/playlist.m3u8</span>
+
+<span class="cm"># Player automatically best quality select করে bandwidth অনুযায়ী</span></pre>
+    </div>
+  </div>
+
+  <div class="section" id="database">
+    <div class="section-label">Database Choice</div>
+    <h2 class="section-title">Data কোথায় রাখবো?</h2>
+    <table class="compare-table">
+      <tr><th>Data</th><th>Database</th><th>Why?</th></tr>
+      <tr><td>Video metadata (title, desc)</td><td>MySQL + Redis cache</td><td>Structured, relational, cacheable</td></tr>
+      <tr><td>Raw video files</td><td>Amazon S3 / Google Cloud Storage</td><td>Object storage, terabytes-scale</td></tr>
+      <tr><td>Processed videos</td><td>S3 → CDN (CloudFront)</td><td>Edge delivery globally</td></tr>
+      <tr><td>User watch history</td><td>Cassandra</td><td>Time-series, massive scale</td></tr>
+      <tr><td>Video search index</td><td>Elasticsearch</td><td>Full-text search, tags</td></tr>
+      <tr><td>Recommendations data</td><td>Neo4j / ML model store</td><td>Graph-based recommendations</td></tr>
+      <tr><td>View counts, likes</td><td>Redis (counters)</td><td>Fast atomic increments</td></tr>
+    </table>
+    <div class="info-box warning">
+      <div class="box-label">⚠️ Never Store Videos in DB</div>
+      Database-এ video binary কখনো store করবে না। Database slow binary retrieval-এর জন্য। সর্বদা Object Storage (S3) + CDN ব্যবহার করো। DB শুধু metadata রাখে।
+    </div>
+  </div>
+
+  <div class="section" id="scaling">
+    <div class="section-label">Scaling Decisions</div>
+    <h2 class="section-title">Scale করার উপায়</h2>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label pro">Strategy</span>
+      <div class="tradeoff-text"><strong>CDN is Everything:</strong> 95%+ video traffic CDN থেকে serve হয়। Origin server-এ কোনো load নেই। Netflix Open Connect — নিজেদের CDN boxes ISP-র কাছে রাখে।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label pro">Strategy</span>
+      <div class="tradeoff-text"><strong>Parallel Transcoding:</strong> একটা video কে segments-এ ভাগ করে parallel workers-এ transcode করো। 1-hour video → 1 worker 1 hour লাগবে, 60 workers = 1 minute!</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label pro">Strategy</span>
+      <div class="tradeoff-text"><strong>Pre-warm CDN:</strong> Popular video detect হলে immediately CDN edge locations-এ push করো। Viral হওয়ার আগেই ready।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label con">Trade-off</span>
+      <div class="tradeoff-text"><strong>Storage Cost:</strong> 10x storage multiplication (multiple qualities)। Storage cheap কিন্তু at 1 exabyte scale expensive হয়। Cold storage (Glacier) use করো old videos-এর জন্য।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label con">Trade-off</span>
+      <div class="tradeoff-text"><strong>Transcoding Time:</strong> 4K video transcode করতে সময় লাগে। User upload করার সাথে সাথে সব quality available হয় না — lower quality আগে, higher quality পরে।</div>
+    </div>
+  </div>
+
+  <div class="section" id="techstack">
+    <div class="section-label">Full Tech Stack</div>
+    <h2 class="section-title">YouTube/Netflix-এর Technologies</h2>
+    <h3 class="sub-title">Backend & Processing</h3>
+    <div class="tech-stack">
+      <span class="tech-tag lang">Python / Java</span>
+      <span class="tech-tag lang">FFmpeg (Transcoding)</span>
+      <span class="tech-tag infra">Kubernetes</span>
+      <span class="tech-tag queue">Apache Kafka</span>
+    </div>
+    <h3 class="sub-title">Storage</h3>
+    <div class="tech-stack">
+      <span class="tech-tag db">Amazon S3 (Video Files)</span>
+      <span class="tech-tag db">MySQL (Metadata)</span>
+      <span class="tech-tag cache">Redis (Cache + Counters)</span>
+      <span class="tech-tag db">Cassandra (Watch History)</span>
+      <span class="tech-tag db">Elasticsearch (Search)</span>
+    </div>
+    <h3 class="sub-title">Delivery & Monitoring</h3>
+    <div class="tech-stack">
+      <span class="tech-tag infra">CloudFront CDN</span>
+      <span class="tech-tag infra">HLS / MPEG-DASH</span>
+      <span class="tech-tag infra">Prometheus + Grafana</span>
+      <span class="tech-tag infra">Apache Spark (Recommendations)</span>
+    </div>
+  </div>
+
+  <!-- MCQ -->
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🎯</span>
+      <h2>MCQ Test — YouTube/Netflix</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">একটি video upload হলে কতটি different format/quality-তে transcode করা হয় সাধারণত?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> শুধু 1 (original)</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> 5-10 different qualities</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> 100+ formats</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> 2 (HD and SD)</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — YouTube typically 360p, 480p, 720p, 1080p, 1440p, 4K + different codecs (H.264, VP9, AV1) + audio tracks = 5-10+ versions। এজন্য storage 10x multiply হয়।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">Adaptive Bitrate Streaming (ABR) কী করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Video compress করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Audio quality বাড়ায়</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Network speed অনুযায়ী automatically quality switch করে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Video resolution permanently change করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — ABR player bandwidth monitor করে। Slow network = 360p switch, fast network = 1080p switch। HLS/DASH protocol এটা implement করে। এজন্যই YouTube-এ buffering কম হয়।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">Video binary data কোথায় store করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Amazon S3 বা Google Cloud Storage</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> MySQL BLOB field</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Redis cache</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> API Server local disk</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Object Storage (S3/GCS) videos-এর জন্য designed। Scalable to exabytes, cheap, durable, CDN integration। Database BLOB = terrible performance at scale। Local disk = no redundancy।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">CDN (Content Delivery Network) video streaming-এ কেন important?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Video encode করতে</span></div>
+        <div class="option" data-val="b"><span class="option-key">B</span> User authentication করতে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Database query করতে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> User-এর কাছের server থেকে video deliver করে latency কমাতে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — CDN edge servers globally distributed। Bangladesh-এর user India বা Singapore edge থেকে video পাবে — origin US server থেকে না। Latency 200ms থেকে 10ms-এ নামে। এটাই fast streaming-এর secret।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">Video transcoding speed বাড়াতে কোন approach best?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> একটা বড় server</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Video segments-এ ভাগ করে parallel workers-এ process</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> User-কে wait করতে বলো</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> কম quality transcode করো</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — 1-hour video → 60 segments × parallel workers = drastically faster। YouTube DAG (Directed Acyclic Graph) দিয়ে transcoding pipeline manage করে। এটাই "embarrassingly parallel" problem।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">User-এর watch history (কোন video কতটুকু দেখেছে) store করতে কোন DB best?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> MySQL</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Redis</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Cassandra</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Elasticsearch</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Watch history = time-series data। User_id দিয়ে partition, watched_at দিয়ে cluster। Massive write throughput (billions of events/day)। Cassandra time-series workload-এর জন্য perfect।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">"Resume from where you left off" feature implement করবে কীভাবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> User-এর last watch position DB-তে save, start করলে সেখান থেকে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Browser cookie-তে রাখো</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Video re-encode করো</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Possible না</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Periodic position save করো (every 10 seconds)। user_id + video_id → last_position_seconds। Video load হলে এই position থেকে HLS chunk request করো। Simple but effective।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">Netflix Open Connect কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Netflix-এর API</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Netflix-এর database</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Netflix-এর payment system</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Netflix-এর নিজস্ব CDN — ISP-দের কাছে servers রাখে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Netflix Open Connect Appliance (OCA) — Netflix নিজেই hardware box তৈরি করে ISP-দের কাছে বিনামূল্যে দেয়। ISP network-এর ভেতরে Netflix content cache থাকে। Bandwidth cost কমে, speed বাড়ে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">HLS (HTTP Live Streaming) কীভাবে কাজ করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Entire video একসাথে download করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Video small chunks (2-10 sec)-এ ভাগ করে HTTP-তে serve করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> UDP দিয়ে stream করে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Real-time encode করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — HLS video-কে 2-10 second chunks-এ ভাগ করে। .m3u8 playlist file এ chunk list থাকে। Player sequentially chunks download করে। Standard HTTP use করে তাই CDN-friendly। Apple-এর invention, এখন industry standard।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">Viral video (suddenly 10M views in 1 hour) — system কীভাবে handle করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Server upgrade করো</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Video temporarily block করো</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> CDN automatically handle করে — edge servers cache থেকে serve</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Origin server direct serve করো</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — CDN-এর beauty: viral video CDN edge servers globally cached। 10M concurrent viewers CDN থেকে serve হয়, origin server-এ almost zero load। এজন্যই YouTube viral videos-এও crash করে না।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT & CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ৩-৪ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <ul class="task-list">
+      <li><strong>Architecture Diagram:</strong> YouTube-এর complete system diagram আঁকো। Upload path এবং Stream path আলাদা রঙে দেখাও। Components: Creator → Upload Service → Raw S3 → Kafka → Transcoding Workers → Processed S3 → CDN → Viewer।</li>
+      <li><strong>Transcoding Pipeline:</strong> একটা 2-hour 4K movie upload হলে: (ক) কতগুলো output file তৈরি হবে? (খ) প্রতিটার approximate size? (গ) Total storage কত? (ঘ) 1 worker vs 120 parallel workers — time difference কত?</li>
+      <li><strong>HLS Playlist:</strong> নিজে একটা simple .m3u8 master playlist file লেখো 3টা quality-র জন্য (360p, 720p, 1080p)। Format দেখে উপরের example থেকে।</li>
+      <li><strong>CDN Strategy:</strong> Bangladesh-এর user যখন YouTube video দেখে, request কোথা থেকে serve হওয়া উচিত? CDN edge location কোথায় থাকলে best? Explain করো।</li>
+      <li><strong>Cost Analysis:</strong> যদি প্রতিদিন 1 petabyte video store করতে হয়, AWS S3 standard pricing (~$23/TB/month) এ monthly cost কত? Cold storage (Glacier, ~$4/TB/month) use করলে পুরনো videos-এর জন্য কত save হবে?</li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>YouTube architecture diagram (upload + stream paths)</li>
+        <li>Transcoding calculation table</li>
+        <li>Sample .m3u8 playlist file</li>
+        <li>CDN placement explanation</li>
+        <li>Cost analysis calculation</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">System Summary</div>
+    <h2 class="section-title">YouTube/Netflix — Key Takeaways</h2>
+    <table class="compare-table">
+      <tr><th>Challenge</th><th>Solution</th><th>Technology</th></tr>
+      <tr><td>Video storage at scale</td><td>Object storage</td><td>Amazon S3</td></tr>
+      <tr><td>Multiple quality formats</td><td>Transcoding pipeline</td><td>FFmpeg + Workers</td></tr>
+      <tr><td>Global fast delivery</td><td>Edge CDN</td><td>CloudFront/Akamai</td></tr>
+      <tr><td>Smooth streaming</td><td>Adaptive bitrate</td><td>HLS / DASH</td></tr>
+      <tr><td>Async processing</td><td>Message queue</td><td>Apache Kafka</td></tr>
+      <tr><td>Watch history</td><td>Time-series DB</td><td>Cassandra</td></tr>
+    </table>
+  </div>
+
+  <div class="next-cta" onclick="alert('System 4: WhatsApp — পরের ফাইল খোলো!')">
+    <div>
+      <div class="next-label">Next System →</div>
+      <div class="next-title">💬 WhatsApp / Chat System Design</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+
+</div>
+</main>
+<script>
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scroll = doc.scrollTop || document.body.scrollTop;
+  const height = doc.scrollHeight - doc.clientHeight;
+  document.getElementById('progressFill').style.width = (scroll / height * 100) + '%';
+});
+let answered = {};
+document.querySelectorAll('.option').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const block = this.closest('.question-block');
+    const qId = Array.from(document.querySelectorAll('.question-block')).indexOf(block);
+    if (answered[qId]) return;
+    answered[qId] = this.dataset.val;
+    block.querySelectorAll('.option').forEach(o => {
+      o.style.pointerEvents = 'none';
+      if (o.dataset.val === block.dataset.correct) o.classList.add('correct');
+      else if (o.dataset.val === this.dataset.val && this.dataset.val !== block.dataset.correct) o.classList.add('wrong');
+    });
+    block.querySelector('.explanation').classList.add('visible');
+    const correct = Array.from(document.querySelectorAll('.question-block')).filter((b,i) => answered[i] === b.dataset.correct).length;
+    document.getElementById('scoreDisplay').textContent = correct;
+  });
+});
+function submitMCQ() {
+  const blocks = document.querySelectorAll('.question-block');
+  const unanswered = blocks.length - Object.keys(answered).length;
+  if (unanswered > 0) { alert(`এখনও ${unanswered}টা প্রশ্নের উত্তর দাওনি!`); return; }
+  let correct = Array.from(blocks).filter((b,i) => answered[i] === b.dataset.correct).length;
+  const banner = document.getElementById('resultBanner');
+  banner.classList.add('visible');
+  if (correct >= 7) { banner.classList.add('pass'); banner.textContent = `🎉 দারুণ! ${correct}/10 সঠিক। System 4 এ যেতে পারো!`; }
+  else { banner.classList.add('fail'); banner.textContent = `📖 ${correct}/10 সঠিক। Concepts আবার পড়ো। ৭/১০ পেলেই pass।`; }
+}
+</script>
+</body>
+</html>

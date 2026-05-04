@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 2 · Topic 4 — API Design & Gateway</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05080f;--surface:#090e1a;--card:#0c1220;--border:#162035;--border2:#1e2d4a;--accent:#3b82f6;--accent-glow:rgba(59,130,246,0.15);--green:#10b981;--green-glow:rgba(16,185,129,0.12);--orange:#f97316;--red:#ef4444;--yellow:#eab308;--purple:#8b5cf6;--text:#e2e8f0;--muted:#64748b;--muted2:#94a3b8}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans Bengali',sans-serif;line-height:1.7;font-size:15px}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.4}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.sidebar-logo .phase-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:4px}
+.sidebar-logo .course-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;line-height:1.3}
+.nav-section{padding:0 12px;margin-bottom:8px}
+.nav-section-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);padding:0 8px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:4px;font-size:13px;color:var(--muted2);cursor:pointer;transition:all 0.15s;text-decoration:none}
+.nav-item:hover{background:var(--card);color:var(--text)}.nav-item.active{background:var(--accent-glow);color:var(--accent)}
+.nav-item .nav-icon{font-size:14px;flex-shrink:0}.nav-item .nav-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto}
+.progress-bar{position:fixed;top:0;left:240px;right:0;height:2px;background:var(--border);z-index:200}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));width:0%;transition:width 0.1s}
+.main{margin-left:240px;min-height:100vh}.content{max-width:780px;margin:0 auto;padding:48px 40px 120px}
+.topic-header{margin-bottom:48px}
+.breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.breadcrumb span{color:var(--accent)}
+.topic-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:block}
+h1.topic-title{font-family:'Fraunces',serif;font-size:clamp(32px,5vw,48px);font-weight:900;line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,#fff 30%,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topic-meta{display:flex;gap:16px;flex-wrap:wrap}
+.meta-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 12px;border-radius:2px;border:1px solid}
+.meta-chip.time{border-color:rgba(59,130,246,0.3);color:var(--accent);background:var(--accent-glow)}
+.meta-chip.level{border-color:rgba(16,185,129,0.3);color:var(--green);background:var(--green-glow)}
+.meta-chip.type{border-color:rgba(139,92,246,0.3);color:var(--purple);background:rgba(139,92,246,0.08)}
+.section{margin-bottom:48px;scroll-margin-top:24px}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:3px;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+h2.section-title{font-family:'Fraunces',serif;font-size:24px;font-weight:700;margin-bottom:16px;color:#f1f5f9}
+h3.sub-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;margin:24px 0 10px;color:#cbd5e1}
+p{margin-bottom:14px;color:#cbd5e1}
+.info-box{border-radius:6px;padding:18px 20px;margin:20px 0;border-left:3px solid;font-size:14px}
+.info-box.concept{background:rgba(59,130,246,0.06);border-color:var(--accent)}.info-box.warning{background:rgba(249,115,22,0.06);border-color:var(--orange)}.info-box.tip{background:rgba(16,185,129,0.06);border-color:var(--green)}.info-box.important{background:rgba(234,179,8,0.06);border-color:var(--yellow)}
+.info-box .box-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:700}
+.info-box.concept .box-label{color:var(--accent)}.info-box.warning .box-label{color:var(--orange)}.info-box.tip .box-label{color:var(--green)}.info-box.important .box-label{color:var(--yellow)}
+.compare-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px}
+.compare-table th{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1px;padding:12px 16px;text-align:left;background:var(--card);border-bottom:2px solid var(--border2);color:var(--muted2)}
+.compare-table td{padding:11px 16px;border-bottom:1px solid var(--border);color:#94a3b8;vertical-align:top;line-height:1.6}
+.compare-table tr:hover td{background:rgba(255,255,255,0.02)}
+.compare-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text)}
+.tag-yes{color:var(--green);font-weight:600}.tag-no{color:var(--red)}.tag-med{color:var(--yellow)}
+.diagram{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:30px 20px;margin:24px 0;text-align:center;overflow-x:auto}
+.code-block{background:#030608;border:1px solid var(--border2);border-radius:6px;margin:20px 0;overflow:hidden}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--border)}
+.code-lang{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:1px}
+.code-file{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)}
+pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.8;color:#e2e8f0}
+.kw{color:#93c5fd}.fn{color:#6ee7b7}.str{color:#fcd34d}.cm{color:#475569;font-style:italic}.num{color:#f9a8d4}.var{color:#e2e8f0}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0}
+.scenario-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:18px}
+.scenario-card .s-title{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+.scenario-card p{font-size:13px;color:var(--muted2);margin:0}
+.mcq-section{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:28px;margin:30px 0}
+.mcq-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.mcq-icon{font-size:24px}.mcq-header h2{font-family:'Fraunces',serif;font-size:20px;font-weight:700}
+.mcq-score{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted)}
+.mcq-score span{color:var(--accent);font-size:18px;font-weight:700}
+.question-block{margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--border)}
+.question-block:last-of-type{border-bottom:none;margin-bottom:0}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.q-text{font-size:15px;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.5;font-family:'Noto Sans Bengali',sans-serif}
+.options{display:flex;flex-direction:column;gap:8px}
+.option{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:4px;border:1px solid var(--border);cursor:pointer;transition:all 0.15s;font-size:14px;color:var(--muted2);font-family:'Noto Sans Bengali',sans-serif}
+.option:hover{border-color:var(--accent);color:var(--text);background:var(--accent-glow)}.option.correct{border-color:var(--green);background:var(--green-glow);color:#6ee7b7}.option.wrong{border-color:var(--red);background:rgba(239,68,68,0.08);color:#fca5a5}
+.option-key{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--border2);padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px}
+.explanation{display:none;margin-top:12px;padding:12px 14px;background:rgba(16,185,129,0.06);border-left:2px solid var(--green);border-radius:0 4px 4px 0;font-size:13px;color:#94a3b8;line-height:1.7;font-family:'Noto Sans Bengali',sans-serif}
+.explanation.visible{display:block}.explanation strong{color:var(--green)}
+.mcq-submit{display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:12px 24px;background:var(--accent);color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;border:none;border-radius:4px;cursor:pointer;letter-spacing:1px;transition:all 0.15s}
+.mcq-submit:hover{background:#2563eb;transform:translateY(-1px)}
+.result-banner{display:none;margin-top:20px;padding:16px 20px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700}
+.result-banner.visible{display:block}.result-banner.pass{background:var(--green-glow);border:1px solid var(--green);color:var(--green)}.result-banner.fail{background:rgba(249,115,22,0.08);border:1px solid var(--orange);color:var(--orange)}
+.assignment-section{background:linear-gradient(135deg,rgba(59,130,246,0.04),rgba(139,92,246,0.04));border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:28px;margin:30px 0}
+.assignment-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.assignment-icon{font-size:28px}.assignment-header h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700}
+.assignment-meta{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.a-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 10px;border-radius:2px}
+.a-chip.time{background:rgba(234,179,8,0.1);color:var(--yellow);border:1px solid rgba(234,179,8,0.2)}.a-chip.level{background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.2)}
+.task-list{counter-reset:tasks;list-style:none;display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
+.task-list li{counter-increment:tasks;display:flex;gap:14px;padding:16px;background:var(--card);border-radius:6px;border:1px solid var(--border);font-size:14px;color:var(--muted2)}
+.task-list li::before{content:counter(tasks);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--accent);background:var(--accent-glow);border:1px solid rgba(59,130,246,0.3);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.task-list li strong{color:var(--text);display:block;margin-bottom:4px}
+.deliverable-box{background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.2);border-radius:6px;padding:18px 20px}
+.d-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;font-weight:700}
+.deliverable-box ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.deliverable-box ul li{font-size:13px;color:var(--muted2);padding-left:16px;position:relative}
+.deliverable-box ul li::before{content:'→';position:absolute;left:0;color:var(--green)}
+.project-section{background:linear-gradient(135deg,rgba(16,185,129,0.04),rgba(59,130,246,0.04));border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:28px;margin:30px 0}
+.project-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.project-header h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700}
+.step-flow{display:flex;flex-direction:column;gap:0}
+.step-item{display:flex;gap:16px;position:relative;padding-bottom:24px}
+.step-item:last-child{padding-bottom:0}
+.step-item:not(:last-child)::after{content:'';position:absolute;left:12px;top:28px;bottom:0;width:1px;background:var(--border2)}
+.step-circle{width:26px;height:26px;border-radius:50%;background:var(--accent);color:white;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;z-index:1}
+.step-content h4{font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px}
+.step-content p{font-size:13px;color:var(--muted2);margin:0}
+.next-cta{display:flex;align-items:center;justify-content:space-between;padding:24px 28px;background:var(--card);border:1px solid var(--border2);border-radius:8px;margin-top:48px;cursor:pointer;transition:all 0.2s}
+.next-cta:hover{border-color:var(--accent);background:rgba(59,130,246,0.05)}
+.next-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:6px}
+.next-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700}.next-arrow{font-size:24px;color:var(--accent)}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--card);padding:2px 7px;border-radius:3px;border:1px solid var(--border);color:#93c5fd}
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 2 · Core Components</span>
+    <div class="course-title">System Design Mastery</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">এই Topic এ</div>
+    <a class="nav-item active" href="#concept"><span class="nav-icon">💡</span> Core Concept <span class="nav-num">01</span></a>
+    <a class="nav-item" href="#rest"><span class="nav-icon">🌐</span> REST API <span class="nav-num">02</span></a>
+    <a class="nav-item" href="#graphql"><span class="nav-icon">📊</span> GraphQL <span class="nav-num">03</span></a>
+    <a class="nav-item" href="#grpc"><span class="nav-icon">⚡</span> gRPC <span class="nav-num">04</span></a>
+    <a class="nav-item" href="#gateway"><span class="nav-icon">🚪</span> API Gateway <span class="nav-num">05</span></a>
+    <a class="nav-item" href="#code"><span class="nav-icon">💻</span> Code Examples <span class="nav-num">06</span></a>
+    <a class="nav-item" href="#interview"><span class="nav-icon">🎯</span> Interview Q&A <span class="nav-num">07</span></a>
+    <a class="nav-item" href="#mcq"><span class="nav-icon">📝</span> MCQ Quiz <span class="nav-num">08</span></a>
+    <a class="nav-item" href="#assignment"><span class="nav-icon">📋</span> Assignment <span class="nav-num">09</span></a>
+    <a class="nav-item" href="#project"><span class="nav-icon">🚀</span> Project <span class="nav-num">10</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px;">
+    <div class="nav-section-label">Phase 2 Topics</div>
+    <a class="nav-item" href="phase2-topic1-caching.html"><span class="nav-icon">🔴</span> T1: Caching & Redis</a>
+    <a class="nav-item" href="phase2-topic2-load-balancing.html"><span class="nav-icon">⚖️</span> T2: Load Balancing</a>
+    <a class="nav-item" href="phase2-topic3-message-queues.html"><span class="nav-icon">📨</span> T3: Message Queues</a>
+    <a class="nav-item active" href="#"><span class="nav-icon">🔌</span> T4: API Design</a>
+    <a class="nav-item" href="phase2-topic5-db-sharding.html"><span class="nav-icon">🗄️</span> T5: DB Sharding</a>
+    <a class="nav-item" href="phase2-topic6-cdn.html"><span class="nav-icon">🌐</span> T6: CDN & Storage</a>
+  </div>
+</aside>
+<main class="main">
+<div class="content">
+  <div class="topic-header">
+    <div class="breadcrumb">System Design Mastery <span>/</span> Phase 2 <span>/</span> Topic 4</div>
+    <span class="topic-num">Phase 2 · Topic 04</span>
+    <h1 class="topic-title">API Design &<br>Gateway</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ 3-4 ঘণ্টা</span>
+      <span class="meta-chip level">📊 Junior → Mid</span>
+      <span class="meta-chip type">🔌 REST · GraphQL · gRPC</span>
+    </div>
+  </div>
+
+  <div class="section" id="concept">
+    <div class="section-label">01 — Core Concept</div>
+    <h2 class="section-title">API কী এবং কেন Design Matter করে?</h2>
+    <p>API (Application Programming Interface) হলো দুটো system এর মধ্যে communication এর চুক্তি। ধরো একটা restaurant এর menu — তুমি menu দেখে order করো, kitchen কীভাবে বানায় সেটা তোমাকে জানতে হয় না। API ও ঠিক তাই — client কী চাইতে পারে এবং server কী দেবে সেটা define করে।</p>
+    <div class="info-box concept">
+      <div class="box-label">💡 API Design কেন গুরুত্বপূর্ণ</div>
+      ভালো API design মানে developer-friendly, predictable, consistent। খারাপ API মানে confusion, bugs, maintenance nightmare। Twitter এর API v1 থেকে v2 migration developers দের কাঁদিয়েছে। Good design upfront সেই pain বাঁচায়।
+    </div>
+    <div class="diagram">
+      <svg width="600" height="110" viewBox="0 0 600 110">
+        <rect x="10" y="30" width="100" height="50" rx="4" fill="#0c1220" stroke="#3b82f6"/>
+        <text x="60" y="52" fill="#3b82f6" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Client</text>
+        <text x="60" y="65" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Browser/App</text>
+        <line x1="110" y1="55" x2="200" y2="55" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="155" y="48" fill="#64748b" font-family="JetBrains Mono" font-size="8">Request</text>
+        <rect x="200" y="20" width="140" height="70" rx="4" fill="rgba(59,130,246,0.1)" stroke="#3b82f6" stroke-width="2"/>
+        <text x="270" y="48" fill="#3b82f6" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">🔌 API</text>
+        <text x="270" y="64" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">REST / GraphQL</text>
+        <text x="270" y="78" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">gRPC / WebSocket</text>
+        <line x1="340" y1="55" x2="420" y2="55" stroke="#10b981" stroke-width="1.5"/>
+        <text x="380" y="48" fill="#64748b" font-family="JetBrains Mono" font-size="8">Response</text>
+        <rect x="420" y="30" width="150" height="50" rx="4" fill="#0c1220" stroke="#10b981"/>
+        <text x="495" y="52" fill="#10b981" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Backend Services</text>
+        <text x="495" y="65" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">DB, Cache, Queue...</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section" id="rest">
+    <div class="section-label">02 — REST API</div>
+    <h2 class="section-title">REST — Representational State Transfer</h2>
+    <p>REST হলো সবচেয়ে popular API style। HTTP methods ব্যবহার করে resources manipulate করে। Stateless, cacheable, uniform interface — এই principles এ কাজ করে।</p>
+    <h3 class="sub-title">REST HTTP Methods</h3>
+    <table class="compare-table">
+      <tr><th>Method</th><th>Action</th><th>Example URL</th><th>Body?</th></tr>
+      <tr><td>GET</td><td>Read data</td><td>GET /users/123</td><td class="tag-no">No</td></tr>
+      <tr><td>POST</td><td>Create new</td><td>POST /users</td><td class="tag-yes">Yes</td></tr>
+      <tr><td>PUT</td><td>Replace full</td><td>PUT /users/123</td><td class="tag-yes">Yes</td></tr>
+      <tr><td>PATCH</td><td>Partial update</td><td>PATCH /users/123</td><td class="tag-yes">Yes</td></tr>
+      <tr><td>DELETE</td><td>Delete</td><td>DELETE /users/123</td><td class="tag-no">No</td></tr>
+    </table>
+    <h3 class="sub-title">REST Best Practices</h3>
+    <div class="info-box tip">
+      <div class="box-label">✅ REST Design Rules</div>
+      Nouns use করো, verbs না: <code>/users</code> ভালো, <code>/getUsers</code> খারাপ। Plural use করো: <code>/users</code>, <code>/products</code>। Nesting: <code>/users/123/orders</code>। Versioning: <code>/api/v1/users</code>। HTTP status codes সঠিকভাবে use করো।
+    </div>
+    <table class="compare-table">
+      <tr><th>Status Code</th><th>মানে</th><th>কখন</th></tr>
+      <tr><td>200 OK</td><td>Success</td><td>GET, PUT, PATCH success</td></tr>
+      <tr><td>201 Created</td><td>New resource created</td><td>POST success</td></tr>
+      <tr><td>400 Bad Request</td><td>Client error</td><td>Invalid input</td></tr>
+      <tr><td>401 Unauthorized</td><td>Auth required</td><td>No/invalid token</td></tr>
+      <tr><td>403 Forbidden</td><td>Permission denied</td><td>Valid token but no access</td></tr>
+      <tr><td>404 Not Found</td><td>Resource missing</td><td>User/product not exist</td></tr>
+      <tr><td>500 Server Error</td><td>Server bug</td><td>Unexpected crash</td></tr>
+    </table>
+  </div>
+
+  <div class="section" id="graphql">
+    <div class="section-label">03 — GraphQL</div>
+    <h2 class="section-title">GraphQL — Query Language for APIs</h2>
+    <p>Facebook তৈরি করেছে। Client exactly যেটুকু data চায় সেটুকুই request করতে পারে — over-fetching বা under-fetching নেই। একটা endpoint, flexible queries।</p>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">❌ REST Problem</div>
+        <p>User profile page এ name, avatar দরকার। GET /users/123 → পুরো object আসে (email, phone, address সব)। Over-fetching! আবার, posts ও দরকার হলে আরেকটা request। Under-fetching!</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">✅ GraphQL Solution</div>
+        <p>একটা query তে exactly যা দরকার: <code>{ user(id: 123) { name avatar posts { title } } }</code> — শুধু name, avatar, এবং post titles আসবে। একটা request এ সব।</p>
+      </div>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">GraphQL</span><span class="code-file">query.graphql</span></div>
+      <pre><span class="cm"># REST এ এটার জন্য 3টা API call লাগতো</span>
+<span class="cm"># GraphQL এ একটাই</span>
+query <span class="fn">GetUserDashboard</span> {
+  user(id: <span class="str">"123"</span>) {
+    name
+    avatar
+    posts(first: <span class="num">5</span>) {
+      title
+      createdAt
+    }
+    followers {
+      count
+    }
+  }
+}
+
+<span class="cm"># Mutation — data change করতে</span>
+mutation <span class="fn">UpdateProfile</span>($name: String!, $bio: String) {
+  updateUser(input: { name: $name, bio: $bio }) {
+    id
+    name
+    updatedAt
+  }
+}</pre>
+    </div>
+    <div class="info-box warning">
+      <div class="box-label">⚠️ GraphQL এর Downside</div>
+      Caching complex (REST এর মতো URL-based cache কাজ করে না)। N+1 query problem (DataLoader দিয়ে solve করতে হয়)। Simple CRUD apps এ overkill। REST এর মতো HTTP cache/CDN সুবিধা নেই।
+    </div>
+  </div>
+
+  <div class="section" id="grpc">
+    <div class="section-label">04 — gRPC</div>
+    <h2 class="section-title">gRPC — High Performance RPC</h2>
+    <p>Google তৈরি করেছে। Protocol Buffers (protobuf) দিয়ে data serialize করে — JSON এর চেয়ে ৫-১০x faster। Strongly typed, code generation, bidirectional streaming। Microservices internal communication এর জন্য ideal।</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Protobuf</span><span class="code-file">user.proto</span></div>
+      <pre><span class="cm">// Service definition</span>
+syntax = <span class="str">"proto3"</span>;
+
+service <span class="fn">UserService</span> {
+  rpc <span class="fn">GetUser</span> (UserRequest) returns (UserResponse);
+  rpc <span class="fn">ListUsers</span> (ListRequest) returns (stream UserResponse);
+}
+
+message <span class="fn">UserRequest</span> {
+  string user_id = <span class="num">1</span>;
+}
+
+message <span class="fn">UserResponse</span> {
+  string id = <span class="num">1</span>;
+  string name = <span class="num">2</span>;
+  string email = <span class="num">3</span>;
+  int32  age = <span class="num">4</span>;
+}
+<span class="cm">// protoc দিয়ে Python/Go/Java/Node code generate হবে</span></pre>
+    </div>
+    <table class="compare-table">
+      <tr><th>Feature</th><th>REST</th><th>GraphQL</th><th>gRPC</th></tr>
+      <tr><td>Protocol</td><td>HTTP/1.1</td><td>HTTP/1.1</td><td class="tag-yes">HTTP/2</td></tr>
+      <tr><td>Data Format</td><td>JSON</td><td>JSON</td><td class="tag-yes">Binary (Protobuf)</td></tr>
+      <tr><td>Performance</td><td class="tag-med">Good</td><td class="tag-med">Good</td><td class="tag-yes">Excellent</td></tr>
+      <tr><td>Over-fetching</td><td class="tag-no">Yes</td><td class="tag-yes">No</td><td class="tag-yes">No (typed)</td></tr>
+      <tr><td>Browser Support</td><td class="tag-yes">Native</td><td class="tag-yes">Native</td><td class="tag-no">Limited (grpc-web)</td></tr>
+      <tr><td>Best For</td><td>Public APIs, CRUD</td><td>Complex data, mobile</td><td>Microservices, low-latency</td></tr>
+      <tr><td>Learning Curve</td><td class="tag-yes">Easy</td><td class="tag-med">Medium</td><td class="tag-no">Hard</td></tr>
+    </table>
+  </div>
+
+  <div class="section" id="gateway">
+    <div class="section-label">05 — API Gateway</div>
+    <h2 class="section-title">API Gateway — Single Entry Point</h2>
+    <p>Microservices architecture এ ৫০টা service আছে। Client কি ৫০টা আলাদা URL জানবে? না। <strong>API Gateway</strong> হলো single entry point — সব requests এখান দিয়ে ঢোকে, Gateway সঠিক service এ route করে।</p>
+    <div class="diagram">
+      <svg width="640" height="170" viewBox="0 0 640 170">
+        <rect x="10" y="65" width="80" height="40" rx="3" fill="#0c1220" stroke="#3b82f6"/>
+        <text x="50" y="85" fill="#3b82f6" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Mobile App</text>
+        <rect x="10" y="112" width="80" height="40" rx="3" fill="#0c1220" stroke="#3b82f6"/>
+        <text x="50" y="132" fill="#3b82f6" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Web Browser</text>
+        <line x1="90" y1="85" x2="160" y2="95" stroke="#3b82f6" stroke-width="1"/>
+        <line x1="90" y1="132" x2="160" y2="105" stroke="#3b82f6" stroke-width="1"/>
+        <rect x="160" y="40" width="130" height="100" rx="5" fill="rgba(234,179,8,0.08)" stroke="#eab308" stroke-width="1.5"/>
+        <text x="225" y="70" fill="#eab308" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">🚪 API Gateway</text>
+        <text x="225" y="86" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">• Auth/JWT Verify</text>
+        <text x="225" y="99" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">• Rate Limiting</text>
+        <text x="225" y="112" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">• Request Routing</text>
+        <text x="225" y="125" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">• SSL Termination</text>
+        <text x="225" y="132" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">• Logging/Monitoring</text>
+        <line x1="290" y1="75" x2="380" y2="40" stroke="#10b981" stroke-width="1.2"/>
+        <line x1="290" y1="90" x2="380" y2="90" stroke="#10b981" stroke-width="1.2"/>
+        <line x1="290" y1="105" x2="380" y2="140" stroke="#10b981" stroke-width="1.2"/>
+        <rect x="380" y="22" width="120" height="30" rx="3" fill="#0c1220" stroke="#10b981"/>
+        <text x="440" y="40" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">👤 User Service</text>
+        <rect x="380" y="75" width="120" height="30" rx="3" fill="#0c1220" stroke="#10b981"/>
+        <text x="440" y="93" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">🛒 Order Service</text>
+        <rect x="380" y="128" width="120" height="30" rx="3" fill="#0c1220" stroke="#10b981"/>
+        <text x="440" y="146" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">💳 Payment Service</text>
+      </svg>
+    </div>
+    <div class="info-box tip">
+      <div class="box-label">✅ API Gateway Features</div>
+      <strong>Authentication:</strong> JWT token verify করে, backend services কে auth চিন্তা করতে হয় না। <strong>Rate Limiting:</strong> প্রতি user/IP কতটা request করতে পারবে limit করে। <strong>Request Transformation:</strong> Request/response format modify করতে পারে। <strong>Circuit Breaking:</strong> Backend service fail হলে fast-fail করে। Popular tools: AWS API Gateway, Kong, Nginx, Traefik।
+    </div>
+  </div>
+
+  <div class="section" id="code">
+    <div class="section-label">06 — Code Examples</div>
+    <h2 class="section-title">Code Examples</h2>
+    <h3 class="sub-title">Node.js — REST API with Express</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Node.js</span><span class="code-file">rest_api.js</span></div>
+      <pre><span class="kw">const</span> express = <span class="fn">require</span>(<span class="str">'express'</span>);
+<span class="kw">const</span> app = <span class="fn">express</span>();
+app.<span class="fn">use</span>(express.<span class="fn">json</span>());
+
+<span class="cm">// GET /api/v1/users/:id</span>
+app.<span class="fn">get</span>(<span class="str">'/api/v1/users/:id'</span>, <span class="kw">async</span> (req, res) => {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> user = <span class="kw">await</span> User.<span class="fn">findById</span>(req.params.id);
+    <span class="kw">if</span> (!user) <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">404</span>).<span class="fn">json</span>({
+      error: <span class="str">'User not found'</span>, code: <span class="str">'USER_NOT_FOUND'</span>
+    });
+    res.<span class="fn">status</span>(<span class="num">200</span>).<span class="fn">json</span>({ data: user });
+  } <span class="kw">catch</span> (err) {
+    res.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({ error: <span class="str">'Internal server error'</span> });
+  }
+});
+
+<span class="cm">// POST /api/v1/users — create user</span>
+app.<span class="fn">post</span>(<span class="str">'/api/v1/users'</span>, <span class="kw">async</span> (req, res) => {
+  <span class="kw">const</span> { name, email, password } = req.body;
+  <span class="kw">if</span> (!name || !email) <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">400</span>).<span class="fn">json</span>({
+    error: <span class="str">'name and email required'</span>
+  });
+  <span class="kw">const</span> user = <span class="kw">await</span> User.<span class="fn">create</span>({ name, email, password });
+  res.<span class="fn">status</span>(<span class="num">201</span>).<span class="fn">json</span>({ data: user });
+});
+
+<span class="cm">// PATCH /api/v1/users/:id — partial update</span>
+app.<span class="fn">patch</span>(<span class="str">'/api/v1/users/:id'</span>, <span class="kw">async</span> (req, res) => {
+  <span class="kw">const</span> updated = <span class="kw">await</span> User.<span class="fn">findByIdAndUpdate</span>(
+    req.params.id, req.body, { <span class="kw">new</span>: <span class="kw">true</span> }
+  );
+  res.<span class="fn">json</span>({ data: updated });
+});</pre>
+    </div>
+    <h3 class="sub-title">Rate Limiting Middleware</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Node.js</span><span class="code-file">rateLimit.js</span></div>
+      <pre><span class="kw">const</span> rateLimit = <span class="fn">require</span>(<span class="str">'express-rate-limit'</span>);
+<span class="kw">const</span> RedisStore = <span class="fn">require</span>(<span class="str">'rate-limit-redis'</span>);
+
+<span class="cm">// API Rate limit: 100 requests per 15 minutes per IP</span>
+<span class="kw">const</span> apiLimiter = <span class="fn">rateLimit</span>({
+  windowMs: <span class="num">15</span> * <span class="num">60</span> * <span class="num">1000</span>,  <span class="cm">// 15 minutes</span>
+  max: <span class="num">100</span>,
+  standardHeaders: <span class="kw">true</span>,
+  store: <span class="kw">new</span> <span class="fn">RedisStore</span>({ client: redisClient }),
+  handler: (req, res) => {
+    res.<span class="fn">status</span>(<span class="num">429</span>).<span class="fn">json</span>({
+      error: <span class="str">'Too many requests'</span>,
+      retryAfter: Math.<span class="fn">ceil</span>(res.getHeader(<span class="str">'Retry-After'</span>))
+    });
+  }
+});
+
+app.<span class="fn">use</span>(<span class="str">'/api/'</span>, apiLimiter);</pre>
+    </div>
+  </div>
+
+  <div class="section" id="interview">
+    <div class="section-label">07 — Interview Prep</div>
+    <h2 class="section-title">Common Interview Questions</h2>
+    <div class="info-box concept">
+      <div class="box-label">❓ Q1: REST vs GraphQL — কোনটা better?</div>
+      <strong>উত্তর:</strong> "Better" নির্ভর করে use case এ। REST — simple CRUD, public API, caching important। GraphQL — complex data requirements, mobile app (bandwidth sensitive), multiple clients different data চাই। Interview এ দুটোর trade-off বলো।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">❓ Q2: API Versioning কীভাবে করবে?</div>
+      <strong>উত্তর:</strong> ৩টা approach: URL versioning (<code>/api/v1/</code> → সবচেয়ে common, visible)। Header versioning (<code>Accept: application/vnd.api+json;version=1</code> → cleaner URLs)। Query param (<code>?version=1</code> → easy but messy)। URL versioning সবচেয়ে popular কারণ explicit এবং debuggable।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">❓ Q3: gRPC কখন use করবে?</div>
+      <strong>উত্তর:</strong> Microservices internal communication এ — high throughput, low latency দরকার। Binary protocol বলে JSON এর চেয়ে faster। Strongly typed — contract clear। Browser থেকে directly call কঠিন বলে public API তে REST/GraphQL ভালো।
+    </div>
+  </div>
+
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🧠</span>
+      <h2>MCQ Quiz — API Design</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">REST API তে নতুন resource create করতে কোন HTTP method use করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> GET</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> POST</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> PUT</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> PATCH</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — POST নতুন resource create করে এবং 201 Created return করে। PUT পুরো resource replace করে (existing হলে)। PATCH partial update।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">GraphQL এর সবচেয়ে বড় advantage REST এর উপর কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Faster than REST</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Better security</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Client exactly যেটুকু data চায় সেটুকুই request করতে পারে — no over/under-fetching</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Easier to implement</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — GraphQL এর core benefit হলো flexible queries। Client ঠিক করে কোন fields দরকার। এতে over-fetching (extra data) এবং under-fetching (multiple requests) দুটোই avoid হয়।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">HTTP 401 vs 403 — পার্থক্য কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> দুটো একই — authentication error</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> 401 server error, 403 client error</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> 401 more severe than 403</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> 401 = unauthenticated (login করোনি), 403 = unauthorized (login করেছো কিন্তু permission নেই)</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — 401: Token নেই বা invalid। "Who are you?" 403: Token valid কিন্তু এই resource access করার permission নেই। "I know you, but you can't enter here."</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">API Gateway এর primary কাজ কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Single entry point হিসেবে কাজ করে, auth, rate limiting, routing করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Database connection manage করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Frontend code serve করে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Message queue manage করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — API Gateway microservices architecture এর front door। সব requests এখান দিয়ে যায়। Auth verify করে, rate limit check করে, সঠিক service এ route করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">gRPC কোন data format ব্যবহার করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> JSON</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Protocol Buffers (Protobuf) — Binary</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> XML</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> YAML</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — gRPC Protocol Buffers (protobuf) ব্যবহার করে। Binary format বলে JSON এর চেয়ে ৫-১০x smaller এবং faster serialize/deserialize হয়। Strongly typed schema।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">REST API versioning এর সবচেয়ে popular approach কোনটা?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Query parameter: /users?version=2</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Header: Accept-Version: v2</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> URL path: /api/v2/users</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Subdomain: v2.api.example.com</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — URL path versioning (/api/v1/, /api/v2/) সবচেয়ে common। Explicit, visible, easy to debug, browser friendly। Twitter, Stripe, GitHub সবাই এটা use করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">REST এ /getUsers endpoint বানানো কেন ভালো practice নয়?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Get method এ capital letter ব্যবহার করা যায় না</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> URL এ underscore ব্যবহার করা যায় না</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Too long URL</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> REST এ URL এ verbs নয়, nouns use করা উচিত। সঠিক: GET /users</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — REST best practice হলো URL এ nouns (resources): /users, /products, /orders। Action/verb টা HTTP method দিয়ে express করো: GET (read), POST (create), DELETE (remove)।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">Rate Limiting কী করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Per user/IP request limit করে — abuse এবং DDoS থেকে protect করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> API response slow করে দেয়</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Database query কমায়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Large responses reject করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Rate Limiting প্রতি user বা IP কে নির্দিষ্ট সময়ে নির্দিষ্ট requests করতে দেয়। Excess হলে 429 Too Many Requests। Abuse prevention, DDoS protection, fair usage নিশ্চিত করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">Mobile app এর জন্য কোন API style সবচেয়ে efficient?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> REST — সবচেয়ে popular</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> gRPC — fastest</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> GraphQL — client exactly needed data request করতে পারে, bandwidth save হয়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> SOAP — most reliable</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Mobile এ bandwidth valuable। GraphQL এ client শুধু দরকারী fields request করে — over-fetching নেই। আর একটা query তে nested data পাওয়া যায় — multiple round trips নেই।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">একটা fintech startup এর internal microservices communication এর জন্য কোনটা সবচেয়ে suitable?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> REST — সবচেয়ে familiar</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> gRPC — high performance, strongly typed, internal services এর জন্য ideal</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> GraphQL — flexible queries</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> WebSocket — real-time</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Internal microservices communication এ gRPC excellent: binary protocol (fast), strongly typed contract (safe), HTTP/2 (multiplexing), code generation (less boilerplate)। Browser থেকে call করতে হয় না বলে browser limitation relevant না।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT &amp; CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ২-৩ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <ul class="task-list">
+      <li><strong>API Design করো:</strong> একটা Blog platform এর REST API design করো। Endpoints define করো: posts (CRUD), comments (CRUD), users (CRUD), likes। Proper HTTP methods, status codes, URL structure use করো।</li>
+      <li><strong>REST vs GraphQL Analysis:</strong> Instagram এর "User Profile" page এ দরকার: username, avatar, posts count, followers count, latest 9 posts (thumbnail only)। REST এ কতটা API call লাগবে? GraphQL এ কীভাবে একটাতেই হবে? লেখো।</li>
+      <li><strong>Status Code Practice:</strong> নিচের ৮টা scenario তে সঠিক HTTP status code বলো: (ক) Login successful (খ) Wrong password (গ) Admin-only page, regular user access করলে (ঘ) Product ID 9999 নেই (ঙ) Server database connection failed (চ) New order created (ছ) Rate limit exceeded (জ) Request body এ required field নেই।</li>
+      <li><strong>API Gateway Design:</strong> একটা E-commerce এর API Gateway design করো। কোন routes কোন service এ যাবে? Auth কোথায় check হবে? Rate limit কীভাবে apply হবে? Diagram বানাও।</li>
+      <li><strong>Code:</strong> উপরে দেওয়া Express.js REST API starter code extend করো: DELETE endpoint add করো, input validation add করো (name minimum 2 chars, valid email), proper error messages return করো।</li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>Blog API endpoint list (HTTP method + URL + description)</li>
+        <li>REST vs GraphQL comparison for Instagram</li>
+        <li>HTTP status code answers (৮টা)</li>
+        <li>API Gateway architecture diagram</li>
+        <li>Extended Express.js code</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="project-section" id="project">
+    <div class="project-header">
+      <span style="font-size:24px">🚀</span>
+      <h2>Hands-On Project Task</h2>
+    </div>
+    <div class="project-body">
+      <h3 style="font-family:'Fraunces',serif;font-size:18px;margin-bottom:12px;color:#f1f5f9;">Full REST API with Auth & Rate Limiting</h3>
+      <p style="font-size:14px;color:#94a3b8;margin-bottom:20px;">Todo List API বানাও — Authentication, Rate Limiting, proper error handling সহ।</p>
+      <div class="step-flow">
+        <div class="step-item"><div class="step-circle">1</div><div class="step-content"><h4>Setup করো</h4><p><code>npm install express jsonwebtoken bcrypt express-rate-limit</code></p></div></div>
+        <div class="step-item"><div class="step-circle">2</div><div class="step-content"><h4>Auth endpoints</h4><p>POST /auth/register (bcrypt password hash), POST /auth/login (JWT token return)।</p></div></div>
+        <div class="step-item"><div class="step-circle">3</div><div class="step-content"><h4>Protected Todo CRUD</h4><p>GET/POST/PATCH/DELETE /todos — JWT middleware দিয়ে protect করো। শুধু owner তার নিজের todos দেখতে পারবে।</p></div></div>
+        <div class="step-item"><div class="step-circle">4</div><div class="step-content"><h4>Rate Limiting যোগ করো</h4><p>Login endpoint এ 5 requests per minute limit। General API তে 100 requests per 15 minutes।</p></div></div>
+        <div class="step-item"><div class="step-circle">5</div><div class="step-content"><h4>Postman দিয়ে test করো</h4><p>সব endpoints test করো। Rate limit test করো — ৬ বার rapid login করো।</p></div></div>
+      </div>
+      <div class="info-box tip" style="margin-top:16px">
+        <div class="box-label">🎯 এটা করলে যা শিখবে</div>
+        JWT authentication implement করবে। REST best practices follow করবে। Rate limiting practically দেখবে। এটা portfolio তে রাখার মতো project।
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Lesson Summary</div>
+    <h2 class="section-title">আজকে যা শিখলাম</h2>
+    <table class="compare-table">
+      <tr><th>Concept</th><th>এক লাইনে</th></tr>
+      <tr><td>REST</td><td>HTTP methods + nouns. Stateless, cacheable, widely supported</td></tr>
+      <tr><td>GraphQL</td><td>Client decides what data it needs. No over/under-fetching</td></tr>
+      <tr><td>gRPC</td><td>Binary, fast, typed. Internal microservices এর জন্য best</td></tr>
+      <tr><td>API Gateway</td><td>Single entry point. Auth, rate limit, routing centralized</td></tr>
+      <tr><td>Rate Limiting</td><td>Abuse prevent করো, 429 Too Many Requests দাও</td></tr>
+      <tr><td>Status Codes</td><td>2xx success, 4xx client error, 5xx server error</td></tr>
+    </table>
+  </div>
+
+  <div class="next-cta" onclick="window.location='phase2-topic5-db-sharding.html'">
+    <div>
+      <div class="next-label">Next Topic →</div>
+      <div class="next-title">🗄️ Database Sharding & Replication</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+</div>
+</main>
+<script>
+window.addEventListener('scroll',()=>{const d=document.documentElement;document.getElementById('progressFill').style.width=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100)+'%'});
+let answered={};
+document.querySelectorAll('.option').forEach(opt=>{opt.addEventListener('click',function(){const block=this.closest('.question-block');const qId=Array.from(document.querySelectorAll('.question-block')).indexOf(block);if(answered[qId])return;answered[qId]=this.dataset.val;block.querySelectorAll('.option').forEach(o=>{o.style.pointerEvents='none';if(o.dataset.val===block.dataset.correct)o.classList.add('correct');else if(o.dataset.val===this.dataset.val)o.classList.add('wrong')});block.querySelector('.explanation').classList.add('visible')})});
+function submitMCQ(){let c=0;const b=document.querySelectorAll('.question-block');b.forEach((bl,i)=>{if(answered[i]===bl.dataset.correct)c++});if(b.length-Object.keys(answered).length>0){alert(`এখনও ${b.length-Object.keys(answered).length}টা বাকি!`);return}document.getElementById('scoreDisplay').textContent=c;const bn=document.getElementById('resultBanner');bn.classList.add('visible');bn.classList.add(c>=7?'pass':'fail');bn.textContent=c>=7?`🎉 দারুণ! ${c}/10 সঠিক!`:`📖 ${c}/10। আবার পড়ো।`}
+document.querySelectorAll('.nav-item[href^="#"]').forEach(l=>{l.addEventListener('click',e=>{e.preventDefault();document.getElementById(l.getAttribute('href').slice(1))?.scrollIntoView({behavior:'smooth'})})});
+</script>
+</body>
+</html>

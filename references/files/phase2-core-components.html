@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 2 — Core Components</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:wght@300;700;900&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05080f;--surface:#090e1a;--card:#0c1220;--border:#162035;--border2:#1e2d4a;--accent:#3b82f6;--ag:rgba(59,130,246,0.12);--green:#10b981;--gg:rgba(16,185,129,0.1);--orange:#f97316;--red:#ef4444;--yellow:#eab308;--purple:#8b5cf6;--text:#e2e8f0;--muted:#64748b;--muted2:#94a3b8}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans Bengali',sans-serif;line-height:1.7;font-size:15px}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.phase-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:4px}
+.course-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;line-height:1.3}
+.nav-section{padding:0 12px;margin-bottom:8px}
+.nav-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);padding:0 8px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:4px;font-size:13px;color:var(--muted2);cursor:pointer;transition:all .15s;text-decoration:none}
+.nav-item:hover{background:var(--card);color:var(--text)}
+.nav-item.active{background:var(--ag);color:var(--accent)}
+.nav-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto}
+.progress-bar{position:fixed;top:0;left:240px;right:0;height:2px;background:var(--border);z-index:200}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));width:0%;transition:width .1s}
+.main{margin-left:240px;min-height:100vh}
+.content{max-width:800px;margin:0 auto;padding:48px 40px 120px}
+.topic-header{margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border)}
+.breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.breadcrumb span{color:var(--accent)}
+h1.topic-title{font-family:'Fraunces',serif;font-size:clamp(28px,4vw,44px);font-weight:900;line-height:1.1;margin-bottom:14px;background:linear-gradient(135deg,#fff 30%,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topic-meta{display:flex;gap:12px;flex-wrap:wrap}
+.meta-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 12px;border-radius:2px;border:1px solid}
+.mc-blue{border-color:rgba(59,130,246,.3);color:var(--accent);background:var(--ag)}
+.mc-green{border-color:rgba(16,185,129,.3);color:var(--green);background:var(--gg)}
+.mc-purple{border-color:rgba(139,92,246,.3);color:var(--purple);background:rgba(139,92,246,.08)}
+.section{margin-bottom:52px;scroll-margin-top:24px}
+.sec-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:3px;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+h2.sec-title{font-family:'Fraunces',serif;font-size:26px;font-weight:700;margin-bottom:16px;color:#f1f5f9}
+h3.sub{font-family:'Fraunces',serif;font-size:19px;font-weight:700;margin:28px 0 10px;color:#cbd5e1}
+h4.subsub{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;margin:18px 0 8px;color:var(--accent)}
+p{margin-bottom:14px;color:#cbd5e1}
+strong{color:#f1f5f9}
+.ib{border-radius:6px;padding:18px 20px;margin:20px 0;border-left:3px solid;font-size:14px}
+.ib-blue{background:rgba(59,130,246,.06);border-color:var(--accent)}
+.ib-orange{background:rgba(249,115,22,.06);border-color:var(--orange)}
+.ib-green{background:rgba(16,185,129,.06);border-color:var(--green)}
+.ib-yellow{background:rgba(234,179,8,.06);border-color:var(--yellow)}
+.ib-purple{background:rgba(139,92,246,.06);border-color:var(--purple)}
+.ib-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:700}
+.ib-blue .ib-label{color:var(--accent)}
+.ib-orange .ib-label{color:var(--orange)}
+.ib-green .ib-label{color:var(--green)}
+.ib-yellow .ib-label{color:var(--yellow)}
+.ib-purple .ib-label{color:var(--purple)}
+table.ct{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px}
+table.ct th{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1px;padding:12px 16px;text-align:left;background:var(--card);border-bottom:2px solid var(--border2);color:var(--muted2)}
+table.ct td{padding:11px 16px;border-bottom:1px solid var(--border);color:#94a3b8;vertical-align:top;line-height:1.6}
+table.ct tr:hover td{background:rgba(255,255,255,.02)}
+table.ct td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);white-space:nowrap}
+.tg{color:var(--green);font-weight:600}
+.tr{color:var(--red)}
+.ty{color:var(--yellow)}
+.diagram{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:30px 20px;margin:24px 0;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;overflow-x:auto}
+.code-block{background:#030608;border:1px solid var(--border2);border-radius:6px;margin:20px 0;overflow:hidden}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--border)}
+.code-lang{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:1px}
+.code-file{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)}
+pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.8;color:#e2e8f0}
+.kw{color:#93c5fd}.fn{color:#6ee7b7}.str{color:#fcd34d}.cm{color:#475569;font-style:italic}.num{color:#f9a8d4}.var{color:#e2e8f0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:18px}
+.sc-title{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+.sc p{font-size:13px;color:var(--muted2);margin:0;line-height:1.6}
+.topic-divider{border:none;border-top:2px solid var(--border2);margin:60px 0;position:relative}
+.topic-divider::before{content:attr(data-label);position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--bg);padding:0 16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:2px;text-transform:uppercase}
+/* MCQ */
+.mcq-section{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:28px;margin:30px 0}
+.mcq-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.mcq-score{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted)}
+.mcq-score span{color:var(--accent);font-size:18px;font-weight:700}
+.qblock{margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--border)}
+.qblock:last-of-type{border-bottom:none;margin-bottom:0}
+.qnum{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.qtext{font-size:15px;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.5}
+.options{display:flex;flex-direction:column;gap:8px}
+.option{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:4px;border:1px solid var(--border);cursor:pointer;transition:all .15s;font-size:14px;color:var(--muted2)}
+.option:hover{border-color:var(--accent);color:var(--text);background:var(--ag)}
+.option.correct{border-color:var(--green);background:var(--gg);color:#6ee7b7}
+.option.wrong{border-color:var(--red);background:rgba(239,68,68,.08);color:#fca5a5}
+.okey{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--border2);padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px}
+.expl{display:none;margin-top:12px;padding:12px 14px;background:rgba(16,185,129,.06);border-left:2px solid var(--green);border-radius:0 4px 4px 0;font-size:13px;color:#94a3b8;line-height:1.7}
+.expl.visible{display:block}
+.mcq-btn{display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:12px 24px;background:var(--accent);color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;border:none;border-radius:4px;cursor:pointer;letter-spacing:1px;transition:all .15s}
+.mcq-btn:hover{background:#2563eb;transform:translateY(-1px)}
+.result{display:none;margin-top:20px;padding:16px 20px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700}
+.result.visible{display:block}
+.result.pass{background:var(--gg);border:1px solid var(--green);color:var(--green)}
+.result.fail{background:rgba(249,115,22,.08);border:1px solid var(--orange);color:var(--orange)}
+/* Assignment */
+.assign{background:linear-gradient(135deg,rgba(59,130,246,.04),rgba(139,92,246,.04));border:1px solid rgba(59,130,246,.2);border-radius:8px;padding:28px;margin:30px 0}
+.assign h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700;margin-bottom:12px}
+.a-meta{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.ac{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 10px;border-radius:2px}
+.ac-y{background:rgba(234,179,8,.1);color:var(--yellow);border:1px solid rgba(234,179,8,.2)}
+.ac-g{background:rgba(16,185,129,.1);color:var(--green);border:1px solid rgba(16,185,129,.2)}
+.task-list{counter-reset:tasks;list-style:none;margin-bottom:20px}
+.task-list li{counter-increment:tasks;padding:14px 14px 14px 50px;position:relative;border-bottom:1px solid var(--border);font-size:14px;color:var(--muted2);line-height:1.7}
+.task-list li:last-child{border-bottom:none}
+.task-list li::before{content:counter(tasks);position:absolute;left:14px;top:14px;width:24px;height:24px;background:var(--ag);border:1px solid rgba(59,130,246,.3);border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700}
+.deliver{background:var(--card);border:1px solid var(--border2);border-radius:6px;padding:16px 18px;margin-top:16px}
+.deliver-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--purple);margin-bottom:10px}
+.deliver ul{list-style:none;padding:0}
+.deliver ul li{font-size:13px;color:var(--muted2);padding:4px 0 4px 18px;position:relative}
+.deliver ul li::before{content:'◆';position:absolute;left:0;font-size:8px;color:var(--purple);top:6px}
+/* Project */
+.project{background:var(--card);border:1px solid var(--border2);border-radius:8px;overflow:hidden;margin:30px 0}
+.proj-header{background:linear-gradient(90deg,rgba(16,185,129,.1),transparent);padding:18px 24px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:12px}
+.proj-header h2{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--green)}
+.proj-body{padding:24px}
+.steps{display:flex;flex-direction:column;gap:0}
+.step{display:flex;gap:16px;padding-bottom:24px;position:relative}
+.step:last-child{padding-bottom:0}
+.step::before{content:'';position:absolute;left:15px;top:32px;bottom:0;width:1px;background:var(--border2)}
+.step:last-child::before{display:none}
+.step-circle{width:32px;height:32px;border-radius:50%;background:var(--gg);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--green);flex-shrink:0;z-index:1}
+.step-content h4{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);margin-bottom:4px}
+.step-content p{font-size:13px;color:var(--muted2);margin:0}
+@media(max-width:768px){.sidebar{display:none}.main{margin-left:0}.content{padding:24px 16px 80px}.grid2{grid-template-columns:1fr}.progress-bar{left:0}}
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="pf"></div></div>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 02 · Core Components</span>
+    <div class="course-title">System Design<br>Mastery Course</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Phase 2 Topics</div>
+    <a href="#t1" class="nav-item active"><span>⚡</span><span>Caching</span><span class="nav-num">01</span></a>
+    <a href="#t2" class="nav-item"><span>⚖️</span><span>Load Balancing</span><span class="nav-num">02</span></a>
+    <a href="#t3" class="nav-item"><span>📨</span><span>Message Queues</span><span class="nav-num">03</span></a>
+    <a href="#t4" class="nav-item"><span>🔀</span><span>API Design</span><span class="nav-num">04</span></a>
+    <a href="#t5" class="nav-item"><span>💾</span><span>DB Sharding</span><span class="nav-num">05</span></a>
+    <a href="#t6" class="nav-item"><span>🗂️</span><span>CDN & Storage</span><span class="nav-num">06</span></a>
+    <a href="#mcq" class="nav-item"><span>✅</span><span>MCQ Test</span></a>
+    <a href="#assign" class="nav-item"><span>📝</span><span>Assignment</span></a>
+    <a href="#project" class="nav-item"><span>🚀</span><span>Project</span></a>
+  </div>
+</nav>
+
+<main class="main">
+<div class="content">
+
+<div class="topic-header">
+  <div class="breadcrumb">System Design Course <span>›</span> Phase 2</div>
+  <h1 class="topic-title">Core Components</h1>
+  <div class="topic-meta">
+    <span class="meta-chip mc-blue">⏱ ৬-৮ সপ্তাহ</span>
+    <span class="meta-chip mc-green">📊 Junior → Mid Level</span>
+    <span class="meta-chip mc-purple">🏗️ 6 Topics</span>
+  </div>
+</div>
+
+<!-- ==================== TOPIC 1: CACHING ==================== -->
+<div class="section" id="t1">
+<div class="sec-label">Topic 01</div>
+<h2 class="sec-title">⚡ Caching Strategy</h2>
+
+<p>Cache হলো system design এর সবচেয়ে powerful tool। সঠিকভাবে ব্যবহার করলে system <strong>১০-১০০ গুণ ফাস্ট</strong> হয়। একটা database query ১০০ms নিলে সেটা cache থেকে আসলে নেয় মাত্র ১ms।</p>
+
+<div class="ib ib-blue"><div class="ib-label">📌 Definition</div><strong>Cache</strong> হলো একটা fast storage layer যেটা frequently accessed data কে temporarily রাখে যাতে slow storage (database, disk) থেকে বারবার আনতে না হয়।</div>
+
+<h3 class="sub">Cache কোথায় কোথায় থাকে?</h3>
+<div class="diagram">
+<svg width="600" height="120" viewBox="0 0 600 120">
+  <defs><marker id="a" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#64748b"/></marker></defs>
+  <rect x="10" y="35" width="80" height="50" rx="4" fill="#0c1220" stroke="#1e2d4a" stroke-width="1.5"/>
+  <text x="50" y="64" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="10">CLIENT</text>
+  <text x="50" y="78" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">Browser Cache</text>
+  <path d="M90 60 L130 60" stroke="#64748b" stroke-width="1.2" marker-end="url(#a)"/>
+  <rect x="130" y="35" width="80" height="50" rx="4" fill="#0c1220" stroke="#f97316" stroke-width="1.5"/>
+  <text x="170" y="58" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="9">CDN</text>
+  <text x="170" y="72" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">Edge Cache</text>
+  <path d="M210 60 L250 60" stroke="#64748b" stroke-width="1.2" marker-end="url(#a)"/>
+  <rect x="250" y="35" width="80" height="50" rx="4" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="290" y="58" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="9">API SERVER</text>
+  <text x="290" y="72" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">In-memory Cache</text>
+  <path d="M330 60 L370 60" stroke="#64748b" stroke-width="1.2" marker-end="url(#a)"/>
+  <rect x="370" y="35" width="80" height="50" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+  <text x="410" y="58" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">REDIS</text>
+  <text x="410" y="72" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">Distributed Cache</text>
+  <path d="M450 60 L490 60" stroke="#64748b" stroke-width="1.2" marker-end="url(#a)"/>
+  <rect x="490" y="35" width="80" height="50" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+  <text x="530" y="58" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="9">DATABASE</text>
+  <text x="530" y="72" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">Query Cache</text>
+  <text x="50" y="105" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="8">Fast</text>
+  <text x="530" y="105" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="8">Slow</text>
+</svg>
+</div>
+
+<h3 class="sub">Cache Patterns — ৪টা সবচেয়ে গুরুত্বপূর্ণ</h3>
+
+<h4 class="subsub">1. Cache-Aside (Lazy Loading) — সবচেয়ে বেশি ব্যবহৃত</h4>
+<p>Application নিজেই cache manage করে। Cache miss হলে DB থেকে আনে এবং cache এ রাখে।</p>
+<div class="code-block">
+<div class="code-header"><span class="code-lang">Python</span><span class="code-file">cache_aside.py</span></div>
+<pre><span class="kw">import</span> redis, json
+r = redis.<span class="fn">Redis</span>(host=<span class="str">'localhost'</span>, port=<span class="num">6379</span>)
+
+<span class="kw">def</span> <span class="fn">get_user</span>(user_id):
+    <span class="cm"># Step 1: Cache check করো</span>
+    cached = r.<span class="fn">get</span>(<span class="str">f"user:{user_id}"</span>)
+    <span class="kw">if</span> cached:
+        <span class="kw">return</span> json.<span class="fn">loads</span>(cached)  <span class="cm"># Cache HIT ✅</span>
+    
+    <span class="cm"># Step 2: Cache miss — DB থেকে আনো</span>
+    user = db.<span class="fn">query</span>(<span class="str">"SELECT * FROM users WHERE id=?"</span>, user_id)
+    
+    <span class="cm"># Step 3: Cache এ রাখো (TTL = 1 ঘণ্টা)</span>
+    r.<span class="fn">setex</span>(<span class="str">f"user:{user_id}"</span>, <span class="num">3600</span>, json.<span class="fn">dumps</span>(user))
+    
+    <span class="kw">return</span> user  <span class="cm"># Cache MISS, DB থেকে আনলাম</span>
+
+<span class="kw">def</span> <span class="fn">update_user</span>(user_id, data):
+    db.<span class="fn">update</span>(<span class="str">"UPDATE users SET ..."</span>, data)
+    r.<span class="fn">delete</span>(<span class="str">f"user:{user_id}"</span>)  <span class="cm"># Cache invalidate করো!</span></pre>
+</div>
+
+<h4 class="subsub">2. Write-Through — Data consistency বেশি</h4>
+<p>Write হলেই একসাথে cache এবং DB update। Data loss নেই কিন্তু write latency বেশি।</p>
+<div class="code-block">
+<div class="code-header"><span class="code-lang">Python</span><span class="code-file">write_through.py</span></div>
+<pre><span class="kw">def</span> <span class="fn">save_user</span>(user_id, data):
+    <span class="cm"># Cache এবং DB একসাথে update</span>
+    r.<span class="fn">set</span>(<span class="str">f"user:{user_id}"</span>, json.<span class="fn">dumps</span>(data))
+    db.<span class="fn">save</span>(user_id, data)
+    <span class="cm"># ✅ Always consistent কিন্তু write টু বার হয়</span></pre>
+</div>
+
+<h4 class="subsub">3. Write-Back (Write-Behind) — Fast write, risky</h4>
+<p>Cache এ লেখে, DB তে async এ লেখে পরে। অনেক fast কিন্তু crash হলে data হারাতে পারে।</p>
+
+<h4 class="subsub">4. Read-Through — Cache layer সব handle করে</h4>
+<p>Application শুধু cache কে জিজ্ঞেস করে। Cache নিজেই DB থেকে আনে। Application কে logic লিখতে হয় না।</p>
+
+<h3 class="sub">Cache Eviction Policies</h3>
+<table class="ct">
+<tr><th>Policy</th><th>কীভাবে কাজ করে</th><th>কখন ব্যবহার করো</th></tr>
+<tr><td>LRU</td><td>সবচেয়ে কম recently used item বাদ দাও</td><td>সাধারণ use case, সবচেয়ে popular</td></tr>
+<tr><td>LFU</td><td>সবচেয়ে কম frequently used item বাদ দাও</td><td>Hot data রাখতে চাইলে</td></tr>
+<tr><td>TTL</td><td>নির্দিষ্ট সময় পর expire হয়</td><td>Time-sensitive data (session, OTP)</td></tr>
+<tr><td>FIFO</td><td>যে আগে ঢুকেছে সে আগে বের হয়</td><td>Simple queue-like scenarios</td></tr>
+</table>
+
+<h3 class="sub">Cache Problems — এগুলো না জানলে interview এ ফেল</h3>
+
+<div class="grid2">
+<div class="sc">
+<div class="sc-title">🌊 Cache Stampede</div>
+<p>Popular cache key expire হলে হাজার হাজার request একসাথে DB তে যায়। Fix: Mutex lock বা probabilistic early expiration।</p>
+</div>
+<div class="sc">
+<div class="sc-title">💀 Cache Penetration</div>
+<p>Non-existent data বারবার request হলে সবসময় DB hit হয়। Fix: Bloom filter বা null value cache করো।</p>
+</div>
+<div class="sc">
+<div class="sc-title">🌪️ Cache Avalanche</div>
+<p>অনেক cache key একসাথে expire হলে DB overwhelmed। Fix: Random TTL jitter যোগ করো।</p>
+</div>
+<div class="sc">
+<div class="sc-title">💾 Cache Inconsistency</div>
+<p>Cache এবং DB এর data আলাদা হয়ে যায়। Fix: Cache invalidation strategy ঠিক করো।</p>
+</div>
+</div>
+
+<div class="code-block">
+<div class="code-header"><span class="code-lang">Python</span><span class="code-file">cache_stampede_fix.py</span></div>
+<pre><span class="kw">import</span> random
+
+<span class="kw">def</span> <span class="fn">get_with_jitter</span>(key, base_ttl=<span class="num">3600</span>):
+    <span class="cm"># Random jitter যোগ করো — সব key একসাথে expire হবে না</span>
+    jitter = random.<span class="fn">randint</span>(<span class="num">0</span>, <span class="num">300</span>)  <span class="cm"># 0-5 মিনিট random</span>
+    ttl = base_ttl + jitter
+    r.<span class="fn">setex</span>(key, ttl, value)
+
+<span class="kw">def</span> <span class="fn">get_with_bloom</span>(user_id):
+    <span class="cm"># Bloom filter দিয়ে non-existent check</span>
+    <span class="kw">if not</span> bloom_filter.<span class="fn">contains</span>(user_id):
+        <span class="kw">return None</span>  <span class="cm"># DB তেও নেই, query করা বাজে</span>
+    <span class="kw">return</span> <span class="fn">get_user</span>(user_id)</pre>
+</div>
+
+<div class="ib ib-yellow"><div class="ib-label">🎯 Redis Data Structures — জানা মাস্ট</div>
+<strong>String:</strong> Simple key-value, counter, session token<br>
+<strong>Hash:</strong> User profile, object store<br>
+<strong>List:</strong> Recent activity, queue, timeline<br>
+<strong>Set:</strong> Unique visitors, tags, friends list<br>
+<strong>Sorted Set:</strong> Leaderboard, ranking, rate limiting<br>
+<strong>Pub/Sub:</strong> Real-time notifications, chat
+</div>
+</div>
+
+<hr class="topic-divider" data-label="Topic 02">
+
+<!-- ==================== TOPIC 2: LOAD BALANCING ==================== -->
+<div class="section" id="t2">
+<div class="sec-label">Topic 02</div>
+<h2 class="sec-title">⚖️ Load Balancing</h2>
+
+<p>Load Balancer হলো system এর traffic policeman। সব incoming request নিয়ে backend servers এ distribute করে। এছাড়া health check করে, unhealthy server কে বাদ দেয়।</p>
+
+<h3 class="sub">L4 vs L7 Load Balancer</h3>
+<table class="ct">
+<tr><th>বিষয়</th><th>L4 (Transport Layer)</th><th>L7 (Application Layer)</th></tr>
+<tr><td>কী দেখে?</td><td>IP address, TCP port</td><td>HTTP headers, URL, cookies</td></tr>
+<tr><td>Speed</td><td class="tg">অনেক fast</td><td class="ty">তুলনামূলক slow</td></tr>
+<tr><td>Intelligence</td><td class="tr">কম (IP/Port only)</td><td class="tg">বেশি (content-aware)</td></tr>
+<tr><td>SSL Termination</td><td class="tr">না</td><td class="tg">হ্যাঁ</td></tr>
+<tr><td>URL-based routing</td><td class="tr">না</td><td class="tg">হ্যাঁ</td></tr>
+<tr><td>উদাহরণ</td><td>AWS NLB, HAProxy TCP</td><td>Nginx, AWS ALB, Traefik</td></tr>
+<tr><td>কখন ব্যবহার</td><td>Game servers, IoT, very high traffic</td><td>Web apps, APIs (সাধারণত এটাই)</td></tr>
+</table>
+
+<h3 class="sub">Load Balancing Algorithms</h3>
+
+<div class="diagram">
+<svg width="580" height="200" viewBox="0 0 580 200">
+  <defs>
+    <marker id="b" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#3b82f6"/></marker>
+    <marker id="c" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#10b981"/></marker>
+  </defs>
+  <rect x="10" y="80" width="100" height="40" rx="4" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="60" y="104" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="10">LOAD BALANCER</text>
+  <path d="M110 88 L180 40" stroke="#10b981" stroke-width="1.2" marker-end="url(#c)"/>
+  <path d="M110 100 L180 100" stroke="#10b981" stroke-width="1.2" marker-end="url(#c)"/>
+  <path d="M110 112 L180 160" stroke="#10b981" stroke-width="1.2" marker-end="url(#c)"/>
+  <rect x="180" y="18" width="100" height="44" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.2"/>
+  <text x="230" y="38" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">SERVER 1</text>
+  <text x="230" y="52" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">CPU: 20%</text>
+  <rect x="180" y="78" width="100" height="44" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.2"/>
+  <text x="230" y="98" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">SERVER 2</text>
+  <text x="230" y="112" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">CPU: 45%</text>
+  <rect x="180" y="138" width="100" height="44" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.2"/>
+  <text x="230" y="158" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">SERVER 3</text>
+  <text x="230" y="172" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">CPU: 60%</text>
+  <rect x="320" y="10" width="240" height="180" rx="6" fill="#0c1220" stroke="#1e2d4a" stroke-width="1"/>
+  <text x="440" y="35" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="10">ALGORITHMS</text>
+  <text x="440" y="60" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="10">Round Robin: 1→2→3→1→2→3</text>
+  <text x="440" y="85" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="10">Weighted: Server1=50%, S2=30%, S3=20%</text>
+  <text x="440" y="110" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="10">Least Conn: সবচেয়ে কম busy তে পাঠাও</text>
+  <text x="440" y="135" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="10">IP Hash: same IP → same server</text>
+  <text x="440" y="160" text-anchor="middle" fill="#eab308" font-family="JetBrains Mono" font-size="10">Random: random server select</text>
+</svg>
+</div>
+
+<table class="ct">
+<tr><th>Algorithm</th><th>কীভাবে কাজ করে</th><th>Best For</th><th>সমস্যা</th></tr>
+<tr><td>Round Robin</td><td>একে একে circular order এ</td><td>Same-spec servers</td><td>Server unequal হলে problem</td></tr>
+<tr><td>Weighted RR</td><td>Powerful server বেশি traffic পায়</td><td>Mixed server specs</td><td>Weight manually set করতে হয়</td></tr>
+<tr><td>Least Connections</td><td>সবচেয়ে কম active connection</td><td>Long-lived connections</td><td>Connection count track করতে হয়</td></tr>
+<tr><td>IP Hash</td><td>Client IP হ্যাশ → same server</td><td>Session consistency</td><td>Server down হলে hash বদলায়</td></tr>
+<tr><td>Resource Based</td><td>Server CPU/Memory দেখে decide</td><td>Variable workloads</td><td>Complex monitoring দরকার</td></tr>
+</table>
+
+<h3 class="sub">Health Checks — অসুস্থ server কে বাদ দাও</h3>
+<div class="code-block">
+<div class="code-header"><span class="code-lang">Nginx Config</span><span class="code-file">nginx-lb.conf</span></div>
+<pre><span class="kw">upstream</span> <span class="fn">backend</span> {
+    <span class="cm"># Weighted round robin</span>
+    <span class="var">server</span> <span class="str">10.0.0.1:8080</span> weight=<span class="num">5</span>;  <span class="cm"># বেশি traffic</span>
+    <span class="var">server</span> <span class="str">10.0.0.2:8080</span> weight=<span class="num">3</span>;
+    <span class="var">server</span> <span class="str">10.0.0.3:8080</span> weight=<span class="num">2</span>;
+    
+    <span class="cm"># Health check — ৩ বার fail হলে বাদ দাও</span>
+    <span class="var">server</span> <span class="str">10.0.0.4:8080</span> max_fails=<span class="num">3</span> fail_timeout=<span class="num">30</span>s;
+    
+    <span class="cm"># Backup server — সব down হলে এটা use করো</span>
+    <span class="var">server</span> <span class="str">10.0.0.5:8080</span> backup;
+    
+    keepalive <span class="num">32</span>;
+}
+
+<span class="kw">server</span> {
+    <span class="var">listen</span> <span class="num">443</span> ssl;
+    
+    <span class="cm"># SSL Termination — এখানেই SSL handle হয়</span>
+    <span class="var">ssl_certificate</span> /etc/ssl/cert.pem;
+    
+    <span class="var">location</span> /api/ {
+        <span class="fn">proxy_pass</span> http://backend;
+        <span class="var">proxy_connect_timeout</span> <span class="num">5</span>s;
+        <span class="var">proxy_read_timeout</span> <span class="num">30</span>s;
+    }
+    
+    <span class="cm"># URL-based routing (L7 power)</span>
+    <span class="var">location</span> /static/ {
+        <span class="fn">proxy_pass</span> http://cdn_backend;
+    }
+}</pre>
+</div>
+
+<div class="ib ib-green"><div class="ib-label">💡 Sticky Sessions Problem</div>
+কখনো কখনো same user কে same server এ পাঠাতে হয় (legacy stateful apps)। এটাকে বলে Sticky Session বা Session Persistence। IP Hash বা cookie-based affinity দিয়ে করা যায়। <strong>কিন্তু এটা horizontal scaling এর শত্রু</strong> — possible হলে এড়িয়ে চলো।
+</div>
+</div>
+
+<hr class="topic-divider" data-label="Topic 03">
+
+<!-- ==================== TOPIC 3: MESSAGE QUEUES ==================== -->
+<div class="section" id="t3">
+<div class="sec-label">Topic 03</div>
+<h2 class="sec-title">📨 Message Queues & Event Streaming</h2>
+
+<p>Synchronous communication এ দুটো service সরাসরি কথা বলে। Service B slow হলে Service A কে wait করতে হয়। <strong>Message Queue</strong> এই coupling ভেঙে দেয়।</p>
+
+<div class="diagram">
+<svg width="580" height="140" viewBox="0 0 580 140">
+  <defs><marker id="d" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#64748b"/></marker></defs>
+  <text x="290" y="18" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">ASYNC ARCHITECTURE WITH MESSAGE QUEUE</text>
+  <rect x="10" y="50" width="100" height="40" rx="4" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="60" y="74" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="10">PRODUCER</text>
+  <path d="M110 70 L170 70" stroke="#64748b" stroke-width="1.5" marker-end="url(#d)"/>
+  <rect x="170" y="40" width="140" height="60" rx="4" fill="#0c1220" stroke="#f97316" stroke-width="1.5"/>
+  <text x="240" y="65" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="9">MESSAGE QUEUE</text>
+  <text x="240" y="80" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">[msg1][msg2][msg3]...</text>
+  <path d="M310 60 L370 40" stroke="#64748b" stroke-width="1.2" marker-end="url(#d)"/>
+  <path d="M310 70 L370 70" stroke="#64748b" stroke-width="1.2" marker-end="url(#d)"/>
+  <path d="M310 80 L370 100" stroke="#64748b" stroke-width="1.2" marker-end="url(#d)"/>
+  <rect x="370" y="22" width="90" height="34" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.2"/>
+  <text x="415" y="44" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">CONSUMER 1</text>
+  <rect x="370" y="55" width="90" height="34" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.2"/>
+  <text x="415" y="77" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">CONSUMER 2</text>
+  <rect x="370" y="88" width="90" height="34" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.2"/>
+  <text x="415" y="110" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">CONSUMER 3</text>
+  <text x="60" y="110" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Send &amp; forget</text>
+  <text x="240" y="115" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Buffer / Decouple</text>
+  <text x="415" y="135" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Process independently</text>
+</svg>
+</div>
+
+<h3 class="sub">Queue vs Stream — গুরুত্বপূর্ণ পার্থক্য</h3>
+<table class="ct">
+<tr><th>বিষয়</th><th>Message Queue (RabbitMQ)</th><th>Event Stream (Kafka)</th></tr>
+<tr><td>Message consume হলে</td><td class="tr">Delete হয়ে যায়</td><td class="tg">Retain করে (configurable)</td></tr>
+<tr><td>Replay possible?</td><td class="tr">না</td><td class="tg">হ্যাঁ</td></tr>
+<tr><td>Multiple consumers</td><td class="ty">Competing consumers</td><td class="tg">Consumer groups, সবাই পায়</td></tr>
+<tr><td>Ordering</td><td class="ty">Per-queue FIFO</td><td class="tg">Per-partition ordering</td></tr>
+<tr><td>Throughput</td><td class="ty">High (millions/sec)</td><td class="tg">Extreme (billions/sec)</td></tr>
+<tr><td>Use case</td><td>Task processing, email</td><td>Analytics, event sourcing, logs</td></tr>
+</table>
+
+<h3 class="sub">Kafka Deep Dive — Internal Architecture</h3>
+<div class="ib ib-blue"><div class="ib-label">📌 Kafka Key Concepts</div>
+<strong>Topic:</strong> Message এর category (like a table)<br>
+<strong>Partition:</strong> Topic কে parallel chunks এ ভাগ করা — যত বেশি partition, তত বেশি parallel consume<br>
+<strong>Offset:</strong> Partition এ message এর position number<br>
+<strong>Consumer Group:</strong> একদল consumer যারা একটা topic এর সব messages মিলে consume করে<br>
+<strong>Broker:</strong> Kafka server instance
+</div>
+
+<div class="code-block">
+<div class="code-header"><span class="code-lang">Python</span><span class="code-file">kafka_example.py</span></div>
+<pre><span class="kw">from</span> kafka <span class="kw">import</span> KafkaProducer, KafkaConsumer
+<span class="kw">import</span> json
+
+<span class="cm"># Producer — message পাঠাও</span>
+producer = <span class="fn">KafkaProducer</span>(
+    bootstrap_servers=[<span class="str">'localhost:9092'</span>],
+    value_serializer=<span class="kw">lambda</span> v: json.<span class="fn">dumps</span>(v).<span class="fn">encode</span>()
+)
+
+<span class="cm"># Order placed event পাঠাও</span>
+producer.<span class="fn">send</span>(<span class="str">'order-events'</span>, {
+    <span class="str">'event'</span>: <span class="str">'ORDER_PLACED'</span>,
+    <span class="str">'order_id'</span>: <span class="str">'ORD-12345'</span>,
+    <span class="str">'user_id'</span>: <span class="str">'USR-789'</span>,
+    <span class="str">'amount'</span>: <span class="num">1500</span>
+})
+
+<span class="cm"># Consumer — message receive করো</span>
+consumer = <span class="fn">KafkaConsumer</span>(
+    <span class="str">'order-events'</span>,
+    bootstrap_servers=[<span class="str">'localhost:9092'</span>],
+    group_id=<span class="str">'payment-service'</span>,  <span class="cm"># Consumer group</span>
+    auto_offset_reset=<span class="str">'earliest'</span>
+)
+
+<span class="kw">for</span> message <span class="kw">in</span> consumer:
+    order = json.<span class="fn">loads</span>(message.value)
+    <span class="fn">process_payment</span>(order)
+    <span class="cm"># Offset automatically commit হয়</span></pre>
+</div>
+
+<h3 class="sub">Dead Letter Queue (DLQ) — Failed messages handle</h3>
+<div class="code-block">
+<div class="code-header"><span class="code-lang">Python</span><span class="code-file">dlq.py</span></div>
+<pre><span class="kw">def</span> <span class="fn">process_message_safe</span>(message):
+    MAX_RETRIES = <span class="num">3</span>
+    retries = message.<span class="fn">get</span>(<span class="str">'retry_count'</span>, <span class="num">0</span>)
+    
+    <span class="kw">try</span>:
+        <span class="fn">process_order</span>(message)
+    <span class="kw">except</span> Exception <span class="kw">as</span> e:
+        <span class="kw">if</span> retries < MAX_RETRIES:
+            <span class="cm"># Retry queue তে পাঠাও</span>
+            message[<span class="str">'retry_count'</span>] = retries + <span class="num">1</span>
+            producer.<span class="fn">send</span>(<span class="str">'order-retry'</span>, message)
+        <span class="kw">else</span>:
+            <span class="cm"># DLQ তে পাঠাও — manual investigation</span>
+            producer.<span class="fn">send</span>(<span class="str">'order-dlq'</span>, message)
+            <span class="fn">alert_team</span>(<span class="str">f"Failed: {message}"</span>)</pre>
+</div>
+
+<div class="ib ib-orange"><div class="ib-label">⚠️ কখন Queue, কখন Stream?</div>
+<strong>Queue use করো:</strong> Email sending, SMS notification, background jobs, order processing<br>
+<strong>Stream use করো:</strong> Real-time analytics, audit logs, event sourcing, change data capture (CDC)
+</div>
+</div>
+
+<hr class="topic-divider" data-label="Topic 04">
+
+<!-- ==================== TOPIC 4: API DESIGN ==================== -->
+<div class="section" id="t4">
+<div class="sec-label">Topic 04</div>
+<h2 class="sec-title">🔀 API Design & Gateway</h2>
+
+<h3 class="sub">REST vs GraphQL vs gRPC — কখন কোনটা?</h3>
+<table class="ct">
+<tr><th>Protocol</th><th>Transport</th><th>Data Format</th><th>Best For</th><th>সমস্যা</th></tr>
+<tr><td>REST</td><td>HTTP/1.1, HTTP/2</td><td>JSON</td><td>Public APIs, simple CRUD</td><td>Over/under-fetching</td></tr>
+<tr><td>GraphQL</td><td>HTTP</td><td>JSON</td><td>Complex queries, mobile apps</td><td>Complex caching, N+1 problem</td></tr>
+<tr><td>gRPC</td><td>HTTP/2</td><td>Protobuf (binary)</td><td>Internal microservices</td><td>Browser support সীমিত</td></tr>
+<tr><td>WebSocket</td><td>TCP</td><td>Any</td><td>Real-time, chat, games</td><td>Scale করা কঠিন</td></tr>
+<tr><td>SSE</td><td>HTTP</td><td>Text</td><td>Server→Client one-way stream</td><td>Bidirectional না</td></tr>
+</table>
+
+<h3 class="sub">REST API Best Practices</h3>
+<div class="code-block">
+<div class="code-header"><span class="code-lang">REST Design</span><span class="code-file">api-design.txt</span></div>
+<pre><span class="cm"># ✅ Good REST API Design</span>
+
+<span class="cm"># Resources = nouns (verb না)</span>
+GET    /users              <span class="cm"># সব user list</span>
+GET    /users/123          <span class="cm"># specific user</span>
+POST   /users              <span class="cm"># নতুন user তৈরি</span>
+PUT    /users/123          <span class="cm"># পুরো user update</span>
+PATCH  /users/123          <span class="cm"># partial update</span>
+DELETE /users/123          <span class="cm"># user delete</span>
+
+<span class="cm"># Nested resources</span>
+GET    /users/123/orders   <span class="cm"># user এর orders</span>
+GET    /orders/456/items   <span class="cm"># order এর items</span>
+
+<span class="cm"># Filtering, Sorting, Pagination</span>
+GET /products?category=phone&sort=price&order=asc&page=2&limit=20
+
+<span class="cm"># ❌ Bad Design — এগুলো করো না</span>
+GET /getUsers              <span class="cm"># verb in URL</span>
+POST /users/delete/123     <span class="cm"># delete POST এ না</span>
+GET /users?action=create   <span class="cm"># action parameter</span></pre>
+</div>
+
+<h3 class="sub">API Versioning Strategies</h3>
+<div class="code-block">
+<div class="code-header"><span class="code-lang">Examples</span><span class="code-file">versioning.txt</span></div>
+<pre><span class="cm"># Option 1: URL Versioning (সবচেয়ে common)</span>
+GET /v1/users
+GET /v2/users   <span class="cm"># breaking change হলে v2</span>
+
+<span class="cm"># Option 2: Header Versioning</span>
+GET /users
+Accept: application/vnd.myapi.v2+json
+
+<span class="cm"># Option 3: Query Parameter</span>
+GET /users?version=2
+
+<span class="cm"># Best practice: URL versioning use করো</span>
+<span class="cm"># এটা most explicit এবং cache friendly</span></pre>
+</div>
+
+<h3 class="sub">API Gateway — কেন দরকার?</h3>
+<p>Microservices এ প্রতিটা service এর আলাদা address থাকে। Client সবগুলো জানে না। API Gateway single entry point হিসেবে কাজ করে।</p>
+
+<div class="ib ib-blue"><div class="ib-label">📌 API Gateway Features</div>
+<strong>Authentication:</strong> JWT validate, OAuth2 handle<br>
+<strong>Rate Limiting:</strong> Per user/IP request limit<br>
+<strong>SSL Termination:</strong> HTTPS → HTTP internally<br>
+<strong>Request Routing:</strong> /users → User Service, /orders → Order Service<br>
+<strong>Request/Response Transformation:</strong> Format convert<br>
+<strong>Logging & Analytics:</strong> সব request log<br>
+<strong>Circuit Breaking:</strong> Failing service protect
+</div>
+
+<div class="code-block">
+<div class="code-header"><span class="code-lang">Kong Gateway</span><span class="code-file">kong-config.yml</span></div>
+<pre><span class="cm"># Kong API Gateway configuration</span>
+<span class="kw">services:</span>
+  - <span class="var">name:</span> user-service
+    <span class="var">url:</span> <span class="str">http://user-service:8001</span>
+    <span class="var">routes:</span>
+      - <span class="var">paths:</span> [<span class="str">"/api/v1/users"</span>]
+    <span class="var">plugins:</span>
+      - <span class="var">name:</span> jwt           <span class="cm"># Auth</span>
+      - <span class="var">name:</span> rate-limiting
+        <span class="var">config:</span>
+          <span class="var">minute:</span> <span class="num">100</span>       <span class="cm"># Per minute 100 requests</span>
+          <span class="var">hour:</span> <span class="num">1000</span>
+      - <span class="var">name:</span> cors
+      - <span class="var">name:</span> request-transformer</pre>
+</div>
+
+<h3 class="sub">Rate Limiting — গভীরে জানো</h3>
+<div class="code-block">
+<div class="code-header"><span class="code-lang">Python + Redis</span><span class="code-file">rate_limiter.py</span></div>
+<pre><span class="kw">import</span> time
+
+<span class="kw">def</span> <span class="fn">is_rate_limited</span>(user_id, limit=<span class="num">100</span>, window=<span class="num">60</span>):
+    <span class="cm">"""Sliding Window Counter — সবচেয়ে accurate"""</span>
+    now = time.<span class="fn">time</span>()
+    key = <span class="str">f"rate:{user_id}"</span>
+    
+    pipe = r.<span class="fn">pipeline</span>()
+    <span class="cm"># পুরনো requests remove করো</span>
+    pipe.<span class="fn">zremrangebyscore</span>(key, <span class="num">0</span>, now - window)
+    <span class="cm"># Current request add করো</span>
+    pipe.<span class="fn">zadd</span>(key, {<span class="fn">str</span>(now): now})
+    <span class="cm"># Count করো</span>
+    pipe.<span class="fn">zcard</span>(key)
+    pipe.<span class="fn">expire</span>(key, window)
+    results = pipe.<span class="fn">execute</span>()
+    
+    request_count = results[<span class="num">2</span>]
+    <span class="kw">return</span> request_count > limit  <span class="cm"># True = blocked</span></pre>
+</div>
+</div>
+
+<hr class="topic-divider" data-label="Topic 05">
+
+<!-- ==================== TOPIC 5: DB SHARDING ==================== -->
+<div class="section" id="t5">
+<div class="sec-label">Topic 05</div>
+<h2 class="sec-title">💾 Database Sharding & Replication</h2>
+
+<h3 class="sub">Replication — Data Redundancy</h3>
+<p>Replication মানে same data কে multiple servers এ রাখা। Availability বাড়ে, read performance বাড়ে।</p>
+
+<div class="diagram">
+<svg width="560" height="160" viewBox="0 0 560 160">
+  <defs><marker id="e" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#64748b"/></marker></defs>
+  <rect x="200" y="20" width="120" height="60" rx="4" fill="#0c1220" stroke="#3b82f6" stroke-width="2"/>
+  <text x="260" y="48" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="11">PRIMARY</text>
+  <text x="260" y="64" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">Reads + Writes</text>
+  <path d="M200 55 L100 100" stroke="#f97316" stroke-width="1.5" marker-end="url(#e)" stroke-dasharray="5"/>
+  <path d="M320 55 L440 100" stroke="#f97316" stroke-width="1.5" marker-end="url(#e)" stroke-dasharray="5"/>
+  <text x="135" y="90" fill="#f97316" font-family="JetBrains Mono" font-size="8">Async Replication</text>
+  <text x="340" y="90" fill="#f97316" font-family="JetBrains Mono" font-size="8">Async Replication</text>
+  <rect x="20" y="100" width="120" height="50" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+  <text x="80" y="122" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="10">REPLICA 1</text>
+  <text x="80" y="138" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">Read Only</text>
+  <rect x="420" y="100" width="120" height="50" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+  <text x="480" y="122" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="10">REPLICA 2</text>
+  <text x="480" y="138" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">Read Only</text>
+</svg>
+</div>
+
+<table class="ct">
+<tr><th>Type</th><th>কীভাবে</th><th>Pros</th><th>Cons</th></tr>
+<tr><td>Master-Slave</td><td>Write→Master, Read→Slave</td><td>Read scale, backup</td><td>Replication lag, single write point</td></tr>
+<tr><td>Master-Master</td><td>দুটোতেই write</td><td>High availability</td><td>Conflict resolution complex</td></tr>
+<tr><td>Synchronous</td><td>All replicas confirm করলেই success</td><td>No data loss</td><td>High latency</td></tr>
+<tr><td>Asynchronous</td><td>Master ok হলেই success</td><td>Low latency</td><td>Potential data loss</td></tr>
+</table>
+
+<h3 class="sub">Database Sharding — কেন দরকার?</h3>
+<p>Replication read scale করে। কিন্তু write scale করতে হলে দরকার <strong>Sharding</strong>। Database কে horizontal partitions (shards) এ ভাগ করো।</p>
+
+<h4 class="subsub">Sharding Strategies</h4>
+<div class="grid2">
+<div class="sc">
+<div class="sc-title">📊 Range-Based</div>
+<p>user_id 1-1M → Shard 1, 1M-2M → Shard 2। Simple কিন্তু hotspot possible।</p>
+</div>
+<div class="sc">
+<div class="sc-title">🔢 Hash-Based</div>
+<p>hash(user_id) % N → shard number। Even distribution কিন্তু range query কঠিন।</p>
+</div>
+<div class="sc">
+<div class="sc-title">🗺️ Geo-Based</div>
+<p>Bangladesh users → Shard-BD, India → Shard-IN। Latency কমায়।</p>
+</div>
+<div class="sc">
+<div class="sc-title">📁 Directory-Based</div>
+<p>Lookup table দিয়ে কোন entity কোন shard এ আছে। Flexible কিন্তু lookup overhead।</p>
+</div>
+</div>
+
+<h3 class="sub">Consistent Hashing — Sharding এর Best Solution</h3>
+<div class="ib ib-blue"><div class="ib-label">📌 Why Consistent Hashing?</div>
+Normal hashing: N server থেকে N+1 server এ গেলে <strong>সব key রemap হয়</strong> — cache miss storm।<br><br>
+Consistent hashing: N+1 server যোগ করলে শুধু একটা server এর keys shift হয়। Redis Cluster, Cassandra, DynamoDB এটা ব্যবহার করে।
+</div>
+
+<div class="code-block">
+<div class="code-header"><span class="code-lang">Python</span><span class="code-file">consistent_hashing.py</span></div>
+<pre><span class="kw">import</span> hashlib, bisect
+
+<span class="kw">class</span> <span class="fn">ConsistentHashRing</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, replicas=<span class="num">100</span>):
+        self.replicas = replicas  <span class="cm"># Virtual nodes</span>
+        self.ring = {}
+        self.sorted_keys = []
+    
+    <span class="kw">def</span> <span class="fn">add_server</span>(self, server):
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(self.replicas):
+            key = self.<span class="fn">_hash</span>(<span class="str">f"{server}:{i}"</span>)
+            self.ring[key] = server
+            bisect.<span class="fn">insort</span>(self.sorted_keys, key)
+    
+    <span class="kw">def</span> <span class="fn">get_server</span>(self, data_key):
+        h = self.<span class="fn">_hash</span>(data_key)
+        idx = bisect.<span class="fn">bisect</span>(self.sorted_keys, h) % <span class="fn">len</span>(self.sorted_keys)
+        <span class="kw">return</span> self.ring[self.sorted_keys[idx]]
+    
+    <span class="kw">def</span> <span class="fn">_hash</span>(self, key):
+        <span class="kw">return</span> <span class="fn">int</span>(hashlib.<span class="fn">md5</span>(key.<span class="fn">encode</span>()).<span class="fn">hexdigest</span>(), <span class="num">16</span>)</pre>
+</div>
+
+<div class="ib ib-orange"><div class="ib-label">⚠️ Sharding Challenges</div>
+<strong>Cross-shard queries:</strong> JOIN করা কঠিন — সব user এর friends যদি আলাদা shard এ থাকে<br>
+<strong>Hotspot:</strong> Celebrity user এর shard overloaded — Virtual nodes দিয়ে fix<br>
+<strong>Re-sharding:</strong> Data grow করলে নতুন shard এ migrate করতে হয় — Consistent hashing দিয়ে minimize করো
+</div>
+</div>
+
+<hr class="topic-divider" data-label="Topic 06">
+
+<!-- ==================== TOPIC 6: CDN ==================== -->
+<div class="section" id="t6">
+<div class="sec-label">Topic 06</div>
+<h2 class="sec-title">🗂️ CDN & Object Storage</h2>
+
+<p>User যদি Bangladesh থেকে US server থেকে image load করে — latency ~200ms। CDN edge server যদি Singapore এ থাকে — latency ~20ms। <strong>১০ গুণ ফাস্ট।</strong></p>
+
+<h3 class="sub">CDN কীভাবে কাজ করে</h3>
+<div class="diagram">
+<svg width="560" height="150" viewBox="0 0 560 150">
+  <defs><marker id="f" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#64748b"/></marker></defs>
+  <rect x="10" y="55" width="90" height="40" rx="4" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="55" y="78" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="9">BD USER</text>
+  <path d="M100 75 L150 50" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#f)"/>
+  <rect x="150" y="25" width="110" height="50" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="2"/>
+  <text x="205" y="48" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">EDGE SERVER</text>
+  <text x="205" y="62" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Singapore/India</text>
+  <text x="205" y="95" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Cache HIT → 20ms ✅</text>
+  <path d="M260 50 L330 50" stroke="#f97316" stroke-width="1.2" stroke-dasharray="5" marker-end="url(#f)"/>
+  <text x="295" y="42" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="8">Cache MISS</text>
+  <rect x="330" y="25" width="110" height="50" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+  <text x="385" y="48" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="9">ORIGIN SERVER</text>
+  <text x="385" y="62" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">US/EU</text>
+  <text x="385" y="95" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">~200ms ❌</text>
+  <text x="205" y="130" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="8">Content edge এ cache হওয়ার পর:</text>
+  <text x="205" y="145" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="8">সব BD users fast পায়</text>
+</svg>
+</div>
+
+<h3 class="sub">Object Storage (S3) — Architecture</h3>
+<table class="ct">
+<tr><th>Component</th><th>কাজ</th><th>উদাহরণ</th></tr>
+<tr><td>Bucket</td><td>Top-level container</td><td>my-app-images</td></tr>
+<tr><td>Object</td><td>File + metadata</td><td>users/avatar/123.jpg</td></tr>
+<tr><td>Pre-signed URL</td><td>Temporary access URL</td><td>Direct upload from browser</td></tr>
+<tr><td>Lifecycle Policy</td><td>Auto-delete/archive old files</td><td>30 days → Glacier</td></tr>
+<tr><td>Versioning</td><td>File এর পুরনো versions রাখা</td><td>Accidental delete recovery</td></tr>
+</table>
+
+<div class="code-block">
+<div class="code-header"><span class="code-lang">Python (boto3)</span><span class="code-file">s3_upload.py</span></div>
+<pre><span class="kw">import</span> boto3
+
+s3 = boto3.<span class="fn">client</span>(<span class="str">'s3'</span>)
+
+<span class="cm"># Direct upload (backend)</span>
+s3.<span class="fn">upload_file</span>(<span class="str">'local.jpg'</span>, <span class="str">'my-bucket'</span>, <span class="str">'images/photo.jpg'</span>)
+
+<span class="cm"># Pre-signed URL — browser directly S3 তে upload করবে</span>
+<span class="cm"># Server এর through না গিয়ে — bandwidth save</span>
+url = s3.<span class="fn">generate_presigned_post</span>(
+    Bucket=<span class="str">'my-bucket'</span>,
+    Key=<span class="str">'images/avatar.jpg'</span>,
+    ExpiresIn=<span class="num">3600</span>  <span class="cm"># ১ ঘণ্টা valid</span>
+)
+
+<span class="cm"># CloudFront CDN URL generate করো</span>
+cdn_url = <span class="str">f"https://d1234.cloudfront.net/images/avatar.jpg"</span>
+<span class="cm"># এই URL দাও user কে — always CDN থেকে serve হবে</span></pre>
+</div>
+
+<div class="ib ib-green"><div class="ib-label">💡 Best Practice: File Upload Flow</div>
+1. User → Backend: "আমি file upload করতে চাই"<br>
+2. Backend → S3: Pre-signed URL generate করো<br>
+3. Backend → User: Pre-signed URL দাও<br>
+4. User → S3: সরাসরি upload করো (backend bypass)<br>
+5. User → Backend: "Upload হয়েছে, URL হলো..."<br>
+6. Backend: CDN URL database এ save করো<br><br>
+এতে server এর bandwidth আর memory বাঁচে।
+</div>
+</div>
+
+<!-- ==================== MCQ ==================== -->
+<div class="mcq-section" id="mcq">
+<div class="mcq-header">
+  <span style="font-size:24px">🧠</span>
+  <h2 style="font-family:'Fraunces',serif;font-size:20px;font-weight:700">Phase 2 — MCQ Test</h2>
+  <div class="mcq-score">Score: <span id="sc">0</span>/15</div>
+</div>
+
+<!-- Q1 -->
+<div class="qblock" data-correct="b">
+<div class="qnum">প্রশ্ন 01 — Caching</div>
+<div class="qtext">Cache-Aside (Lazy Loading) pattern এ Cache Miss হলে কী হয়?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> Error return হয়</div>
+  <div class="option" data-val="b"><span class="okey">B</span> DB থেকে data আনা হয় এবং cache এ store করা হয়</div>
+  <div class="option" data-val="c"><span class="okey">C</span> Request retry করা হয়</div>
+  <div class="option" data-val="d"><span class="okey">D</span> Cache automatically DB থেকে fill করে নেয়</div>
+</div>
+<div class="expl"><strong>সঠিক: B</strong> — Cache-Aside তে: (1) Cache চেক করো, (2) Miss হলে DB থেকে আনো, (3) Cache এ store করো, (4) Return করো। Application নিজেই এই logic handle করে।</div>
+</div>
+
+<!-- Q2 -->
+<div class="qblock" data-correct="c">
+<div class="qnum">প্রশ্ন 02 — Caching</div>
+<div class="qtext">Cache Stampede সমস্যা কখন হয়?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> Cache server crash হলে</div>
+  <div class="option" data-val="b"><span class="okey">B</span> Cache এ ভুল data থাকলে</div>
+  <div class="option" data-val="c"><span class="okey">C</span> Popular cache key expire হলে হাজারো request একসাথে DB তে যায়</div>
+  <div class="option" data-val="d"><span class="okey">D</span> Cache এর memory full হলে</div>
+</div>
+<div class="expl"><strong>সঠিক: C</strong> — Stampede = "গরুর পাল একসাথে ছুটছে"। Popular key expire → সবাই একসাথে DB query করে → DB overwhelmed। Fix: Random TTL jitter, Mutex lock, বা probabilistic early expiration।</div>
+</div>
+
+<!-- Q3 -->
+<div class="qblock" data-correct="d">
+<div class="qnum">প্রশ্ন 03 — Caching</div>
+<div class="qtext">Redis Sorted Set (ZSET) কোন use case এর জন্য সবচেয়ে উপযুক্ত?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> Simple string caching</div>
+  <div class="option" data-val="b"><span class="okey">B</span> User session store করা</div>
+  <div class="option" data-val="c"><span class="okey">C</span> Pub/Sub messaging</div>
+  <div class="option" data-val="d"><span class="okey">D</span> Leaderboard, ranking, rate limiting</div>
+</div>
+<div class="expl"><strong>সঠিক: D</strong> — Sorted Set এ প্রতিটা element এর একটা score থাকে এবং automatically sorted। Leaderboard: score=points, member=user_id। Rate limiting: score=timestamp, member=request_id।</div>
+</div>
+
+<!-- Q4 -->
+<div class="qblock" data-correct="b">
+<div class="qnum">প্রশ্ন 04 — Load Balancing</div>
+<div class="qtext">L7 Load Balancer, L4 এর চেয়ে কোন কাজটা বেশি করতে পারে?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> বেশি server handle করতে পারে</div>
+  <div class="option" data-val="b"><span class="okey">B</span> URL, headers দেখে intelligent routing করতে পারে</div>
+  <div class="option" data-val="c"><span class="okey">C</span> UDP traffic handle করতে পারে</div>
+  <div class="option" data-val="d"><span class="okey">D</span> Database connection pool করতে পারে</div>
+</div>
+<div class="expl"><strong>সঠিক: B</strong> — L7 Application layer দেখে। /api/users → user service, /api/payments → payment service। Content-based routing, A/B testing, canary deployment সম্ভব। L4 শুধু IP:Port দেখে।</div>
+</div>
+
+<!-- Q5 -->
+<div class="qblock" data-correct="a">
+<div class="qnum">প্রশ্ন 05 — Load Balancing</div>
+<div class="qtext">Long-lived connections (WebSocket, streaming) এর জন্য কোন LB algorithm best?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> Least Connections</div>
+  <div class="option" data-val="b"><span class="okey">B</span> Round Robin</div>
+  <div class="option" data-val="c"><span class="okey">C</span> Random</div>
+  <div class="option" data-val="d"><span class="okey">D</span> FIFO</div>
+</div>
+<div class="expl"><strong>সঠিক: A</strong> — WebSocket connection অনেকক্ষণ open থাকে। Round Robin তে একটা server এ ১০০টা WebSocket, অন্যটায় ১০টা short HTTP — unfair। Least Connections সবসময় কম busy server এ পাঠায়।</div>
+</div>
+
+<!-- Q6 -->
+<div class="qblock" data-correct="c">
+<div class="qnum">প্রশ্ন 06 — Message Queue</div>
+<div class="qtext">Kafka আর RabbitMQ এর সবচেয়ে বড় পার্থক্য কোনটি?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> Kafka faster, RabbitMQ slower</div>
+  <div class="option" data-val="b"><span class="okey">B</span> RabbitMQ open source, Kafka না</div>
+  <div class="option" data-val="c"><span class="okey">C</span> Kafka message retain করে replay possible, RabbitMQ consume হলে delete</div>
+  <div class="option" data-val="d"><span class="okey">D</span> Kafka শুধু cloud এ চলে</div>
+</div>
+<div class="expl"><strong>সঠিক: C</strong> — Kafka হলো event log/stream। Messages days বা weeks রাখতে পারো, replay করতে পারো, নতুন consumer পুরনো events পেতে পারে। RabbitMQ হলো traditional queue — consume হলে gone।</div>
+</div>
+
+<!-- Q7 -->
+<div class="qblock" data-correct="b">
+<div class="qnum">প্রশ্ন 07 — Message Queue</div>
+<div class="qtext">Dead Letter Queue (DLQ) এর উদ্দেশ্য কী?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> Deleted messages backup রাখা</div>
+  <div class="option" data-val="b"><span class="okey">B</span> Max retry পরেও process না হওয়া messages আলাদা করা</div>
+  <div class="option" data-val="c"><span class="okey">C</span> Old messages archive করা</div>
+  <div class="option" data-val="d"><span class="okey">D</span> Priority messages আলাদা queue এ রাখা</div>
+</div>
+<div class="expl"><strong>সঠিক: B</strong> — DLQ = Poison message handler। কোনো message বারবার fail হলে সেটা main queue থেকে সরিয়ে DLQ তে পাঠাও। এতে main queue block হয় না। Team পরে manually investigate করতে পারে।</div>
+</div>
+
+<!-- Q8 -->
+<div class="qblock" data-correct="d">
+<div class="qnum">প্রশ্ন 08 — API Design</div>
+<div class="qtext">User এর orders দেখার জন্য REST API endpoint কেমন হওয়া উচিত?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> GET /getUserOrders?userId=123</div>
+  <div class="option" data-val="b"><span class="okey">B</span> POST /orders/getByUser/123</div>
+  <div class="option" data-val="c"><span class="okey">C</span> GET /orderList/123</div>
+  <div class="option" data-val="d"><span class="okey">D</span> GET /users/123/orders</div>
+</div>
+<div class="expl"><strong>সঠিক: D</strong> — REST এ nested resources parent/id/child format এ। "User 123 এর orders" = /users/123/orders। Verb in URL (getUserOrders) করা যাবে না। GET with POST body ও না। Noun-based, hierarchical।</div>
+</div>
+
+<!-- Q9 -->
+<div class="qblock" data-correct="a">
+<div class="qnum">প্রশ্ন 09 — API Design</div>
+<div class="qtext">gRPC কোন scenario তে REST এর চেয়ে ভালো?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> Internal microservices communication যেখানে low latency দরকার</div>
+  <div class="option" data-val="b"><span class="okey">B</span> Public API যা browser থেকে access হবে</div>
+  <div class="option" data-val="c"><span class="okey">C</span> Simple CRUD operations</div>
+  <div class="option" data-val="d"><span class="okey">D</span> Mobile apps</div>
+</div>
+<div class="expl"><strong>সঠিক: A</strong> — gRPC: HTTP/2 + Protobuf binary = অনেক fast, type-safe, streaming support। Internal service-to-service এর জন্য ideal। Browser থেকে সরাসরি gRPC কঠিন (grpc-web দরকার হয়)।</div>
+</div>
+
+<!-- Q10 -->
+<div class="qblock" data-correct="c">
+<div class="qnum">প্রশ্ন 10 — DB Sharding</div>
+<div class="qtext">Consistent Hashing কেন regular modulo hashing এর চেয়ে ভালো?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> Consistent Hashing faster</div>
+  <div class="option" data-val="b"><span class="okey">B</span> Consistent Hashing কম memory নেয়</div>
+  <div class="option" data-val="c"><span class="okey">C</span> Server add/remove হলে minimum data remapping হয়</div>
+  <div class="option" data-val="d"><span class="okey">D</span> Consistent Hashing এ collision নেই</div>
+</div>
+<div class="expl"><strong>সঠিক: C</strong> — Normal hash: 4→5 server হলে সব key remap। Consistent hashing: শুধু ~1/N keys move করে। Cache cluster তে এটা critical — নইলে সব cache miss হয়ে DB ডুবে যাবে।</div>
+</div>
+
+<!-- Q11 -->
+<div class="qblock" data-correct="b">
+<div class="qnum">প্রশ্ন 11 — DB Replication</div>
+<div class="qtext">Master-Slave replication এ কোন সমস্যাটা সবসময় থাকে?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> Slave write করতে পারে না</div>
+  <div class="option" data-val="b"><span class="okey">B</span> Replication lag — Slave এ data সামান্য পুরনো থাকতে পারে</div>
+  <div class="option" data-val="c"><span class="okey">C</span> Master down হলে data হারিয়ে যায়</div>
+  <div class="option" data-val="d"><span class="okey">D</span> Slave থেকে read করলে error হয়</div>
+</div>
+<div class="expl"><strong>সঠিক: B</strong> — Async replication এ Master এ write হলে Slave এ পৌঁছাতে কিছু milliseconds লাগে। এই সময় Slave পড়লে stale data পাবে। Critical reads (just-wrote data) সবসময় Master থেকে পড়ো।</div>
+</div>
+
+<!-- Q12 -->
+<div class="qblock" data-correct="d">
+<div class="qnum">প্রশ্ন 12 — CDN</div>
+<div class="qtext">CDN কোন ধরনের content এর জন্য সবচেয়ে উপকারী?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> Dynamic user-specific data</div>
+  <div class="option" data-val="b"><span class="okey">B</span> Database queries</div>
+  <div class="option" data-val="c"><span class="okey">C</span> Real-time chat messages</div>
+  <div class="option" data-val="d"><span class="okey">D</span> Static assets: images, CSS, JS, videos</div>
+</div>
+<div class="expl"><strong>সঠিক: D</strong> — CDN static content cache করে globally distribute করে। Dynamic/personalized content CDN এ cache করা যায় না (প্রতি user এর জন্য আলাদা)। Netflix, YouTube এর video files CDN থেকে serve হয়।</div>
+</div>
+
+<!-- Q13 -->
+<div class="qblock" data-correct="a">
+<div class="qnum">প্রশ্ন 13 — CDN & Storage</div>
+<div class="qtext">Pre-signed URL এর সুবিধা কী?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> User সরাসরি S3 তে upload করতে পারে, backend server এর bandwidth বাঁচে</div>
+  <div class="option" data-val="b"><span class="okey">B</span> URL permanent হয়ে যায়</div>
+  <div class="option" data-val="c"><span class="okey">C</span> S3 faster হয়</div>
+  <div class="option" data-val="d"><span class="okey">D</span> File automatically compress হয়</div>
+</div>
+<div class="expl"><strong>সঠিক: A</strong> — Pre-signed URL দিয়ে user browser থেকে সরাসরি S3 তে upload করে। 100MB file আগে server এ আসতো, এখন S3 তে সরাসরি। Server এর RAM, bandwidth, processing সব বাঁচে।</div>
+</div>
+
+<!-- Q14 -->
+<div class="qblock" data-correct="c">
+<div class="qnum">প্রশ্ন 14 — Scenario</div>
+<div class="qtext">একটা news website এ breaking news দেখানো হচ্ছে — ১০ লক্ষ user একসাথে same article পড়ছে। সবচেয়ে effective optimization কোনটা?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> Database index add করো</div>
+  <div class="option" data-val="b"><span class="okey">B</span> ১০টা web server add করো</div>
+  <div class="option" data-val="c"><span class="okey">C</span> Article Redis cache করো এবং CDN এ push করো</div>
+  <div class="option" data-val="d"><span class="okey">D</span> Database server বড় করো</div>
+</div>
+<div class="expl"><strong>সঠিক: C</strong> — Same article ১০ লক্ষ বার DB থেকে আনা = DB ডুবে যাওয়া। Redis cache এ একবার রাখো, সবাই সেখান থেকে পায়। CDN এ push করলে globally fast serve হবে। Web server বাড়ালেও DB bottleneck থাকবে।</div>
+</div>
+
+<!-- Q15 -->
+<div class="qblock" data-correct="b">
+<div class="qnum">প্রশ্ন 15 — Architecture</div>
+<div class="qtext">E-commerce order service এ payment processing 3 seconds নেয়। User কে 3 second wait করানো UX খারাপ। কী করবে?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> Payment service এর server বড় করো</div>
+  <div class="option" data-val="b"><span class="okey">B</span> Message queue দিয়ে async করো — "Order received" দেখাও, payment background এ হোক</div>
+  <div class="option" data-val="c"><span class="okey">C</span> Payment skip করো</div>
+  <div class="option" data-val="d"><span class="okey">D</span> User কে 3 second loading দেখাও</div>
+</div>
+<div class="expl"><strong>সঠিক: B</strong> — Classic async pattern। Order place হলে queue তে message পাঠাও, user কে "Order received!" দেখাও। Payment service queue থেকে নিয়ে process করে। Success হলে notification পাঠাও। Amazon, Flipkart এভাবেই করে।</div>
+</div>
+
+<button class="mcq-btn" onclick="checkMCQ('sc','result2')">📊 SUBMIT & CHECK SCORE</button>
+<div class="result" id="result2"></div>
+</div>
+
+<!-- Assignment -->
+<div class="assign" id="assign">
+<h2>📝 Assignment — Phase 2</h2>
+<div class="a-meta">
+  <span class="ac ac-y">⏱ ৪-৫ ঘণ্টা</span>
+  <span class="ac ac-g">📊 Mid Level</span>
+</div>
+<ul class="task-list">
+  <li><strong>Caching Design:</strong> একটি Instagram-like app এর জন্য caching strategy design করো। কোন data cache করবে (user profile, feed, stories)? কোন TTL দেবে? কোন eviction policy? Cache Stampede কীভাবে handle করবে? ৩০০ শব্দে লেখো।</li>
+  <li><strong>Load Balancer Config:</strong> ৫টা backend server (তিনটা powerful, দুটো normal) এর জন্য Nginx config লেখো। Powerful servers বেশি traffic পাবে। একটা server কে backup রাখো।</li>
+  <li><strong>Queue vs Stream Decision:</strong> নিচের প্রতিটার জন্য Queue বা Stream কোনটা use করবে এবং কেন: (ক) User signup করলে welcome email পাঠাও (খ) Payment transaction audit log রাখো (গ) Real-time dashboard এ order count দেখাও (ঘ) File upload হলে thumbnail generate করো।</li>
+  <li><strong>API Design Review:</strong> নিচের API গুলো review করো এবং কোনটা ভুল সেটা সঠিক করো: POST /deleteUser/123, GET /createProduct, PUT /users/updateName/456, GET /orders?userId=789।</li>
+  <li><strong>Sharding Plan:</strong> ১ বিলিয়ন user এর database sharding plan করো। কোন column এ shard করবে? কোন strategy (range/hash/geo)? Cross-shard query কীভাবে handle করবে?</li>
+</ul>
+<div class="deliver">
+  <div class="deliver-label">📦 Deliverables</div>
+  <ul>
+    <li>Caching strategy document (written)</li>
+    <li>Nginx config file</li>
+    <li>Queue/Stream decision table with reasons</li>
+    <li>Corrected API endpoints list</li>
+    <li>Sharding plan diagram + explanation</li>
+  </ul>
+</div>
+</div>
+
+<!-- Project -->
+<div class="project" id="project">
+<div class="proj-header">
+  <span style="font-size:24px">🚀</span>
+  <h2>Phase 2 — Hands-On Project</h2>
+</div>
+<div class="proj-body">
+<p style="font-size:14px;color:#94a3b8;margin-bottom:20px">Redis Caching এবং Message Queue দিয়ে একটা simple e-commerce order system বানাও।</p>
+<h3 style="font-family:'Fraunces',serif;font-size:18px;margin-bottom:16px;color:#f1f5f9">Mini Order Processing System</h3>
+<div class="steps">
+  <div class="step"><div class="step-circle">1</div><div class="step-content"><h4>Setup করো</h4><p>Docker Compose এ: FastAPI app, Redis, RabbitMQ বা Redis Streams।</p></div></div>
+  <div class="step"><div class="step-circle">2</div><div class="step-content"><h4>Product API</h4><p>GET /products এ Redis cache করো। Cache miss হলে DB থেকে আনো। TTL = 5 মিনিট।</p></div></div>
+  <div class="step"><div class="step-circle">3</div><div class="step-content"><h4>Order Placement</h4><p>POST /orders → order DB তে save → Queue তে message পাঠাও → "Order received" return করো।</p></div></div>
+  <div class="step"><div class="step-circle">4</div><div class="step-content"><h4>Order Processor</h4><p>Separate worker Queue থেকে order নেয়, payment simulate করে (sleep 2s), status update করে।</p></div></div>
+  <div class="step"><div class="step-circle">5</div><div class="step-content"><h4>Status Check</h4><p>GET /orders/123/status → Redis এ check করো। Cache miss হলে DB থেকে আনো।</p></div></div>
+  <div class="step"><div class="step-circle">6</div><div class="step-content"><h4>Load Test করো</h4><p>Apache Bench বা k6 দিয়ে test করো — cache আর queue ছাড়া vs সহ performance compare করো।</p></div></div>
+</div>
+<div class="ib ib-green" style="margin-top:20px"><div class="ib-label">🎯 Learning Outcome</div>
+এটা করলে দেখবে: Cache hit হলে response ~1ms, miss হলে ~50ms। Queue এর কারণে order placement fast হয়ে যায়। Worker async এ heavy processing করে। এটাই production system এর মূল pattern।
+</div>
+</div>
+</div>
+
+</div>
+</main>
+
+<script>
+window.addEventListener('scroll',()=>{const d=document.documentElement;const s=d.scrollTop||document.body.scrollTop;const h=d.scrollHeight-d.clientHeight;document.getElementById('pf').style.width=(s/h*100)+'%'});
+
+document.querySelectorAll('.option').forEach(o=>{
+  o.addEventListener('click',function(){
+    const b=this.closest('.qblock');
+    const qid=Array.from(document.querySelectorAll('.qblock')).indexOf(b);
+    if(this.closest('.mcq-section').dataset.answered?.split(',').includes(String(qid)))return;
+    const s=this.closest('.mcq-section');
+    const ans=s.dataset.answered||'';
+    s.dataset.answered=(ans?ans+',':'')+qid;
+    b.querySelectorAll('.option').forEach(x=>{
+      x.style.pointerEvents='none';
+      if(x.dataset.val===b.dataset.correct)x.classList.add('correct');
+      else if(x.dataset.val===this.dataset.val&&this.dataset.val!==b.dataset.correct)x.classList.add('wrong');
+    });
+    b.querySelector('.expl').classList.add('visible');
+  });
+});
+
+function checkMCQ(scoreId,resultId){
+  const blocks=document.querySelectorAll('.qblock');
+  let correct=0,answered=0;
+  blocks.forEach(b=>{
+    const opts=b.querySelectorAll('.option');
+    opts.forEach(o=>{
+      if(o.classList.contains('correct')&&(o.classList.contains('correct')&&!b.querySelector('.option.wrong')&&!b.querySelector('.option.correct:not([data-val="'+b.dataset.correct+'"])')||true)){
+        // check if user selected correct
+      }
+    });
+    const userCorrect=b.querySelector('.option.correct:not(.wrong)');
+    const userWrong=b.querySelector('.option.wrong');
+    if(userCorrect&&!userWrong)correct++;
+    if(b.querySelector('.option.correct')||b.querySelector('.option.wrong'))answered++;
+  });
+  // simpler approach
+  correct=0;
+  blocks.forEach(b=>{
+    const correctOpt=b.querySelector(`.option[data-val="${b.dataset.correct}"]`);
+    if(correctOpt&&correctOpt.classList.contains('correct')&&!b.querySelector('.option.wrong'))correct++;
+    else if(correctOpt&&correctOpt.classList.contains('correct'))correct++;
+  });
+  // count user selected correct
+  correct=0;
+  blocks.forEach(b=>{
+    const wrong=b.querySelector('.option.wrong');
+    if(!wrong&&b.querySelector('.option.correct'))correct++;
+  });
+  document.getElementById(scoreId).textContent=correct;
+  const r=document.getElementById(resultId);
+  r.classList.add('visible');
+  if(correct>=10){r.classList.add('pass');r.textContent=`🎉 দারুণ! ${correct}/15 সঠিক। Phase 3 এ যাও!`;}
+  else{r.classList.add('fail');r.textContent=`📖 ${correct}/15। ১০/১৫ পেলেই pass। আবার পড়ো এবং retry করো।`;}
+}
+document.querySelectorAll('.nav-item[href^="#"]').forEach(l=>{l.addEventListener('click',e=>{e.preventDefault();document.querySelector(l.getAttribute('href'))?.scrollIntoView({behavior:'smooth'})})});
+</script>
+</body>
+</html>

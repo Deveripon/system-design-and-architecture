@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Design Mastery Roadmap</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c14;
+    --surface: #0d1420;
+    --border: #1a2540;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #7c3aed;
+    --green: #00ff87;
+    --yellow: #ffd60a;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --card: #0f1a2e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans Bengali', 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .hero {
+    text-align: center;
+    padding: 60px 0 50px;
+    position: relative;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    border: 1px solid rgba(0,212,255,0.3);
+    padding: 4px 14px;
+    border-radius: 2px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    background: rgba(0,212,255,0.05);
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 6vw, 68px);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+
+  .hero-sub {
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 600px;
+    margin: 0 auto 30px;
+    line-height: 1.7;
+    font-family: 'Noto Sans Bengali', sans-serif;
+  }
+
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Phase sections */
+  .phase {
+    margin-bottom: 50px;
+  }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 18px 24px;
+    border-radius: 4px;
+    border-left: 3px solid;
+    cursor: pointer;
+    transition: background 0.2s;
+    user-select: none;
+  }
+
+  .phase-header:hover { background: rgba(255,255,255,0.03); }
+
+  .phase-1 .phase-header { border-color: var(--green); background: rgba(0,255,135,0.04); }
+  .phase-2 .phase-header { border-color: var(--accent); background: rgba(0,212,255,0.04); }
+  .phase-3 .phase-header { border-color: var(--accent2); background: rgba(255,107,53,0.04); }
+  .phase-4 .phase-header { border-color: var(--accent3); background: rgba(124,58,237,0.04); }
+  .phase-5 .phase-header { border-color: var(--yellow); background: rgba(255,214,10,0.04); }
+
+  .phase-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  .phase-1 .phase-num { background: rgba(0,255,135,0.15); color: var(--green); }
+  .phase-2 .phase-num { background: rgba(0,212,255,0.15); color: var(--accent); }
+  .phase-3 .phase-num { background: rgba(255,107,53,0.15); color: var(--accent2); }
+  .phase-4 .phase-num { background: rgba(124,58,237,0.15); color: #a78bfa; }
+  .phase-5 .phase-num { background: rgba(255,214,10,0.15); color: var(--yellow); }
+
+  .phase-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    flex: 1;
+  }
+
+  .phase-duration {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .phase-toggle {
+    font-size: 18px;
+    color: var(--muted);
+    transition: transform 0.3s;
+  }
+
+  .phase-toggle.open { transform: rotate(180deg); }
+
+  /* Topic cards grid */
+  .topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+    display: none;
+  }
+
+  .topics-grid.visible { display: grid; }
+
+  .topic-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px;
+    transition: border-color 0.2s, transform 0.2s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .topic-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .phase-1 .topic-card::before { background: var(--green); }
+  .phase-2 .topic-card::before { background: var(--accent); }
+  .phase-3 .topic-card::before { background: var(--accent2); }
+  .phase-4 .topic-card::before { background: var(--accent3); }
+  .phase-5 .topic-card::before { background: var(--yellow); }
+
+  .topic-card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-2px); }
+  .topic-card:hover::before { opacity: 1; }
+
+  .topic-card.expanded { border-color: rgba(255,255,255,0.2); }
+  .topic-card.expanded::before { opacity: 1; }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .card-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.3;
+    flex: 1;
+  }
+
+  .card-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.07);
+    color: var(--muted);
+    white-space: nowrap;
+    align-self: flex-start;
+  }
+
+  .card-summary {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 10px;
+    font-family: 'Noto Sans Bengali', sans-serif;
+  }
+
+  .card-details {
+    display: none;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .card-details.visible { display: block; }
+
+  .detail-section {
+    margin-bottom: 14px;
+  }
+
+  .detail-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .detail-content {
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.7;
+    font-family: 'Noto Sans Bengali', sans-serif;
+  }
+
+  .tools-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  .tool-chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 3px;
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.2);
+    color: var(--accent);
+  }
+
+  .tool-chip.orange {
+    background: rgba(255,107,53,0.08);
+    border-color: rgba(255,107,53,0.2);
+    color: var(--accent2);
+  }
+
+  .tool-chip.purple {
+    background: rgba(124,58,237,0.08);
+    border-color: rgba(124,58,237,0.2);
+    color: #a78bfa;
+  }
+
+  .tool-chip.green {
+    background: rgba(0,255,135,0.08);
+    border-color: rgba(0,255,135,0.2);
+    color: var(--green);
+  }
+
+  .use-cases {
+    list-style: none;
+    padding: 0;
+  }
+
+  .use-cases li {
+    font-size: 13px;
+    color: #94a3b8;
+    padding: 4px 0;
+    padding-left: 16px;
+    position: relative;
+    font-family: 'Noto Sans Bengali', sans-serif;
+    line-height: 1.6;
+  }
+
+  .use-cases li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .practice-steps {
+    counter-reset: steps;
+    list-style: none;
+    padding: 0;
+  }
+
+  .practice-steps li {
+    font-size: 13px;
+    color: #94a3b8;
+    padding: 5px 0 5px 28px;
+    position: relative;
+    font-family: 'Noto Sans Bengali', sans-serif;
+    line-height: 1.6;
+    counter-increment: steps;
+  }
+
+  .practice-steps li::before {
+    content: counter(steps);
+    position: absolute;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 5px;
+  }
+
+  /* Interview tips section */
+  .interview-section {
+    background: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(124,58,237,0.05));
+    border: 1px solid rgba(0,212,255,0.15);
+    border-radius: 8px;
+    padding: 30px;
+    margin: 50px 0;
+  }
+
+  .interview-section h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    color: var(--accent);
+  }
+
+  .interview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+  }
+
+  .interview-tip {
+    background: rgba(0,0,0,0.3);
+    border-radius: 4px;
+    padding: 14px;
+    border-left: 2px solid var(--accent3);
+  }
+
+  .interview-tip h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #a78bfa;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .interview-tip p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    font-family: 'Noto Sans Bengali', sans-serif;
+  }
+
+  /* Resources */
+  .resources-section {
+    margin-top: 50px;
+  }
+
+  .resources-section h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 20px;
+  }
+
+  .resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+
+  .resource-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px;
+  }
+
+  .resource-type {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent2);
+    margin-bottom: 6px;
+  }
+
+  .resource-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .resource-desc {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'Noto Sans Bengali', sans-serif;
+    line-height: 1.5;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 40px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  @media (max-width: 600px) {
+    .topics-grid { grid-template-columns: 1fr; }
+    .stats-row { gap: 20px; }
+    .interview-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-badge">15 Years Experience · Senior System Engineer</div>
+    <h1>System Design<br>Mastery Roadmap</h1>
+    <p class="hero-sub">একজন সিনিয়র সিস্টেম ইঞ্জিনিয়ারের অভিজ্ঞতা থেকে তৈরি — প্রতিটি টপিক, টুলস, ইউজ কেস এবং প্র্যাকটিস গাইড সহ।</p>
+    <div class="stats-row">
+      <div class="stat"><span class="stat-num">5</span><span class="stat-label">Phases</span></div>
+      <div class="stat"><span class="stat-num">30+</span><span class="stat-label">Topics</span></div>
+      <div class="stat"><span class="stat-num">50+</span><span class="stat-label">Tools</span></div>
+      <div class="stat"><span class="stat-num">6-12</span><span class="stat-label">মাস রোডম্যাপ</span></div>
+    </div>
+  </div>
+
+  <!-- PHASE 1 -->
+  <div class="phase phase-1">
+    <div class="phase-header" onclick="togglePhase(this)">
+      <span class="phase-num">Phase 01</span>
+      <span class="phase-title">Foundations — ভিত্তি তৈরি</span>
+      <span class="phase-duration">৪-৬ সপ্তাহ</span>
+      <span class="phase-toggle">▼</span>
+    </div>
+    <div class="topics-grid visible">
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">🔢</span>
+          <span class="card-title">Scalability Fundamentals</span>
+          <span class="card-tag">CORE</span>
+        </div>
+        <p class="card-summary">Vertical vs Horizontal Scaling, এর পার্থক্য, কখন কোনটা ব্যবহার করবে।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">কী শিখবে</div>
+            <div class="detail-content">Vertical scaling (বড় মেশিন) vs Horizontal scaling (বেশি মেশিন)। Load balancer দিয়ে ট্র্যাফিক ভাগ করা। Stateless vs Stateful আর্কিটেকচার।</div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Use Cases</div>
+            <ul class="use-cases">
+              <li>Startup stage: vertical scaling শুরু করো</li>
+              <li>১০ লক্ষ+ user হলে: horizontal scaling</li>
+              <li>Database bottleneck: vertical first</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Practice</div>
+            <ol class="practice-steps">
+              <li>একটি সিম্পল Node.js API বানাও</li>
+              <li>Nginx দিয়ে load balance করো</li>
+              <li>Multiple instances run করো</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">🌐</span>
+          <span class="card-title">Networking Basics for Engineers</span>
+          <span class="card-tag">CORE</span>
+        </div>
+        <p class="card-summary">TCP/IP, DNS, HTTP/HTTPS, WebSocket — সিস্টেম ডিজাইনের জন্য যা জানা মাস্ট।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">কী শিখবে</div>
+            <div class="detail-content">DNS resolution কীভাবে কাজ করে। TCP vs UDP কখন কোনটা। HTTP/2 vs HTTP/3 সুবিধা। WebSocket দিয়ে real-time communication।</div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Tools</div>
+            <div class="tools-list">
+              <span class="tool-chip">Wireshark</span>
+              <span class="tool-chip">curl</span>
+              <span class="tool-chip">dig/nslookup</span>
+              <span class="tool-chip green">Postman</span>
+            </div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Use Cases</div>
+            <ul class="use-cases">
+              <li>Chat app: WebSocket</li>
+              <li>Video stream: UDP/QUIC</li>
+              <li>REST API: HTTP/2</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">🗄️</span>
+          <span class="card-title">Database Fundamentals</span>
+          <span class="card-tag">CORE</span>
+        </div>
+        <p class="card-summary">SQL vs NoSQL, ACID properties, indexes, transactions — সবকিছু ক্লিয়ার করো।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">SQL vs NoSQL কখন কী</div>
+            <ul class="use-cases">
+              <li>Relational data (user, orders): PostgreSQL/MySQL</li>
+              <li>Unstructured/flexible: MongoDB</li>
+              <li>Key-value fast lookup: Redis</li>
+              <li>Time-series data: InfluxDB</li>
+              <li>Full-text search: Elasticsearch</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Tools</div>
+            <div class="tools-list">
+              <span class="tool-chip">PostgreSQL</span>
+              <span class="tool-chip orange">MongoDB</span>
+              <span class="tool-chip green">Redis</span>
+              <span class="tool-chip purple">Elasticsearch</span>
+            </div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Practice</div>
+            <ol class="practice-steps">
+              <li>E-commerce schema PostgreSQL এ ডিজাইন করো</li>
+              <li>Indexes ছাড়া vs সহ query performance তুলনা করো</li>
+              <li>MongoDB তে same data store করো</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">📦</span>
+          <span class="card-title">CAP Theorem & Consistency</span>
+          <span class="card-tag">THEORY</span>
+        </div>
+        <p class="card-summary">Consistency, Availability, Partition Tolerance — distributed system এর মূল ত্রিভুজ।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">CAP Triangle</div>
+            <div class="detail-content">তিনটার মধ্যে দুটো choose করতে হয়। CA: Traditional SQL। CP: HBase, Zookeeper। AP: Cassandra, DynamoDB। Eventual consistency vs Strong consistency — trade-off বোঝো।</div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Real Scenarios</div>
+            <ul class="use-cases">
+              <li>Bank transfer: Strong consistency (CP)</li>
+              <li>Social media likes: Eventual consistency (AP)</li>
+              <li>DNS: Eventual consistency</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="phase phase-2">
+    <div class="phase-header" onclick="togglePhase(this)">
+      <span class="phase-num">Phase 02</span>
+      <span class="phase-title">Core Components — মূল বিল্ডিং ব্লক</span>
+      <span class="phase-duration">৬-৮ সপ্তাহ</span>
+      <span class="phase-toggle">▼</span>
+    </div>
+    <div class="topics-grid visible">
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">⚡</span>
+          <span class="card-title">Caching Strategy</span>
+          <span class="card-tag">HIGH IMPACT</span>
+        </div>
+        <p class="card-summary">Cache এর সঠিক ব্যবহারে system ১০-১০০x ফাস্ট হয়। এটা না জানলে চলবে না।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">Cache Patterns</div>
+            <ul class="use-cases">
+              <li>Cache-Aside (Lazy loading): সবচেয়ে common</li>
+              <li>Write-Through: data loss কম, latency বেশি</li>
+              <li>Write-Back: fast write, data loss risk</li>
+              <li>Read-Through: cache layer handles DB</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Eviction Policies</div>
+            <div class="detail-content">LRU (Least Recently Used) — সবচেয়ে বেশি used। LFU (Least Frequently Used)। TTL (Time to Live) — expiry set করো।</div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Tools</div>
+            <div class="tools-list">
+              <span class="tool-chip green">Redis</span>
+              <span class="tool-chip">Memcached</span>
+              <span class="tool-chip orange">CDN (CloudFront)</span>
+              <span class="tool-chip purple">Varnish</span>
+            </div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Practice</div>
+            <ol class="practice-steps">
+              <li>Redis install করো, simple key-value করো</li>
+              <li>User profile cache করো TTL=1hr</li>
+              <li>Cache hit rate measure করো</li>
+              <li>Cache stampede কী সেটা handle করো</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">⚖️</span>
+          <span class="card-title">Load Balancing</span>
+          <span class="card-tag">HIGH IMPACT</span>
+        </div>
+        <p class="card-summary">Traffic কীভাবে distribute করবে — algorithms, health checks, sticky sessions।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">Algorithms</div>
+            <ul class="use-cases">
+              <li>Round Robin: সমান ট্র্যাফিক, simple</li>
+              <li>Least Connections: busy server কম load</li>
+              <li>IP Hash: same user → same server</li>
+              <li>Weighted: powerful server বেশি load</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">L4 vs L7</div>
+            <div class="detail-content">L4 (Transport): TCP/UDP level। L7 (Application): HTTP header/URL দেখে route করে। L7 বেশি intelligent কিন্তু overhead বেশি।</div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Tools</div>
+            <div class="tools-list">
+              <span class="tool-chip">Nginx</span>
+              <span class="tool-chip orange">HAProxy</span>
+              <span class="tool-chip green">AWS ALB/NLB</span>
+              <span class="tool-chip purple">Cloudflare</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">📨</span>
+          <span class="card-title">Message Queues & Event Streaming</span>
+          <span class="card-tag">MUST KNOW</span>
+        </div>
+        <p class="card-summary">Async communication, decoupling services — modern distributed system এর মেরুদণ্ড।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">Queue vs Stream</div>
+            <div class="detail-content">Queue (RabbitMQ): একবার consume হলে delete। Stream (Kafka): data retain করে, replay possible। Queue = task processing। Stream = event sourcing, analytics।</div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Use Cases</div>
+            <ul class="use-cases">
+              <li>Email/notification: RabbitMQ/SQS</li>
+              <li>Real-time analytics: Kafka</li>
+              <li>Order processing: SQS/RabbitMQ</li>
+              <li>Log aggregation: Kafka</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Tools</div>
+            <div class="tools-list">
+              <span class="tool-chip">Apache Kafka</span>
+              <span class="tool-chip orange">RabbitMQ</span>
+              <span class="tool-chip green">AWS SQS/SNS</span>
+              <span class="tool-chip purple">Redis Streams</span>
+            </div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Practice</div>
+            <ol class="practice-steps">
+              <li>Kafka local setup করো Docker দিয়ে</li>
+              <li>Producer → Consumer বানাও</li>
+              <li>Consumer group দিয়ে parallel processing করো</li>
+              <li>Dead letter queue implement করো</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">🔀</span>
+          <span class="card-title">API Design & Gateway</span>
+          <span class="card-tag">MUST KNOW</span>
+        </div>
+        <p class="card-summary">REST vs GraphQL vs gRPC, API versioning, rate limiting, API Gateway pattern।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">কখন কোনটা</div>
+            <ul class="use-cases">
+              <li>REST: সব general purpose API</li>
+              <li>GraphQL: flexible query, mobile apps</li>
+              <li>gRPC: internal service-to-service, low latency</li>
+              <li>WebSocket: real-time bidirectional</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">API Gateway Features</div>
+            <div class="detail-content">Authentication, Rate Limiting, SSL Termination, Request routing, Response transformation, Analytics/Logging।</div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Tools</div>
+            <div class="tools-list">
+              <span class="tool-chip green">Kong</span>
+              <span class="tool-chip">AWS API Gateway</span>
+              <span class="tool-chip orange">Nginx</span>
+              <span class="tool-chip purple">Traefik</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">💾</span>
+          <span class="card-title">Database Sharding & Replication</span>
+          <span class="card-tag">ADVANCED</span>
+        </div>
+        <p class="card-summary">Large-scale database management — horizontal partitioning এবং data redundancy।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">Sharding Strategies</div>
+            <ul class="use-cases">
+              <li>Range-based: user_id 1-1M → shard 1</li>
+              <li>Hash-based: consistent hashing</li>
+              <li>Directory-based: lookup table</li>
+              <li>Geo-based: region অনুযায়ী</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Replication</div>
+            <div class="detail-content">Master-Slave: write → master, read → slave। Master-Master: both write। Multi-region replication: latency কমাতে। Read replica দিয়ে read load handle করো।</div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Hotspot Problem</div>
+            <div class="detail-content">Consistent hashing দিয়ে hotspot avoid করো। Celebrity problem: viral user এর data একই shard এ → Virtual nodes ব্যবহার করো।</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">🗂️</span>
+          <span class="card-title">CDN & Object Storage</span>
+          <span class="card-tag">PRACTICAL</span>
+        </div>
+        <p class="card-summary">Static assets, images, videos globally fast serve করার জন্য। S3, CloudFront মাস্ট।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">CDN কীভাবে কাজ করে</div>
+            <div class="detail-content">Edge servers globally ছড়িয়ে থাকে। User কাছের edge থেকে content পায়। Origin server load কমে। Cache-Control headers দিয়ে TTL set করো।</div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Tools</div>
+            <div class="tools-list">
+              <span class="tool-chip orange">AWS S3</span>
+              <span class="tool-chip">CloudFront</span>
+              <span class="tool-chip green">Cloudflare</span>
+              <span class="tool-chip purple">MinIO (self-hosted)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PHASE 3 -->
+  <div class="phase phase-3">
+    <div class="phase-header" onclick="togglePhase(this)">
+      <span class="phase-num">Phase 03</span>
+      <span class="phase-title">Distributed Systems — উন্নত স্থাপত্য</span>
+      <span class="phase-duration">৬-৮ সপ্তাহ</span>
+      <span class="phase-toggle">▼</span>
+    </div>
+    <div class="topics-grid">
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">🧩</span>
+          <span class="card-title">Microservices Architecture</span>
+          <span class="card-tag">ARCHITECTURE</span>
+        </div>
+        <p class="card-summary">Monolith থেকে Microservices এ যাওয়ার পথ, trade-offs, service mesh।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">Monolith vs Microservices</div>
+            <ul class="use-cases">
+              <li>Startup: Monolith দিয়ে শুরু করো</li>
+              <li>১০০+ developers হলে: Microservices</li>
+              <li>Independent deploy দরকার: Microservices</li>
+              <li>Simple app: Monolith ভালো</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Service Communication</div>
+            <div class="detail-content">Synchronous: REST/gRPC — simple কিন্তু tight coupling। Asynchronous: Kafka/RabbitMQ — loose coupling, complex। Service mesh (Istio/Linkerd): service discovery, load balancing, mTLS।</div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Tools</div>
+            <div class="tools-list">
+              <span class="tool-chip">Docker</span>
+              <span class="tool-chip green">Kubernetes</span>
+              <span class="tool-chip orange">Istio</span>
+              <span class="tool-chip purple">Consul</span>
+            </div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Practice</div>
+            <ol class="practice-steps">
+              <li>ছোট e-commerce: user, product, order সার্ভিস বানাও</li>
+              <li>Docker Compose দিয়ে run করো</li>
+              <li>API Gateway দিয়ে route করো</li>
+              <li>Kubernetes তে deploy করো</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">🔒</span>
+          <span class="card-title">Distributed Consensus & Coordination</span>
+          <span class="card-tag">DEEP</span>
+        </div>
+        <p class="card-summary">Raft, Paxos, leader election — distributed system এ agreement কীভাবে হয়।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">Key Concepts</div>
+            <ul class="use-cases">
+              <li>Leader Election: Raft algorithm</li>
+              <li>Distributed Lock: Zookeeper/Redis</li>
+              <li>Consensus: সব node agree করা</li>
+              <li>Split-brain: network partition problem</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Tools</div>
+            <div class="tools-list">
+              <span class="tool-chip">Zookeeper</span>
+              <span class="tool-chip orange">etcd</span>
+              <span class="tool-chip green">Consul</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">🔄</span>
+          <span class="card-title">Circuit Breaker & Resilience</span>
+          <span class="card-tag">RELIABILITY</span>
+        </div>
+        <p class="card-summary">Cascading failures থামানো — Circuit Breaker, Retry, Timeout, Bulkhead patterns।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">Resilience Patterns</div>
+            <ul class="use-cases">
+              <li>Circuit Breaker: failed service isolate করো</li>
+              <li>Retry with Exponential Backoff</li>
+              <li>Timeout: hanging request kill করো</li>
+              <li>Bulkhead: resource pool isolate করো</li>
+              <li>Fallback: default response দাও</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Tools</div>
+            <div class="tools-list">
+              <span class="tool-chip">Resilience4j</span>
+              <span class="tool-chip orange">Hystrix (legacy)</span>
+              <span class="tool-chip green">Polly (.NET)</span>
+            </div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Netflix এর উদাহরণ</div>
+            <div class="detail-content">Recommendation service down হলেও homepage চলে। Circuit open হলে cached/default content দেখায়। Graceful degradation = user experience বাঁচানো।</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">🌊</span>
+          <span class="card-title">Rate Limiting & Throttling</span>
+          <span class="card-tag">SECURITY</span>
+        </div>
+        <p class="card-summary">DDoS protection, fair usage — Token Bucket, Leaky Bucket, Sliding Window algorithms।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">Algorithms</div>
+            <ul class="use-cases">
+              <li>Token Bucket: burst traffic allow করে</li>
+              <li>Leaky Bucket: steady rate enforce করে</li>
+              <li>Fixed Window Counter: simple কিন্তু edge case আছে</li>
+              <li>Sliding Window Log: সবচেয়ে accurate</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Implementation</div>
+            <div class="detail-content">Redis দিয়ে distributed rate limiting করো। API Gateway তে global limit। Per-user, per-IP, per-endpoint — granularity choose করো।</div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Tools</div>
+            <div class="tools-list">
+              <span class="tool-chip green">Redis + Lua</span>
+              <span class="tool-chip">Kong Rate Limiting</span>
+              <span class="tool-chip orange">Cloudflare WAF</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PHASE 4 -->
+  <div class="phase phase-4">
+    <div class="phase-header" onclick="togglePhase(this)">
+      <span class="phase-num">Phase 04</span>
+      <span class="phase-title">Real-World Systems — বাস্তব সিস্টেম ডিজাইন</span>
+      <span class="phase-duration">৬-৮ সপ্তাহ</span>
+      <span class="phase-toggle">▼</span>
+    </div>
+    <div class="topics-grid">
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">🐦</span>
+          <span class="card-title">Design Twitter/X</span>
+          <span class="card-tag">INTERVIEW FAV</span>
+        </div>
+        <p class="card-summary">১০০M+ user, tweets, timeline, notifications — সবচেয়ে popular system design interview question।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">Key Challenges</div>
+            <ul class="use-cases">
+              <li>Tweet fanout: follower এর timeline update</li>
+              <li>Celebrity problem: 100M follower এর tweet</li>
+              <li>Real-time notifications</li>
+              <li>Search functionality</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Architecture Decisions</div>
+            <div class="detail-content">Push model: tweet হলেই সব follower এর timeline update। Pull model: timeline load করার সময় query করো। Hybrid: celebrity → pull, normal user → push।</div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Stack</div>
+            <div class="tools-list">
+              <span class="tool-chip">Cassandra</span>
+              <span class="tool-chip green">Redis Cache</span>
+              <span class="tool-chip orange">Kafka</span>
+              <span class="tool-chip purple">Elasticsearch</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">🎬</span>
+          <span class="card-title">Design YouTube/Netflix</span>
+          <span class="card-tag">INTERVIEW FAV</span>
+        </div>
+        <p class="card-summary">Video upload, encoding, streaming, CDN — media system এর জটিলতা।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">Video Pipeline</div>
+            <ul class="use-cases">
+              <li>Upload → S3/GCS raw storage</li>
+              <li>Encoding: 360p, 720p, 1080p, 4K</li>
+              <li>CDN: globally distribute করো</li>
+              <li>Adaptive Bitrate (ABR): network speed অনুযায়ী</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Tools</div>
+            <div class="tools-list">
+              <span class="tool-chip orange">FFmpeg</span>
+              <span class="tool-chip">AWS S3 + CloudFront</span>
+              <span class="tool-chip green">Apache Kafka</span>
+              <span class="tool-chip purple">HLS/DASH</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">🔗</span>
+          <span class="card-title">Design URL Shortener (TinyURL)</span>
+          <span class="card-tag">BEGINNER FRIENDLY</span>
+        </div>
+        <p class="card-summary">Simple কিন্তু tricky — hash collision, redirect latency, analytics।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">Core Design</div>
+            <ul class="use-cases">
+              <li>Hash function: MD5/SHA256 → first 7 chars</li>
+              <li>Collision handling: retry with salt</li>
+              <li>Redis: hot URL cache করো</li>
+              <li>Analytics: click count, geo data</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Scale করলে</div>
+            <div class="detail-content">Snowflake ID / ZooKeeper counter দিয়ে unique ID generate করো। Base62 encoding করো। Database: Cassandra (write heavy)।</div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Practice</div>
+            <ol class="practice-steps">
+              <li>এটা implement করো (সহজ শুরু)</li>
+              <li>1 billion URL handle করতে কী করবে?</li>
+              <li>Analytics feature add করো</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">💬</span>
+          <span class="card-title">Design WhatsApp/Chat System</span>
+          <span class="card-tag">INTERVIEW FAV</span>
+        </div>
+        <p class="card-summary">Real-time messaging, message storage, group chat, delivery receipts।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">Architecture</div>
+            <ul class="use-cases">
+              <li>WebSocket: persistent connection</li>
+              <li>Message queue: offline user handling</li>
+              <li>Cassandra: message storage (time-series)</li>
+              <li>Presence service: online/offline status</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Delivery Receipts</div>
+            <div class="detail-content">Sent (✓) → Delivered (✓✓) → Read (✓✓ blue)। Message ID তৈরি করো। ACK mechanism implement করো।</div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">E2E Encryption</div>
+            <div class="detail-content">Signal Protocol ব্যবহার করো। Key exchange: Diffie-Hellman। Server never sees plaintext message।</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">🛒</span>
+          <span class="card-title">Design Amazon/E-commerce</span>
+          <span class="card-tag">COMPLEX</span>
+        </div>
+        <p class="card-summary">Product catalog, inventory, orders, payment, recommendation — পুরো e-commerce।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">Key Services</div>
+            <ul class="use-cases">
+              <li>Product Service: catalog, search</li>
+              <li>Inventory Service: stock management</li>
+              <li>Order Service: order lifecycle</li>
+              <li>Payment Service: transaction</li>
+              <li>Recommendation: ML-based</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Flash Sale Challenge</div>
+            <div class="detail-content">১০M user একসাথে ১টা product কিনতে আসলে কী করবে? Redis atomic operations, database lock, queue-based processing।</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">🔍</span>
+          <span class="card-title">Design Search Engine (Typeahead)</span>
+          <span class="card-tag">DATA INTENSIVE</span>
+        </div>
+        <p class="card-summary">Auto-complete, search ranking, indexing — Google Search এর পেছনের architecture।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">Typeahead Design</div>
+            <ul class="use-cases">
+              <li>Trie data structure: prefix matching</li>
+              <li>Cache: top-k suggestions pre-compute করো</li>
+              <li>Debounce: 300ms delay</li>
+              <li>CDN: region-specific suggestions</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Tools</div>
+            <div class="tools-list">
+              <span class="tool-chip purple">Elasticsearch</span>
+              <span class="tool-chip green">Redis</span>
+              <span class="tool-chip">Apache Solr</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PHASE 5 -->
+  <div class="phase phase-5">
+    <div class="phase-header" onclick="togglePhase(this)">
+      <span class="phase-num">Phase 05</span>
+      <span class="phase-title">Advanced Topics — Expert Level</span>
+      <span class="phase-duration">৪-৬ সপ্তাহ</span>
+      <span class="phase-toggle">▼</span>
+    </div>
+    <div class="topics-grid">
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">🔐</span>
+          <span class="card-title">Security in System Design</span>
+          <span class="card-tag">CRITICAL</span>
+        </div>
+        <p class="card-summary">Authentication, Authorization, Encryption, OWASP — secure system design।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">AuthN vs AuthZ</div>
+            <div class="detail-content">Authentication: তুমি কে? (JWT, OAuth2, SAML)। Authorization: তুমি কী করতে পারবে? (RBAC, ABAC)। Zero Trust: সবাইকে verify করো।</div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Must Know</div>
+            <ul class="use-cases">
+              <li>JWT: stateless auth token</li>
+              <li>OAuth2: third-party login</li>
+              <li>mTLS: service-to-service auth</li>
+              <li>Secret management: Vault, AWS Secrets Manager</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Tools</div>
+            <div class="tools-list">
+              <span class="tool-chip">HashiCorp Vault</span>
+              <span class="tool-chip orange">Keycloak</span>
+              <span class="tool-chip green">AWS IAM</span>
+              <span class="tool-chip purple">Auth0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">📊</span>
+          <span class="card-title">Observability: Logging, Metrics, Tracing</span>
+          <span class="card-tag">PRODUCTION</span>
+        </div>
+        <p class="card-summary">Distributed system এ কী হচ্ছে বোঝার জন্য — the 3 pillars of observability।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">3 Pillars</div>
+            <ul class="use-cases">
+              <li>Logs: কী হয়েছে (ELK Stack)</li>
+              <li>Metrics: কতটুকু হয়েছে (Prometheus + Grafana)</li>
+              <li>Traces: কোন পথে হয়েছে (Jaeger, Zipkin)</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Tools</div>
+            <div class="tools-list">
+              <span class="tool-chip">Prometheus</span>
+              <span class="tool-chip orange">Grafana</span>
+              <span class="tool-chip green">ELK Stack</span>
+              <span class="tool-chip purple">Jaeger</span>
+              <span class="tool-chip">Datadog</span>
+            </div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Practice</div>
+            <ol class="practice-steps">
+              <li>Docker Compose এ Prometheus + Grafana setup</li>
+              <li>Application metrics expose করো</li>
+              <li>Alert rules তৈরি করো</li>
+              <li>Distributed tracing add করো Jaeger দিয়ে</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">🚀</span>
+          <span class="card-title">Cloud Architecture & IaC</span>
+          <span class="card-tag">MODERN</span>
+        </div>
+        <p class="card-summary">AWS/GCP/Azure, serverless, Infrastructure as Code — modern deployment।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">When Serverless</div>
+            <ul class="use-cases">
+              <li>Event-driven: Lambda/Cloud Functions</li>
+              <li>Low traffic, cost optimize</li>
+              <li>Cold start acceptable হলে</li>
+              <li>Stateless processing</li>
+            </ul>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">IaC Tools</div>
+            <div class="tools-list">
+              <span class="tool-chip orange">Terraform</span>
+              <span class="tool-chip">AWS CDK</span>
+              <span class="tool-chip green">Pulumi</span>
+              <span class="tool-chip purple">Ansible</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="toggleCard(this)">
+        <div class="card-top">
+          <span class="card-icon">🔁</span>
+          <span class="card-title">Event-Driven & CQRS/Event Sourcing</span>
+          <span class="card-tag">ADVANCED</span>
+        </div>
+        <p class="card-summary">Command Query Responsibility Segregation, Event Sourcing — enterprise pattern।</p>
+        <div class="card-details">
+          <div class="detail-section">
+            <div class="detail-label">CQRS</div>
+            <div class="detail-content">Read এবং Write আলাদা model রাখো। Write: normalized DB (consistency)। Read: denormalized/cached (performance)। Complex domain এ খুব কার্যকর।</div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Event Sourcing</div>
+            <div class="detail-content">State save করো না, events save করো। State = events replay করার result। Audit trail free পাও। Time travel debugging possible।</div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-label">Use Cases</div>
+            <ul class="use-cases">
+              <li>Banking: transaction history</li>
+              <li>E-commerce: order state machine</li>
+              <li>Audit-heavy systems</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Interview Section -->
+  <div class="interview-section">
+    <h2>🎯 Interview এ System Design করার Framework</h2>
+    <div class="interview-grid">
+      <div class="interview-tip">
+        <h4>1. Requirements (5 min)</h4>
+        <p>Functional requirements কী? Non-functional: scale, latency, availability। Clarify করো, assume করো না।</p>
+      </div>
+      <div class="interview-tip">
+        <h4>2. Estimation (3 min)</h4>
+        <p>DAU, QPS, storage estimate করো। Back-of-envelope calculation। Read/Write ratio বলো।</p>
+      </div>
+      <div class="interview-tip">
+        <h4>3. High-Level Design (10 min)</h4>
+        <p>বড় components আঁকো। Client → LB → Services → DB। Data flow explain করো।</p>
+      </div>
+      <div class="interview-tip">
+        <h4>4. Deep Dive (15 min)</h4>
+        <p>Interviewer যেটায় focus করতে বলে সেটা detail এ বলো। Trade-offs discuss করো।</p>
+      </div>
+      <div class="interview-tip">
+        <h4>5. Scale করো</h4>
+        <p>Bottlenecks identify করো। Cache কোথায়? Sharding কোথায়? Async কোথায়?</p>
+      </div>
+      <div class="interview-tip">
+        <h4>6. Wrap Up</h4>
+        <p>Monitoring কীভাবে করবে? Failure scenarios কী? Further improvements কী কী?</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resources -->
+  <div class="resources-section">
+    <h2>📚 Best Resources</h2>
+    <div class="resources-grid">
+      <div class="resource-card">
+        <div class="resource-type">📖 Book</div>
+        <div class="resource-name">Designing Data-Intensive Applications</div>
+        <div class="resource-desc">Martin Kleppmann — সিস্টেম ডিজাইনের বাইবেল। অবশ্যই পড়তে হবে।</div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-type">📖 Book</div>
+        <div class="resource-name">System Design Interview Vol 1 & 2</div>
+        <div class="resource-desc">Alex Xu — Interview specific, practical diagrams সহ।</div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-type">🌐 Website</div>
+        <div class="resource-name">High Scalability Blog</div>
+        <div class="resource-desc">Real companies এর architecture teardown। Netflix, Uber, Airbnb কীভাবে build করেছে।</div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-type">🎥 YouTube</div>
+        <div class="resource-name">ByteByteGo Channel</div>
+        <div class="resource-desc">Alex Xu এর animations সহ system design। সবচেয়ে visual এবং clear।</div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-type">🖥️ GitHub</div>
+        <div class="resource-name">system-design-primer</div>
+        <div class="resource-desc">donalicata/system-design-primer — সব topics covered, free।</div>
+      </div>
+      <div class="resource-card">
+        <div class="resource-type">💻 Practice</div>
+        <div class="resource-name">Excalidraw + Draw.io</div>
+        <div class="resource-desc">Architecture diagram প্র্যাকটিসের জন্য। Mock interview দাও।</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>Built for System Design Mastery · Click any card to expand details · Click phase headers to collapse</footer>
+
+<script>
+  function togglePhase(header) {
+    const grid = header.nextElementSibling;
+    const toggle = header.querySelector('.phase-toggle');
+    grid.classList.toggle('visible');
+    toggle.classList.toggle('open');
+  }
+
+  function toggleCard(card) {
+    const details = card.querySelector('.card-details');
+    card.classList.toggle('expanded');
+    details.classList.toggle('visible');
+  }
+
+  // Initialize: phase 1 & 2 open, others closed
+  document.querySelectorAll('.phase-toggle').forEach((t, i) => {
+    if (i >= 2) t.classList.add('open');
+  });
+</script>
+</body>
+</html>

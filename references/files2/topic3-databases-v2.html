@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 1 · Topic 3 — Database Fundamentals</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root { --bg:#05080f; --surface:#090e1a; --card:#0c1220; --border:#162035; --border2:#1e2d4a; --accent:#3b82f6; --accent-glow:rgba(59,130,246,0.15); --green:#10b981; --green-glow:rgba(16,185,129,0.12); --orange:#f97316; --red:#ef4444; --yellow:#eab308; --purple:#8b5cf6; --text:#e2e8f0; --muted:#64748b; --muted2:#94a3b8; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:'Noto Sans Bengali',sans-serif; line-height:1.7; font-size:15px; }
+body::after { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events:none; z-index:999; opacity:0.4; }
+.sidebar { position:fixed; left:0; top:0; bottom:0; width:240px; background:var(--surface); border-right:1px solid var(--border); padding:24px 0; overflow-y:auto; z-index:100; }
+.sidebar-logo { padding:0 20px 20px; border-bottom:1px solid var(--border); margin-bottom:16px; }
+.sidebar-logo .phase-tag { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent); letter-spacing:2px; text-transform:uppercase; display:block; margin-bottom:4px; }
+.sidebar-logo .course-title { font-family:'Fraunces',serif; font-size:16px; font-weight:700; line-height:1.3; }
+.nav-section { padding:0 12px; margin-bottom:8px; }
+.nav-section-label { font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:2px; color:var(--muted); padding:0 8px; margin-bottom:6px; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:4px; font-size:13px; color:var(--muted2); cursor:pointer; transition:all 0.15s; text-decoration:none; }
+.nav-item:hover { background:var(--card); color:var(--text); }
+.nav-item.active { background:var(--accent-glow); color:var(--accent); }
+.nav-item .nav-icon { font-size:14px; flex-shrink:0; }
+.nav-item .nav-num { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); margin-left:auto; }
+.progress-bar { position:fixed; top:0; left:240px; right:0; height:2px; background:var(--border); z-index:200; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--green)); width:0%; transition:width 0.1s; }
+.main { margin-left:240px; min-height:100vh; }
+.content { max-width:780px; margin:0 auto; padding:48px 40px 120px; }
+.topic-header { margin-bottom:48px; }
+.breadcrumb { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+.breadcrumb span { color:var(--accent); }
+.topic-num { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-bottom:10px; display:block; }
+h1.topic-title { font-family:'Fraunces',serif; font-size:clamp(32px,5vw,48px); font-weight:900; line-height:1.1; margin-bottom:16px; background:linear-gradient(135deg,#fff 30%,#93c5fd); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.topic-meta { display:flex; gap:16px; flex-wrap:wrap; }
+.meta-chip { font-family:'JetBrains Mono',monospace; font-size:11px; padding:4px 12px; border-radius:2px; border:1px solid; }
+.meta-chip.time { border-color:rgba(59,130,246,0.3); color:var(--accent); background:var(--accent-glow); }
+.meta-chip.level { border-color:rgba(16,185,129,0.3); color:var(--green); background:var(--green-glow); }
+.meta-chip.type { border-color:rgba(139,92,246,0.3); color:var(--purple); background:rgba(139,92,246,0.08); }
+.section { margin-bottom:48px; scroll-margin-top:24px; }
+.section-label { font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:3px; color:var(--accent); margin-bottom:12px; display:flex; align-items:center; gap:10px; }
+.section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+h2.section-title { font-family:'Fraunces',serif; font-size:24px; font-weight:700; margin-bottom:16px; color:#f1f5f9; }
+h3.sub-title { font-family:'Fraunces',serif; font-size:18px; font-weight:700; margin:24px 0 10px; color:#cbd5e1; }
+p { margin-bottom:14px; color:#cbd5e1; }
+.info-box { border-radius:6px; padding:18px 20px; margin:20px 0; border-left:3px solid; font-size:14px; }
+.info-box.concept { background:rgba(59,130,246,0.06); border-color:var(--accent); }
+.info-box.warning { background:rgba(249,115,22,0.06); border-color:var(--orange); }
+.info-box.tip { background:rgba(16,185,129,0.06); border-color:var(--green); }
+.info-box.important { background:rgba(234,179,8,0.06); border-color:var(--yellow); }
+.info-box .box-label { font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px; font-weight:700; }
+.info-box.concept .box-label { color:var(--accent); }
+.info-box.warning .box-label { color:var(--orange); }
+.info-box.tip .box-label { color:var(--green); }
+.info-box.important .box-label { color:var(--yellow); }
+.compare-table { width:100%; border-collapse:collapse; margin:20px 0; font-size:13px; }
+.compare-table th { font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:1px; padding:12px 16px; text-align:left; background:var(--card); border-bottom:2px solid var(--border2); color:var(--muted2); }
+.compare-table td { padding:11px 16px; border-bottom:1px solid var(--border); color:#94a3b8; vertical-align:top; line-height:1.6; }
+.compare-table tr:hover td { background:rgba(255,255,255,0.02); }
+.compare-table td:first-child { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text); white-space:nowrap; }
+.tag-yes { color:var(--green); font-weight:600; }
+.tag-no { color:var(--red); }
+.tag-med { color:var(--yellow); }
+.diagram { background:var(--card); border:1px solid var(--border2); border-radius:8px; padding:30px 20px; margin:24px 0; text-align:center; font-family:'JetBrains Mono',monospace; font-size:12px; overflow-x:auto; }
+.diagram svg { max-width:100%; }
+.code-block { background:#030608; border:1px solid var(--border2); border-radius:6px; margin:20px 0; overflow:hidden; }
+.code-header { display:flex; align-items:center; justify-content:space-between; padding:10px 16px; background:var(--card); border-bottom:1px solid var(--border); }
+.code-lang { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent); text-transform:uppercase; letter-spacing:1px; }
+.code-file { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); }
+pre { padding:20px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.8; color:#e2e8f0; }
+.kw{color:#93c5fd;} .fn{color:#6ee7b7;} .str{color:#fcd34d;} .cm{color:#475569;font-style:italic;} .num{color:#f9a8d4;} .var{color:#e2e8f0;}
+.scenario-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:20px 0; }
+.scenario-card { background:var(--card); border:1px solid var(--border); border-radius:6px; padding:18px; }
+.scenario-card .s-title { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; }
+.scenario-card p { font-size:13px; color:var(--muted2); margin:0; }
+.mcq-section { background:var(--surface); border:1px solid var(--border2); border-radius:8px; padding:28px; margin:30px 0; }
+.mcq-header { display:flex; align-items:center; gap:12px; margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+.mcq-icon { font-size:24px; }
+.mcq-header h2 { font-family:'Fraunces',serif; font-size:20px; font-weight:700; }
+.mcq-score { margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--muted); }
+.mcq-score span { color:var(--accent); font-size:18px; font-weight:700; }
+.question-block { margin-bottom:28px; padding-bottom:28px; border-bottom:1px solid var(--border); }
+.question-block:last-of-type { border-bottom:none; margin-bottom:0; }
+.q-num { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+.q-text { font-size:15px; font-weight:600; color:var(--text); margin-bottom:14px; line-height:1.5; font-family:'Noto Sans Bengali',sans-serif; }
+.options { display:flex; flex-direction:column; gap:8px; }
+.option { display:flex; align-items:flex-start; gap:12px; padding:12px 14px; border-radius:4px; border:1px solid var(--border); cursor:pointer; transition:all 0.15s; font-size:14px; color:var(--muted2); font-family:'Noto Sans Bengali',sans-serif; }
+.option:hover { border-color:var(--accent); color:var(--text); background:var(--accent-glow); }
+.option.correct { border-color:var(--green); background:var(--green-glow); color:#6ee7b7; }
+.option.wrong { border-color:var(--red); background:rgba(239,68,68,0.08); color:#fca5a5; }
+.option-key { font-family:'JetBrains Mono',monospace; font-size:11px; background:var(--border2); padding:2px 7px; border-radius:2px; flex-shrink:0; margin-top:1px; }
+.explanation { display:none; margin-top:12px; padding:12px 14px; background:rgba(16,185,129,0.06); border-left:2px solid var(--green); border-radius:0 4px 4px 0; font-size:13px; color:#94a3b8; line-height:1.7; font-family:'Noto Sans Bengali',sans-serif; }
+.explanation.visible { display:block; }
+.explanation strong { color:var(--green); }
+.mcq-submit { display:inline-flex; align-items:center; gap:8px; margin-top:20px; padding:12px 24px; background:var(--accent); color:#fff; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; border:none; border-radius:4px; cursor:pointer; letter-spacing:1px; transition:all 0.15s; }
+.mcq-submit:hover { background:#2563eb; transform:translateY(-1px); }
+.result-banner { display:none; margin-top:20px; padding:16px 20px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; }
+.result-banner.visible { display:block; }
+.result-banner.pass { background:var(--green-glow); border:1px solid var(--green); color:var(--green); }
+.result-banner.fail { background:rgba(249,115,22,0.08); border:1px solid var(--orange); color:var(--orange); }
+.assignment-section { background:linear-gradient(135deg,rgba(59,130,246,0.04),rgba(139,92,246,0.04)); border:1px solid rgba(59,130,246,0.2); border-radius:8px; padding:28px; margin:30px 0; }
+.assignment-header { display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+.assignment-icon { font-size:28px; }
+.assignment-header h2 { font-family:'Fraunces',serif; font-size:22px; font-weight:700; }
+.assignment-meta { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+.a-chip { font-family:'JetBrains Mono',monospace; font-size:11px; padding:3px 10px; border-radius:2px; }
+.a-chip.time { background:rgba(234,179,8,0.1); color:var(--yellow); border:1px solid rgba(234,179,8,0.2); }
+.a-chip.level { background:rgba(16,185,129,0.1); color:var(--green); border:1px solid rgba(16,185,129,0.2); }
+.task-list { counter-reset:tasks; list-style:none; margin-bottom:20px; }
+.task-list li { counter-increment:tasks; padding:14px 14px 14px 50px; position:relative; border-bottom:1px solid var(--border); font-size:14px; color:var(--muted2); line-height:1.7; font-family:'Noto Sans Bengali',sans-serif; }
+.task-list li:last-child { border-bottom:none; }
+.task-list li::before { content:counter(tasks); position:absolute; left:14px; top:14px; width:24px; height:24px; background:var(--accent-glow); border:1px solid rgba(59,130,246,0.3); border-radius:3px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent); display:flex; align-items:center; justify-content:center; font-weight:700; }
+.task-list li strong { color:var(--text); }
+.deliverable-box { background:var(--card); border:1px solid var(--border2); border-radius:6px; padding:16px 18px; margin-top:16px; }
+.deliverable-box .d-label { font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--purple); margin-bottom:10px; }
+.deliverable-box ul { list-style:none; padding:0; }
+.deliverable-box ul li { font-size:13px; color:var(--muted2); padding:4px 0 4px 18px; position:relative; font-family:'Noto Sans Bengali',sans-serif; }
+.deliverable-box ul li::before { content:'◆'; position:absolute; left:0; font-size:8px; color:var(--purple); top:6px; }
+.project-section { background:var(--card); border:1px solid var(--border2); border-radius:8px; overflow:hidden; margin:30px 0; }
+.project-header { background:linear-gradient(90deg,rgba(16,185,129,0.1),transparent); padding:18px 24px; border-bottom:1px solid var(--border2); display:flex; align-items:center; gap:12px; }
+.project-header h2 { font-family:'Fraunces',serif; font-size:20px; font-weight:700; color:var(--green); }
+.project-body { padding:24px; }
+.step-flow { display:flex; flex-direction:column; gap:0; margin:16px 0; }
+.step-item { display:flex; gap:16px; padding-bottom:24px; position:relative; }
+.step-item:last-child { padding-bottom:0; }
+.step-item::before { content:''; position:absolute; left:15px; top:32px; bottom:0; width:1px; background:var(--border2); }
+.step-item:last-child::before { display:none; }
+.step-circle { width:32px; height:32px; border-radius:50%; background:var(--green-glow); border:2px solid var(--green); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:var(--green); flex-shrink:0; z-index:1; }
+.step-content { flex:1; }
+.step-content h4 { font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text); margin-bottom:4px; }
+.step-content p { font-size:13px; color:var(--muted2); margin:0; }
+.next-cta { display:flex; align-items:center; justify-content:space-between; background:var(--surface); border:1px solid var(--border2); border-radius:8px; padding:20px 24px; margin-top:48px; text-decoration:none; color:var(--text); transition:border-color 0.2s; }
+.next-cta:hover { border-color:var(--accent); }
+.next-label { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:4px; }
+.next-title { font-family:'Fraunces',serif; font-size:18px; font-weight:700; }
+.next-arrow { font-size:24px; color:var(--accent); }
+code { font-family:'JetBrains Mono',monospace; font-size:12px; background:var(--card); border:1px solid var(--border2); padding:1px 6px; border-radius:3px; color:#93c5fd; }
+@media (max-width:768px) { .sidebar{display:none;} .main{margin-left:0;} .content{padding:24px 16px 80px;} .scenario-grid{grid-template-columns:1fr;} .progress-bar{left:0;} }
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 01 · Foundations</span>
+    <div class="course-title">System Design<br>Mastery Course</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Phase 1 Topics</div>
+    <a href="#" class="nav-item"><span class="nav-icon">🔢</span><span>Scalability</span><span class="nav-num">01</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🌐</span><span>Networking</span><span class="nav-num">02</span></a>
+    <a href="#concept" class="nav-item active"><span class="nav-icon">🗄️</span><span>Databases</span><span class="nav-num">03</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">📦</span><span>CAP Theorem</span><span class="nav-num">04</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px">
+    <div class="nav-section-label">This Lesson</div>
+    <a href="#concept" class="nav-item"><span class="nav-icon">💡</span><span>Concept</span></a>
+    <a href="#sql-nosql" class="nav-item"><span class="nav-icon">⚔️</span><span>SQL vs NoSQL</span></a>
+    <a href="#acid" class="nav-item"><span class="nav-icon">⚗️</span><span>ACID Properties</span></a>
+    <a href="#indexing" class="nav-item"><span class="nav-icon">📑</span><span>Indexing</span></a>
+    <a href="#scaling" class="nav-item"><span class="nav-icon">🔀</span><span>Sharding &amp; Replication</span></a>
+    <a href="#realworld" class="nav-item"><span class="nav-icon">🏢</span><span>Real World</span></a>
+    <a href="#tools" class="nav-item"><span class="nav-icon">🔧</span><span>Tools Comparison</span></a>
+    <a href="#mcq" class="nav-item"><span class="nav-icon">✅</span><span>MCQ Test</span></a>
+    <a href="#assignment" class="nav-item"><span class="nav-icon">📝</span><span>Assignment</span></a>
+    <a href="#project" class="nav-item"><span class="nav-icon">🚀</span><span>Project Task</span></a>
+  </div>
+</nav>
+
+<main class="main">
+<div class="content">
+
+  <div class="topic-header" id="concept">
+    <div class="breadcrumb">Phase 1 — Foundations <span>›</span> Topic 03</div>
+    <span class="topic-num">TOPIC 03 / 04</span>
+    <h1 class="topic-title">Database<br>Fundamentals</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ ৯০-১২০ মিনিট</span>
+      <span class="meta-chip level">📊 Junior Level</span>
+      <span class="meta-chip type">🗄️ Data Storage</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Why It Matters</div>
+    <h2 class="section-title">Database কেন এত গুরুত্বপূর্ণ?</h2>
+    <p>একটা system এর performance এর ৮০% নির্ভর করে database design এর উপর। ভুল database choose করলে, index না দিলে, বা wrong schema করলে — ১০০ জন user এলেই সব crash করে।</p>
+    <p>Interview এ "Design Instagram" বললে — কোন database? SQL নাকি NoSQL? Photos কোথায়? Follow relationship কীভাবে? Feed কীভাবে fast? — সব database question। <em>Database choice ই system এর সবচেয়ে critical decision।</em></p>
+    <div class="info-box concept">
+      <div class="box-label">📌 Definition</div>
+      <strong>Database</strong> হলো organized data storage system। শুধু store নয় — efficiently retrieve, update, delete এবং manage করাই database এর কাজ। একই query milliseconds এ return করবে নাকি seconds এ — সেটা নির্ভর করে database design এর উপর।
+    </div>
+  </div>
+
+  <div class="section" id="sql-nosql">
+    <div class="section-label">SQL vs NoSQL</div>
+    <h2 class="section-title">SQL vs NoSQL — সবচেয়ে বড় decision</h2>
+    <p>প্রতিটি project এর শুরুতে এই decision নিতে হয়। কোনো একটা "সবসময় better" না — use case বুঝে decide করতে হয়।</p>
+
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">📊 SQL — Relational</div>
+        <p>Structured data, ACID transactions, complex JOINs। Fixed schema। Banking, e-commerce orders, user accounts এর জন্য best।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🌊 NoSQL — Non-Relational</div>
+        <p>Flexible schema, horizontal scaling, high throughput। Social feed, caching, IoT, product catalog এর জন্য best।</p>
+      </div>
+    </div>
+
+    <table class="compare-table">
+      <tr><th>বিষয়</th><th>SQL</th><th>NoSQL</th></tr>
+      <tr><td>Schema</td><td>Fixed (ALTER TABLE লাগে)</td><td class="tag-yes">Flexible (যেকোনো structure)</td></tr>
+      <tr><td>Scaling</td><td class="tag-med">Vertical (harder horizontal)</td><td class="tag-yes">Horizontal (সহজ)</td></tr>
+      <tr><td>ACID</td><td class="tag-yes">Full ACID support</td><td class="tag-med">Eventual consistency</td></tr>
+      <tr><td>JOIN</td><td class="tag-yes">Complex JOINs সহজ</td><td class="tag-no">JOIN কঠিন বা অসম্ভব</td></tr>
+      <tr><td>Query Language</td><td>Standard SQL (সব DB তে একই)</td><td>Database-specific API</td></tr>
+      <tr><td>Best For</td><td>Banking, Orders, Auth, Reporting</td><td>Feed, Cache, IoT, Search</td></tr>
+    </table>
+
+    <h3 class="sub-title">NoSQL এর ৪টি Type — কোনটা কী কাজে</h3>
+    <table class="compare-table">
+      <tr><th>Type</th><th>Database</th><th>Best For</th></tr>
+      <tr><td>Key-Value</td><td>Redis, DynamoDB</td><td>Caching, Sessions, Shopping cart, Rate limiting</td></tr>
+      <tr><td>Document</td><td>MongoDB, Firestore</td><td>User profiles, Product catalog, Blog posts</td></tr>
+      <tr><td>Column-family</td><td>Cassandra, HBase</td><td>Time-series, IoT sensor data, Analytics</td></tr>
+      <tr><td>Graph</td><td>Neo4j, Amazon Neptune</td><td>Social network, Fraud detection, Recommendation</td></tr>
+    </table>
+
+    <div class="info-box important">
+      <div class="box-label">🎯 Interview এ এটা বলো</div>
+      "আমি SQL দিয়ে শুরু করবো কারণ ACID guarantee এবং mature tooling। Data model unclear বা massive write scale দরকার হলে NoSQL consider করবো। Real production systems এ সাধারণত দুটোই use হয় — Polyglot Persistence।" এটাই industry standard answer।
+    </div>
+  </div>
+
+  <div class="section" id="acid">
+    <div class="section-label">ACID Properties</div>
+    <h2 class="section-title">ACID — Transaction এর ৪টি Guarantee</h2>
+    <p>ACID মানে Atomicity, Consistency, Isolation, Durability। Bank transfer ভাবো — টাকা একটা account থেকে কাটলে অবশ্যই অন্যটায় যোগ হতে হবে। এই guarantee দেয় ACID।</p>
+
+    <div class="diagram">
+      <svg width="560" height="170" viewBox="0 0 560 170">
+        <rect x="5" y="15" width="128" height="138" rx="5" fill="rgba(59,130,246,0.08)" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="69" y="52" text-anchor="middle" fill="#3b82f6" font-family="Fraunces,serif" font-size="36" font-weight="900">A</text>
+        <text x="69" y="72" text-anchor="middle" fill="#93c5fd" font-family="JetBrains Mono" font-size="9" font-weight="700">ATOMICITY</text>
+        <text x="69" y="92" text-anchor="middle" fill="#64748b" font-family="Noto Sans Bengali" font-size="10">All or Nothing</text>
+        <text x="69" y="110" text-anchor="middle" fill="#64748b" font-family="Noto Sans Bengali" font-size="10">সব হবে না হয়</text>
+        <text x="69" y="128" text-anchor="middle" fill="#64748b" font-family="Noto Sans Bengali" font-size="10">কিছুই না</text>
+
+        <rect x="143" y="15" width="128" height="138" rx="5" fill="rgba(16,185,129,0.08)" stroke="#10b981" stroke-width="1.5"/>
+        <text x="207" y="52" text-anchor="middle" fill="#10b981" font-family="Fraunces,serif" font-size="36" font-weight="900">C</text>
+        <text x="207" y="72" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" font-weight="700">CONSISTENCY</text>
+        <text x="207" y="92" text-anchor="middle" fill="#64748b" font-family="Noto Sans Bengali" font-size="10">Business rules</text>
+        <text x="207" y="110" text-anchor="middle" fill="#64748b" font-family="Noto Sans Bengali" font-size="10">সবসময় valid</text>
+        <text x="207" y="128" text-anchor="middle" fill="#64748b" font-family="Noto Sans Bengali" font-size="10">state maintain</text>
+
+        <rect x="281" y="15" width="128" height="138" rx="5" fill="rgba(139,92,246,0.08)" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="345" y="52" text-anchor="middle" fill="#8b5cf6" font-family="Fraunces,serif" font-size="36" font-weight="900">I</text>
+        <text x="345" y="72" text-anchor="middle" fill="#c4b5fd" font-family="JetBrains Mono" font-size="9" font-weight="700">ISOLATION</text>
+        <text x="345" y="92" text-anchor="middle" fill="#64748b" font-family="Noto Sans Bengali" font-size="10">Concurrent txn</text>
+        <text x="345" y="110" text-anchor="middle" fill="#64748b" font-family="Noto Sans Bengali" font-size="10">একে অন্যকে</text>
+        <text x="345" y="128" text-anchor="middle" fill="#64748b" font-family="Noto Sans Bengali" font-size="10">affect করে না</text>
+
+        <rect x="419" y="15" width="128" height="138" rx="5" fill="rgba(249,115,22,0.08)" stroke="#f97316" stroke-width="1.5"/>
+        <text x="483" y="52" text-anchor="middle" fill="#f97316" font-family="Fraunces,serif" font-size="36" font-weight="900">D</text>
+        <text x="483" y="72" text-anchor="middle" fill="#fdba74" font-family="JetBrains Mono" font-size="9" font-weight="700">DURABILITY</text>
+        <text x="483" y="92" text-anchor="middle" fill="#64748b" font-family="Noto Sans Bengali" font-size="10">Committed data</text>
+        <text x="483" y="110" text-anchor="middle" fill="#64748b" font-family="Noto Sans Bengali" font-size="10">crash এ হারাবে না</text>
+        <text x="483" y="128" text-anchor="middle" fill="#64748b" font-family="Noto Sans Bengali" font-size="10">(WAL log দিয়ে)</text>
+      </svg>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">SQL</span><span class="code-file">bank-transfer.sql</span></div>
+      <pre><span class="cm">-- Bank Transfer — ACID transaction এর classic example</span>
+<span class="kw">BEGIN</span> TRANSACTION;
+
+<span class="cm">-- Step 1: Sender থেকে টাকা কাটো</span>
+<span class="kw">UPDATE</span> accounts <span class="kw">SET</span> balance = balance - <span class="num">5000</span>
+<span class="kw">WHERE</span> account_id = <span class="num">101</span>;
+
+<span class="cm">-- Step 2: Balance negative হলে সব undo — Atomicity!</span>
+<span class="kw">IF</span> (<span class="kw">SELECT</span> balance <span class="kw">FROM</span> accounts <span class="kw">WHERE</span> account_id = <span class="num">101</span>) < <span class="num">0</span> <span class="kw">THEN</span>
+    <span class="kw">ROLLBACK</span>;  <span class="cm">-- দুটো UPDATE এর কোনোটাই হবে না</span>
+    <span class="fn">RAISE EXCEPTION</span> <span class="str">'Insufficient balance'</span>;
+<span class="kw">END IF</span>;
+
+<span class="cm">-- Step 3: Receiver এ টাকা যোগ করো</span>
+<span class="kw">UPDATE</span> accounts <span class="kw">SET</span> balance = balance + <span class="num">5000</span>
+<span class="kw">WHERE</span> account_id = <span class="num">202</span>;
+
+<span class="cm">-- Step 4: Audit log রাখো</span>
+<span class="kw">INSERT INTO</span> transfer_log (from_id, to_id, amount, created_at)
+<span class="kw">VALUES</span> (<span class="num">101</span>, <span class="num">202</span>, <span class="num">5000</span>, <span class="fn">NOW</span>());
+
+<span class="kw">COMMIT</span>;  <span class="cm">-- সব ঠিক থাকলে permanent save — Durability!</span></pre>
+    </div>
+  </div>
+
+  <div class="section" id="indexing">
+    <div class="section-label">Indexing</div>
+    <h2 class="section-title">Indexing — Database এর Superpower</h2>
+    <p>Index হলো book এর index page এর মতো। পুরো book না পড়ে সরাসরি page এ যাওয়া যায়। Database এ index না থাকলে প্রতিটি query তে পুরো table scan করতে হয় — ১০ লক্ষ row এ এটা অনেক slow।</p>
+
+    <div class="diagram">
+      <svg width="540" height="185" viewBox="0 0 540 185">
+        <defs>
+          <marker id="ga" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#10b981"/></marker>
+        </defs>
+        <!-- Without index left panel -->
+        <text x="120" y="18" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="11" font-weight="700">❌ WITHOUT INDEX</text>
+        <text x="120" y="33" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">O(n) — Full Table Scan</text>
+        <rect x="20" y="40" width="200" height="16" rx="2" fill="rgba(239,68,68,0.08)" stroke="rgba(239,68,68,0.2)"/>
+        <text x="120" y="52" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">Row 1: a@x.com — check... ✗</text>
+        <rect x="20" y="60" width="200" height="16" rx="2" fill="rgba(239,68,68,0.08)" stroke="rgba(239,68,68,0.2)"/>
+        <text x="120" y="72" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">Row 2: b@x.com — check... ✗</text>
+        <rect x="20" y="80" width="200" height="16" rx="2" fill="rgba(239,68,68,0.08)" stroke="rgba(239,68,68,0.2)"/>
+        <text x="120" y="92" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">Row 3: c@x.com — check... ✗</text>
+        <text x="120" y="114" text-anchor="middle" fill="#475569" font-family="JetBrains Mono" font-size="10">· · · 1,000,000 rows · · ·</text>
+        <text x="120" y="140" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="14" font-weight="700">~1 second 😱</text>
+        <!-- divider -->
+        <line x1="265" y1="10" x2="265" y2="175" stroke="#1e2d4a" stroke-width="1" stroke-dasharray="4,3"/>
+        <!-- With index right panel -->
+        <text x="400" y="18" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="11" font-weight="700">✅ WITH B-TREE INDEX</text>
+        <text x="400" y="33" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">O(log n) — Binary Search</text>
+        <rect x="348" y="40" width="104" height="24" rx="3" fill="rgba(16,185,129,0.1)" stroke="#10b981"/>
+        <text x="400" y="56" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9">B-Tree Root</text>
+        <path d="M 375 64 L 348 88" stroke="#10b981" stroke-width="1" marker-end="url(#ga)"/>
+        <path d="M 425 64 L 452 88" stroke="#10b981" stroke-width="1" marker-end="url(#ga)"/>
+        <rect x="316" y="88" width="64" height="20" rx="2" fill="rgba(16,185,129,0.07)" stroke="rgba(16,185,129,0.3)"/>
+        <text x="348" y="102" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="8">a-m branch</text>
+        <rect x="424" y="88" width="64" height="20" rx="2" fill="rgba(16,185,129,0.07)" stroke="rgba(16,185,129,0.3)"/>
+        <text x="456" y="102" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="8">n-z branch</text>
+        <path d="M 348 108 L 348 128" stroke="#10b981" stroke-width="1" marker-end="url(#ga)"/>
+        <rect x="306" y="128" width="84" height="22" rx="3" fill="rgba(16,185,129,0.15)" stroke="#10b981" stroke-width="2"/>
+        <text x="348" y="143" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9">abc@mail ✓ FOUND</text>
+        <text x="400" y="174" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="14" font-weight="700">~1ms ⚡ (1000x faster!)</text>
+      </svg>
+    </div>
+
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">✅ Index দাও যখন</div>
+        <p>WHERE clause এ frequently query হয়। High cardinality column (email, phone)। Foreign key columns। Read-heavy workload।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">❌ Index এড়াও যখন</div>
+        <p>Write-heavy table (INSERT/UPDATE slow হয়)। ১০০০ row এর কম small table। Low cardinality (true/false, status)। Rarely queried columns।</p>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">SQL</span><span class="code-file">indexing-examples.sql</span></div>
+      <pre><span class="cm">-- 1. Basic index — single column</span>
+<span class="kw">CREATE INDEX</span> idx_users_email <span class="kw">ON</span> users(email);
+
+<span class="cm">-- 2. Composite index — দুটো column একসাথে filter করলে</span>
+<span class="cm">--    WHERE email = ? AND created_at > ?</span>
+<span class="kw">CREATE INDEX</span> idx_users_email_date <span class="kw">ON</span> users(email, created_at);
+
+<span class="cm">-- 3. Partial index — শুধু active users (ছোট এবং fast)</span>
+<span class="kw">CREATE INDEX</span> idx_active_users <span class="kw">ON</span> users(email) <span class="kw">WHERE</span> status = <span class="str">'active'</span>;
+
+<span class="cm">-- 4. Query plan দেখো — index use হচ্ছে কি?</span>
+<span class="fn">EXPLAIN ANALYZE</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> users <span class="kw">WHERE</span> email = <span class="str">'test@example.com'</span>;
+<span class="cm">-- "Index Scan" → ভালো ✅  |  "Seq Scan" → index নেই ⚠️</span>
+
+<span class="cm">-- N+1 Problem fix — JOIN দিয়ে single query</span>
+<span class="cm">-- ❌ BAD: 100 users এর জন্য 100টা আলাদা query</span>
+<span class="cm">-- ✅ GOOD: একটা JOIN query</span>
+<span class="kw">SELECT</span> u.name, COUNT(p.id) <span class="kw">as</span> post_count
+<span class="kw">FROM</span> users u
+<span class="kw">LEFT JOIN</span> posts p <span class="kw">ON</span> p.user_id = u.id
+<span class="kw">GROUP BY</span> u.id;</pre>
+    </div>
+  </div>
+
+  <div class="section" id="scaling">
+    <div class="section-label">Database Scaling</div>
+    <h2 class="section-title">Sharding এবং Replication</h2>
+
+    <h3 class="sub-title">Read Replica — Read Load কমাও</h3>
+    <p>সব database operation এর ৮০-৯০% হলো READ। Primary database এর copy (Replica) রাখো — Read requests Replica তে পাঠাও। Primary শুধু Write handle করবে। এভাবে Primary এর load অনেক কমে।</p>
+
+    <div class="diagram">
+      <svg width="480" height="145" viewBox="0 0 480 145">
+        <defs>
+          <marker id="ra" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#3b82f6"/></marker>
+          <marker id="rb" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#f97316"/></marker>
+          <marker id="rc" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#10b981"/></marker>
+        </defs>
+        <rect x="10" y="52" width="90" height="34" rx="3" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="55" y="68" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">App</text>
+        <text x="55" y="80" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">Server</text>
+        <path d="M 102 58 L 162 38" stroke="#f97316" stroke-width="1.5" marker-end="url(#rb)"/>
+        <text x="127" y="40" fill="#f97316" font-family="JetBrains Mono" font-size="8">WRITE</text>
+        <path d="M 102 75 L 162 95" stroke="#10b981" stroke-width="1.5" marker-end="url(#rc)"/>
+        <text x="112" y="94" fill="#10b981" font-family="JetBrains Mono" font-size="8">READ</text>
+        <rect x="164" y="22" width="100" height="34" rx="3" fill="#0c1220" stroke="#f97316" stroke-width="1.5"/>
+        <text x="214" y="37" text-anchor="middle" fill="#fdba74" font-family="JetBrains Mono" font-size="9">PRIMARY</text>
+        <text x="214" y="50" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Write here</text>
+        <rect x="164" y="78" width="100" height="32" rx="3" fill="#0c1220" stroke="#10b981"/>
+        <text x="214" y="93" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9">REPLICA 1</text>
+        <text x="214" y="104" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Read only</text>
+        <rect x="164" y="117" width="100" height="24" rx="3" fill="#0c1220" stroke="#10b981" stroke-width="0.8"/>
+        <text x="214" y="133" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="8">REPLICA 2 (Read)</text>
+        <path d="M 266 39 L 340 50" stroke="#3b82f6" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#ra)"/>
+        <path d="M 266 39 L 340 125" stroke="#3b82f6" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#ra)"/>
+        <text x="350" y="45" fill="#3b82f6" font-family="JetBrains Mono" font-size="8">async replication</text>
+        <text x="350" y="60" fill="#64748b" font-family="JetBrains Mono" font-size="8">→ Replica 1 synced</text>
+        <text x="350" y="128" fill="#64748b" font-family="JetBrains Mono" font-size="8">→ Replica 2 synced</text>
+      </svg>
+    </div>
+
+    <h3 class="sub-title">Sharding — Write Load ভাগ করো</h3>
+    <p>একটা বড় table কে multiple databases এ ভাগ করা। User ID 1-1M → DB1, 1M-2M → DB2। প্রতিটি shard আলাদাভাবে serve করতে পারে।</p>
+
+    <table class="compare-table">
+      <tr><th>Approach</th><th>কীভাবে কাজ করে</th><th>কখন ব্যবহার করো</th></tr>
+      <tr><td>Read Replica</td><td>Primary → Replica async sync। Read → Replica</td><td>Read-heavy app (80%+ read)</td></tr>
+      <tr><td>Vertical Sharding</td><td>আলাদা table → আলাদা DB (users DB, orders DB)</td><td>Microservices separation</td></tr>
+      <tr><td>Horizontal Sharding</td><td>একই table rows ভাগ করে multiple DB তে</td><td>Billions of rows, write scale</td></tr>
+    </table>
+
+    <div class="info-box warning">
+      <div class="box-label">⚠️ Sharding এর সমস্যা</div>
+      Cross-shard JOIN কঠিন — User A Shard 1 এ, User B Shard 3 এ, এদের data JOIN করতে application layer এ করতে হয়। Resharding complex। Hotspot shard হতে পারে। তাই Sharding সবচেয়ে শেষে করো — আগে Read Replica, Caching, Query optimization দিয়ে দেখো।
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Node.js</span><span class="code-file">db-pool-cache.js</span></div>
+      <pre><span class="kw">const</span> { Pool } = <span class="fn">require</span>(<span class="str">'pg'</span>);
+<span class="kw">const</span> redis = <span class="fn">require</span>(<span class="str">'redis'</span>);
+
+<span class="cm">// Connection Pool — connection বারবার create করা expensive!</span>
+<span class="kw">const</span> primaryDB = <span class="kw">new</span> Pool({ host: <span class="str">'primary-db'</span>, max: <span class="num">20</span> });
+<span class="kw">const</span> replicaDB = <span class="kw">new</span> Pool({ host: <span class="str">'replica-db'</span>, max: <span class="num">40</span> });
+<span class="kw">const</span> cache = redis.<span class="fn">createClient</span>();
+
+<span class="cm">// Cache-aside Pattern — সবচেয়ে common caching strategy</span>
+<span class="kw">async function</span> <span class="fn">getUser</span>(userId) {
+  <span class="kw">const</span> cacheKey = `user:${userId}`;
+
+  <span class="cm">// 1. Cache check করো</span>
+  <span class="kw">const</span> cached = <span class="kw">await</span> cache.<span class="fn">get</span>(cacheKey);
+  <span class="kw">if</span> (cached) <span class="kw">return</span> JSON.<span class="fn">parse</span>(cached);  <span class="cm">// Cache HIT ✅</span>
+
+  <span class="cm">// 2. Cache miss — Replica থেকে read (Primary এ load দিও না)</span>
+  <span class="kw">const</span> result = <span class="kw">await</span> replicaDB.<span class="fn">query</span>(
+    <span class="str">'SELECT * FROM users WHERE id = $1'</span>, [userId]
+  );
+  <span class="kw">const</span> user = result.rows[<span class="num">0</span>];
+
+  <span class="cm">// 3. Cache এ store করো (TTL: 1 hour)</span>
+  <span class="kw">await</span> cache.<span class="fn">setEx</span>(cacheKey, <span class="num">3600</span>, JSON.<span class="fn">stringify</span>(user));
+
+  <span class="kw">return</span> user;
+}
+
+<span class="cm">// Write — Primary তে</span>
+<span class="kw">async function</span> <span class="fn">updateUser</span>(userId, data) {
+  <span class="kw">await</span> primaryDB.<span class="fn">query</span>(<span class="str">'UPDATE users SET name=$1 WHERE id=$2'</span>, [data.name, userId]);
+  <span class="kw">await</span> cache.<span class="fn">del</span>(`user:${userId}`);  <span class="cm">// Cache invalidate করো!</span>
+}</pre>
+    </div>
+  </div>
+
+  <div class="section" id="realworld">
+    <div class="section-label">Real World Examples</div>
+    <h2 class="section-title">বড় কোম্পানিগুলো কীভাবে করেছে</h2>
+
+    <h3 class="sub-title">📱 Instagram এর Database Journey</h3>
+    <p>Instagram শুরু করেছিল PostgreSQL দিয়ে। User base ১০M থেকে ১B+ হওয়ার সময় PostgreSQL শarding করে। User ID based consistent hashing দিয়ে ১০০০+ shards। Photos (media files) আলাদাভাবে S3 (object storage) তে রাখে — database তে শুধু metadata। Django ORM এর উপরে custom sharding layer।</p>
+
+    <h3 class="sub-title">🏦 bKash / Banking — ACID Critical</h3>
+    <p>Financial systems এ SQL database অপরিহার্য। Transaction isolation level "SERIALIZABLE" রাখতে হয়। Double-spending prevent করতে database-level locks। Audit log সব transactions এর। Strong consistency mandatory — কোনো eventual consistency চলবে না।</p>
+
+    <div class="info-box tip">
+      <div class="box-label">💡 Polyglot Persistence</div>
+      Real production systems এ এক ধরনের database দিয়ে সব হয় না। Instagram: PostgreSQL (users/follow) + Cassandra (activity feed) + Redis (session/cache) + S3 (photos)। প্রতিটির আলাদা strength কে কাজে লাগানো হয়। এটাই Polyglot Persistence।
+    </div>
+  </div>
+
+  <div class="section" id="tools">
+    <div class="section-label">Tools Comparison</div>
+    <h2 class="section-title">Database Tools — কোনটা কখন ব্যবহার করবে</h2>
+    <table class="compare-table">
+      <tr><th>Database</th><th>Type</th><th>ACID</th><th>Scale</th><th>Best For</th></tr>
+      <tr><td>PostgreSQL</td><td>SQL</td><td class="tag-yes">✅ Full</td><td>Vertical + Read Replica</td><td>Complex queries, JSON, GIS</td></tr>
+      <tr><td>MySQL</td><td>SQL</td><td class="tag-yes">✅ Full</td><td>Master-slave replication</td><td>Web apps, E-commerce</td></tr>
+      <tr><td>MongoDB</td><td>Document NoSQL</td><td class="tag-med">⚠️ Partial</td><td>Horizontal sharding</td><td>Flexible schema, JSON docs</td></tr>
+      <tr><td>Redis</td><td>Key-Value NoSQL</td><td class="tag-no">❌ No</td><td>Cluster mode</td><td>Caching, Sessions, Pub/Sub</td></tr>
+      <tr><td>Cassandra</td><td>Column NoSQL</td><td class="tag-med">⚠️ Eventual</td><td>Linear horizontal</td><td>Time-series, IoT, High write</td></tr>
+      <tr><td>DynamoDB</td><td>Document/KV NoSQL</td><td class="tag-med">⚠️ Configurable</td><td>Managed, infinite</td><td>Serverless, Auto-scaling</td></tr>
+    </table>
+  </div>
+
+  <!-- MCQ -->
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🧪</span>
+      <h2>MCQ Test</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">ACID এ "I" — Isolation মানে কি?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Index optimization</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Data integrity maintenance</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Concurrent transactions একে অন্যকে affect করে না</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Data encryption</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Isolation মানে প্রতিটি transaction মনে করে সে একা কাজ করছে। দুটো transaction একই account এ simultaneously কাজ করলেও একটা অন্যটার dirty data দেখবে না। Race condition prevent করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">Database Index এর internal data structure সাধারণত কোনটি?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Linked List</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> B-Tree (Balanced Tree)</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Stack</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Array</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — বেশিরভাগ databases B-Tree বা B+Tree use করে। Balanced tree তে O(log n) search, insert, delete। ১ million rows এ মাত্র ~20 comparisons লাগে। Leaf nodes এ actual data pointer থাকে।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">Read Replica এর primary use কি?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Read queries distribute করে Primary এর load কমানো</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Write performance বাড়ানো</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Data sharding করা</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Schema migration করা</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — ৮০-৯০% database operations হলো READ। Read replicas দিয়ে এই load distribute করা যায়। Write Primary তে যায়, async এ Replicas তে sync হয়। Primary এর CPU/IO load অনেক কমে।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">N+1 Query Problem কি এবং কীভাবে fix করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Database crash হওয়া — connection pool বাড়িয়ে fix করো</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Schema design এর সমস্যা — Sharding করো</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Index না থাকা — Index যোগ করো</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> 100 user এর জন্য 100টা আলাদা query — JOIN বা eager loading দিয়ে fix করো</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — N+1: প্রথমে N users fetch করো, তারপর প্রতিটির জন্য আলাদা query। ১০০ users মানে ১০১ queries! Fix: একটাই JOIN query ব্যবহার করো, অথবা ORM এ eager loading (include/populate)।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">Redis কোন type এর database?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Relational database</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Document database</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> In-memory Key-Value store</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Graph database</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Redis = Remote Dictionary Server। Memory তে data store করে বলে microseconds এ respond করে। Caching, Sessions, Leaderboards, Pub/Sub এর জন্য perfect। Disk এ backup রাখতে পারে (RDB/AOF) but primarily in-memory।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">Connection Pool কেন দরকার?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Database encrypt করতে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> নতুন DB connection create করা expensive — pool এ reuse করা হয়</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Multiple databases শুধুমাত্র একসাথে query করতে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Automatic sharding করতে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — DB connection create করা expensive (~50-100ms, TCP handshake + auth)। Pool এ pre-created connections থাকে। Request আসলে pool থেকে নেয়, শেষে return করে। Max pool size = CPU cores × 2-4 হলে good practice।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">SQL Injection prevent করার সবচেয়ে effective way কোনটি?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> HTTPS ব্যবহার করা</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Password hashing করা</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Input এর length validate করা</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Parameterized queries / Prepared statements ব্যবহার করা</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Parameterized queries তে SQL code এবং data আলাদা থাকে। User input কখনো SQL code হিসেবে treat হয় না। ORM ব্যবহার করলেও automatically parameterized হয়। String concatenation দিয়ে query build করা সবচেয়ে dangerous।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">Denormalization কখন করা উচিত?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Read-heavy workload এ JOIN কমিয়ে query performance improve করতে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> সবসময়, কারণ data সহজে পাওয়া যায়</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Write-heavy workload এ</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Storage বাঁচাতে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Normalization = কম redundancy, data integrity। Denormalization = JOIN কমানো, read speed বাড়ানো (redundancy ইচ্ছাকৃতভাবে রাখা)। Analytics, reporting, read-heavy apps এ beneficial। Write-heavy এ unnecessary কারণ update করতে বেশি জায়গায় change করতে হয়।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">Sharding এর সবচেয়ে বড় challenge কোনটি?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Read performance কমে যায়</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Index কাজ করে না</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Cross-shard JOIN কঠিন এবং expensive</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Backup নেওয়া যায় না</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Sharding এর সবচেয়ে বড় challenge হলো cross-shard operations। User A Shard 1 এ, User B Shard 3 এ — তাদের data JOIN করতে application layer এ manually করতে হয়, যেটা complex এবং slow।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">Cache-aside pattern কীভাবে কাজ করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> সব data সবসময় cache এ রাখো, DB use করো না</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> প্রথমে cache check করো, miss হলে DB থেকে নিয়ে cache এ store করো</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Write করার সাথে সাথে cache update করো</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Cache এবং DB কে synchronously update করো</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Cache-aside (Lazy loading): Read → Cache check → Hit? Return। Miss? → DB query → Cache store → Return। Write → DB update → Cache delete (invalidate)। সবচেয়ে common pattern। Simple এবং effective।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT &amp; CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <!-- Assignment -->
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ৩-৪ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <p style="margin-bottom:16px; font-size:14px; color:#94a3b8;">নিচের tasks গুলো complete করো। Database concepts practically বোঝার জন্য এগুলো essential।</p>
+    <ul class="task-list">
+      <li>
+        <strong>Index Benchmark:</strong> PostgreSQL এ ১ million fake user insert করো (pgbench বা faker.js দিয়ে)। <code>email</code> column এ index ছাড়া এবং index সহ query time measure করো (<code>EXPLAIN ANALYZE</code> ব্যবহার করো)। Before/after comparison report লেখো।
+      </li>
+      <li>
+        <strong>ACID Transaction:</strong> Node.js দিয়ে একটা Bank Transfer system তৈরি করো। BEGIN/COMMIT/ROLLBACK দিয়ে transaction implement করো। Insufficient balance এর scenario test করো। Concurrent transfers এ race condition আছে কিনা দেখো।
+      </li>
+      <li>
+        <strong>Database Choice Justification:</strong> নিচের ৫টি systems এর জন্য কোন database choose করবে এবং কেন — লেখো: (ক) bKash mobile banking (খ) Facebook post feed (গ) Uber driver real-time location (ঘ) Amazon product catalog (ঙ) Stack Overflow Q&amp;A।
+      </li>
+      <li>
+        <strong>Redis Caching:</strong> একটা Express API তে Redis caching যোগ করো। Cache hit/miss count track করো। User update হলে cache invalidate করো। Before/after response time compare করো।
+      </li>
+      <li>
+        <strong>Query Optimization:</strong> এই slow query optimize করো: "Get top 10 users by total order amount in last 30 days from Dhaka"। EXPLAIN ANALYZE দিয়ে before/after দেখো। Index strategy explain করো।
+      </li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>Index benchmark result (before/after EXPLAIN ANALYZE screenshot)</li>
+        <li>Bank Transfer code সহ ACID behavior demonstration</li>
+        <li>Database choice justification (written)</li>
+        <li>Redis caching implementation সহ performance comparison</li>
+        <li>Query optimization report</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project -->
+  <div class="project-section" id="project">
+    <div class="project-header">
+      <span style="font-size:24px">🚀</span>
+      <h2>Hands-On Project Task</h2>
+    </div>
+    <div class="project-body">
+      <p style="font-size:14px; color:#94a3b8; margin-bottom:20px;">Multi-database E-commerce Backend তৈরি করো — PostgreSQL + Redis + MongoDB একসাথে।</p>
+
+      <h3 style="font-family:'Fraunces',serif; font-size:18px; margin-bottom:16px; color:#f1f5f9;">Polyglot Persistence Mini E-commerce</h3>
+      <p style="font-size:14px; color:#94a3b8; margin-bottom:20px;">PostgreSQL (users, orders), Redis (cart, cache), MongoDB (products) — তিনটা database একটা project এ ব্যবহার করো এবং practically বোঝো কেন আলাদা।</p>
+
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-circle">1</div>
+          <div class="step-content">
+            <h4>Docker Compose Setup</h4>
+            <p>PostgreSQL, MongoDB, Redis — তিনটা service একসাথে <code>docker-compose up</code> দিয়ে চালাও।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">2</div>
+          <div class="step-content">
+            <h4>PostgreSQL — Users &amp; Orders</h4>
+            <p>users, orders, order_items tables তৈরি করো। ACID transaction দিয়ে order place করো। Index যোগ করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">3</div>
+          <div class="step-content">
+            <h4>MongoDB — Products</h4>
+            <p>Products collection তৈরি করো — flexible schema (Phone আলাদা attributes, T-shirt আলাদা)। Full-text search test করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">4</div>
+          <div class="step-content">
+            <h4>Redis — Shopping Cart</h4>
+            <p>HASH দিয়ে cart implement করো। TTL = 1 hour। Cart add/remove/view API বানাও।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">5</div>
+          <div class="step-content">
+            <h4>Checkout Flow</h4>
+            <p>Redis cart → PostgreSQL ACID transaction এ order create। Cart clear করো। Stock update করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">6</div>
+          <div class="step-content">
+            <h4>Measure করো</h4>
+            <p>Redis cache সহ এবং ছাড়া response time compare করো। Index সহ এবং ছাড়া query time দেখো।</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block" style="margin-top:20px">
+        <div class="code-header"><span class="code-lang">docker-compose</span><span class="code-file">docker-compose.yml</span></div>
+        <pre><span class="kw">version:</span> <span class="str">'3.8'</span>
+<span class="kw">services:</span>
+  <span class="fn">postgres:</span>
+    <span class="var">image:</span> postgres:15-alpine
+    <span class="var">environment:</span>
+      POSTGRES_DB: <span class="str">ecommerce</span>
+      POSTGRES_PASSWORD: <span class="str">secret</span>
+    <span class="var">ports:</span> [<span class="str">"5432:5432"</span>]
+
+  <span class="fn">mongodb:</span>
+    <span class="var">image:</span> mongo:6
+    <span class="var">ports:</span> [<span class="str">"27017:27017"</span>]
+
+  <span class="fn">redis:</span>
+    <span class="var">image:</span> redis:7-alpine
+    <span class="var">ports:</span> [<span class="str">"6379:6379"</span>]
+
+  <span class="fn">app:</span>
+    <span class="var">build:</span> .
+    <span class="var">ports:</span> [<span class="str">"3000:3000"</span>]
+    <span class="var">depends_on:</span> [postgres, mongodb, redis]</pre>
+      </div>
+
+      <div class="info-box tip" style="margin-top:16px">
+        <div class="box-label">🎯 এটা করলে যা শিখবে</div>
+        PostgreSQL এ ACID transaction practically দেখবে — checkout এ stock কাটলে order confirm হয়, না হলে rollback। Redis cache কতটা fast সেটা সংখ্যায় দেখবে। MongoDB এর flexible schema কেন product catalog এ better — এটাই Polyglot Persistence এর real value।
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-label">Lesson Summary</div>
+    <h2 class="section-title">আজকে যা শিখলাম</h2>
+    <table class="compare-table">
+      <tr><th>Concept</th><th>এক লাইনে</th></tr>
+      <tr><td>SQL vs NoSQL</td><td>SQL = ACID, structured। NoSQL = flexible, scale। Use case দেখে choose করো</td></tr>
+      <tr><td>ACID</td><td>Atomicity (all/nothing), Consistency, Isolation, Durability</td></tr>
+      <tr><td>Index</td><td>B-Tree দিয়ে O(n) → O(log n)। Read fast, Write slow হয়</td></tr>
+      <tr><td>Read Replica</td><td>Read → Replica, Write → Primary। Read load কমে</td></tr>
+      <tr><td>Sharding</td><td>Table rows ভাগ করো। Write scale করো। Cross-shard JOIN কঠিন</td></tr>
+      <tr><td>Cache-aside</td><td>Cache check → miss → DB fetch → cache store। Update = cache delete</td></tr>
+      <tr><td>N+1 Problem</td><td>Loop এ query করো না। JOIN বা eager loading ব্যবহার করো</td></tr>
+    </table>
+  </div>
+
+  <div class="next-cta">
+    <div>
+      <div class="next-label">Next Topic →</div>
+      <div class="next-title">📦 CAP Theorem &amp; Consistency</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+
+</div>
+</main>
+
+<script>
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scroll = doc.scrollTop || document.body.scrollTop;
+  const height = doc.scrollHeight - doc.clientHeight;
+  document.getElementById('progressFill').style.width = ((scroll / height) * 100) + '%';
+});
+let answered = {};
+document.querySelectorAll('.option').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const block = this.closest('.question-block');
+    const qId = Array.from(document.querySelectorAll('.question-block')).indexOf(block);
+    if (answered[qId]) return;
+    answered[qId] = this.dataset.val;
+    block.querySelectorAll('.option').forEach(o => {
+      o.style.pointerEvents = 'none';
+      if (o.dataset.val === block.dataset.correct) o.classList.add('correct');
+      else if (o.dataset.val === this.dataset.val && this.dataset.val !== block.dataset.correct) o.classList.add('wrong');
+    });
+    block.querySelector('.explanation').classList.add('visible');
+  });
+});
+function submitMCQ() {
+  let correct = 0;
+  const blocks = document.querySelectorAll('.question-block');
+  blocks.forEach((block, i) => { if (answered[i] === block.dataset.correct) correct++; });
+  const unanswered = blocks.length - Object.keys(answered).length;
+  if (unanswered > 0) { alert(`এখনও ${unanswered}টা প্রশ্নের উত্তর দাওনি!`); return; }
+  document.getElementById('scoreDisplay').textContent = correct;
+  const banner = document.getElementById('resultBanner');
+  banner.classList.add('visible');
+  if (correct >= 7) { banner.classList.add('pass'); banner.textContent = `🎉 দারুণ! ${correct}/10 সঠিক। পরের topic এ যেতে পারো!`; }
+  else { banner.classList.add('fail'); banner.textContent = `📖 ${correct}/10 সঠিক। Concept গুলো আবার পড়ো এবং retry করো। ৭/১০ পেলেই pass।`; }
+}
+document.querySelectorAll('.nav-item[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    document.getElementById(link.getAttribute('href').slice(1))?.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>

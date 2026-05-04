@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 3 · Topic 2 — Distributed Consensus</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05080f;--surface:#090e1a;--card:#0c1220;--border:#162035;--border2:#1e2d4a;--accent:#3b82f6;--accent-glow:rgba(59,130,246,0.15);--green:#10b981;--green-glow:rgba(16,185,129,0.12);--orange:#f97316;--red:#ef4444;--yellow:#eab308;--purple:#8b5cf6;--text:#e2e8f0;--muted:#64748b;--muted2:#94a3b8;}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans Bengali',sans-serif;line-height:1.7;font-size:15px;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.4;}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100;}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo .phase-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--orange);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:4px;}
+.sidebar-logo .course-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;line-height:1.3;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-section-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);padding:0 8px;margin-bottom:6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:4px;font-size:13px;color:var(--muted2);cursor:pointer;transition:all 0.15s;text-decoration:none;}
+.nav-item:hover{background:var(--card);color:var(--text);}
+.nav-item.active{background:rgba(249,115,22,0.1);color:var(--orange);}
+.nav-item .nav-icon{font-size:14px;flex-shrink:0;}
+.nav-item .nav-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto;}
+.progress-bar{position:fixed;top:0;left:240px;right:0;height:2px;background:var(--border);z-index:200;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--yellow));width:0%;transition:width 0.1s;}
+.main{margin-left:240px;min-height:100vh;}
+.content{max-width:780px;margin:0 auto;padding:48px 40px 120px;}
+.topic-header{margin-bottom:48px;}
+.breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.breadcrumb span{color:var(--orange);}
+.topic-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--orange);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:block;}
+h1.topic-title{font-family:'Fraunces',serif;font-size:clamp(32px,5vw,48px);font-weight:900;line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,#fff 30%,#fed7aa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.topic-meta{display:flex;gap:16px;flex-wrap:wrap;}
+.meta-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 12px;border-radius:2px;border:1px solid;}
+.meta-chip.time{border-color:rgba(59,130,246,0.3);color:var(--accent);background:var(--accent-glow);}
+.meta-chip.level{border-color:rgba(16,185,129,0.3);color:var(--green);background:var(--green-glow);}
+.meta-chip.type{border-color:rgba(249,115,22,0.3);color:var(--orange);background:rgba(249,115,22,0.08);}
+.section{margin-bottom:48px;scroll-margin-top:24px;}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:3px;color:var(--orange);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+h2.section-title{font-family:'Fraunces',serif;font-size:24px;font-weight:700;margin-bottom:16px;color:#f1f5f9;}
+h3.sub-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;margin:24px 0 10px;color:#cbd5e1;}
+p{margin-bottom:14px;color:#cbd5e1;}
+.info-box{border-radius:6px;padding:18px 20px;margin:20px 0;border-left:3px solid;font-size:14px;}
+.info-box.concept{background:rgba(59,130,246,0.06);border-color:var(--accent);}
+.info-box.warning{background:rgba(249,115,22,0.06);border-color:var(--orange);}
+.info-box.tip{background:rgba(16,185,129,0.06);border-color:var(--green);}
+.info-box.important{background:rgba(234,179,8,0.06);border-color:var(--yellow);}
+.info-box .box-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:700;}
+.info-box.concept .box-label{color:var(--accent);}
+.info-box.warning .box-label{color:var(--orange);}
+.info-box.tip .box-label{color:var(--green);}
+.info-box.important .box-label{color:var(--yellow);}
+.compare-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;}
+.compare-table th{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1px;padding:12px 16px;text-align:left;background:var(--card);border-bottom:2px solid var(--border2);color:var(--muted2);}
+.compare-table td{padding:11px 16px;border-bottom:1px solid var(--border);color:#94a3b8;vertical-align:top;line-height:1.6;}
+.compare-table tr:hover td{background:rgba(255,255,255,0.02);}
+.compare-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);white-space:nowrap;}
+.tag-yes{color:var(--green);font-weight:600;}.tag-no{color:var(--red);}.tag-med{color:var(--yellow);}
+.diagram{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:30px 20px;margin:24px 0;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;overflow-x:auto;}
+.diagram svg{max-width:100%;}
+.code-block{background:#030608;border:1px solid var(--border2);border-radius:6px;margin:20px 0;overflow:hidden;}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--border);}
+.code-lang{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--orange);text-transform:uppercase;letter-spacing:1px;}
+.code-file{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);}
+pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.8;color:#e2e8f0;}
+.kw{color:#93c5fd;}.fn{color:#6ee7b7;}.str{color:#fcd34d;}.cm{color:#475569;font-style:italic;}.num{color:#f9a8d4;}.var{color:#e2e8f0;}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0;}
+.scenario-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:18px;}
+.scenario-card .s-title{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--orange);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;}
+.scenario-card p{font-size:13px;color:var(--muted2);margin:0;}
+.mcq-section{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:28px;margin:30px 0;}
+.mcq-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.mcq-icon{font-size:24px;}
+.mcq-header h2{font-family:'Fraunces',serif;font-size:20px;font-weight:700;}
+.mcq-score{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);}
+.mcq-score span{color:var(--orange);font-size:18px;font-weight:700;}
+.question-block{margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--border);}
+.question-block:last-of-type{border-bottom:none;margin-bottom:0;}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.q-text{font-size:15px;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.5;font-family:'Noto Sans Bengali',sans-serif;}
+.options{display:flex;flex-direction:column;gap:8px;}
+.option{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:4px;border:1px solid var(--border);cursor:pointer;transition:all 0.15s;font-size:14px;color:var(--muted2);font-family:'Noto Sans Bengali',sans-serif;}
+.option:hover{border-color:var(--orange);color:var(--text);background:rgba(249,115,22,0.06);}
+.option.correct{border-color:var(--green);background:var(--green-glow);color:#6ee7b7;}
+.option.wrong{border-color:var(--red);background:rgba(239,68,68,0.08);color:#fca5a5;}
+.option-key{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--border2);padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;}
+.explanation{display:none;margin-top:12px;padding:12px 14px;background:rgba(16,185,129,0.06);border-left:2px solid var(--green);border-radius:0 4px 4px 0;font-size:13px;color:#94a3b8;line-height:1.7;font-family:'Noto Sans Bengali',sans-serif;}
+.explanation.visible{display:block;}
+.explanation strong{color:var(--green);}
+.mcq-submit{display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:12px 24px;background:var(--orange);color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;border:none;border-radius:4px;cursor:pointer;letter-spacing:1px;transition:all 0.15s;}
+.mcq-submit:hover{background:#ea7205;transform:translateY(-1px);}
+.result-banner{display:none;margin-top:20px;padding:16px 20px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;}
+.result-banner.visible{display:block;}
+.result-banner.pass{background:var(--green-glow);border:1px solid var(--green);color:var(--green);}
+.result-banner.fail{background:rgba(249,115,22,0.08);border:1px solid var(--orange);color:var(--orange);}
+.assignment-section{background:linear-gradient(135deg,rgba(249,115,22,0.04),rgba(234,179,8,0.04));border:1px solid rgba(249,115,22,0.2);border-radius:8px;padding:28px;margin:30px 0;}
+.assignment-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.assignment-icon{font-size:28px;}
+.assignment-header h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700;}
+.assignment-meta{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.a-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 10px;border-radius:2px;}
+.a-chip.time{background:rgba(234,179,8,0.1);color:var(--yellow);border:1px solid rgba(234,179,8,0.2);}
+.a-chip.level{background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.2);}
+.task-list{counter-reset:tasks;list-style:none;margin-bottom:20px;}
+.task-list li{counter-increment:tasks;padding:14px 14px 14px 50px;position:relative;border-bottom:1px solid var(--border);font-size:14px;color:var(--muted2);line-height:1.7;font-family:'Noto Sans Bengali',sans-serif;}
+.task-list li:last-child{border-bottom:none;}
+.task-list li::before{content:counter(tasks);position:absolute;left:14px;top:14px;width:24px;height:24px;background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--orange);display:flex;align-items:center;justify-content:center;font-weight:700;}
+.task-list li strong{color:var(--text);}
+.deliverable-box{background:var(--card);border:1px solid var(--border2);border-radius:6px;padding:16px 18px;margin-top:16px;}
+.deliverable-box .d-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--orange);margin-bottom:10px;}
+.deliverable-box ul{list-style:none;padding:0;}
+.deliverable-box ul li{font-size:13px;color:var(--muted2);padding:4px 0 4px 18px;position:relative;font-family:'Noto Sans Bengali',sans-serif;}
+.deliverable-box ul li::before{content:'◆';position:absolute;left:0;font-size:8px;color:var(--orange);top:6px;}
+.project-section{background:var(--card);border:1px solid var(--border2);border-radius:8px;overflow:hidden;margin:30px 0;}
+.project-header{background:linear-gradient(90deg,rgba(16,185,129,0.1),transparent);padding:18px 24px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:12px;}
+.project-header h2{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--green);}
+.project-body{padding:24px;}
+.step-flow{display:flex;flex-direction:column;gap:0;margin:16px 0;}
+.step-item{display:flex;gap:16px;padding-bottom:24px;position:relative;}
+.step-item:last-child{padding-bottom:0;}
+.step-item::before{content:'';position:absolute;left:15px;top:32px;bottom:0;width:1px;background:var(--border2);}
+.step-item:last-child::before{display:none;}
+.step-circle{width:32px;height:32px;border-radius:50%;background:var(--green-glow);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--green);flex-shrink:0;z-index:1;}
+.step-content{flex:1;}
+.step-content h4{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);margin-bottom:4px;}
+.step-content p{font-size:13px;color:var(--muted2);margin:0;}
+.next-cta{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:20px 24px;margin-top:48px;text-decoration:none;color:var(--text);transition:border-color 0.2s;}
+.next-cta:hover{border-color:var(--orange);}
+.next-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;}
+.next-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;}
+.next-arrow{font-size:24px;color:var(--orange);}
+@media(max-width:768px){.sidebar{display:none;}.main{margin-left:0;}.content{padding:24px 16px 80px;}.scenario-grid{grid-template-columns:1fr;}.progress-bar{left:0;}}
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 03 · Distributed Systems</span>
+    <div class="course-title">System Design<br>Mastery Course</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Phase 3 Topics</div>
+    <a href="#" class="nav-item"><span class="nav-icon">🧩</span><span>Microservices</span><span class="nav-num">01</span></a>
+    <a href="#" class="nav-item active"><span class="nav-icon">🗳️</span><span>Distributed Consensus</span><span class="nav-num">02</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">⚡</span><span>Circuit Breaker</span><span class="nav-num">03</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🚦</span><span>Rate Limiting</span><span class="nav-num">04</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🔍</span><span>Service Discovery</span><span class="nav-num">05</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🔄</span><span>Saga Pattern</span><span class="nav-num">06</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px">
+    <div class="nav-section-label">This Lesson</div>
+    <a href="#concept" class="nav-item"><span class="nav-icon">💡</span><span>Concept</span></a>
+    <a href="#problem" class="nav-item"><span class="nav-icon">❓</span><span>The Problem</span></a>
+    <a href="#raft" class="nav-item"><span class="nav-icon">🏆</span><span>Raft Algorithm</span></a>
+    <a href="#zookeeper" class="nav-item"><span class="nav-icon">🦁</span><span>ZooKeeper</span></a>
+    <a href="#code" class="nav-item"><span class="nav-icon">💻</span><span>Code Examples</span></a>
+    <a href="#realworld" class="nav-item"><span class="nav-icon">🌍</span><span>Real World</span></a>
+    <a href="#interview" class="nav-item"><span class="nav-icon">🎯</span><span>Interview Q&A</span></a>
+    <a href="#mcq" class="nav-item"><span class="nav-icon">✅</span><span>MCQ Test</span></a>
+    <a href="#assignment" class="nav-item"><span class="nav-icon">📝</span><span>Assignment</span></a>
+    <a href="#project" class="nav-item"><span class="nav-icon">🚀</span><span>Project Task</span></a>
+  </div>
+</nav>
+
+<main class="main">
+<div class="content">
+
+  <div class="topic-header" id="concept">
+    <div class="breadcrumb">Phase 3 — Distributed Systems <span>›</span> Topic 02</div>
+    <span class="topic-num">TOPIC 02 / 06</span>
+    <h1 class="topic-title">Distributed<br>Consensus</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ ৬০-৯০ মিনিট</span>
+      <span class="meta-chip level">📊 Junior Level</span>
+      <span class="meta-chip type">🗳️ Distributed Systems</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Why It Matters</div>
+    <h2 class="section-title">Distributed Consensus কেন শিখতে হবে?</h2>
+    <p>৩টা server আছে — Server A, B, C। সবাই একই data রাখে। কিন্তু হঠাৎ network problem — A এবং B একটা value দেখছে, C আরেকটা। এখন কোনটা সত্য? কে decide করবে?</p>
+    <p>এই সমস্যার নাম <strong>Distributed Consensus Problem</strong>। Multiple nodes কীভাবে একটা single agreed value তে পৌঁছাবে — এটাই consensus। Kubernetes, etcd, Kafka, CockroachDB — সব জায়গায় এটা ব্যবহার হয়।</p>
+    <div class="info-box concept">
+      <div class="box-label">📌 Definition</div>
+      <strong>Distributed Consensus</strong> হলো একটা process যেখানে একটা distributed system এর সব nodes একটা single value বা decision এ <em>agree</em> করে — এমনকি যখন কিছু nodes fail করে বা network partition হয়।
+    </div>
+  </div>
+
+  <div class="section" id="problem">
+    <div class="section-label">The Core Problem</div>
+    <h2 class="section-title">সমস্যাটা কী?</h2>
+    <p>ধরো তুমি একটা bank এ কাজ করো। Account balance হলো ১০,০০০ টাকা। ৩টা server এই data replicate করে রাখে। এখন একসাথে দুটো transaction আসলো:</p>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">❌ Without Consensus</div>
+        <p>TX1: Debit ৫,০০০ → Server A<br>TX2: Debit ৮,০০০ → Server B<br>উভয় approve হলো! Balance হলো -৩,০০০! 💸</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">✅ With Consensus</div>
+        <p>TX1 এবং TX2 একটা order এ agree করতে হবে। একটা process হবে, তারপর অন্যটা। Overdraft impossible।</p>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Byzantine Generals Problem</h3>
+    <p>Distributed Consensus এর classic problem। কয়েকজন general একটা city attack করবে — সবাইকে একসাথে attack বা retreat করতে হবে। কিন্তু messenger unreliable, কিছু general traitor হতে পারে। কীভাবে সবাই agree করবে?</p>
+    <div class="info-box warning">
+      <div class="box-label">⚠️ The Two Key Challenges</div>
+      <strong>1. Fault Tolerance:</strong> কিছু nodes fail করলেও system চলতে থাকবে।<br>
+      <strong>2. Consistency:</strong> সব nodes একই data দেখবে একই সময়ে।<br><br>
+      CAP Theorem মনে আছে? Distributed system এ Consistency এবং Availability দুটো একসাথে fully পাওয়া যায় না। Consensus algorithms এই trade-off manage করে।
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 660 200" xmlns="http://www.w3.org/2000/svg">
+        <text x="330" y="22" fill="#94a3b8" font-family="JetBrains Mono" font-size="11" text-anchor="middle">CONSENSUS: 3 NODES MUST AGREE</text>
+        <!-- Node 1 - Leader -->
+        <circle cx="150" cy="110" r="45" fill="#0c1220" stroke="#f97316" stroke-width="2"/>
+        <text x="150" y="102" fill="#fdba74" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">Node 1</text>
+        <text x="150" y="116" fill="#f97316" font-family="JetBrains Mono" font-size="9" text-anchor="middle">LEADER</text>
+        <text x="150" y="130" fill="#fdba74" font-family="JetBrains Mono" font-size="9" text-anchor="middle">val=42</text>
+        <!-- Node 2 -->
+        <circle cx="330" cy="60" r="40" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="330" y="53" fill="#6ee7b7" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Node 2</text>
+        <text x="330" y="67" fill="#10b981" font-family="JetBrains Mono" font-size="9" text-anchor="middle">FOLLOWER</text>
+        <text x="330" y="82" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">val=42 ✓</text>
+        <!-- Node 3 -->
+        <circle cx="330" cy="155" r="40" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="330" y="148" fill="#6ee7b7" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Node 3</text>
+        <text x="330" y="162" fill="#10b981" font-family="JetBrains Mono" font-size="9" text-anchor="middle">FOLLOWER</text>
+        <text x="330" y="177" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">val=42 ✓</text>
+        <!-- Arrows -->
+        <line x1="193" y1="88" x2="292" y2="68" stroke="#f97316" stroke-width="1.5" stroke-dasharray="5"/>
+        <line x1="193" y1="132" x2="292" y2="152" stroke="#f97316" stroke-width="1.5" stroke-dasharray="5"/>
+        <text x="240" y="62" fill="#f97316" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Replicate</text>
+        <text x="240" y="160" fill="#f97316" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Replicate</text>
+        <!-- Quorum box -->
+        <rect x="410" y="80" width="220" height="55" rx="4" fill="#0c1220" stroke="#eab308" stroke-width="1.5"/>
+        <text x="520" y="100" fill="#fcd34d" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">QUORUM: Majority wins</text>
+        <text x="520" y="115" fill="#94a3b8" font-family="JetBrains Mono" font-size="9" text-anchor="middle">3 nodes → need 2/3 to agree</text>
+        <text x="520" y="127" fill="#94a3b8" font-family="JetBrains Mono" font-size="9" text-anchor="middle">5 nodes → need 3/5 to agree</text>
+        <line x1="370" y1="110" x2="410" y2="107" stroke="#eab308" stroke-width="1" stroke-dasharray="3"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section" id="raft">
+    <div class="section-label">Raft Algorithm</div>
+    <h2 class="section-title">Raft — Understandable Consensus</h2>
+    <p>Paxos (পুরনো algorithm) বোঝা খুব কঠিন ছিল। ২০১৪ সালে Stanford এর Diego Ongaro এবং John Ousterhout Raft design করলেন — same guarantees, কিন্তু অনেক বেশি understandable।</p>
+
+    <h3 class="sub-title">Raft এর তিনটা Core Concept</h3>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">👑 Leader Election</div>
+        <p>Cluster এ একটাই Leader থাকে। Leader সব writes handle করে। Leader fail করলে নতুন election হয়।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">📋 Log Replication</div>
+        <p>Leader সব entries তার log এ লেখে। তারপর Followers কে replicate করে। Majority acknowledge করলেই committed।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🔒 Safety</div>
+        <p>Committed entries কখনো lost হয় না। New leader এর কাছে সব committed entries থাকবেই। Strong guarantee।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">⏰ Term</div>
+        <p>Raft logical time "Term" ব্যবহার করে। প্রতিটা election নতুন term শুরু করে। Stale leader detect করতে term ব্যবহার হয়।</p>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Leader Election Process</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 680 180" xmlns="http://www.w3.org/2000/svg">
+        <text x="340" y="20" fill="#94a3b8" font-family="JetBrains Mono" font-size="11" text-anchor="middle">RAFT LEADER ELECTION FLOW</text>
+
+        <!-- Step 1: Follower -->
+        <rect x="10" y="40" width="130" height="60" rx="4" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="75" y="63" fill="#93c5fd" font-family="JetBrains Mono" font-size="9" text-anchor="middle" font-weight="700">FOLLOWER</text>
+        <text x="75" y="77" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Heartbeat timeout</text>
+        <text x="75" y="91" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">expired → starts</text>
+        <text x="75" y="150" fill="#3b82f6" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Step 1</text>
+
+        <line x1="140" y1="70" x2="175" y2="70" stroke="#f97316" stroke-width="1.5" marker-end="url(#a1)"/>
+        <defs><marker id="a1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#f97316"/></marker></defs>
+
+        <!-- Step 2: Candidate -->
+        <rect x="175" y="40" width="130" height="60" rx="4" fill="#0c1220" stroke="#f97316" stroke-width="1.5"/>
+        <text x="240" y="63" fill="#fdba74" font-family="JetBrains Mono" font-size="9" text-anchor="middle" font-weight="700">CANDIDATE</text>
+        <text x="240" y="77" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Votes for itself</text>
+        <text x="240" y="91" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Requests votes</text>
+        <text x="240" y="150" fill="#f97316" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Step 2</text>
+
+        <line x1="305" y1="70" x2="340" y2="70" stroke="#10b981" stroke-width="1.5" marker-end="url(#a2)"/>
+        <defs><marker id="a2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#10b981"/></marker></defs>
+
+        <!-- Step 3: Gets majority -->
+        <rect x="340" y="40" width="130" height="60" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="405" y="63" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle" font-weight="700">MAJORITY VOTE</text>
+        <text x="405" y="77" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">2/3 nodes say YES</text>
+        <text x="405" y="91" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">(Quorum reached)</text>
+        <text x="405" y="150" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Step 3</text>
+
+        <line x1="470" y1="70" x2="505" y2="70" stroke="#eab308" stroke-width="1.5" marker-end="url(#a3)"/>
+        <defs><marker id="a3" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#eab308"/></marker></defs>
+
+        <!-- Step 4: Leader -->
+        <rect x="505" y="40" width="130" height="60" rx="4" fill="#0c1220" stroke="#eab308" stroke-width="2"/>
+        <text x="570" y="63" fill="#fcd34d" font-family="JetBrains Mono" font-size="9" text-anchor="middle" font-weight="700">LEADER! 👑</text>
+        <text x="570" y="77" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Sends heartbeats</text>
+        <text x="570" y="91" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Handles all writes</text>
+        <text x="570" y="150" fill="#eab308" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Step 4</text>
+      </svg>
+    </div>
+
+    <div class="info-box tip">
+      <div class="box-label">💡 Heartbeat Mechanism</div>
+      Leader প্রতি few milliseconds এ Followers কে heartbeat পাঠায়। Follower যদি একটা নির্দিষ্ট সময়ের মধ্যে heartbeat না পায়, সে ধরে নেয় Leader dead। তখন election শুরু হয়। এই timeout হলো <strong>election timeout</strong> (150ms–300ms)।
+    </div>
+  </div>
+
+  <div class="section" id="zookeeper">
+    <div class="section-label">ZooKeeper</div>
+    <h2 class="section-title">Apache ZooKeeper — Coordination Service</h2>
+    <p>ZooKeeper হলো Apache এর একটা distributed coordination service। এটা নিজে Zab (ZooKeeper Atomic Broadcast) protocol ব্যবহার করে — Raft এর মতোই একটা consensus algorithm।</p>
+
+    <h3 class="sub-title">ZooKeeper কী কী করে?</h3>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">🔐 Distributed Locking</div>
+        <p>Multiple servers এর মধ্যে lock coordinate করো। একটাই server কোনো resource access করবে।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">📋 Configuration Management</div>
+        <p>সব services এর config ZooKeeper এ রাখো। Config change হলে সব services automatically update পাবে।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🏃 Leader Election</div>
+        <p>Kafka, HBase তাদের leader election ZooKeeper দিয়ে করে (পুরনো version)।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">📡 Service Registry</div>
+        <p>Services তাদের health status ZooKeeper এ register করে। Service down হলে automatically remove।</p>
+      </div>
+    </div>
+
+    <div class="info-box important">
+      <div class="box-label">📊 ZooKeeper vs etcd vs Consul</div>
+      <strong>ZooKeeper:</strong> Kafka এর purana setup এ, Java-based, complex<br>
+      <strong>etcd:</strong> Kubernetes এর brain। Raft ব্যবহার করে। Simple key-value store। Modern choice।<br>
+      <strong>Consul:</strong> Service discovery + health checking + KV store। HashiCorp এর product।
+    </div>
+
+    <table class="compare-table">
+      <tr><th>Feature</th><th>ZooKeeper</th><th>etcd</th><th>Consul</th></tr>
+      <tr><td>Algorithm</td><td>Zab (Paxos-like)</td><td>Raft</td><td>Raft</td></tr>
+      <tr><td>Language</td><td>Java</td><td>Go</td><td>Go</td></tr>
+      <tr><td>Use in</td><td>Kafka (old), HBase</td><td>Kubernetes</td><td>HashiCorp stack</td></tr>
+      <tr><td>Complexity</td><td><span class="tag-no">High</span></td><td><span class="tag-yes">Low</span></td><td><span class="tag-med">Medium</span></td></tr>
+      <tr><td>Watch/Events</td><td><span class="tag-yes">Yes</span></td><td><span class="tag-yes">Yes</span></td><td><span class="tag-yes">Yes</span></td></tr>
+      <tr><td>Production 2024</td><td><span class="tag-med">Legacy</span></td><td><span class="tag-yes">Preferred</span></td><td><span class="tag-yes">Preferred</span></td></tr>
+    </table>
+  </div>
+
+  <div class="section" id="code">
+    <div class="section-label">Code Examples</div>
+    <h2 class="section-title">Practical Code</h2>
+
+    <h3 class="sub-title">Python: Raft Concept Simulation</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Python</span><span class="code-file">raft_simulation.py</span></div>
+      <pre><span class="kw">import</span> random
+<span class="kw">import</span> time
+<span class="kw">from</span> enum <span class="kw">import</span> Enum
+
+<span class="kw">class</span> <span class="fn">NodeState</span>(Enum):
+    FOLLOWER = <span class="str">"follower"</span>
+    CANDIDATE = <span class="str">"candidate"</span>
+    LEADER = <span class="str">"leader"</span>
+
+<span class="kw">class</span> <span class="fn">RaftNode</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, node_id, cluster_size):
+        self.node_id = node_id
+        self.state = NodeState.FOLLOWER
+        self.current_term = <span class="num">0</span>
+        self.voted_for = <span class="kw">None</span>
+        self.log = []  <span class="cm"># List of (term, value) tuples</span>
+        self.commit_index = <span class="num">-1</span>
+        self.cluster_size = cluster_size
+        self.votes_received = <span class="num">0</span>
+
+    <span class="kw">def</span> <span class="fn">start_election</span>(self):
+        <span class="str">"""Follower timeout হলে election শুরু করে"""</span>
+        self.state = NodeState.CANDIDATE
+        self.current_term += <span class="num">1</span>
+        self.voted_for = self.node_id  <span class="cm"># নিজেকে vote</span>
+        self.votes_received = <span class="num">1</span>
+        <span class="fn">print</span>(<span class="str">f"Node {self.node_id}: Starting election for term {self.current_term}"</span>)
+
+    <span class="kw">def</span> <span class="fn">receive_vote</span>(self, from_node, term, vote_granted):
+        <span class="kw">if</span> term == self.current_term <span class="kw">and</span> self.state == NodeState.CANDIDATE:
+            <span class="kw">if</span> vote_granted:
+                self.votes_received += <span class="num">1</span>
+                quorum = (self.cluster_size // <span class="num">2</span>) + <span class="num">1</span>
+                <span class="kw">if</span> self.votes_received >= quorum:
+                    self.<span class="fn">become_leader</span>()
+
+    <span class="kw">def</span> <span class="fn">become_leader</span>(self):
+        self.state = NodeState.LEADER
+        <span class="fn">print</span>(<span class="str">f"✅ Node {self.node_id}: Became LEADER for term {self.current_term}"</span>)
+        <span class="fn">print</span>(<span class="str">f"   Votes: {self.votes_received}/{self.cluster_size}"</span>)
+
+    <span class="kw">def</span> <span class="fn">append_entry</span>(self, value):
+        <span class="str">"""Leader শুধু এটা call করতে পারে"""</span>
+        <span class="kw">if</span> self.state != NodeState.LEADER:
+            <span class="kw">raise</span> <span class="fn">Exception</span>(<span class="str">"Only leader can append entries"</span>)
+        self.log.<span class="fn">append</span>((self.current_term, value))
+        <span class="fn">print</span>(<span class="str">f"Leader Node {self.node_id}: Appended '{value}' to log"</span>)
+
+<span class="cm"># Simulation</span>
+nodes = [<span class="fn">RaftNode</span>(i, <span class="num">5</span>) <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>)]
+
+<span class="cm"># Node 2 starts election</span>
+nodes[<span class="num">2</span>].<span class="fn">start_election</span>()
+
+<span class="cm"># 3 nodes vote yes (quorum = 3/5)</span>
+nodes[<span class="num">2</span>].<span class="fn">receive_vote</span>(<span class="num">0</span>, <span class="num">1</span>, <span class="kw">True</span>)
+nodes[<span class="num">2</span>].<span class="fn">receive_vote</span>(<span class="num">1</span>, <span class="num">1</span>, <span class="kw">True</span>)
+nodes[<span class="num">2</span>].<span class="fn">receive_vote</span>(<span class="num">3</span>, <span class="num">1</span>, <span class="kw">True</span>)  <span class="cm"># This triggers becoming leader</span>
+
+<span class="cm"># Leader now writes</span>
+nodes[<span class="num">2</span>].<span class="fn">append_entry</span>(<span class="str">"balance=10000"</span>)
+nodes[<span class="num">2</span>].<span class="fn">append_entry</span>(<span class="str">"transfer=5000"</span>)</pre>
+    </div>
+
+    <h3 class="sub-title">Node.js: etcd দিয়ে Distributed Lock</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Node.js</span><span class="code-file">distributed_lock.js</span></div>
+      <pre><span class="cm">// npm install etcd3</span>
+<span class="kw">const</span> { Etcd3 } = <span class="fn">require</span>(<span class="str">'etcd3'</span>);
+
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">Etcd3</span>({ hosts: <span class="str">'localhost:2379'</span> });
+
+<span class="kw">async function</span> <span class="fn">processOrderWithLock</span>(orderId) {
+    <span class="cm">// Distributed lock — শুধু একটা server এই order process করবে</span>
+    <span class="kw">const</span> lock = client.<span class="fn">lock</span>(<span class="str">`order/${orderId}`</span>);
+
+    <span class="kw">try</span> {
+        <span class="kw">await</span> lock.<span class="fn">acquire</span>();
+        console.<span class="fn">log</span>(<span class="str">`🔒 Lock acquired for order ${orderId}`</span>);
+
+        <span class="cm">// Critical section — duplicate processing impossible</span>
+        <span class="kw">const</span> existing = <span class="kw">await</span> client.<span class="fn">get</span>(<span class="str">`processed/${orderId}`</span>);
+        <span class="kw">if</span> (existing) {
+            console.<span class="fn">log</span>(<span class="str">`⚠️ Order ${orderId} already processed!`</span>);
+            <span class="kw">return</span>;
+        }
+
+        <span class="cm">// Process the order</span>
+        console.<span class="fn">log</span>(<span class="str">`✅ Processing order ${orderId}...`</span>);
+        <span class="kw">await</span> <span class="kw">new</span> <span class="fn">Promise</span>(resolve => <span class="fn">setTimeout</span>(resolve, <span class="num">1000</span>));
+
+        <span class="cm">// Mark as processed</span>
+        <span class="kw">await</span> client.<span class="fn">put</span>(<span class="str">`processed/${orderId}`</span>).<span class="fn">value</span>(<span class="str">'true'</span>);
+        console.<span class="fn">log</span>(<span class="str">`🎉 Order ${orderId} processed successfully!`</span>);
+
+    } <span class="kw">finally</span> {
+        <span class="kw">await</span> lock.<span class="fn">release</span>();
+        console.<span class="fn">log</span>(<span class="str">`🔓 Lock released for order ${orderId}`</span>);
+    }
+}
+
+<span class="cm">// Multiple services try to process same order simultaneously</span>
+<span class="cm">// Only ONE will succeed due to distributed lock</span>
+Promise.<span class="fn">all</span>([
+    <span class="fn">processOrderWithLock</span>(<span class="str">'order-123'</span>),
+    <span class="fn">processOrderWithLock</span>(<span class="str">'order-123'</span>),  <span class="cm">// Duplicate — will be blocked</span>
+    <span class="fn">processOrderWithLock</span>(<span class="str">'order-123'</span>),  <span class="cm">// Duplicate — will be blocked</span>
+]);</pre>
+    </div>
+  </div>
+
+  <div class="section" id="realworld">
+    <div class="section-label">Real World</div>
+    <h2 class="section-title">Real World Use Cases</h2>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">☸️ Kubernetes (etcd)</div>
+        <p>Kubernetes এর সব cluster state etcd তে থাকে। Raft দিয়ে 3-5 etcd nodes consensus maintain করে। etcd down হলে K8s cluster কাজ করে না।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">📨 Apache Kafka</div>
+        <p>KRaft mode এ Kafka নিজেই Raft ব্যবহার করে। আগে ZooKeeper লাগতো। Kafka 3.3+ এ ZooKeeper deprecated।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🗄️ CockroachDB</div>
+        <p>Distributed SQL database। প্রতিটা range এর জন্য Raft group। Globally distributed consistency। Google Spanner এর open source alternative।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🔐 HashiCorp Vault</div>
+        <p>Secrets management। Raft storage backend। HA mode এ একটা Vault cluster এর সব nodes consensus maintain করে।</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="interview">
+    <div class="section-label">Interview Preparation</div>
+    <h2 class="section-title">Common Interview Questions</h2>
+    <div class="info-box concept">
+      <div class="box-label">🎯 Q1: Raft এবং Paxos এর পার্থক্য কী?</div>
+      <strong>Answer:</strong> উভয়ই consensus algorithms। Paxos theoretically proven কিন্তু implement করা কঠিন। Raft explicitly understandability এর জন্য designed — Leader, Log, Safety তিনটা clearly defined sub-problem। Production এ Raft বেশি ব্যবহার হয় (etcd, CockroachDB, TiKV)।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">🎯 Q2: Quorum কী? ৩ nodes এ কতটা fail করলে চলবে?</div>
+      <strong>Answer:</strong> Quorum = majority = (N/2) + 1। ৩ nodes এ quorum = 2। মানে ১টা fail করলেও চলবে। ৫ nodes এ quorum = 3, মানে ২টা fail করলেও চলবে। ফর্মুলা: N = 2f + 1, যেখানে f = tolerable failures।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">🎯 Q3: Split Brain কী?</div>
+      <strong>Answer:</strong> Network partition হলে cluster দুই ভাগে ভাগ হয়ে দুটো আলাদা leader elect করতে পারে। এটাই Split Brain। Raft এটা prevent করে quorum requirement দিয়ে — minority partition কোনো decision নিতে পারে না।
+    </div>
+  </div>
+
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🗳️</span>
+      <h2>MCQ Test</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">Distributed Consensus এর মূল সমস্যা কোনটি?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Database query optimize করা</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Multiple nodes একটা single agreed value তে পৌঁছানো</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Network bandwidth বাড়ানো</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> CPU usage কমানো</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Consensus মানে agreement। Distributed system এ কিছু nodes fail করতে পারে, network partition হতে পারে — তবুও সব nodes একটা value এ agree করবে। এটাই fundamental challenge।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">৫টা nodes এর একটা Raft cluster এ Quorum কত?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> ২</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> ২.৫</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> ৩</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> ৫</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Quorum = (N/2) + 1 = (5/2) + 1 = 2.5 + 1 = 3.5 → floor = 3। ৫ nodes এ ৩টা agree করলেই quorum। মানে ২টা fail করলেও cluster চলবে।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">Raft এ Leader কীভাবে তার authority maintain করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Regular heartbeat messages পাঠিয়ে followers কে alive জানায়</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> প্রতি second এ নতুন election করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Database এ leader flag set করে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Followers কে lock করে রাখে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Leader প্রতি few milliseconds এ heartbeat পাঠায়। Follower নির্দিষ্ট সময়ের মধ্যে heartbeat না পেলে leader dead ধরে election শুরু করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">Kubernetes কোন consensus tool ব্যবহার করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> ZooKeeper</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Consul</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Redis</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> etcd</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — etcd হলো Kubernetes এর core data store। সব cluster state (pods, deployments, services) etcd তে থাকে। etcd Raft algorithm ব্যবহার করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">Split Brain problem কখন হয়?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Server এর CPU overload হলে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Network partition এ cluster দুই ভাগে ভাগ হয়ে দুটো leader elect করলে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Database corrupt হলে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Memory full হলে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Split Brain = একটা cluster দুটো ভাগে ভাগ হয়ে দুটো আলাদা leader। দুটো inconsistent decision নেয়। Raft quorum requirement দিয়ে এটা prevent করে — minority partition কোনো decision নিতে পারে না।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">Raft কে Paxos এর চেয়ে বেশি ব্যবহার করা হয় কেন?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Raft faster</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Raft less storage use করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Raft বোঝা এবং implement করা অনেক সহজ</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Raft কম bandwidth use করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Raft explicitly understandability এর জন্য designed। Paxos theoretically sound কিন্তু notoriously difficult to implement correctly। "Raft: In Search of an Understandable Consensus Algorithm" — এটাই paper এর title ছিল।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">Distributed Lock কেন দরকার?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Multiple servers যাতে একই resource simultaneously access না করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Database connection pool manage করতে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Network traffic কমাতে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> File compression করতে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Payment processing তে একটা order দুইবার process হওয়া রোধ করতে distributed lock ব্যবহার হয়। Single server এ thread lock যা করে, distributed এ etcd/Redis lock সেটা করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">Raft এ "Term" কী represent করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Server এর uptime</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Transaction count</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Data size</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Logical time — প্রতিটা election নতুন term শুরু করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Term হলো Raft এর logical clock। প্রতিটা election একটা নতুন term শুরু করে। Stale leader কে detect করতে term ব্যবহার হয় — lower term এর message reject হয়।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">Kafka এর নতুন version (3.3+) এ ZooKeeper replace করা হয়েছে কী দিয়ে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> etcd</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> KRaft (Kafka's own Raft implementation)</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Consul</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Redis</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Kafka KIP-500 এ ZooKeeper dependency remove করা হয়েছে। KRaft (Kafka Raft) mode এ Kafka নিজেই Raft implement করে। এটা simpler, faster, এবং ZooKeeper dependency ছাড়া।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">একটা ৩-node cluster এ কতটা node fail হলেও system available থাকবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> ০টা</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> ২টা</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> ১টা</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> ৩টা</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — ৩-node cluster এ quorum = 2। ১টা fail হলে ২টা বাকি থাকে যা quorum পূরণ করে। ২টা fail হলে শুধু ১টা থাকে — quorum পূরণ হয় না, system unavailable। Formula: tolerable failures = (N-1)/2 = 1।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT & CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ২-৩ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <ul class="task-list">
+      <li><strong>Quorum Calculation:</strong> নিচের cluster sizes এর জন্য quorum, tolerable failures, এবং minimum odd nodes calculate করো: ৩, ৫, ৭, ৯, ১১। Table আকারে লেখো।</li>
+      <li><strong>Raft Visualization:</strong> raft.github.io website এ গিয়ে interactive Raft simulation দেখো। Leader fail করো, নতুন election observe করো। কী দেখলে ৫ লাইনে লেখো।</li>
+      <li><strong>Code Extension:</strong> দেওয়া Python Raft simulation তে একটা <code>handle_leader_failure()</code> method যোগ করো যেটা leader fail হলে নতুন election trigger করবে।</li>
+      <li><strong>Research:</strong> CockroachDB documentation পড়ো — তারা কীভাবে Raft use করে। ৩-৪ লাইনে summary লেখো।</li>
+      <li><strong>Comparison:</strong> তুমি যদি একটা payment system design করো তাহলে etcd, Consul, বা ZooKeeper — কোনটা use করবে এবং কেন? Justify করো।</li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>Quorum calculation table</li>
+        <li>Raft simulation observation notes</li>
+        <li>Extended Python code with leader failure handling</li>
+        <li>CockroachDB research summary</li>
+        <li>Tool selection justification</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="project-section" id="project">
+    <div class="project-header">
+      <span style="font-size:24px">🚀</span>
+      <h2>Hands-On Project Task</h2>
+    </div>
+    <div class="project-body">
+      <h3 style="font-family:'Fraunces',serif;font-size:18px;margin-bottom:16px;color:#f1f5f9;">etcd Distributed Config Store</h3>
+      <p style="font-size:14px;color:#94a3b8;margin-bottom:20px;">Docker দিয়ে etcd cluster চালাও এবং distributed configuration management করো।</p>
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-circle">1</div>
+          <div class="step-content">
+            <h4>etcd single node চালাও</h4>
+            <p><code>docker run -d --name etcd -p 2379:2379 bitnami/etcd:latest</code></p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">2</div>
+          <div class="step-content">
+            <h4>config values set করো</h4>
+            <p><code>docker exec etcd etcdctl put /config/db_host "localhost"</code> এবং আরো কিছু config set করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">3</div>
+          <div class="step-content">
+            <h4>Python দিয়ে watch করো</h4>
+            <p>etcd3 Python library দিয়ে config changes watch করার script লেখো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">4</div>
+          <div class="step-content">
+            <h4>Config change করো</h4>
+            <p>etcdctl দিয়ে একটা config change করো — Python watcher automatically detect করবে কিনা দেখো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">5</div>
+          <div class="step-content">
+            <h4>Bonus: 3-node cluster</h4>
+            <p>docker-compose দিয়ে ৩-node etcd cluster চালাও। একটা node kill করো — cluster চলে কিনা দেখো।</p>
+          </div>
+        </div>
+      </div>
+      <div class="info-box tip" style="margin-top:16px">
+        <div class="box-label">🎯 এটা করলে যা শিখবে</div>
+        Consensus theory নয় — actually দেখবে etcd কীভাবে distributed config store হিসেবে কাজ করে। Real Kubernetes cluster এর brain কীভাবে কাজ করে সেটা বুঝবে।
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Lesson Summary</div>
+    <h2 class="section-title">আজকে যা শিখলাম</h2>
+    <table class="compare-table">
+      <tr><th>Concept</th><th>এক লাইনে</th></tr>
+      <tr><td>Consensus</td><td>Distributed nodes এর agreement on single value</td></tr>
+      <tr><td>Raft</td><td>Understandable consensus — Leader, Log, Safety</td></tr>
+      <tr><td>Quorum</td><td>Majority (N/2 + 1) agree করলেই committed</td></tr>
+      <tr><td>Leader Election</td><td>Timeout → Candidate → Vote → Leader</td></tr>
+      <tr><td>etcd</td><td>Kubernetes এর brain, Raft-based KV store</td></tr>
+      <tr><td>ZooKeeper</td><td>Legacy coordination service, Kafka এ ছিল</td></tr>
+      <tr><td>Split Brain</td><td>Quorum দিয়ে prevent করা হয়</td></tr>
+    </table>
+  </div>
+
+  <div class="next-cta">
+    <div>
+      <div class="next-label">Next Topic →</div>
+      <div class="next-title">⚡ Circuit Breaker & Resilience Patterns</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+
+</div>
+</main>
+<script>
+window.addEventListener('scroll',()=>{const d=document.documentElement;const s=d.scrollTop||document.body.scrollTop;const h=d.scrollHeight-d.clientHeight;document.getElementById('progressFill').style.width=((s/h)*100)+'%';});
+let answered={};
+document.querySelectorAll('.option').forEach(opt=>{opt.addEventListener('click',function(){const block=this.closest('.question-block');const qId=Array.from(document.querySelectorAll('.question-block')).indexOf(block);if(answered[qId])return;answered[qId]=this.dataset.val;block.querySelectorAll('.option').forEach(o=>{o.style.pointerEvents='none';if(o.dataset.val===block.dataset.correct)o.classList.add('correct');else if(o.dataset.val===this.dataset.val)o.classList.add('wrong');});block.querySelector('.explanation').classList.add('visible');});});
+function submitMCQ(){let correct=0;const blocks=document.querySelectorAll('.question-block');blocks.forEach((block,i)=>{if(answered[i]===block.dataset.correct)correct++;});const unanswered=blocks.length-Object.keys(answered).length;if(unanswered>0){alert(`এখনও ${unanswered}টা প্রশ্নের উত্তর দাওনি!`);return;}document.getElementById('scoreDisplay').textContent=correct;const banner=document.getElementById('resultBanner');banner.classList.add('visible');if(correct>=7){banner.classList.add('pass');banner.textContent=`🎉 দারুণ! ${correct}/10 সঠিক। পরের topic এ যেতে পারো!`;}else{banner.classList.add('fail');banner.textContent=`📖 ${correct}/10 সঠিক। Concept গুলো আবার পড়ো। ৭/১০ পেলেই pass।`;}}
+</script>
+</body>
+</html>

@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 4 · System 2 — Twitter/X Design</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05080f; --surface: #090e1a; --card: #0c1220; --border: #162035; --border2: #1e2d4a;
+  --accent: #1d9bf0; --accent-glow: rgba(29,155,240,0.15);
+  --green: #10b981; --green-glow: rgba(16,185,129,0.12);
+  --orange: #f97316; --red: #ef4444; --yellow: #eab308; --purple: #8b5cf6;
+  --text: #e2e8f0; --muted: #64748b; --muted2: #94a3b8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Sans Bengali', sans-serif; line-height: 1.7; font-size: 15px; }
+body::after { content:''; position:fixed; inset:0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events:none; z-index:999; opacity:0.4; }
+.sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: var(--surface); border-right: 1px solid var(--border); padding: 24px 0; overflow-y: auto; z-index: 100; }
+.sidebar-logo { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.sidebar-logo .phase-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; display: block; margin-bottom: 4px; }
+.sidebar-logo .course-title { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; line-height: 1.3; }
+.nav-section { padding: 0 12px; margin-bottom: 8px; }
+.nav-section-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); padding: 0 8px; margin-bottom: 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 4px; font-size: 13px; color: var(--muted2); cursor: pointer; transition: all 0.15s; text-decoration: none; }
+.nav-item:hover { background: var(--card); color: var(--text); }
+.nav-item.active { background: rgba(29,155,240,0.1); color: var(--accent); }
+.nav-item .nav-icon { font-size: 14px; flex-shrink:0; }
+.nav-item .nav-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); margin-left: auto; }
+.progress-bar { position: fixed; top: 0; left: 240px; right: 0; height: 2px; background: var(--border); z-index: 200; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--purple)); width: 0%; transition: width 0.1s; }
+.main { margin-left: 240px; min-height: 100vh; }
+.content { max-width: 780px; margin: 0 auto; padding: 48px 40px 120px; }
+.topic-header { margin-bottom: 48px; }
+.breadcrumb { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.breadcrumb span { color: var(--accent); }
+.topic-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; display: block; }
+h1.topic-title { font-family: 'Fraunces', serif; font-size: clamp(32px, 5vw, 48px); font-weight: 900; line-height: 1.1; margin-bottom: 16px; background: linear-gradient(135deg, #fff 30%, #93c5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.topic-meta { display: flex; gap: 16px; flex-wrap: wrap; }
+.meta-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 12px; border-radius: 2px; border: 1px solid; }
+.meta-chip.time { border-color: rgba(29,155,240,0.3); color: var(--accent); background: var(--accent-glow); }
+.meta-chip.level { border-color: rgba(16,185,129,0.3); color: var(--green); background: var(--green-glow); }
+.meta-chip.type { border-color: rgba(139,92,246,0.3); color: var(--purple); background: rgba(139,92,246,0.08); }
+.section { margin-bottom: 48px; scroll-margin-top: 24px; }
+.section-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+h2.section-title { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 700; margin-bottom: 16px; color: #f1f5f9; }
+h3.sub-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; margin: 24px 0 10px; color: #cbd5e1; }
+p { margin-bottom: 14px; color: #cbd5e1; }
+.info-box { border-radius: 6px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; font-size: 14px; }
+.info-box.concept { background: rgba(29,155,240,0.06); border-color: var(--accent); }
+.info-box.warning { background: rgba(249,115,22,0.06); border-color: var(--orange); }
+.info-box.tip { background: rgba(16,185,129,0.06); border-color: var(--green); }
+.info-box.important { background: rgba(234,179,8,0.06); border-color: var(--yellow); }
+.info-box .box-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; font-weight: 700; }
+.info-box.concept .box-label { color: var(--accent); }
+.info-box.warning .box-label { color: var(--orange); }
+.info-box.tip .box-label { color: var(--green); }
+.info-box.important .box-label { color: var(--yellow); }
+.compare-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+.compare-table th { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; padding: 12px 16px; text-align: left; background: var(--card); border-bottom: 2px solid var(--border2); color: var(--muted2); }
+.compare-table td { padding: 11px 16px; border-bottom: 1px solid var(--border); color: #94a3b8; vertical-align: top; line-height: 1.6; }
+.compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+.compare-table td:first-child { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text); white-space: nowrap; }
+.tag-yes { color: var(--green); font-weight: 600; }
+.tag-no { color: var(--red); }
+.tag-med { color: var(--yellow); }
+.diagram { background: var(--card); border: 1px solid var(--border2); border-radius: 8px; padding: 30px 20px; margin: 24px 0; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; overflow-x: auto; }
+.diagram svg { max-width: 100%; }
+.code-block { background: #030608; border: 1px solid var(--border2); border-radius: 6px; margin: 20px 0; overflow: hidden; }
+.code-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--card); border-bottom: 1px solid var(--border); }
+.code-lang { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+.code-file { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+pre { padding: 20px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.8; color: #e2e8f0; }
+.kw { color: #93c5fd; } .fn { color: #6ee7b7; } .str { color: #fcd34d; } .cm { color: #475569; font-style: italic; } .num { color: #f9a8d4; } .var { color: #e2e8f0; }
+.scenario-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 20px 0; }
+.scenario-card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 18px; }
+.scenario-card .s-title { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.scenario-card p { font-size: 13px; color: var(--muted2); margin: 0; }
+.req-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.req-card { background: var(--card); border: 1px solid var(--border2); border-radius: 6px; padding: 20px; }
+.req-card .r-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
+.req-card.functional .r-title { color: var(--green); }
+.req-card.nonfunc .r-title { color: var(--purple); }
+.req-card ul { list-style: none; padding: 0; }
+.req-card ul li { font-size: 13px; color: var(--muted2); padding: 5px 0 5px 18px; position: relative; border-bottom: 1px solid var(--border); font-family: 'Noto Sans Bengali', sans-serif; }
+.req-card ul li:last-child { border-bottom: none; }
+.req-card ul li::before { content: '→'; position: absolute; left: 0; color: var(--muted); font-size: 12px; }
+.estimation-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0; }
+.est-card { background: var(--card); border: 1px solid var(--border2); border-radius: 6px; padding: 16px; text-align: center; }
+.est-num { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 700; color: var(--accent); display: block; margin-bottom: 4px; }
+.est-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+.tech-stack { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+.tech-tag { font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 6px 14px; border-radius: 3px; border: 1px solid; }
+.tech-tag.db { border-color: rgba(29,155,240,0.3); color: var(--accent); background: var(--accent-glow); }
+.tech-tag.cache { border-color: rgba(234,179,8,0.3); color: var(--yellow); background: rgba(234,179,8,0.06); }
+.tech-tag.lang { border-color: rgba(16,185,129,0.3); color: var(--green); background: var(--green-glow); }
+.tech-tag.infra { border-color: rgba(139,92,246,0.3); color: var(--purple); background: rgba(139,92,246,0.08); }
+.tech-tag.queue { border-color: rgba(249,115,22,0.3); color: var(--orange); background: rgba(249,115,22,0.08); }
+.tradeoff-row { display: flex; gap: 12px; margin: 10px 0; align-items: flex-start; }
+.tradeoff-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 10px; border-radius: 2px; flex-shrink: 0; }
+.tradeoff-label.pro { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.tradeoff-label.con { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+.tradeoff-text { font-size: 13px; color: var(--muted2); line-height: 1.6; font-family: 'Noto Sans Bengali', sans-serif; }
+.mcq-section { background: var(--surface); border: 1px solid var(--border2); border-radius: 8px; padding: 28px; margin: 30px 0; }
+.mcq-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.mcq-icon { font-size: 24px; }
+.mcq-header h2 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; }
+.mcq-score { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--muted); }
+.mcq-score span { color: var(--accent); font-size: 18px; font-weight: 700; }
+.question-block { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+.question-block:last-of-type { border-bottom: none; margin-bottom: 0; }
+.q-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.q-text { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.5; font-family: 'Noto Sans Bengali', sans-serif; }
+.options { display: flex; flex-direction: column; gap: 8px; }
+.option { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-radius: 4px; border: 1px solid var(--border); cursor: pointer; transition: all 0.15s; font-size: 14px; color: var(--muted2); font-family: 'Noto Sans Bengali', sans-serif; }
+.option:hover { border-color: var(--accent); color: var(--text); background: var(--accent-glow); }
+.option.correct { border-color: var(--green); background: var(--green-glow); color: #6ee7b7; }
+.option.wrong { border-color: var(--red); background: rgba(239,68,68,0.08); color: #fca5a5; }
+.option-key { font-family: 'JetBrains Mono', monospace; font-size: 11px; background: var(--border2); padding: 2px 7px; border-radius: 2px; flex-shrink: 0; margin-top: 1px; }
+.explanation { display: none; margin-top: 12px; padding: 12px 14px; background: rgba(16,185,129,0.06); border-left: 2px solid var(--green); border-radius: 0 4px 4px 0; font-size: 13px; color: #94a3b8; line-height: 1.7; font-family: 'Noto Sans Bengali', sans-serif; }
+.explanation.visible { display: block; }
+.explanation strong { color: var(--green); }
+.mcq-submit { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; padding: 12px 24px; background: var(--accent); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; letter-spacing: 1px; transition: all 0.15s; }
+.mcq-submit:hover { background: #1a8ad3; transform: translateY(-1px); }
+.result-banner { display: none; margin-top: 20px; padding: 16px 20px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; }
+.result-banner.visible { display: block; }
+.result-banner.pass { background: var(--green-glow); border: 1px solid var(--green); color: var(--green); }
+.result-banner.fail { background: rgba(249,115,22,0.08); border: 1px solid var(--orange); color: var(--orange); }
+.assignment-section { background: linear-gradient(135deg, rgba(29,155,240,0.04), rgba(139,92,246,0.04)); border: 1px solid rgba(29,155,240,0.2); border-radius: 8px; padding: 28px; margin: 30px 0; }
+.assignment-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.assignment-icon { font-size: 28px; }
+.assignment-header h2 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; }
+.assignment-meta { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.a-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 10px; border-radius: 2px; }
+.a-chip.time { background: rgba(234,179,8,0.1); color: var(--yellow); border: 1px solid rgba(234,179,8,0.2); }
+.a-chip.level { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.task-list { counter-reset: tasks; list-style: none; margin-bottom: 20px; }
+.task-list li { counter-increment: tasks; padding: 14px 14px 14px 50px; position: relative; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--muted2); line-height: 1.7; font-family: 'Noto Sans Bengali', sans-serif; }
+.task-list li:last-child { border-bottom: none; }
+.task-list li::before { content: counter(tasks); position: absolute; left: 14px; top: 14px; width: 24px; height: 24px; background: var(--accent-glow); border: 1px solid rgba(29,155,240,0.3); border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.task-list li strong { color: var(--text); }
+.deliverable-box { background: var(--card); border: 1px solid var(--border2); border-radius: 6px; padding: 16px 18px; margin-top: 16px; }
+.deliverable-box .d-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--purple); margin-bottom: 10px; }
+.deliverable-box ul { list-style: none; padding: 0; }
+.deliverable-box ul li { font-size: 13px; color: var(--muted2); padding: 4px 0 4px 18px; position: relative; font-family: 'Noto Sans Bengali', sans-serif; }
+.deliverable-box ul li::before { content: '◆'; position: absolute; left: 0; font-size: 8px; color: var(--purple); top: 6px; }
+.next-cta { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--border2); border-radius: 8px; padding: 20px 24px; margin-top: 48px; text-decoration: none; color: var(--text); transition: border-color 0.2s; cursor: pointer; }
+.next-cta:hover { border-color: var(--accent); }
+.next-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+.next-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; }
+.next-arrow { font-size: 24px; color: var(--accent); }
+@media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } .content { padding: 24px 16px 80px; } .scenario-grid, .req-grid, .estimation-grid { grid-template-columns: 1fr; } .progress-bar { left: 0; } }
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 04 · Real World Systems</span>
+    <div class="course-title">System Design<br>Mastery Course</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Phase 4 Systems</div>
+    <a href="#" class="nav-item"><span class="nav-icon">🔗</span><span>URL Shortener</span><span class="nav-num">01</span></a>
+    <a href="#" class="nav-item active"><span class="nav-icon">🐦</span><span>Twitter/X</span><span class="nav-num">02</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">📺</span><span>YouTube</span><span class="nav-num">03</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">💬</span><span>WhatsApp</span><span class="nav-num">04</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🛒</span><span>Amazon</span><span class="nav-num">05</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🔍</span><span>Search</span><span class="nav-num">06</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🚗</span><span>Uber</span><span class="nav-num">07</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px">
+    <div class="nav-section-label">This Lesson</div>
+    <a href="#requirements" class="nav-item"><span class="nav-icon">📋</span><span>Requirements</span></a>
+    <a href="#estimation" class="nav-item"><span class="nav-icon">🔢</span><span>Estimation</span></a>
+    <a href="#architecture" class="nav-item"><span class="nav-icon">🏗️</span><span>Architecture</span></a>
+    <a href="#deepdive" class="nav-item"><span class="nav-icon">🔬</span><span>Deep Dive</span></a>
+    <a href="#database" class="nav-item"><span class="nav-icon">🗄️</span><span>Database</span></a>
+    <a href="#scaling" class="nav-item"><span class="nav-icon">📈</span><span>Scaling</span></a>
+    <a href="#techstack" class="nav-item"><span class="nav-icon">⚙️</span><span>Tech Stack</span></a>
+    <a href="#mcq" class="nav-item"><span class="nav-icon">✅</span><span>MCQ Test</span></a>
+    <a href="#assignment" class="nav-item"><span class="nav-icon">📝</span><span>Assignment</span></a>
+  </div>
+</nav>
+
+<main class="main">
+<div class="content">
+
+  <div class="topic-header" id="requirements">
+    <div class="breadcrumb">Phase 4 — Real World Systems <span>›</span> System 02</div>
+    <span class="topic-num">SYSTEM 02 / 07</span>
+    <h1 class="topic-title">Twitter / X<br>Design</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ ৯০-১২০ মিনিট</span>
+      <span class="meta-chip level">📊 Junior Level</span>
+      <span class="meta-chip type">🏗️ System Design</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Why This System</div>
+    <h2 class="section-title">Twitter কেন Design শেখা দরকার?</h2>
+    <p>Twitter/X হলো সবচেয়ে complex social media system design interview question গুলোর একটা। এখানে <strong>News Feed generation</strong>, <strong>follower/following graph</strong>, <strong>real-time trending</strong> — এই তিনটা hard problem একসাথে solve করতে হয়।</p>
+    <div class="info-box concept">
+      <div class="box-label">📌 Core Challenges</div>
+      <strong>Fanout Problem:</strong> একজন celebrity যখন tweet করে (Elon Musk: 150M followers), তখন সেই tweet 150M user-এর feed-এ push করতে হবে। এটাই Twitter-এর সবচেয়ে কঠিন scaling problem।
+    </div>
+  </div>
+
+  <!-- Requirements -->
+  <div class="section">
+    <div class="section-label">Requirements</div>
+    <h2 class="section-title">কী কী Features লাগবে?</h2>
+    <div class="req-grid">
+      <div class="req-card functional">
+        <div class="r-title">✅ Functional Requirements</div>
+        <ul>
+          <li>Tweet post করা (text, image, video)</li>
+          <li>Follow / Unfollow করা</li>
+          <li>Home timeline (following-দের tweets)</li>
+          <li>User timeline (নির্দিষ্ট user-এর tweets)</li>
+          <li>Like, Retweet, Reply</li>
+          <li>Search tweets ও users</li>
+          <li>Trending hashtags</li>
+          <li>Notification system</li>
+        </ul>
+      </div>
+      <div class="req-card nonfunc">
+        <div class="r-title">⚡ Non-Functional Requirements</div>
+        <ul>
+          <li>500M+ daily active users</li>
+          <li>Timeline load < 200ms</li>
+          <li>Tweet post < 500ms</li>
+          <li>High availability (99.99%)</li>
+          <li>Eventual consistency acceptable</li>
+          <li>Tweets never lost (durability)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estimation -->
+  <div class="section" id="estimation">
+    <div class="section-label">Back-of-Envelope Estimation</div>
+    <h2 class="section-title">Twitter Scale বোঝা</h2>
+    <div class="estimation-grid">
+      <div class="est-card"><span class="est-num">500M</span><span class="est-label">Daily Active Users</span></div>
+      <div class="est-card"><span class="est-num">200M</span><span class="est-label">Tweets/Day</span></div>
+      <div class="est-card"><span class="est-num">2300</span><span class="est-label">Tweets/sec</span></div>
+      <div class="est-card"><span class="est-num">300K</span><span class="est-label">Timeline reads/sec</span></div>
+      <div class="est-card"><span class="est-num">150M</span><span class="est-label">Max Followers (celebrity)</span></div>
+      <div class="est-card"><span class="est-num">100TB</span><span class="est-label">Daily Media Storage</span></div>
+    </div>
+    <div class="info-box important">
+      <div class="box-label">🔢 Fanout Calculation</div>
+      প্রতিটা tweet average 200 followers → fanout = 200 × 2300 = 460K writes/sec শুধু timeline update-এর জন্য। Celebrity tweet হলে 150M × 1 = 150M instant writes! এটাই "thundering herd" problem।
+    </div>
+  </div>
+
+  <!-- Architecture -->
+  <div class="section" id="architecture">
+    <div class="section-label">High Level Architecture</div>
+    <h2 class="section-title">Twitter-এর Big Picture</h2>
+
+    <div class="diagram">
+      <svg width="700" height="380" viewBox="0 0 700 380">
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#64748b"/></marker>
+          <marker id="arrB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#1d9bf0"/></marker>
+        </defs>
+
+        <!-- Client -->
+        <rect x="10" y="160" width="70" height="40" rx="4" fill="#0c1220" stroke="#1e2d4a" stroke-width="1.5"/>
+        <text x="45" y="177" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">CLIENT</text>
+        <text x="45" y="191" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Web/App</text>
+
+        <path d="M 80 180 L 115 180" stroke="#1d9bf0" stroke-width="1.5" marker-end="url(#arrB)"/>
+
+        <!-- API Gateway -->
+        <rect x="115" y="155" width="90" height="50" rx="4" fill="#0c1220" stroke="#1d9bf0" stroke-width="1.5"/>
+        <text x="160" y="175" text-anchor="middle" fill="#1d9bf0" font-family="JetBrains Mono" font-size="9">API</text>
+        <text x="160" y="188" text-anchor="middle" fill="#1d9bf0" font-family="JetBrains Mono" font-size="9">GATEWAY</text>
+        <text x="160" y="218" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Auth + Rate Limit</text>
+
+        <!-- Tweet Service -->
+        <path d="M 205 170 L 240 130" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <rect x="240" y="110" width="100" height="40" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.2"/>
+        <text x="290" y="128" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">TWEET</text>
+        <text x="290" y="141" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">SERVICE</text>
+
+        <!-- User Service -->
+        <path d="M 205 180 L 240 180" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <rect x="240" y="160" width="100" height="40" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.2"/>
+        <text x="290" y="178" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="9">USER</text>
+        <text x="290" y="191" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="9">SERVICE</text>
+
+        <!-- Timeline Service -->
+        <path d="M 205 190 L 240 230" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <rect x="240" y="210" width="100" height="40" rx="4" fill="#0c1220" stroke="#f97316" stroke-width="1.2"/>
+        <text x="290" y="228" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="9">TIMELINE</text>
+        <text x="290" y="241" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="9">SERVICE</text>
+
+        <!-- Fanout Service -->
+        <path d="M 340 130 L 380 130" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <rect x="380" y="110" width="100" height="40" rx="4" fill="#0c1220" stroke="#eab308" stroke-width="1.5"/>
+        <text x="430" y="128" text-anchor="middle" fill="#eab308" font-family="JetBrains Mono" font-size="9">FANOUT</text>
+        <text x="430" y="141" text-anchor="middle" fill="#eab308" font-family="JetBrains Mono" font-size="9">SERVICE</text>
+
+        <!-- Message Queue -->
+        <path d="M 480 130 L 520 130" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <rect x="520" y="110" width="90" height="40" rx="4" fill="#0c1220" stroke="#64748b" stroke-width="1.2"/>
+        <text x="565" y="128" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">KAFKA</text>
+        <text x="565" y="141" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">QUEUE</text>
+
+        <!-- Tweet DB -->
+        <path d="M 340 130 L 380 200" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <rect x="380" y="185" width="100" height="40" rx="4" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="430" y="203" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="9">TWEET DB</text>
+        <text x="430" y="216" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Cassandra</text>
+
+        <!-- Timeline Cache -->
+        <path d="M 340 230 L 380 270" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <rect x="380" y="255" width="100" height="40" rx="4" fill="#0c1220" stroke="#eab308" stroke-width="1.5"/>
+        <text x="430" y="273" text-anchor="middle" fill="#eab308" font-family="JetBrains Mono" font-size="9">TIMELINE</text>
+        <text x="430" y="286" text-anchor="middle" fill="#eab308" font-family="JetBrains Mono" font-size="8">Redis Cache</text>
+
+        <!-- Social Graph DB -->
+        <path d="M 340 180 L 520 220" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <rect x="520" y="205" width="100" height="40" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.2"/>
+        <text x="570" y="223" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="9">GRAPH DB</text>
+        <text x="570" y="236" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Follow graph</text>
+
+        <!-- Media Storage -->
+        <rect x="520" y="300" width="100" height="40" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.2"/>
+        <text x="570" y="318" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">MEDIA</text>
+        <text x="570" y="331" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">S3 + CDN</text>
+
+        <!-- Search Service -->
+        <rect x="10" y="300" width="100" height="40" rx="4" fill="#0c1220" stroke="#1d9bf0" stroke-width="1.2"/>
+        <text x="60" y="318" text-anchor="middle" fill="#1d9bf0" font-family="JetBrains Mono" font-size="9">SEARCH</text>
+        <text x="60" y="331" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Elasticsearch</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Deep Dive: Fanout -->
+  <div class="section" id="deepdive">
+    <div class="section-label">Deep Dive</div>
+    <h2 class="section-title">Fanout Problem — Twitter-এর Hardest Part</h2>
+    <p>যখন কেউ tweet করে, সেই tweet তার সব followers-এর home timeline-এ দেখা যায়। এটা করার দুটো approach আছে।</p>
+
+    <table class="compare-table">
+      <tr><th>Approach</th><th>কীভাবে কাজ করে</th><th>Write Cost</th><th>Read Cost</th><th>Problem</th></tr>
+      <tr><td>Fan-out on Write (Push)</td><td>Tweet করলেই সব followers-এর cache update</td><td class="tag-no">High (150M writes)</td><td class="tag-yes">Low (cache hit)</td><td>Celebrity problem</td></tr>
+      <tr><td>Fan-out on Read (Pull)</td><td>Timeline load করলে following-দের tweets pull</td><td class="tag-yes">Low</td><td class="tag-no">High (DB joins)</td><td>Slow timeline</td></tr>
+      <tr><td>Hybrid (Twitter's approach)</td><td>Normal users: push, Celebrity: pull on read</td><td class="tag-yes">Balanced</td><td class="tag-yes">Balanced</td><td class="tag-yes">Best of both</td></tr>
+    </table>
+
+    <div class="info-box tip">
+      <div class="box-label">💡 Twitter-এর Real Solution</div>
+      Twitter threshold ≈ 10,000 followers। এর কম followers হলে <strong>fan-out on write</strong> (push to all)। বেশি হলে <strong>fan-out on read</strong> (pull at read time)। এই hybrid approach-ই production-এ use হয়।
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Python</span>
+        <span class="code-file">fanout_service.py</span>
+      </div>
+      <pre><span class="kw">async def</span> <span class="fn">fanout_tweet</span>(tweet_id, author_id, db, cache, queue):
+    <span class="cm"># Author-এর follower list নাও</span>
+    followers = <span class="kw">await</span> db.get_followers(author_id)
+    
+    <span class="cm"># Hybrid Fanout Logic</span>
+    <span class="kw">if</span> <span class="fn">len</span>(followers) < <span class="num">10_000</span>:
+        <span class="cm"># Normal user: push to all followers' timeline cache</span>
+        <span class="kw">for</span> follower_id <span class="kw">in</span> followers:
+            cache.lpush(<span class="str">f"timeline:{follower_id}"</span>, tweet_id)
+            cache.ltrim(<span class="str">f"timeline:{follower_id}"</span>, <span class="num">0</span>, <span class="num">799</span>)  <span class="cm"># last 800 tweets</span>
+    <span class="kw">else</span>:
+        <span class="cm"># Celebrity: push to Kafka, workers will process async</span>
+        <span class="cm"># At read time, celebrity tweets are fetched separately</span>
+        <span class="kw">await</span> queue.publish(<span class="str">"celebrity-fanout"</span>, {
+            <span class="str">"tweet_id"</span>: tweet_id,
+            <span class="str">"author_id"</span>: author_id
+        })
+    
+    <span class="cm"># Tweet always saved to Tweet DB</span>
+    <span class="kw">await</span> db.save_tweet(tweet_id, author_id)</pre>
+    </div>
+
+    <h3 class="sub-title">📰 Home Timeline — Read Path</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Python</span>
+        <span class="code-file">timeline_service.py</span>
+      </div>
+      <pre><span class="kw">async def</span> <span class="fn">get_home_timeline</span>(user_id, db, cache):
+    <span class="cm"># Step 1: User-এর pre-built timeline cache থেকে নাও</span>
+    cached = cache.lrange(<span class="str">f"timeline:{user_id}"</span>, <span class="num">0</span>, <span class="num">19</span>)
+    
+    <span class="cm"># Step 2: Celebrity following list check</span>
+    celebrities = cache.smembers(<span class="str">f"following_celebrities:{user_id}"</span>)
+    
+    <span class="cm"># Step 3: Celebrity tweets আলাদাভাবে fetch করো</span>
+    celebrity_tweets = []
+    <span class="kw">for</span> celeb_id <span class="kw">in</span> celebrities:
+        tweets = <span class="kw">await</span> db.get_recent_tweets(celeb_id, limit=<span class="num">5</span>)
+        celebrity_tweets.extend(tweets)
+    
+    <span class="cm"># Step 4: Merge করো, sort by timestamp</span>
+    all_tweet_ids = cached + [t.id <span class="kw">for</span> t <span class="kw">in</span> celebrity_tweets]
+    all_tweet_ids.sort(key=<span class="kw">lambda</span> x: x.created_at, reverse=<span class="kw">True</span>)
+    
+    <span class="kw">return</span> all_tweet_ids[:<span class="num">20</span>]  <span class="cm"># Top 20 tweets</span></pre>
+    </div>
+  </div>
+
+  <!-- Database -->
+  <div class="section" id="database">
+    <div class="section-label">Database Choice</div>
+    <h2 class="section-title">Multiple Databases — কোনটা কিসের জন্য?</h2>
+    <p>Twitter-এ single database দিয়ে হয় না। Different use cases-এর জন্য different databases।</p>
+
+    <table class="compare-table">
+      <tr><th>Data Type</th><th>Database</th><th>Why?</th></tr>
+      <tr><td>Tweets (immutable)</td><td>Cassandra</td><td>Append-only, time-series, massive scale</td></tr>
+      <tr><td>User profiles</td><td>PostgreSQL</td><td>ACID, relational, profile updates</td></tr>
+      <tr><td>Follow graph</td><td>Redis (sorted set) / Neo4j</td><td>Graph traversal, follower counts</td></tr>
+      <tr><td>Home timeline</td><td>Redis (list)</td><td>Fast reads, pre-computed, in-memory</td></tr>
+      <tr><td>Search index</td><td>Elasticsearch</td><td>Full-text search, hashtag search</td></tr>
+      <tr><td>Media files</td><td>Amazon S3 + CloudFront</td><td>Object storage, CDN delivery</td></tr>
+      <tr><td>Analytics</td><td>Hadoop/Spark + Hive</td><td>Batch processing, trend analysis</td></tr>
+    </table>
+
+    <div class="info-box warning">
+      <div class="box-label">⚠️ Tweet Schema Design</div>
+      Tweets এ created_at দিয়ে partition করো Cassandra-তে। <strong>Time-series data</strong> — নতুন tweets সবসময় write, পুরনো tweets rarely read। Cassandra-র time-based partitioning perfect fit।
+    </div>
+  </div>
+
+  <!-- Scaling -->
+  <div class="section" id="scaling">
+    <div class="section-label">Scaling Decisions</div>
+    <h2 class="section-title">Twitter Scale করার Strategies</h2>
+
+    <div class="tradeoff-row">
+      <span class="tradeoff-label pro">Strategy</span>
+      <div class="tradeoff-text"><strong>Timeline Caching:</strong> প্রতিটা user-এর last 800 tweets Redis-এ store। 99% reads cache hit → DB আসে না।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label pro">Strategy</span>
+      <div class="tradeoff-text"><strong>Async Fanout via Kafka:</strong> Tweet POST করলে immediately return। Background-এ Kafka workers fanout করে। User experience fast রাখে।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label pro">Strategy</span>
+      <div class="tradeoff-text"><strong>Read Replicas:</strong> Tweet DB-তে 1 master + 5 replicas। সব reads replica থেকে → master শুধু writes।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label con">Trade-off</span>
+      <div class="tradeoff-text"><strong>Eventual Consistency:</strong> Celebrity tweet হলে সবার timeline-এ 1-2 sec delay হতে পারে। Acceptable trade-off।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label con">Trade-off</span>
+      <div class="tradeoff-text"><strong>Storage Cost:</strong> প্রতিটা tweet 800 user-এর cache-এ store মানে 800x storage। Memory expensive কিন্তু latency দিয়ে pay করা worth।</div>
+    </div>
+  </div>
+
+  <!-- Tech Stack -->
+  <div class="section" id="techstack">
+    <div class="section-label">Full Tech Stack</div>
+    <h2 class="section-title">Twitter-এর Real Tech Stack</h2>
+    <h3 class="sub-title">Backend Services</h3>
+    <div class="tech-stack">
+      <span class="tech-tag lang">Scala / Java</span>
+      <span class="tech-tag lang">Python (ML/Recommendations)</span>
+      <span class="tech-tag infra">Kubernetes</span>
+      <span class="tech-tag infra">Nginx + Envoy Proxy</span>
+    </div>
+    <h3 class="sub-title">Data Storage</h3>
+    <div class="tech-stack">
+      <span class="tech-tag db">Cassandra (Tweets)</span>
+      <span class="tech-tag db">PostgreSQL (Users)</span>
+      <span class="tech-tag cache">Redis Cluster (Timeline)</span>
+      <span class="tech-tag db">Elasticsearch (Search)</span>
+      <span class="tech-tag db">Manhattan (Twitter's own KV store)</span>
+    </div>
+    <h3 class="sub-title">Messaging & Analytics</h3>
+    <div class="tech-stack">
+      <span class="tech-tag queue">Apache Kafka (Fanout)</span>
+      <span class="tech-tag infra">Amazon S3 (Media)</span>
+      <span class="tech-tag infra">CloudFront CDN</span>
+      <span class="tech-tag db">Hadoop + Spark (Analytics)</span>
+    </div>
+  </div>
+
+  <!-- MCQ -->
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🎯</span>
+      <h2>MCQ Test — Twitter/X Design</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">Elon Musk (150M followers) tweet করলে "Fanout on Write" approach-এ কতটা writes হবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> 1 write (শুধু tweet save)</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> 1000 writes</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> 150 million writes</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> 150 thousand writes</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Fan-out on write মানে প্রতিটা follower-এর timeline cache update করো। 150M followers → 150M cache writes। এটাই "celebrity problem" বা "thundering herd" — তাই Twitter hybrid approach use করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">Twitter-এর Hybrid Fanout approach-এ celebrity threshold কত followers?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> 1,000 followers</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> 10,000 followers</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> 1 million followers</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> 100,000 followers</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Twitter-এর actual threshold ≈ 10,000 followers। এর কম = fan-out on write (push)। বেশি = fan-out on read (pull at timeline load time)। এই number exact নয়, কিন্তু concept টা interview-এ গুরুত্বপূর্ণ।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">Home Timeline-এর জন্য Redis-এ কোন data structure সবচেয়ে appropriate?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> List (LPUSH + LTRIM)</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Hash Map</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Set</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> String</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Redis List এ LPUSH দিয়ে নতুন tweet সামনে add করো, LTRIM দিয়ে last 800 রাখো। Ordered by insertion time — timeline-এর জন্য perfect। LRANGE দিয়ে pagination করা যায়।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">Tweet data store করার জন্য সবচেয়ে suitable database কোনটা এবং কেন?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> MySQL — ACID transactions দরকার</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> MongoDB — flexible schema</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> SQLite — simple and fast</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Cassandra — immutable, time-series, massive write scale</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Tweets are immutable (একবার post, rarely edit) এবং time-series (by created_at)। Cassandra partition by time, massive write throughput। Twitter নিজে Cassandra use করে tweet storage-এর জন্য।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">Hashtag search (#Python) implement করতে কোন database best?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Redis</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Elasticsearch</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Cassandra</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> PostgreSQL LIKE query</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উत তর: B</strong> — Elasticsearch full-text search-এর জন্য designed। Inverted index দিয়ে hashtag search milliseconds-এ হয়। PostgreSQL LIKE query O(n) — 200M tweets-এ অনেক slow। Twitter Elasticsearch use করে search feature-এ।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">Twitter-এ Follow graph (কে কাকে follow করে) store করার জন্য কোনটা ভালো?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> MySQL table</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> File system</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Redis Sorted Set / Graph DB</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Array in memory</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Follow graph = social graph। Redis Sorted Set-এ user_id → follower_ids store করো। Follower count, mutual follows efficiently query করা যায়। Large scale-এ Neo4j বা FlockDB (Twitter's own graph DB) use হয়।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">Tweet image/video কোথায় store করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Amazon S3 + CloudFront CDN</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Database BLOB field</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> API Server local disk</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Redis cache</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Binary files (images, videos) object storage-এ রাখো। S3 reliable, cheap, scalable। CDN (CloudFront) globally distribute করে — user-এর কাছের edge server থেকে fast delivery। Database-এ BLOB = terrible idea for scale।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">Real-time Trending Topics (#Trending) কীভাবে implement করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> প্রতি second DB scan করো</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> User vote করবে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Daily batch job</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Redis Sorted Set + sliding window count</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Redis Sorted Set এ hashtag → last 1 hour count রাখো। নতুন tweet → ZINCRBY করো। ZREVRANGE দিয়ে top trending পাও। Sliding window (last 1 hour) দিয়ে stale trends avoid করো।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">Twitter-এর Like count millions হলে race condition prevent করবে কীভাবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Single thread এ সব process করো</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Redis INCR (atomic operation)</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> DB transaction lock করো</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Like count approximate রাখো</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Redis INCR atomic operation — concurrent requests-এ race condition নেই। DB-তে SELECT FOR UPDATE lock expensive। Redis INCR lightning fast, atomic, perfect for counters।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">Twitter-এ Kafka use করার primary reason কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Primary database হিসেবে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> User authentication এর জন্য</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Async fanout — tweet post এর পরে background-এ distribute করতে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Image compression এর জন্য</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Tweet POST request immediately return করে। Kafka queue-তে tweet_id push হয়। Background consumers async-ভাবে follower timelines update করে। এই decoupling দিয়ে write latency কমে এবং system resilient হয়।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT & CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <!-- Assignment -->
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ৩-৪ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <p style="margin-bottom:16px; font-size:14px; color:#94a3b8;">Twitter-এর core systems design করো।</p>
+    <ul class="task-list">
+      <li><strong>Full Architecture Diagram:</strong> Excalidraw বা draw.io তে Twitter-এর complete system diagram আঁকো। Include: Client, API Gateway, Tweet Service, Fanout Service, Timeline Service, Kafka, Cassandra (Tweet DB), Redis (Timeline Cache), Elasticsearch, S3+CDN। Arrows দিয়ে data flow দেখাও।</li>
+      <li><strong>Fanout Comparison:</strong> একটা table বানাও — Fan-out on Write vs Fan-out on Read। প্রতিটার জন্য: Write cost, Read latency, Storage cost, Celebrity problem, Normal user experience। তুমি কোনটা choose করতে এবং কেন?</li>
+      <li><strong>Data Model Design:</strong> Tweet, User, এবং Follow tables-এর schema লেখো (Cassandra format)। Partition key, clustering key কী হবে explain করো।</li>
+      <li><strong>Trending Hashtags Algorithm:</strong> Redis Sorted Set ব্যবহার করে "last 1 hour trending hashtags" কীভাবে implement করবে pseudo-code লেখো।</li>
+      <li><strong>Scaling Question:</strong> Twitter-এ World Cup final চলছে — প্রতি second 100,000 tweets হচ্ছে #WorldCupFinal নিয়ে। তোমার system কীভাবে এই sudden spike handle করবে? ৩-৫ লাইন লেখো।</li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>Full Twitter architecture diagram</li>
+        <li>Fanout comparison table</li>
+        <li>Data model schema</li>
+        <li>Trending hashtag pseudo-code</li>
+        <li>Spike handling explanation</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-label">System Summary</div>
+    <h2 class="section-title">Twitter — Key Takeaways</h2>
+    <table class="compare-table">
+      <tr><th>Challenge</th><th>Solution</th><th>Technology</th></tr>
+      <tr><td>Celebrity fanout</td><td>Hybrid: push+pull</td><td>Kafka + Redis</td></tr>
+      <tr><td>Fast timeline reads</td><td>Pre-computed cache</td><td>Redis List</td></tr>
+      <tr><td>Tweet storage at scale</td><td>Time-series immutable</td><td>Cassandra</td></tr>
+      <tr><td>Hashtag search</td><td>Inverted index</td><td>Elasticsearch</td></tr>
+      <tr><td>Media delivery</td><td>Object store + CDN</td><td>S3 + CloudFront</td></tr>
+      <tr><td>Follow graph</td><td>Graph traversal</td><td>Redis Sorted Set</td></tr>
+    </table>
+  </div>
+
+  <div class="next-cta" onclick="alert('System 3: YouTube/Netflix — পরের ফাইল খোলো!')">
+    <div>
+      <div class="next-label">Next System →</div>
+      <div class="next-title">📺 YouTube / Netflix Design</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+
+</div>
+</main>
+
+<script>
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scroll = doc.scrollTop || document.body.scrollTop;
+  const height = doc.scrollHeight - doc.clientHeight;
+  document.getElementById('progressFill').style.width = (scroll / height * 100) + '%';
+});
+let answered = {};
+document.querySelectorAll('.option').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const block = this.closest('.question-block');
+    const qId = Array.from(document.querySelectorAll('.question-block')).indexOf(block);
+    if (answered[qId]) return;
+    answered[qId] = this.dataset.val;
+    block.querySelectorAll('.option').forEach(o => {
+      o.style.pointerEvents = 'none';
+      if (o.dataset.val === block.dataset.correct) o.classList.add('correct');
+      else if (o.dataset.val === this.dataset.val && this.dataset.val !== block.dataset.correct) o.classList.add('wrong');
+    });
+    block.querySelector('.explanation').classList.add('visible');
+    const correct = Array.from(document.querySelectorAll('.question-block')).filter((b,i) => answered[i] === b.dataset.correct).length;
+    document.getElementById('scoreDisplay').textContent = correct;
+  });
+});
+function submitMCQ() {
+  const blocks = document.querySelectorAll('.question-block');
+  const unanswered = blocks.length - Object.keys(answered).length;
+  if (unanswered > 0) { alert(`এখনও ${unanswered}টা প্রশ্নের উত্তর দাওনি!`); return; }
+  let correct = Array.from(blocks).filter((b,i) => answered[i] === b.dataset.correct).length;
+  const banner = document.getElementById('resultBanner');
+  banner.classList.add('visible');
+  if (correct >= 7) { banner.classList.add('pass'); banner.textContent = `🎉 দারুণ! ${correct}/10 সঠিক। System 3 এ যেতে পারো!`; }
+  else { banner.classList.add('fail'); banner.textContent = `📖 ${correct}/10 সঠিক। Concepts আবার পড়ো। ৭/১০ পেলেই pass।`; }
+}
+</script>
+</body>
+</html>

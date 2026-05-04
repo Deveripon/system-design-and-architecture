@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 3 · Topic 5 — Service Discovery & Mesh</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05080f;--surface:#090e1a;--card:#0c1220;--border:#162035;--border2:#1e2d4a;--accent:#3b82f6;--accent-glow:rgba(59,130,246,0.15);--green:#10b981;--green-glow:rgba(16,185,129,0.12);--orange:#f97316;--red:#ef4444;--yellow:#eab308;--purple:#8b5cf6;--pink:#ec4899;--text:#e2e8f0;--muted:#64748b;--muted2:#94a3b8;}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans Bengali',sans-serif;line-height:1.7;font-size:15px;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.4;}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100;}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo .phase-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--pink);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:4px;}
+.sidebar-logo .course-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;line-height:1.3;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-section-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);padding:0 8px;margin-bottom:6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:4px;font-size:13px;color:var(--muted2);cursor:pointer;transition:all 0.15s;text-decoration:none;}
+.nav-item:hover{background:var(--card);color:var(--text);}
+.nav-item.active{background:rgba(236,72,153,0.1);color:var(--pink);}
+.nav-item .nav-icon{font-size:14px;flex-shrink:0;}
+.nav-item .nav-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto;}
+.progress-bar{position:fixed;top:0;left:240px;right:0;height:2px;background:var(--border);z-index:200;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--pink),var(--purple));width:0%;transition:width 0.1s;}
+.main{margin-left:240px;min-height:100vh;}
+.content{max-width:780px;margin:0 auto;padding:48px 40px 120px;}
+.topic-header{margin-bottom:48px;}
+.breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.breadcrumb span{color:var(--pink);}
+.topic-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--pink);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:block;}
+h1.topic-title{font-family:'Fraunces',serif;font-size:clamp(32px,5vw,48px);font-weight:900;line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,#fff 30%,#fbcfe8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.topic-meta{display:flex;gap:16px;flex-wrap:wrap;}
+.meta-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 12px;border-radius:2px;border:1px solid;}
+.meta-chip.time{border-color:rgba(59,130,246,0.3);color:var(--accent);background:var(--accent-glow);}
+.meta-chip.level{border-color:rgba(16,185,129,0.3);color:var(--green);background:var(--green-glow);}
+.meta-chip.type{border-color:rgba(236,72,153,0.3);color:var(--pink);background:rgba(236,72,153,0.08);}
+.section{margin-bottom:48px;scroll-margin-top:24px;}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:3px;color:var(--pink);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+h2.section-title{font-family:'Fraunces',serif;font-size:24px;font-weight:700;margin-bottom:16px;color:#f1f5f9;}
+h3.sub-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;margin:24px 0 10px;color:#cbd5e1;}
+p{margin-bottom:14px;color:#cbd5e1;}
+.info-box{border-radius:6px;padding:18px 20px;margin:20px 0;border-left:3px solid;font-size:14px;}
+.info-box.concept{background:rgba(59,130,246,0.06);border-color:var(--accent);}
+.info-box.warning{background:rgba(249,115,22,0.06);border-color:var(--orange);}
+.info-box.tip{background:rgba(16,185,129,0.06);border-color:var(--green);}
+.info-box.important{background:rgba(234,179,8,0.06);border-color:var(--yellow);}
+.info-box .box-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:700;}
+.info-box.concept .box-label{color:var(--accent);}
+.info-box.warning .box-label{color:var(--orange);}
+.info-box.tip .box-label{color:var(--green);}
+.info-box.important .box-label{color:var(--yellow);}
+.compare-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;}
+.compare-table th{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1px;padding:12px 16px;text-align:left;background:var(--card);border-bottom:2px solid var(--border2);color:var(--muted2);}
+.compare-table td{padding:11px 16px;border-bottom:1px solid var(--border);color:#94a3b8;vertical-align:top;line-height:1.6;}
+.compare-table tr:hover td{background:rgba(255,255,255,0.02);}
+.compare-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);}
+.tag-yes{color:var(--green);font-weight:600;}.tag-no{color:var(--red);}.tag-med{color:var(--yellow);}
+.diagram{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:30px 20px;margin:24px 0;overflow-x:auto;}
+.diagram svg{max-width:100%;}
+.code-block{background:#030608;border:1px solid var(--border2);border-radius:6px;margin:20px 0;overflow:hidden;}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--border);}
+.code-lang{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--pink);text-transform:uppercase;letter-spacing:1px;}
+.code-file{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);}
+pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.8;color:#e2e8f0;}
+.kw{color:#93c5fd;}.fn{color:#6ee7b7;}.str{color:#fcd34d;}.cm{color:#475569;font-style:italic;}.num{color:#f9a8d4;}.var{color:#e2e8f0;}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0;}
+.scenario-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:18px;}
+.scenario-card .s-title{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--pink);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;}
+.scenario-card p{font-size:13px;color:var(--muted2);margin:0;}
+.mcq-section{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:28px;margin:30px 0;}
+.mcq-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.mcq-icon{font-size:24px;}
+.mcq-header h2{font-family:'Fraunces',serif;font-size:20px;font-weight:700;}
+.mcq-score{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);}
+.mcq-score span{color:var(--pink);font-size:18px;font-weight:700;}
+.question-block{margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--border);}
+.question-block:last-of-type{border-bottom:none;margin-bottom:0;}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.q-text{font-size:15px;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.5;font-family:'Noto Sans Bengali',sans-serif;}
+.options{display:flex;flex-direction:column;gap:8px;}
+.option{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:4px;border:1px solid var(--border);cursor:pointer;transition:all 0.15s;font-size:14px;color:var(--muted2);font-family:'Noto Sans Bengali',sans-serif;}
+.option:hover{border-color:var(--pink);color:var(--text);background:rgba(236,72,153,0.05);}
+.option.correct{border-color:var(--green);background:var(--green-glow);color:#6ee7b7;}
+.option.wrong{border-color:var(--red);background:rgba(239,68,68,0.08);color:#fca5a5;}
+.option-key{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--border2);padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;}
+.explanation{display:none;margin-top:12px;padding:12px 14px;background:rgba(16,185,129,0.06);border-left:2px solid var(--green);border-radius:0 4px 4px 0;font-size:13px;color:#94a3b8;line-height:1.7;font-family:'Noto Sans Bengali',sans-serif;}
+.explanation.visible{display:block;}
+.explanation strong{color:var(--green);}
+.mcq-submit{display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:12px 24px;background:var(--pink);color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;border:none;border-radius:4px;cursor:pointer;letter-spacing:1px;transition:all 0.15s;}
+.mcq-submit:hover{background:#db2777;transform:translateY(-1px);}
+.result-banner{display:none;margin-top:20px;padding:16px 20px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;}
+.result-banner.visible{display:block;}
+.result-banner.pass{background:var(--green-glow);border:1px solid var(--green);color:var(--green);}
+.result-banner.fail{background:rgba(249,115,22,0.08);border:1px solid var(--orange);color:var(--orange);}
+.assignment-section{background:linear-gradient(135deg,rgba(236,72,153,0.04),rgba(139,92,246,0.04));border:1px solid rgba(236,72,153,0.2);border-radius:8px;padding:28px;margin:30px 0;}
+.assignment-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.assignment-icon{font-size:28px;}
+.assignment-header h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700;}
+.assignment-meta{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.a-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 10px;border-radius:2px;}
+.a-chip.time{background:rgba(234,179,8,0.1);color:var(--yellow);border:1px solid rgba(234,179,8,0.2);}
+.a-chip.level{background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.2);}
+.task-list{counter-reset:tasks;list-style:none;margin-bottom:20px;}
+.task-list li{counter-increment:tasks;padding:14px 14px 14px 50px;position:relative;border-bottom:1px solid var(--border);font-size:14px;color:var(--muted2);line-height:1.7;font-family:'Noto Sans Bengali',sans-serif;}
+.task-list li:last-child{border-bottom:none;}
+.task-list li::before{content:counter(tasks);position:absolute;left:14px;top:14px;width:24px;height:24px;background:rgba(236,72,153,0.1);border:1px solid rgba(236,72,153,0.3);border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--pink);display:flex;align-items:center;justify-content:center;font-weight:700;}
+.task-list li strong{color:var(--text);}
+.deliverable-box{background:var(--card);border:1px solid var(--border2);border-radius:6px;padding:16px 18px;margin-top:16px;}
+.deliverable-box .d-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--pink);margin-bottom:10px;}
+.deliverable-box ul{list-style:none;padding:0;}
+.deliverable-box ul li{font-size:13px;color:var(--muted2);padding:4px 0 4px 18px;position:relative;font-family:'Noto Sans Bengali',sans-serif;}
+.deliverable-box ul li::before{content:'◆';position:absolute;left:0;font-size:8px;color:var(--pink);top:6px;}
+.project-section{background:var(--card);border:1px solid var(--border2);border-radius:8px;overflow:hidden;margin:30px 0;}
+.project-header{background:linear-gradient(90deg,rgba(16,185,129,0.1),transparent);padding:18px 24px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:12px;}
+.project-header h2{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--green);}
+.project-body{padding:24px;}
+.step-flow{display:flex;flex-direction:column;gap:0;margin:16px 0;}
+.step-item{display:flex;gap:16px;padding-bottom:24px;position:relative;}
+.step-item:last-child{padding-bottom:0;}
+.step-item::before{content:'';position:absolute;left:15px;top:32px;bottom:0;width:1px;background:var(--border2);}
+.step-item:last-child::before{display:none;}
+.step-circle{width:32px;height:32px;border-radius:50%;background:var(--green-glow);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--green);flex-shrink:0;z-index:1;}
+.step-content{flex:1;}
+.step-content h4{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);margin-bottom:4px;}
+.step-content p{font-size:13px;color:var(--muted2);margin:0;}
+.next-cta{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:20px 24px;margin-top:48px;text-decoration:none;color:var(--text);transition:border-color 0.2s;}
+.next-cta:hover{border-color:var(--pink);}
+.next-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;}
+.next-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;}
+.next-arrow{font-size:24px;color:var(--pink);}
+@media(max-width:768px){.sidebar{display:none;}.main{margin-left:0;}.content{padding:24px 16px 80px;}.scenario-grid{grid-template-columns:1fr;}.progress-bar{left:0;}}
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 03 · Distributed Systems</span>
+    <div class="course-title">System Design<br>Mastery Course</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Phase 3 Topics</div>
+    <a href="#" class="nav-item"><span class="nav-icon">🧩</span><span>Microservices</span><span class="nav-num">01</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🗳️</span><span>Distributed Consensus</span><span class="nav-num">02</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">⚡</span><span>Circuit Breaker</span><span class="nav-num">03</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🚦</span><span>Rate Limiting</span><span class="nav-num">04</span></a>
+    <a href="#" class="nav-item active"><span class="nav-icon">🔍</span><span>Service Discovery</span><span class="nav-num">05</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🔄</span><span>Saga Pattern</span><span class="nav-num">06</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px">
+    <div class="nav-section-label">This Lesson</div>
+    <a href="#concept" class="nav-item"><span class="nav-icon">💡</span><span>Concept</span></a>
+    <a href="#patterns" class="nav-item"><span class="nav-icon">🔎</span><span>Discovery Patterns</span></a>
+    <a href="#mesh" class="nav-item"><span class="nav-icon">🕸️</span><span>Service Mesh</span></a>
+    <a href="#code" class="nav-item"><span class="nav-icon">💻</span><span>Code Examples</span></a>
+    <a href="#realworld" class="nav-item"><span class="nav-icon">🌍</span><span>Real World</span></a>
+    <a href="#interview" class="nav-item"><span class="nav-icon">🎯</span><span>Interview Q&A</span></a>
+    <a href="#mcq" class="nav-item"><span class="nav-icon">✅</span><span>MCQ Test</span></a>
+    <a href="#assignment" class="nav-item"><span class="nav-icon">📝</span><span>Assignment</span></a>
+    <a href="#project" class="nav-item"><span class="nav-icon">🚀</span><span>Project Task</span></a>
+  </div>
+</nav>
+<main class="main">
+<div class="content">
+
+  <div class="topic-header" id="concept">
+    <div class="breadcrumb">Phase 3 — Distributed Systems <span>›</span> Topic 05</div>
+    <span class="topic-num">TOPIC 05 / 06</span>
+    <h1 class="topic-title">Service Discovery<br>& Mesh</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ ৬০-৯০ মিনিট</span>
+      <span class="meta-chip level">📊 Junior Level</span>
+      <span class="meta-chip type">🔍 Infrastructure</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Why It Matters</div>
+    <h2 class="section-title">Service Discovery কেন শিখতে হবে?</h2>
+    <p>তোমার microservices system এ Order Service কে Payment Service কে call করতে হবে। কিন্তু Payment Service এর IP কী? Kubernetes এ pods dynamically scale হয় — IP বদলায়। Hardcode করা impossible।</p>
+    <p>এই সমস্যার সমাধান হলো <strong>Service Discovery</strong> — services নিজেদের register করে, অন্যরা সেই registry থেকে খুঁজে নেয়।</p>
+    <div class="info-box concept">
+      <div class="box-label">📌 Definition</div>
+      <strong>Service Discovery</strong> হলো একটা mechanism যেখানে services automatically তাদের network location (IP, port) একটা registry তে register করে। অন্য services ওই registry থেকে তাদের খুঁজে নেয়। Dynamic scaling এ IP hardcode করার দরকার নেই।
+    </div>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">❌ Without Discovery</div>
+        <p>Order Service: <code>http://192.168.1.45:8001/charge</code> — hardcoded। Payment pod restart হলে IP বদলায় → app broken।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">✅ With Discovery</div>
+        <p>Order Service: <code>http://payment-service/charge</code> — DNS name। Kubernetes DNS automatically resolve করে। Pod যেকোনো IP তে থাকুক।</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="patterns">
+    <div class="section-label">Discovery Patterns</div>
+    <h2 class="section-title">দুটো Pattern — Client-side vs Server-side</h2>
+
+    <h3 class="sub-title">1. Client-Side Discovery</h3>
+    <p>Client নিজেই Service Registry থেকে service এর location বের করে এবং directly call করে। Netflix Eureka এই pattern follow করে।</p>
+    <div class="diagram">
+      <svg viewBox="0 0 660 175" xmlns="http://www.w3.org/2000/svg">
+        <text x="330" y="18" fill="#94a3b8" font-family="JetBrains Mono" font-size="11" text-anchor="middle">CLIENT-SIDE DISCOVERY</text>
+        <!-- Client -->
+        <rect x="10" y="60" width="110" height="50" rx="4" fill="#0c1220" stroke="#ec4899" stroke-width="2"/>
+        <text x="65" y="81" fill="#fbcfe8" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">Order</text>
+        <text x="65" y="96" fill="#fbcfe8" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">Service</text>
+        <!-- Registry -->
+        <rect x="240" y="30" width="130" height="60" rx="4" fill="#0c1220" stroke="#eab308" stroke-width="2"/>
+        <text x="305" y="53" fill="#fcd34d" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">Service</text>
+        <text x="305" y="67" fill="#fcd34d" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">Registry</text>
+        <text x="305" y="82" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">(Consul/Eureka)</text>
+        <!-- Step 1: query -->
+        <path d="M 120 75 L 240 65" stroke="#eab308" stroke-width="1.5" marker-end="url(#ya5)"/>
+        <defs><marker id="ya5" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#eab308"/></marker></defs>
+        <text x="180" y="62" fill="#eab308" font-family="JetBrains Mono" font-size="8" text-anchor="middle">1. Where is Payment?</text>
+        <!-- Registry response -->
+        <path d="M 240 80 L 120 88" stroke="#eab308" stroke-width="1.5" stroke-dasharray="4" marker-end="url(#ya5b)"/>
+        <defs><marker id="ya5b" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#eab308"/></marker></defs>
+        <text x="180" y="100" fill="#eab308" font-family="JetBrains Mono" font-size="8" text-anchor="middle">2. It's at 10.0.1.5:8001</text>
+        <!-- Payment service instances -->
+        <rect x="490" y="40" width="130" height="35" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="555" y="62" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Payment Service (x3)</text>
+        <!-- Step 3: direct call -->
+        <path d="M 120 95 L 490 60" stroke="#ec4899" stroke-width="1.5" marker-end="url(#pa5)"/>
+        <defs><marker id="pa5" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#ec4899"/></marker></defs>
+        <text x="310" y="115" fill="#ec4899" font-family="JetBrains Mono" font-size="8" text-anchor="middle">3. Direct call to 10.0.1.5:8001</text>
+        <!-- Registration arrows -->
+        <path d="M 490 57 L 370 57" stroke="#10b981" stroke-width="1" stroke-dasharray="3" marker-end="url(#ga5)"/>
+        <defs><marker id="ga5" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#10b981"/></marker></defs>
+        <text x="430" y="50" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Register on start</text>
+        <!-- Client-side load balancing note -->
+        <rect x="50" y="130" width="200" height="35" rx="4" fill="#0c1220" stroke="#ec4899" stroke-width="1"/>
+        <text x="150" y="147" fill="#fbcfe8" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Client has load balancing logic</text>
+        <text x="150" y="160" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">(Netflix Ribbon)</text>
+      </svg>
+    </div>
+
+    <h3 class="sub-title">2. Server-Side Discovery</h3>
+    <p>Client একটা fixed endpoint এ request পাঠায়। Load Balancer / API Gateway নিজে Registry থেকে service location বের করে forward করে। Client কিছু জানে না। Kubernetes Service এই pattern।</p>
+    <div class="diagram">
+      <svg viewBox="0 0 660 155" xmlns="http://www.w3.org/2000/svg">
+        <text x="330" y="18" fill="#94a3b8" font-family="JetBrains Mono" font-size="11" text-anchor="middle">SERVER-SIDE DISCOVERY (Kubernetes Style)</text>
+        <rect x="10" y="55" width="100" height="45" rx="4" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="60" y="81" fill="#93c5fd" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Client</text>
+        <path d="M 110 77 L 175 77" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#ba5)"/>
+        <defs><marker id="ba5" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#3b82f6"/></marker></defs>
+        <text x="143" y="68" fill="#3b82f6" font-family="JetBrains Mono" font-size="8" text-anchor="middle">payment-svc</text>
+        <!-- K8s Service / LB -->
+        <rect x="175" y="45" width="145" height="65" rx="4" fill="#0c1220" stroke="#eab308" stroke-width="2"/>
+        <text x="247" y="67" fill="#fcd34d" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">K8s Service</text>
+        <text x="247" y="81" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Stable DNS + VIP</text>
+        <text x="247" y="95" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Load balances pods</text>
+        <text x="247" y="108" fill="#fcd34d" font-family="JetBrains Mono" font-size="8" text-anchor="middle">kube-proxy</text>
+        <!-- Pods -->
+        <path d="M 320 65 L 400 45" stroke="#ec4899" stroke-width="1.5" marker-end="url(#pa5b)"/>
+        <defs><marker id="pa5b" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#ec4899"/></marker></defs>
+        <path d="M 320 77 L 400 77" stroke="#ec4899" stroke-width="1.5" marker-end="url(#pa5b)"/>
+        <path d="M 320 90 L 400 110" stroke="#ec4899" stroke-width="1.5" marker-end="url(#pa5b)"/>
+        <rect x="400" y="28" width="110" height="30" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="455" y="47" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Pod 10.0.1.5</text>
+        <rect x="400" y="62" width="110" height="30" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="455" y="81" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Pod 10.0.1.6</text>
+        <rect x="400" y="96" width="110" height="30" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="455" y="115" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Pod 10.0.1.7</text>
+        <!-- etcd -->
+        <rect x="540" y="55" width="110" height="45" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="595" y="75" fill="#c4b5fd" font-family="JetBrains Mono" font-size="9" text-anchor="middle">etcd</text>
+        <text x="595" y="90" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Pod registry</text>
+        <path d="M 510 77 L 540 77" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="3"/>
+      </svg>
+    </div>
+
+    <table class="compare-table">
+      <tr><th>Pattern</th><th>Load Balancing</th><th>Complexity</th><th>Example</th></tr>
+      <tr><td>Client-side</td><td>Client handles</td><td><span class="tag-no">Higher</span></td><td>Netflix Eureka + Ribbon</td></tr>
+      <tr><td>Server-side</td><td>LB/Infra handles</td><td><span class="tag-yes">Lower</span></td><td>Kubernetes Service, AWS ALB</td></tr>
+    </table>
+  </div>
+
+  <div class="section" id="mesh">
+    <div class="section-label">Service Mesh</div>
+    <h2 class="section-title">Service Mesh — Infrastructure Layer</h2>
+    <p>Service Discovery solve করার পরও বাকি থাকে: load balancing, circuit breaking, retry, mTLS, observability। প্রতিটা service এ আলাদাভাবে এগুলো implement করা tedious।</p>
+    <p><strong>Service Mesh</strong> এই সমস্যা solve করে — প্রতিটা service এর পাশে একটা <strong>sidecar proxy</strong> বসায় (যেমন Envoy)। সব network traffic এই proxy দিয়ে যায়। Service কোড change করতে হয় না।</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 660 200" xmlns="http://www.w3.org/2000/svg">
+        <text x="330" y="18" fill="#94a3b8" font-family="JetBrains Mono" font-size="11" text-anchor="middle">SERVICE MESH — SIDECAR PATTERN</text>
+        <!-- Service A pod -->
+        <rect x="20" y="35" width="200" height="130" rx="6" fill="#0c1220" stroke="#ec4899" stroke-width="1.5"/>
+        <text x="120" y="56" fill="#fbcfe8" font-family="JetBrains Mono" font-size="9" text-anchor="middle">POD A</text>
+        <rect x="35" y="65" width="75" height="80" rx="4" fill="#162035" stroke="#3b82f6" stroke-width="1"/>
+        <text x="72" y="99" fill="#93c5fd" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Order</text>
+        <text x="72" y="113" fill="#93c5fd" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Service</text>
+        <rect x="120" y="65" width="85" height="80" rx="4" fill="#162035" stroke="#ec4899" stroke-width="1.5"/>
+        <text x="162" y="96" fill="#fbcfe8" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">Envoy</text>
+        <text x="162" y="110" fill="#ec4899" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Sidecar</text>
+        <text x="162" y="124" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">mTLS, LB</text>
+        <text x="162" y="135" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">Circuit Breaker</text>
+        <!-- Arrow between app and sidecar -->
+        <line x1="110" y1="105" x2="120" y2="105" stroke="#ec4899" stroke-width="1.5"/>
+
+        <!-- Encrypted channel in middle -->
+        <rect x="238" y="80" width="144" height="60" rx="4" fill="#0c1220" stroke="#eab308" stroke-width="1.5" stroke-dasharray="5"/>
+        <text x="310" y="103" fill="#fcd34d" font-family="JetBrains Mono" font-size="9" text-anchor="middle" font-weight="700">mTLS Encrypted</text>
+        <text x="310" y="117" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Mutual TLS Channel</text>
+        <text x="310" y="130" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Auto cert rotation</text>
+        <line x1="205" y1="105" x2="238" y2="110" stroke="#eab308" stroke-width="1.5"/>
+        <line x1="382" y1="110" x2="420" y2="105" stroke="#eab308" stroke-width="1.5"/>
+
+        <!-- Service B pod -->
+        <rect x="440" y="35" width="200" height="130" rx="6" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="540" y="56" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">POD B</text>
+        <rect x="455" y="65" width="85" height="80" rx="4" fill="#162035" stroke="#ec4899" stroke-width="1.5"/>
+        <text x="497" y="96" fill="#fbcfe8" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">Envoy</text>
+        <text x="497" y="110" fill="#ec4899" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Sidecar</text>
+        <rect x="550" y="65" width="75" height="80" rx="4" fill="#162035" stroke="#3b82f6" stroke-width="1"/>
+        <text x="587" y="99" fill="#93c5fd" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Payment</text>
+        <text x="587" y="113" fill="#93c5fd" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Service</text>
+        <line x1="540" y1="105" x2="550" y2="105" stroke="#ec4899" stroke-width="1.5"/>
+
+        <!-- Control Plane -->
+        <rect x="240" y="165" width="140" height="30" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="310" y="184" fill="#c4b5fd" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Istio Control Plane</text>
+        <line x1="310" y1="165" x2="310" y2="140" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="3"/>
+      </svg>
+    </div>
+
+    <h3 class="sub-title">Service Mesh কী কী করে?</h3>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">🔐 mTLS</div>
+        <p>Service-to-service communication automatically encrypted। Certificate management automatic। Zero-trust network।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">⚖️ Load Balancing</div>
+        <p>Advanced algorithms: round-robin, least connections, consistent hashing। Health-aware routing।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">⚡ Circuit Breaking</div>
+        <p>Code change ছাড়াই circuit breaker। YAML config এ define করো। Language-agnostic।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">📊 Observability</div>
+        <p>Automatic distributed tracing, metrics, logs। প্রতিটা service এ code লেখা লাগে না। Jaeger integration।</p>
+      </div>
+    </div>
+
+    <table class="compare-table">
+      <tr><th>Tool</th><th>Type</th><th>Proxy</th><th>Best For</th></tr>
+      <tr><td>Istio</td><td>Service Mesh</td><td>Envoy</td><td>Kubernetes — full featured, complex</td></tr>
+      <tr><td>Linkerd</td><td>Service Mesh</td><td>linkerd-proxy</td><td>Lightweight K8s mesh</td></tr>
+      <tr><td>Consul Connect</td><td>Mesh + Discovery</td><td>Envoy/built-in</td><td>Multi-platform, non-K8s too</td></tr>
+      <tr><td>AWS App Mesh</td><td>Managed Mesh</td><td>Envoy</td><td>AWS ECS/EKS</td></tr>
+      <tr><td>Consul</td><td>Discovery only</td><td>—</td><td>Multi-DC service registry</td></tr>
+      <tr><td>K8s DNS</td><td>Discovery only</td><td>—</td><td>Simple K8s service discovery</td></tr>
+    </table>
+  </div>
+
+  <div class="section" id="code">
+    <div class="section-label">Code Examples</div>
+    <h2 class="section-title">Practical Code</h2>
+
+    <h3 class="sub-title">Python: Consul Service Registration</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Python</span><span class="code-file">service_registry.py</span></div>
+      <pre><span class="cm"># pip install python-consul</span>
+<span class="kw">import</span> consul
+<span class="kw">import</span> socket
+<span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+<span class="kw">import</span> uvicorn
+<span class="kw">import</span> atexit
+
+app = <span class="fn">FastAPI</span>()
+c = consul.<span class="fn">Consul</span>(host=<span class="str">'localhost'</span>, port=<span class="num">8500</span>)
+
+SERVICE_NAME = <span class="str">"payment-service"</span>
+SERVICE_PORT = <span class="num">8001</span>
+SERVICE_ID = <span class="str">f"payment-service-{socket.gethostname()}"</span>
+
+<span class="kw">def</span> <span class="fn">register_service</span>():
+    <span class="str">"""Consul এ service register করো"""</span>
+    c.agent.service.<span class="fn">register</span>(
+        name=SERVICE_NAME,
+        service_id=SERVICE_ID,
+        address=socket.<span class="fn">gethostbyname</span>(socket.<span class="fn">gethostname</span>()),
+        port=SERVICE_PORT,
+        check={
+            <span class="str">"http"</span>: <span class="str">f"http://localhost:{SERVICE_PORT}/health"</span>,
+            <span class="str">"interval"</span>: <span class="str">"10s"</span>,   <span class="cm"># Every 10s health check</span>
+            <span class="str">"timeout"</span>: <span class="str">"5s"</span>
+        },
+        tags=[<span class="str">"payment"</span>, <span class="str">"api"</span>, <span class="str">"v1"</span>]
+    )
+    <span class="fn">print</span>(<span class="str">f"✅ Registered: {SERVICE_ID}"</span>)
+
+<span class="kw">def</span> <span class="fn">deregister_service</span>():
+    <span class="str">"""Shutdown এ deregister করো"""</span>
+    c.agent.service.<span class="fn">deregister</span>(SERVICE_ID)
+    <span class="fn">print</span>(<span class="str">f"❌ Deregistered: {SERVICE_ID}"</span>)
+
+<span class="kw">def</span> <span class="fn">discover_service</span>(service_name: <span class="var">str</span>) -> <span class="var">str</span>:
+    <span class="str">"""Service এর URL বের করো"""</span>
+    _, services = c.health.<span class="fn">service</span>(service_name, passing=<span class="kw">True</span>)
+    <span class="kw">if not</span> services:
+        <span class="kw">raise</span> <span class="fn">Exception</span>(<span class="str">f"No healthy instances of {service_name}"</span>)
+    <span class="cm"># Simple round-robin (real এ load balancer করবে)</span>
+    service = services[<span class="num">0</span>][<span class="str">'Service'</span>]
+    <span class="kw">return</span> <span class="str">f"http://{service['Address']}:{service['Port']}"</span>
+
+<span class="fn">@app.on_event</span>(<span class="str">"startup"</span>)
+<span class="kw">async def</span> <span class="fn">startup</span>():
+    <span class="fn">register_service</span>()
+    atexit.<span class="fn">register</span>(deregister_service)
+
+<span class="fn">@app.get</span>(<span class="str">"/health"</span>)
+<span class="kw">async def</span> <span class="fn">health</span>():
+    <span class="kw">return</span> {<span class="str">"status"</span>: <span class="str">"healthy"</span>}
+
+<span class="fn">@app.post</span>(<span class="str">"/orders"</span>)
+<span class="kw">async def</span> <span class="fn">create_order</span>():
+    <span class="cm"># Discover payment service dynamically</span>
+    payment_url = <span class="fn">discover_service</span>(<span class="str">"payment-service"</span>)
+    <span class="kw">return</span> {<span class="str">"payment_url"</span>: payment_url, <span class="str">"status"</span>: <span class="str">"processing"</span>}</pre>
+    </div>
+
+    <h3 class="sub-title">Kubernetes: Service Discovery YAML</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">YAML</span><span class="code-file">payment-service.yaml</span></div>
+      <pre><span class="cm"># Kubernetes Service — stable DNS endpoint</span>
+<span class="kw">apiVersion:</span> v1
+<span class="kw">kind:</span> Service
+<span class="kw">metadata:</span>
+  <span class="var">name:</span> payment-service   <span class="cm"># DNS name হবে: payment-service.default.svc.cluster.local</span>
+  <span class="var">namespace:</span> default
+<span class="kw">spec:</span>
+  <span class="var">selector:</span>
+    <span class="str">app: payment</span>          <span class="cm"># এই label এর pods কে route করবে</span>
+  <span class="var">ports:</span>
+    - <span class="var">port:</span> <span class="num">80</span>            <span class="cm"># Service port</span>
+      <span class="var">targetPort:</span> <span class="num">8001</span>     <span class="cm"># Pod এর actual port</span>
+  <span class="var">type:</span> ClusterIP        <span class="cm"># Internal only</span>
+---
+<span class="kw">apiVersion:</span> apps/v1
+<span class="kw">kind:</span> Deployment
+<span class="kw">metadata:</span>
+  <span class="var">name:</span> payment-deployment
+<span class="kw">spec:</span>
+  <span class="var">replicas:</span> <span class="num">3</span>            <span class="cm"># 3 pods — K8s Service load balances</span>
+  <span class="var">selector:</span>
+    <span class="var">matchLabels:</span>
+      <span class="str">app: payment</span>
+  <span class="var">template:</span>
+    <span class="var">metadata:</span>
+      <span class="var">labels:</span>
+        <span class="str">app: payment</span>
+    <span class="var">spec:</span>
+      <span class="var">containers:</span>
+      - <span class="var">name:</span> payment
+        <span class="var">image:</span> payment-service:latest
+        <span class="var">ports:</span>
+        - <span class="var">containerPort:</span> <span class="num">8001</span>
+        <span class="cm"># Order service এখন শুধু "payment-service" use করে</span>
+        <span class="cm"># কোনো IP hardcode না!</span></pre>
+    </div>
+  </div>
+
+  <div class="section" id="realworld">
+    <div class="section-label">Real World</div>
+    <h2 class="section-title">Real World Use Cases</h2>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">☸️ Kubernetes DNS</div>
+        <p>সবচেয়ে common। K8s Service create করলেই DNS entry হয়। <code>payment-service.default.svc.cluster.local</code> — automatic। কোনো external tool লাগে না।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🎬 Netflix Eureka</div>
+        <p>Client-side discovery। প্রতিটা service Eureka তে register করে। Ribbon load balancer client-side। Java Spring Cloud ecosystem।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🌐 Istio (Google)</div>
+        <p>K8s তে সবচেয়ে popular service mesh। Envoy sidecar। Traffic management, security, observability। Google, Lyft, IBM এর product।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🔗 Consul (HashiCorp)</div>
+        <p>K8s ছাড়াও কাজ করে। Multi-DC। VM এবং container উভয়ে। Health checking built-in। Terraform ecosystem এর সাথে ভালো।</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="interview">
+    <div class="section-label">Interview Preparation</div>
+    <h2 class="section-title">Common Interview Questions</h2>
+    <div class="info-box concept">
+      <div class="box-label">🎯 Q1: Service Discovery ছাড়া microservices কেন কাজ করে না?</div>
+      Dynamic environment এ (K8s, auto-scaling) services এর IP constantly বদলায়। Hardcoded IP = broken system। Service Discovery: register on start, deregister on stop, discover by name। এটাই dynamic infrastructure এর foundation।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">🎯 Q2: Service Mesh কি সবসময় দরকার?</div>
+      না। Small microservices (৫-১০ services), simple communication — Service Mesh overkill। K8s DNS যথেষ্ট। ৫০+ services, complex traffic policies, zero-trust security, observability দরকার হলে Service Mesh consider করো।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">🎯 Q3: Sidecar Pattern কীভাবে কাজ করে?</div>
+      প্রতিটা service pod এ দুটো container: (1) actual service, (2) Envoy proxy sidecar। সব inbound/outbound traffic proxy দিয়ে যায়। Service কোড change ছাড়াই mTLS, retry, circuit breaking পাওয়া যায়। Control Plane (Istiod) সব sidecars কে configure করে।
+    </div>
+  </div>
+
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🔍</span>
+      <h2>MCQ Test</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">Service Discovery কেন দরকার?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Database fast করতে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Dynamic environment এ services এর IP hardcode না করে dynamically discover করতে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> UI render করতে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Code compile করতে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Kubernetes এ pods dynamically scale হয়, IP বদলায়। Hardcoded IP = broken app। Service Discovery: services register করে, অন্যরা name দিয়ে discover করে। IP বদলালেও name same থাকে।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">Client-Side Discovery এ load balancing কে করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Server করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> DNS করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Client নিজেই — Registry থেকে instances list নিয়ে choose করে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Database করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Client-Side Discovery তে client Registry থেকে সব available instances এর list নেয় এবং নিজেই load balancing করে (Netflix Ribbon এর মতো)। Server-Side তে LB/Infrastructure এই কাজ করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">Kubernetes এ Service Discovery কীভাবে কাজ করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> K8s Service create করলে DNS entry হয় — service name দিয়ে call করা যায়</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> IP hardcode করতে হয়</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Consul manually configure করতে হয়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> External DNS provider লাগে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — K8s Service object create করলে automatically DNS entry হয়: <code>service-name.namespace.svc.cluster.local</code>। kube-dns / CoreDNS এটা handle করে। কোনো external tool লাগে না।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">Service Mesh এর Sidecar Proxy কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> একটা database</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> একটা load balancer</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> একটা monitoring tool</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> প্রতিটা service এর পাশে থাকা lightweight proxy — সব network traffic intercept করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Sidecar = প্রতিটা service pod এ একটা extra proxy container (Envoy)। সব inbound/outbound traffic এই proxy দিয়ে যায়। Service code change ছাড়াই mTLS, circuit breaking, observability পাওয়া যায়।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">Istio কোন proxy ব্যবহার করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Nginx</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Envoy</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> HAProxy</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Traefik</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Istio Envoy proxy ব্যবহার করে sidecar হিসেবে। Envoy হলো Lyft এর তৈরি high-performance proxy, C++ এ লেখা। Istio ছাড়াও AWS App Mesh এবং Consul Connect Envoy ব্যবহার করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">mTLS (Mutual TLS) Service Mesh এ কী করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Database encrypt করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> User password hash করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Service-to-service communication automatically encrypt করে, উভয় side authenticate করে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Log compress করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — mTLS = Mutual TLS — শুধু server নয়, client ও certificate দিয়ে authenticate করে। Service Mesh এ automatically হয়। Code change লাগে না। Zero-trust network: প্রতিটা service অন্য সব service কে verify করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">কখন Service Mesh use করবে না?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> ৫-১০ টা simple microservices এ — complexity worth না</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Production এ কখনো না</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Kubernetes ব্যবহার করলে সবসময়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Java apps এ</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Service Mesh complex — additional latency (sidecar overhead), steep learning curve, operational complexity। Small systems এ K8s DNS + basic service communication যথেষ্ট। ৫০+ services, complex policies, zero-trust দরকার হলে consider করো।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">Netflix এর Client-Side Discovery তে কোন library load balancing করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Zuul</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Hystrix</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Feign</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Ribbon</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Netflix OSS Stack: Eureka (discovery) + Ribbon (client-side load balancing) + Hystrix (circuit breaker) + Feign (declarative HTTP client)। Spring Cloud এ এগুলো integrate করা আছে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">Health Check কেন Service Discovery তে গুরুত্বপূর্ণ?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Performance বাড়াতে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Unhealthy instances কে automatically registry থেকে remove করতে — traffic না পাঠাতে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Database backup করতে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> SSL certificate renew করতে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Service crash হলে registry থেকে remove হওয়া দরকার। Regular health checks (HTTP /health endpoint, TCP check) দিয়ে Consul/K8s automatically unhealthy pods কে deregister করে। Traffic only healthy instances এ যায়।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">Kubernetes এ <code>payment-service.default.svc.cluster.local</code> এর মানে কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> External domain</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> IP address</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> payment-service নামের K8s Service, default namespace এ, cluster internal DNS</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> AWS endpoint</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — K8s DNS pattern: <code>[service-name].[namespace].svc.cluster.local</code>। Same namespace এ শুধু service name ব্যবহার করা যায়: <code>payment-service</code>। CoreDNS automatically resolve করে সঠিক Service IP তে।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT & CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ২-৩ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <ul class="task-list">
+      <li><strong>Pattern Comparison:</strong> Client-Side vs Server-Side discovery — ৩টা করে pros এবং cons লেখো। একটা ride-sharing app (Pathao/Uber) এ কোনটা use করবে এবং কেন?</li>
+      <li><strong>K8s YAML:</strong> দেওয়া payment-service.yaml পড়ো। যদি payment service এর ৩টা replica চলে এবং একটা crash করে, কী হবে? K8s কীভাবে handle করবে?</li>
+      <li><strong>Consul Exploration:</strong> Consul website (consul.io) এ গিয়ে "What is Consul" পড়ো। ZooKeeper এর সাথে ৩টা মূল পার্থক্য লেখো।</li>
+      <li><strong>Service Mesh Decision:</strong> তুমি ১৫টা microservices system design করছো। Service Mesh use করবে কি? কোনটা (Istio/Linkerd/Consul Connect) এবং কেন? Justify করো।</li>
+      <li><strong>Health Check Design:</strong> একটা FastAPI service এর জন্য proper /health endpoint design করো — database connection, external service dependency সব check করে।</li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>Client-Side vs Server-Side comparison table</li>
+        <li>K8s crash scenario analysis</li>
+        <li>Consul vs ZooKeeper comparison</li>
+        <li>Service Mesh decision with justification</li>
+        <li>Health check endpoint code</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="project-section" id="project">
+    <div class="project-header">
+      <span style="font-size:24px">🚀</span>
+      <h2>Hands-On Project Task</h2>
+    </div>
+    <div class="project-body">
+      <h3 style="font-family:'Fraunces',serif;font-size:18px;margin-bottom:16px;color:#f1f5f9;">Consul Service Registry Demo</h3>
+      <p style="font-size:14px;color:#94a3b8;margin-bottom:20px;">Docker দিয়ে Consul চালাও এবং দুটো service register করো যারা একে অপরকে discover করবে।</p>
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-circle">1</div>
+          <div class="step-content">
+            <h4>Consul চালাও</h4>
+            <p><code>docker run -d -p 8500:8500 consul:latest</code> — UI: localhost:8500</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">2</div>
+          <div class="step-content">
+            <h4>Order Service বানাও</h4>
+            <p>FastAPI app যেটা startup এ Consul তে register করে এবং /health endpoint আছে।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">3</div>
+          <div class="step-content">
+            <h4>Payment Service বানাও</h4>
+            <p>একইভাবে Consul তে register করে। Order Service Consul থেকে Payment discover করে call করে।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">4</div>
+          <div class="step-content">
+            <h4>Consul UI দেখো</h4>
+            <p>localhost:8500 এ দুটো service registered দেখবে। Health check passing।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">5</div>
+          <div class="step-content">
+            <h4>Payment service kill করো</h4>
+            <p>Payment service stop করো। Consul automatically unhealthy mark করবে। Order service graceful error দেবে।</p>
+          </div>
+        </div>
+      </div>
+      <div class="info-box tip" style="margin-top:16px">
+        <div class="box-label">🎯 এটা করলে যা শিখবে</div>
+        Service Discovery practically দেখবে — service register হয়, health check fail করে deregister হয়, client discover করে। Kubernetes এর ভেতরে ঠিক এটাই হয়, শুধু automatically।
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Lesson Summary</div>
+    <h2 class="section-title">আজকে যা শিখলাম</h2>
+    <table class="compare-table">
+      <tr><th>Concept</th><th>এক লাইনে</th></tr>
+      <tr><td>Service Discovery</td><td>Services নিজেদের register করে, অন্যরা name দিয়ে খোঁজে</td></tr>
+      <tr><td>Client-Side</td><td>Client নিজে LB করে — Netflix Eureka+Ribbon</td></tr>
+      <tr><td>Server-Side</td><td>LB/Infra করে — K8s Service, AWS ALB</td></tr>
+      <tr><td>K8s DNS</td><td>Simplest — Service create করলেই DNS auto</td></tr>
+      <tr><td>Service Mesh</td><td>Sidecar proxy — mTLS, LB, CB, tracing auto</td></tr>
+      <tr><td>Envoy</td><td>Industry standard proxy — Istio, Consul, AWS এ</td></tr>
+      <tr><td>Health Check</td><td>Unhealthy service automatically deregister হয়</td></tr>
+    </table>
+  </div>
+
+  <div class="next-cta">
+    <div>
+      <div class="next-label">Next Topic →</div>
+      <div class="next-title">🔄 Saga Pattern & Distributed Transactions</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+</div>
+</main>
+<script>
+window.addEventListener('scroll',()=>{const d=document.documentElement;const s=d.scrollTop||document.body.scrollTop;const h=d.scrollHeight-d.clientHeight;document.getElementById('progressFill').style.width=((s/h)*100)+'%';});
+let answered={};
+document.querySelectorAll('.option').forEach(opt=>{opt.addEventListener('click',function(){const block=this.closest('.question-block');const qId=Array.from(document.querySelectorAll('.question-block')).indexOf(block);if(answered[qId])return;answered[qId]=this.dataset.val;block.querySelectorAll('.option').forEach(o=>{o.style.pointerEvents='none';if(o.dataset.val===block.dataset.correct)o.classList.add('correct');else if(o.dataset.val===this.dataset.val)o.classList.add('wrong');});block.querySelector('.explanation').classList.add('visible');});});
+function submitMCQ(){let correct=0;const blocks=document.querySelectorAll('.question-block');blocks.forEach((b,i)=>{if(answered[i]===b.dataset.correct)correct++;});const un=blocks.length-Object.keys(answered).length;if(un>0){alert(`এখনও ${un}টা প্রশ্নের উত্তর দাওনি!`);return;}document.getElementById('scoreDisplay').textContent=correct;const banner=document.getElementById('resultBanner');banner.classList.add('visible');if(correct>=7){banner.classList.add('pass');banner.textContent=`🎉 দারুণ! ${correct}/10 সঠিক। শেষ topic এ যাও!`;}else{banner.classList.add('fail');banner.textContent=`📖 ${correct}/10 সঠিক। আবার পড়ো। ৭/১০ পেলেই pass।`;}}
+</script>
+</body>
+</html>

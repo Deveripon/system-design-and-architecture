@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 4 · System 6 — Search & Typeahead</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05080f; --surface: #090e1a; --card: #0c1220; --border: #162035; --border2: #1e2d4a;
+  --accent: #8b5cf6; --accent-glow: rgba(139,92,246,0.15);
+  --green: #10b981; --green-glow: rgba(16,185,129,0.12);
+  --orange: #f97316; --red: #ef4444; --yellow: #eab308; --purple: #8b5cf6;
+  --text: #e2e8f0; --muted: #64748b; --muted2: #94a3b8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Sans Bengali', sans-serif; line-height: 1.7; font-size: 15px; }
+body::after { content:''; position:fixed; inset:0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events:none; z-index:999; opacity:0.4; }
+.sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: var(--surface); border-right: 1px solid var(--border); padding: 24px 0; overflow-y: auto; z-index: 100; }
+.sidebar-logo { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.sidebar-logo .phase-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; display: block; margin-bottom: 4px; }
+.sidebar-logo .course-title { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; line-height: 1.3; }
+.nav-section { padding: 0 12px; margin-bottom: 8px; }
+.nav-section-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); padding: 0 8px; margin-bottom: 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 4px; font-size: 13px; color: var(--muted2); cursor: pointer; transition: all 0.15s; text-decoration: none; }
+.nav-item:hover { background: var(--card); color: var(--text); }
+.nav-item.active { background: rgba(139,92,246,0.1); color: var(--accent); }
+.nav-item .nav-icon { font-size: 14px; flex-shrink:0; }
+.nav-item .nav-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); margin-left: auto; }
+.progress-bar { position: fixed; top: 0; left: 240px; right: 0; height: 2px; background: var(--border); z-index: 200; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #6366f1); width: 0%; transition: width 0.1s; }
+.main { margin-left: 240px; min-height: 100vh; }
+.content { max-width: 780px; margin: 0 auto; padding: 48px 40px 120px; }
+.topic-header { margin-bottom: 48px; }
+.breadcrumb { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.breadcrumb span { color: var(--accent); }
+.topic-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; display: block; }
+h1.topic-title { font-family: 'Fraunces', serif; font-size: clamp(32px, 5vw, 48px); font-weight: 900; line-height: 1.1; margin-bottom: 16px; background: linear-gradient(135deg, #fff 30%, #c4b5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.topic-meta { display: flex; gap: 16px; flex-wrap: wrap; }
+.meta-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 12px; border-radius: 2px; border: 1px solid; }
+.meta-chip.time { border-color: rgba(139,92,246,0.3); color: var(--accent); background: var(--accent-glow); }
+.meta-chip.level { border-color: rgba(16,185,129,0.3); color: var(--green); background: var(--green-glow); }
+.meta-chip.type { border-color: rgba(249,115,22,0.3); color: var(--orange); background: rgba(249,115,22,0.08); }
+.section { margin-bottom: 48px; scroll-margin-top: 24px; }
+.section-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+h2.section-title { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 700; margin-bottom: 16px; color: #f1f5f9; }
+h3.sub-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; margin: 24px 0 10px; color: #cbd5e1; }
+p { margin-bottom: 14px; color: #cbd5e1; }
+.info-box { border-radius: 6px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; font-size: 14px; }
+.info-box.concept { background: rgba(139,92,246,0.06); border-color: var(--accent); }
+.info-box.warning { background: rgba(249,115,22,0.06); border-color: var(--orange); }
+.info-box.tip { background: rgba(16,185,129,0.06); border-color: var(--green); }
+.info-box.important { background: rgba(234,179,8,0.06); border-color: var(--yellow); }
+.info-box .box-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; font-weight: 700; }
+.info-box.concept .box-label { color: var(--accent); }
+.info-box.warning .box-label { color: var(--orange); }
+.info-box.tip .box-label { color: var(--green); }
+.info-box.important .box-label { color: var(--yellow); }
+.compare-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+.compare-table th { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; padding: 12px 16px; text-align: left; background: var(--card); border-bottom: 2px solid var(--border2); color: var(--muted2); }
+.compare-table td { padding: 11px 16px; border-bottom: 1px solid var(--border); color: #94a3b8; vertical-align: top; line-height: 1.6; }
+.compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+.compare-table td:first-child { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text); }
+.tag-yes { color: var(--green); font-weight: 600; }
+.tag-no { color: var(--red); }
+.tag-med { color: var(--yellow); }
+.diagram { background: var(--card); border: 1px solid var(--border2); border-radius: 8px; padding: 30px 20px; margin: 24px 0; text-align: center; overflow-x: auto; }
+.diagram svg { max-width: 100%; }
+.code-block { background: #030608; border: 1px solid var(--border2); border-radius: 6px; margin: 20px 0; overflow: hidden; }
+.code-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--card); border-bottom: 1px solid var(--border); }
+.code-lang { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+.code-file { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+pre { padding: 20px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.8; color: #e2e8f0; }
+.kw { color: #93c5fd; } .fn { color: #6ee7b7; } .str { color: #fcd34d; } .cm { color: #475569; font-style: italic; } .num { color: #f9a8d4; } .var { color: #e2e8f0; }
+.req-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.req-card { background: var(--card); border: 1px solid var(--border2); border-radius: 6px; padding: 20px; }
+.req-card .r-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
+.req-card.functional .r-title { color: var(--accent); }
+.req-card.nonfunc .r-title { color: var(--green); }
+.req-card ul { list-style: none; padding: 0; }
+.req-card ul li { font-size: 13px; color: var(--muted2); padding: 5px 0 5px 18px; position: relative; border-bottom: 1px solid var(--border); font-family: 'Noto Sans Bengali', sans-serif; }
+.req-card ul li:last-child { border-bottom: none; }
+.req-card ul li::before { content: '→'; position: absolute; left: 0; color: var(--muted); font-size: 12px; }
+.estimation-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0; }
+.est-card { background: var(--card); border: 1px solid var(--border2); border-radius: 6px; padding: 16px; text-align: center; }
+.est-num { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 700; color: var(--accent); display: block; margin-bottom: 4px; }
+.est-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+.tech-stack { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+.tech-tag { font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 6px 14px; border-radius: 3px; border: 1px solid; }
+.tech-tag.db { border-color: rgba(139,92,246,0.3); color: var(--accent); background: var(--accent-glow); }
+.tech-tag.cache { border-color: rgba(234,179,8,0.3); color: var(--yellow); background: rgba(234,179,8,0.06); }
+.tech-tag.lang { border-color: rgba(16,185,129,0.3); color: var(--green); background: var(--green-glow); }
+.tech-tag.infra { border-color: rgba(249,115,22,0.3); color: var(--orange); background: rgba(249,115,22,0.08); }
+.tech-tag.queue { border-color: rgba(239,68,68,0.3); color: var(--red); background: rgba(239,68,68,0.08); }
+.tradeoff-row { display: flex; gap: 12px; margin: 10px 0; align-items: flex-start; }
+.tradeoff-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 10px; border-radius: 2px; flex-shrink: 0; }
+.tradeoff-label.pro { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.tradeoff-label.con { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+.tradeoff-text { font-size: 13px; color: var(--muted2); line-height: 1.6; font-family: 'Noto Sans Bengali', sans-serif; }
+/* Trie visual */
+.trie-visual { background: var(--card); border: 1px solid var(--border2); border-radius: 8px; padding: 24px; margin: 20px 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+.trie-visual .trie-title { color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; }
+/* MCQ */
+.mcq-section { background: var(--surface); border: 1px solid var(--border2); border-radius: 8px; padding: 28px; margin: 30px 0; }
+.mcq-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.mcq-icon { font-size: 24px; }
+.mcq-header h2 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; }
+.mcq-score { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--muted); }
+.mcq-score span { color: var(--accent); font-size: 18px; font-weight: 700; }
+.question-block { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+.question-block:last-of-type { border-bottom: none; margin-bottom: 0; }
+.q-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.q-text { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.5; font-family: 'Noto Sans Bengali', sans-serif; }
+.options { display: flex; flex-direction: column; gap: 8px; }
+.option { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-radius: 4px; border: 1px solid var(--border); cursor: pointer; transition: all 0.15s; font-size: 14px; color: var(--muted2); font-family: 'Noto Sans Bengali', sans-serif; }
+.option:hover { border-color: var(--accent); color: var(--text); background: var(--accent-glow); }
+.option.correct { border-color: var(--green); background: var(--green-glow); color: #6ee7b7; }
+.option.wrong { border-color: var(--red); background: rgba(239,68,68,0.08); color: #fca5a5; }
+.option-key { font-family: 'JetBrains Mono', monospace; font-size: 11px; background: var(--border2); padding: 2px 7px; border-radius: 2px; flex-shrink: 0; margin-top: 1px; }
+.explanation { display: none; margin-top: 12px; padding: 12px 14px; background: rgba(16,185,129,0.06); border-left: 2px solid var(--green); border-radius: 0 4px 4px 0; font-size: 13px; color: #94a3b8; line-height: 1.7; font-family: 'Noto Sans Bengali', sans-serif; }
+.explanation.visible { display: block; }
+.explanation strong { color: var(--green); }
+.mcq-submit { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; padding: 12px 24px; background: var(--accent); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; letter-spacing: 1px; transition: all 0.15s; }
+.mcq-submit:hover { background: #7c3aed; transform: translateY(-1px); }
+.result-banner { display: none; margin-top: 20px; padding: 16px 20px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; }
+.result-banner.visible { display: block; }
+.result-banner.pass { background: var(--green-glow); border: 1px solid var(--green); color: var(--green); }
+.result-banner.fail { background: rgba(249,115,22,0.08); border: 1px solid var(--orange); color: var(--orange); }
+.assignment-section { background: linear-gradient(135deg, rgba(139,92,246,0.04), rgba(16,185,129,0.04)); border: 1px solid rgba(139,92,246,0.2); border-radius: 8px; padding: 28px; margin: 30px 0; }
+.assignment-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.assignment-icon { font-size: 28px; }
+.assignment-header h2 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; }
+.assignment-meta { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.a-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 10px; border-radius: 2px; }
+.a-chip.time { background: rgba(234,179,8,0.1); color: var(--yellow); border: 1px solid rgba(234,179,8,0.2); }
+.a-chip.level { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.task-list { counter-reset: tasks; list-style: none; margin-bottom: 20px; }
+.task-list li { counter-increment: tasks; padding: 14px 14px 14px 50px; position: relative; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--muted2); line-height: 1.7; font-family: 'Noto Sans Bengali', sans-serif; }
+.task-list li:last-child { border-bottom: none; }
+.task-list li::before { content: counter(tasks); position: absolute; left: 14px; top: 14px; width: 24px; height: 24px; background: var(--accent-glow); border: 1px solid rgba(139,92,246,0.3); border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.task-list li strong { color: var(--text); }
+.deliverable-box { background: var(--card); border: 1px solid var(--border2); border-radius: 6px; padding: 16px 18px; margin-top: 16px; }
+.deliverable-box .d-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--orange); margin-bottom: 10px; }
+.deliverable-box ul { list-style: none; padding: 0; }
+.deliverable-box ul li { font-size: 13px; color: var(--muted2); padding: 4px 0 4px 18px; position: relative; font-family: 'Noto Sans Bengali', sans-serif; }
+.deliverable-box ul li::before { content: '◆'; position: absolute; left: 0; font-size: 8px; color: var(--orange); top: 6px; }
+.next-cta { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--border2); border-radius: 8px; padding: 20px 24px; margin-top: 48px; text-decoration: none; color: var(--text); transition: border-color 0.2s; cursor: pointer; }
+.next-cta:hover { border-color: var(--accent); }
+.next-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+.next-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; }
+.next-arrow { font-size: 24px; color: var(--accent); }
+@media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } .content { padding: 24px 16px 80px; } .req-grid, .estimation-grid { grid-template-columns: 1fr; } .progress-bar { left: 0; } }
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 04 · Real World Systems</span>
+    <div class="course-title">System Design<br>Mastery Course</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Phase 4 Systems</div>
+    <a href="#" class="nav-item"><span class="nav-icon">🔗</span><span>URL Shortener</span><span class="nav-num">01</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🐦</span><span>Twitter/X</span><span class="nav-num">02</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">📺</span><span>YouTube</span><span class="nav-num">03</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">💬</span><span>WhatsApp</span><span class="nav-num">04</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🛒</span><span>Amazon</span><span class="nav-num">05</span></a>
+    <a href="#" class="nav-item active"><span class="nav-icon">🔍</span><span>Search</span><span class="nav-num">06</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🚗</span><span>Uber</span><span class="nav-num">07</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px">
+    <div class="nav-section-label">This Lesson</div>
+    <a href="#why" class="nav-item"><span class="nav-icon">💡</span><span>Why Search?</span></a>
+    <a href="#requirements" class="nav-item"><span class="nav-icon">📋</span><span>Requirements</span></a>
+    <a href="#estimation" class="nav-item"><span class="nav-icon">🔢</span><span>Estimation</span></a>
+    <a href="#architecture" class="nav-item"><span class="nav-icon">🏗️</span><span>Architecture</span></a>
+    <a href="#deepdive" class="nav-item"><span class="nav-icon">🔬</span><span>Deep Dive</span></a>
+    <a href="#typeahead" class="nav-item"><span class="nav-icon">⌨️</span><span>Typeahead</span></a>
+    <a href="#database" class="nav-item"><span class="nav-icon">🗄️</span><span>Database</span></a>
+    <a href="#scaling" class="nav-item"><span class="nav-icon">📈</span><span>Scaling</span></a>
+    <a href="#mcq" class="nav-item"><span class="nav-icon">✅</span><span>MCQ Test</span></a>
+    <a href="#assignment" class="nav-item"><span class="nav-icon">📝</span><span>Assignment</span></a>
+  </div>
+</nav>
+
+<main class="main">
+<div class="content">
+
+  <div class="topic-header" id="why">
+    <div class="breadcrumb">Phase 4 — Real World Systems <span>›</span> System 06</div>
+    <span class="topic-num">SYSTEM 06 / 07</span>
+    <h1 class="topic-title">Search &<br>Typeahead</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ ৯০-১২০ মিনিট</span>
+      <span class="meta-chip level">📊 Junior Level</span>
+      <span class="meta-chip type">🔍 Search Systems</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Why This System</div>
+    <h2 class="section-title">Search কেন Hard?</h2>
+    <p>Google প্রতিদিন 8.5 billion searches process করে। Typeahead-এ প্রতিটা keypress-এ suggestions দেখাতে হয় — 100ms-এর মধ্যে। এই system-এ দুটো আলাদা challenge: <strong>Full-text search</strong> এবং <strong>real-time autocomplete</strong>।</p>
+    <div class="info-box concept">
+      <div class="box-label">📌 Two Different Problems</div>
+      <strong>Search:</strong> "wireless headphones" type করলে relevant results দেখাও (relevance, ranking)।<br>
+      <strong>Typeahead/Autocomplete:</strong> "wire" type করতেই "wireless headphones", "wireless mouse" suggestions দেখাও (speed, prefix matching)।<br>
+      দুটো problem আলাদা — আলাদা data structure এবং approach দরকার।
+    </div>
+  </div>
+
+  <div class="section" id="requirements">
+    <div class="section-label">Requirements</div>
+    <h2 class="section-title">Features কী কী?</h2>
+    <div class="req-grid">
+      <div class="req-card functional">
+        <div class="r-title">✅ Functional Requirements</div>
+        <ul>
+          <li>Full-text search (keyword)</li>
+          <li>Typeahead/autocomplete</li>
+          <li>Fuzzy matching (typo tolerance)</li>
+          <li>Faceted search (filter by category)</li>
+          <li>Relevance ranking</li>
+          <li>Search suggestions (trending)</li>
+          <li>Personalized suggestions</li>
+        </ul>
+      </div>
+      <div class="req-card nonfunc">
+        <div class="r-title">⚡ Non-Functional Requirements</div>
+        <ul>
+          <li>Typeahead < 100ms latency</li>
+          <li>Search results < 500ms</li>
+          <li>Billions of documents indexed</li>
+          <li>High availability 99.99%</li>
+          <li>New content indexed within minutes</li>
+          <li>Support 100K+ queries/sec</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="estimation">
+    <div class="section-label">Back-of-Envelope Estimation</div>
+    <h2 class="section-title">Google-এর Scale</h2>
+    <div class="estimation-grid">
+      <div class="est-card"><span class="est-num">8.5B</span><span class="est-label">Daily Searches</span></div>
+      <div class="est-card"><span class="est-num">99K</span><span class="est-label">Searches/sec</span></div>
+      <div class="est-card"><span class="est-num">100B+</span><span class="est-label">Indexed Web Pages</span></div>
+      <div class="est-card"><span class="est-num">15%</span><span class="est-label">New queries daily</span></div>
+      <div class="est-card"><span class="est-num">~20</span><span class="est-label">Characters avg query</span></div>
+      <div class="est-card"><span class="est-num">~5</span><span class="est-label">Keystrokes per typeahead</span></div>
+    </div>
+    <div class="info-box important">
+      <div class="box-label">🔢 Typeahead Requests</div>
+      User "apple" type করলে: a → ap → app → appl → apple = 5 requests। 99K searches/sec × 5 = ~500K typeahead requests/sec। Typeahead traffic search-এর চেয়ে অনেক বেশি! তাই extreme optimization দরকার।
+    </div>
+  </div>
+
+  <div class="section" id="architecture">
+    <div class="section-label">High Level Architecture</div>
+    <h2 class="section-title">Search System Architecture</h2>
+
+    <div class="diagram">
+      <svg width="680" height="320" viewBox="0 0 680 320">
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#64748b"/></marker>
+          <marker id="arrP" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#8b5cf6"/></marker>
+        </defs>
+
+        <!-- Data Sources -->
+        <rect x="10" y="30" width="100" height="35" rx="4" fill="#0c1220" stroke="#1e2d4a" stroke-width="1.5"/>
+        <text x="60" y="48" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">WEB CRAWLER</text>
+        <text x="60" y="60" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">HTML pages</text>
+
+        <rect x="10" y="80" width="100" height="35" rx="4" fill="#0c1220" stroke="#1e2d4a" stroke-width="1.5"/>
+        <text x="60" y="98" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">DB CONNECTOR</text>
+        <text x="60" y="110" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Products, articles</text>
+
+        <!-- Doc Processor -->
+        <path d="M 110 47 L 160 100" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <path d="M 110 97 L 160 105" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <rect x="160" y="75" width="110" height="55" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="215" y="98" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="9">DOCUMENT</text>
+        <text x="215" y="111" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="9">PROCESSOR</text>
+        <text x="215" y="124" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Tokenize, Normalize</text>
+
+        <!-- Inverted Index Builder -->
+        <path d="M 270 102 L 330 102" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <rect x="330" y="75" width="120" height="55" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="390" y="98" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">INVERTED INDEX</text>
+        <text x="390" y="111" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">BUILDER</text>
+        <text x="390" y="124" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Elasticsearch</text>
+
+        <!-- Index Storage -->
+        <path d="M 450 102 L 510 102" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <rect x="510" y="75" width="110" height="55" rx="4" fill="#0c1220" stroke="#eab308" stroke-width="1.5"/>
+        <text x="565" y="95" text-anchor="middle" fill="#eab308" font-family="JetBrains Mono" font-size="9">SEARCH</text>
+        <text x="565" y="108" text-anchor="middle" fill="#eab308" font-family="JetBrains Mono" font-size="9">INDEX</text>
+        <text x="565" y="121" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Sharded replicas</text>
+
+        <!-- Divider -->
+        <line x1="0" y1="155" x2="680" y2="155" stroke="#1e2d4a" stroke-width="1" stroke-dasharray="4,4"/>
+        <text x="340" y="148" text-anchor="middle" fill="#475569" font-family="JetBrains Mono" font-size="9">── INDEXING PIPELINE (offline) ──</text>
+        <text x="340" y="175" text-anchor="middle" fill="#475569" font-family="JetBrains Mono" font-size="9">── QUERY PIPELINE (online) ──</text>
+
+        <!-- User -->
+        <rect x="10" y="190" width="70" height="40" rx="4" fill="#0c1220" stroke="#1e2d4a" stroke-width="1.5"/>
+        <text x="45" y="208" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">USER</text>
+        <text x="45" y="221" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Types query</text>
+        <path d="M 80 210 L 120 210" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#arrP)"/>
+
+        <!-- Query Processor -->
+        <rect x="120" y="185" width="110" height="55" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="175" y="208" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="9">QUERY</text>
+        <text x="175" y="221" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="9">PROCESSOR</text>
+        <text x="175" y="234" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Parse, Analyze</text>
+
+        <!-- Cache check -->
+        <path d="M 230 210 L 270 210" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <rect x="270" y="185" width="90" height="55" rx="4" fill="#0c1220" stroke="#f97316" stroke-width="1.5"/>
+        <text x="315" y="208" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="9">CACHE</text>
+        <text x="315" y="221" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="9">CHECK</text>
+        <text x="315" y="234" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Redis</text>
+
+        <!-- Search Engine -->
+        <path d="M 360 210 L 400 210" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <rect x="400" y="185" width="120" height="55" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="460" y="208" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">SEARCH ENGINE</text>
+        <text x="460" y="221" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">QUERY EXECUTOR</text>
+        <text x="460" y="234" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Hits inverted index</text>
+
+        <!-- Ranker -->
+        <path d="M 520 210 L 560 210" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <rect x="560" y="185" width="100" height="55" rx="4" fill="#0c1220" stroke="#eab308" stroke-width="1.5"/>
+        <text x="610" y="208" text-anchor="middle" fill="#eab308" font-family="JetBrains Mono" font-size="9">RANKER</text>
+        <text x="610" y="221" text-anchor="middle" fill="#eab308" font-family="JetBrains Mono" font-size="9">& RESULTS</text>
+        <text x="610" y="234" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">TF-IDF, PageRank</text>
+
+        <!-- Arrow back to user -->
+        <path d="M 610 240 L 610 285 L 45 285 L 45 230" stroke="#64748b" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        <text x="330" y="300" text-anchor="middle" fill="#475569" font-family="JetBrains Mono" font-size="8">Results returned to user</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section" id="deepdive">
+    <div class="section-label">Deep Dive — Full-Text Search</div>
+    <h2 class="section-title">Inverted Index — Search-এর Core</h2>
+    <p>Search engine-এর সবচেয়ে important data structure হলো <strong>Inverted Index</strong>। এটা basically একটা dictionary যেখানে word → document list map করা থাকে।</p>
+
+    <div class="info-box concept">
+      <div class="box-label">📌 Inverted Index কীভাবে কাজ করে</div>
+      Forward index: Document → Words। Inverted index: Word → Documents। "apple" search করলে directly "apple" key look up করো → সব relevant documents পাওয়া যায়। Sequential scan দরকার নেই।
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Concept</span>
+        <span class="code-file">inverted_index_example.py</span>
+      </div>
+      <pre><span class="cm"># 3টা document আছে:</span>
+<span class="cm"># Doc 1: "apple iphone review"</span>
+<span class="cm"># Doc 2: "apple macbook laptop"</span>
+<span class="cm"># Doc 3: "samsung galaxy review"</span>
+
+<span class="cm"># Inverted Index (simplified):</span>
+inverted_index = {
+    <span class="str">"apple"</span>:   [<span class="num">1</span>, <span class="num">2</span>],       <span class="cm"># Doc 1 এবং 2 এ আছে</span>
+    <span class="str">"iphone"</span>:  [<span class="num">1</span>],          <span class="cm"># শুধু Doc 1 এ</span>
+    <span class="str">"review"</span>:  [<span class="num">1</span>, <span class="num">3</span>],       <span class="cm"># Doc 1 এবং 3 এ</span>
+    <span class="str">"macbook"</span>: [<span class="num">2</span>],          <span class="cm"># শুধু Doc 2 এ</span>
+    <span class="str">"samsung"</span>: [<span class="num">3</span>],          <span class="cm"># শুধু Doc 3 এ</span>
+    <span class="str">"galaxy"</span>:  [<span class="num">3</span>],          <span class="cm"># শুধু Doc 3 এ</span>
+}
+
+<span class="cm"># Search "apple review" করলে:</span>
+<span class="cm"># apple → [1, 2]</span>
+<span class="cm"># review → [1, 3]</span>
+<span class="cm"># Intersection → [1] ← Most relevant!</span>
+
+<span class="kw">def</span> <span class="fn">search</span>(query: <span class="var">str</span>) -> <span class="var">list</span>:
+    words = query.lower().split()
+    <span class="cm"># প্রতিটা word-এর document list নাও</span>
+    doc_lists = [set(inverted_index.get(w, [])) <span class="kw">for</span> w <span class="kw">in</span> words]
+    <span class="cm"># Intersection করো (সব word আছে এমন docs)</span>
+    result = doc_lists[<span class="num">0</span>].intersection(*doc_lists[<span class="num">1</span>:])
+    <span class="kw">return</span> sorted(result)</pre>
+    </div>
+
+    <h3 class="sub-title">📊 TF-IDF — Relevance Ranking</h3>
+    <p>সব documents এ word থাকলেই হবে না — কোনটা সবচেয়ে relevant সেটা rank করতে হবে। <strong>TF-IDF</strong> (Term Frequency × Inverse Document Frequency) এটা calculate করে।</p>
+
+    <table class="compare-table">
+      <tr><th>Metric</th><th>Formula</th><th>মানে কী</th></tr>
+      <tr><td>TF (Term Frequency)</td><td>word count / total words</td><td>Document-এ word কতবার আছে</td></tr>
+      <tr><td>IDF (Inverse Doc Freq)</td><td>log(total docs / docs with word)</td><td>Word কতটা rare/unique</td></tr>
+      <tr><td>TF-IDF Score</td><td>TF × IDF</td><td>Higher = more relevant</td></tr>
+    </table>
+
+    <div class="info-box tip">
+      <div class="box-label">💡 Simple Example</div>
+      "the" শব্দটা সব document-এ থাকে → IDF low → Score low। "Elasticsearch" rare word, শুধু কিছু docs-এ → IDF high। এই doc-এ "Elasticsearch" অনেকবার → TF high → Score very high। তাই "Elasticsearch tutorial" search করলে এই document আগে আসবে।
+    </div>
+  </div>
+
+  <div class="section" id="typeahead">
+    <div class="section-label">Typeahead / Autocomplete</div>
+    <h2 class="section-title">Trie Data Structure</h2>
+    <p>Typeahead-এর জন্য <strong>Trie</strong> (Prefix Tree) সবচেয়ে natural data structure। প্রতিটা node একটা character represent করে।</p>
+
+    <div class="diagram">
+      <svg width="600" height="260" viewBox="0 0 600 260">
+        <!-- Root -->
+        <circle cx="300" cy="30" r="18" fill="#0c1220" stroke="#8b5cf6" stroke-width="2"/>
+        <text x="300" y="36" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="12" font-weight="700">*</text>
+        <text x="300" y="14" text-anchor="middle" fill="#475569" font-family="JetBrains Mono" font-size="9">root</text>
+
+        <!-- Level 1: a, b, c -->
+        <line x1="300" y1="48" x2="140" y2="82" stroke="#1e2d4a" stroke-width="1.5"/>
+        <circle cx="140" cy="100" r="18" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="140" y="106" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="13" font-weight="700">a</text>
+
+        <line x1="300" y1="48" x2="460" y2="82" stroke="#1e2d4a" stroke-width="1.5"/>
+        <circle cx="460" cy="100" r="18" fill="#0c1220" stroke="#64748b" stroke-width="1.5"/>
+        <text x="460" y="106" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="13">w</text>
+
+        <!-- Level 2 from 'a': ap, ar -->
+        <line x1="140" y1="118" x2="80" y2="152" stroke="#1e2d4a" stroke-width="1.5"/>
+        <circle cx="80" cy="170" r="18" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="80" y="176" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="13" font-weight="700">p</text>
+
+        <line x1="140" y1="118" x2="200" y2="152" stroke="#1e2d4a" stroke-width="1.5"/>
+        <circle cx="200" cy="170" r="18" fill="#0c1220" stroke="#64748b" stroke-width="1.5"/>
+        <text x="200" y="176" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="13">r</text>
+
+        <!-- Level 3 from 'ap': app, api -->
+        <line x1="80" y1="188" x2="50" y2="220" stroke="#1e2d4a" stroke-width="1.5"/>
+        <circle cx="50" cy="238" r="18" fill="#0c1220" stroke="#10b981" stroke-width="2"/>
+        <text x="50" y="244" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="12" font-weight="700">p</text>
+        <text x="50" y="258" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="8">*end</text>
+
+        <line x1="80" y1="188" x2="110" y2="220" stroke="#1e2d4a" stroke-width="1.5"/>
+        <circle cx="110" cy="238" r="18" fill="#0c1220" stroke="#10b981" stroke-width="2"/>
+        <text x="110" y="244" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="12" font-weight="700">i</text>
+        <text x="110" y="258" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="8">*end</text>
+
+        <!-- from 'w': wi, wo -->
+        <line x1="460" y1="118" x2="420" y2="152" stroke="#1e2d4a" stroke-width="1.5"/>
+        <circle cx="420" cy="170" r="18" fill="#0c1220" stroke="#64748b" stroke-width="1.5"/>
+        <text x="420" y="176" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="13">i</text>
+
+        <line x1="460" y1="118" x2="500" y2="152" stroke="#1e2d4a" stroke-width="1.5"/>
+        <circle cx="500" cy="170" r="18" fill="#0c1220" stroke="#64748b" stroke-width="1.5"/>
+        <text x="500" y="176" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="13">o</text>
+
+        <!-- Labels -->
+        <text x="340" y="90" fill="#475569" font-family="JetBrains Mono" font-size="9">prefix "w..."</text>
+        <text x="10" y="90" fill="#475569" font-family="JetBrains Mono" font-size="9">prefix "a..."</text>
+
+        <!-- Highlight path for "ap" -->
+        <rect x="220" y="10" width="200" height="60" rx="4" fill="rgba(139,92,246,0.08)" stroke="rgba(139,92,246,0.3)" stroke-width="1"/>
+        <text x="320" y="32" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="10" font-weight="700">User types "ap"</text>
+        <text x="320" y="48" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">→ app, api সাজেস্ট হবে</text>
+        <text x="320" y="62" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">(green nodes = words)</text>
+      </svg>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Python</span>
+        <span class="code-file">trie.py — Typeahead Implementation</span>
+      </div>
+      <pre><span class="kw">class</span> <span class="fn">TrieNode</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        self.children = {}
+        self.is_end = <span class="kw">False</span>
+        self.frequency = <span class="num">0</span>  <span class="cm"># কতবার search হয়েছে</span>
+
+<span class="kw">class</span> <span class="fn">Trie</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        self.root = <span class="fn">TrieNode</span>()
+
+    <span class="kw">def</span> <span class="fn">insert</span>(self, word: <span class="var">str</span>, freq: <span class="var">int</span> = <span class="num">1</span>):
+        node = self.root
+        <span class="kw">for</span> char <span class="kw">in</span> word.lower():
+            <span class="kw">if</span> char <span class="kw">not in</span> node.children:
+                node.children[char] = <span class="fn">TrieNode</span>()
+            node = node.children[char]
+        node.is_end = <span class="kw">True</span>
+        node.frequency = freq
+
+    <span class="kw">def</span> <span class="fn">autocomplete</span>(self, prefix: <span class="var">str</span>, limit: <span class="var">int</span> = <span class="num">5</span>) -> <span class="var">list</span>:
+        <span class="cm"># Prefix node খুঁজে বের করো</span>
+        node = self.root
+        <span class="kw">for</span> char <span class="kw">in</span> prefix.lower():
+            <span class="kw">if</span> char <span class="kw">not in</span> node.children:
+                <span class="kw">return</span> []  <span class="cm"># কোনো match নেই</span>
+            node = node.children[char]
+        
+        <span class="cm"># Prefix node থেকে সব words collect করো</span>
+        results = []
+        self.<span class="fn">_dfs</span>(node, prefix, results)
+        
+        <span class="cm"># Frequency দিয়ে sort করো (popular first)</span>
+        results.sort(key=<span class="kw">lambda</span> x: x[<span class="num">1</span>], reverse=<span class="kw">True</span>)
+        <span class="kw">return</span> [word <span class="kw">for</span> word, _ <span class="kw">in</span> results[:limit]]
+
+    <span class="kw">def</span> <span class="fn">_dfs</span>(self, node, current, results):
+        <span class="kw">if</span> node.is_end:
+            results.append((current, node.frequency))
+        <span class="kw">for</span> char, child <span class="kw">in</span> node.children.items():
+            self.<span class="fn">_dfs</span>(child, current + char, results)
+
+<span class="cm"># Usage example:</span>
+trie = <span class="fn">Trie</span>()
+trie.<span class="fn">insert</span>(<span class="str">"apple"</span>, freq=<span class="num">1000000</span>)
+trie.<span class="fn">insert</span>(<span class="str">"application"</span>, freq=<span class="num">500000</span>)
+trie.<span class="fn">insert</span>(<span class="str">"apply"</span>, freq=<span class="num">200000</span>)
+
+print(trie.<span class="fn">autocomplete</span>(<span class="str">"app"</span>))
+<span class="cm"># → ["apple", "application", "apply"]  (by frequency)</span></pre>
+    </div>
+
+    <div class="info-box warning">
+      <div class="box-label">⚠️ Trie at Scale Problem</div>
+      Billions of search queries-এর Trie memory-তে রাখা possible না। Solution: <strong>Top-K suggestions per node</strong> store করো। প্রতিটা prefix node-এ top 5-10 most popular completions pre-computed রাখো। DFS করতে হবে না — O(1) lookup।
+    </div>
+  </div>
+
+  <div class="section" id="database">
+    <div class="section-label">Database Choice</div>
+    <h2 class="section-title">কোন Data কোথায়?</h2>
+    <table class="compare-table">
+      <tr><th>Data</th><th>Storage</th><th>Why?</th></tr>
+      <tr><td>Search index (inverted)</td><td>Elasticsearch / Lucene</td><td>Purpose-built for full-text search</td></tr>
+      <tr><td>Typeahead Trie</td><td>Redis (Sorted Sets) / In-memory</td><td>Sub-millisecond prefix lookup</td></tr>
+      <tr><td>Popular queries</td><td>Redis Sorted Set (ZADD score)</td><td>Rank by search frequency</td></tr>
+      <tr><td>Search analytics</td><td>Kafka → Hadoop/Spark</td><td>Stream processing for trending</td></tr>
+      <tr><td>Document store</td><td>Elasticsearch + S3</td><td>Original content + index</td></tr>
+      <tr><td>Query cache</td><td>Redis (TTL 1 hr)</td><td>Popular searches cached</td></tr>
+    </table>
+    <div class="info-box tip">
+      <div class="box-label">💡 Redis Sorted Set for Typeahead</div>
+      Redis ZADD "queries" &lt;frequency&gt; "apple"। ZRANGEBYSCORE দিয়ে top queries পাও। Prefix matching-এর জন্য ZRANGEBYLEX command। Real-time frequency update করা যায়। Production-grade typeahead শুধু Redis দিয়েই possible।
+    </div>
+  </div>
+
+  <div class="section" id="scaling">
+    <div class="section-label">Scaling Decisions</div>
+    <h2 class="section-title">Search Scale করার উপায়</h2>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label pro">Strategy</span>
+      <div class="tradeoff-text"><strong>Index Sharding:</strong> Billions of documents single index-এ রাখা যাবে না। Document ID বা alphabetically shard করো। Query সব shards-এ যায়, results merge হয়।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label pro">Strategy</span>
+      <div class="tradeoff-text"><strong>Query Cache:</strong> Popular queries (যেমন "iphone 15") result cache করো Redis-এ। 80% queries repeat হয়। Cache hit হলে index touch করতে হয় না।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label pro">Strategy</span>
+      <div class="tradeoff-text"><strong>Typeahead CDN:</strong> Popular prefixes ("app", "goo", "you") static JSON file হিসেবে CDN-এ serve করো। Server hit হয় না।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label con">Trade-off</span>
+      <div class="tradeoff-text"><strong>Index Freshness vs Speed:</strong> Real-time indexing করলে latency বাড়ে। Batch indexing করলে নতুন content দেখাতে দেরি হয়। Google 15-minute crawl lag normal।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label con">Trade-off</span>
+      <div class="tradeoff-text"><strong>Fuzzy Search Cost:</strong> Typo tolerance (fuzzy matching) expensive। Edit distance computation করতে হয়। Solution: Pre-compute common typos, phonetic matching।</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Tech Stack</div>
+    <h2 class="section-title">Search Systems Technologies</h2>
+    <h3 class="sub-title">Core Search</h3>
+    <div class="tech-stack">
+      <span class="tech-tag db">Elasticsearch</span>
+      <span class="tech-tag db">Apache Lucene (underlying)</span>
+      <span class="tech-tag db">Apache Solr</span>
+      <span class="tech-tag lang">Java / Go</span>
+    </div>
+    <h3 class="sub-title">Typeahead</h3>
+    <div class="tech-stack">
+      <span class="tech-tag cache">Redis Sorted Sets</span>
+      <span class="tech-tag cache">In-memory Trie</span>
+      <span class="tech-tag infra">CDN (static prefix cache)</span>
+    </div>
+    <h3 class="sub-title">Data Pipeline</h3>
+    <div class="tech-stack">
+      <span class="tech-tag queue">Apache Kafka</span>
+      <span class="tech-tag infra">Apache Spark (batch)</span>
+      <span class="tech-tag infra">Flink (stream processing)</span>
+      <span class="tech-tag infra">Hadoop HDFS</span>
+    </div>
+  </div>
+
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🎯</span>
+      <h2>MCQ Test — Search & Typeahead</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">Inverted Index-এ কী store থাকে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Document → শব্দের list</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> শব্দ → document list (word to docs mapping)</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Document → popularity score</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> শব্দ → definition</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Inverted Index: word → [doc1, doc2, doc3...]। "apple" search করলে directly এই list lookup করো। Sequential scan করতে হয় না। এই structure-এর জন্যই Google milliseconds-এ billions of pages search করতে পারে।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">Typeahead/Autocomplete-এর জন্য কোন data structure সবচেয়ে উপযুক্ত?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> HashMap</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Binary Search Tree</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Trie (Prefix Tree)</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Linked List</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Trie prefix-based lookup-এর জন্য designed। "app" type করলে 'a' → 'p' → 'p' node-এ যাও, সেই subtree-এর সব words = suggestions। O(prefix length) time। HashMap দিয়ে prefix matching efficient হয় না।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">TF-IDF-এ "the" শব্দের score কম কেন?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> সব documents-এ আছে তাই IDF কম</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> ছোট শব্দ তাই</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> কোনো meaning নেই</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Manually blacklisted</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — IDF = log(total docs / docs containing word)। "the" প্রায় সব documents-এ থাকে → denominator বড় → IDF ≈ log(1) = 0। Score = TF × 0 ≈ 0। এই কারণে common words ("stop words") search relevance-এ contribute করে না।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">Typeahead-এ popular suggestions আগে দেখানোর জন্য কী track করতে হবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Alphabetical order</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Document creation time</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Random order</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Search frequency (কতবার search হয়েছে)</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — প্রতিটা query log করো। "apple" কতবার searched? Trie node-এ frequency store করো। High frequency = সামনে দেখাও। Redis Sorted Set ZADD দিয়ে score update করো। Trending searches automatically উপরে আসে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">Search query cache করলে কী সুবিধা?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Search results better হয়</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Popular queries index hit করে না — latency কমে, cost কমে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> New documents faster index হয়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Storage কমে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — 80% queries repeat। "iphone 15 price" প্রতিদিন millions বার search হয়। Redis cache-এ result রাখো (TTL 1 hr)। Cache hit → Elasticsearch touch করতে হয় না। Massive cost saving + lower latency।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">Elasticsearch internally কোন data structure use করে indexing-এর জন্য?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> B-Tree</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Hash Table</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Inverted Index (Apache Lucene)</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Red-Black Tree</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Elasticsearch under the hood Apache Lucene use করে। Lucene inverted index-based search engine। Elasticsearch Lucene-এর উপরে distributed layer, REST API, JSON support add করেছে। Core search logic = inverted index।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">Billions of documents-এর index scale করতে কী করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Index sharding — multiple nodes-এ ভাগ করো</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Single large server</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Compress the index</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Old documents delete করো</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Elasticsearch natively sharding support করে। প্রতিটা shard একটা Lucene instance। Query সব shards-এ parallel যায়, results merge হয়। 100 shards = 100x parallel search capability।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">Typo tolerance ("appel" → "apple") কীভাবে implement করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> User-কে ঠিক করতে বলো</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> All possible typos store করো</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Regex matching</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Edit distance (Levenshtein distance) algorithm</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Levenshtein distance: দুটো string-এর মধ্যে minimum edit operations (insert/delete/substitute)। "appel" → "apple" = 1 edit। Elasticsearch fuzziness parameter দিয়ে এটা configure করা যায়। Distance ≤ 2 হলে match।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">Typeahead request কেন search request-এর চেয়ে বেশি হয়?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Users বেশি click করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> প্রতিটা keypress একটা request — 1 search = 5-10 typeahead requests</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Typeahead আলাদা users</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Error বেশি হয়</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — "apple" type করলে: a, ap, app, appl, apple = 5 typeahead requests, 1 search request। 5x বেশি। Google-এ 99K searches/sec মানে ~500K typeahead req/sec। তাই typeahead ultra-optimized হতে হবে।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">Trending search suggestions ("iphone 16 release date" suddenly popular) কীভাবে real-time update করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Manual update daily</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Weekly batch job</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Kafka stream → real-time frequency counter update in Redis</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> ML model monthly retrain</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — প্রতিটা search event Kafka-তে publish হয়। Stream processor (Flink/Spark) consume করে Redis ZADD দিয়ে frequency update করে। Sliding window (last 1 hour) দিয়ে trending detect করে। Real-time Trie update হয় না — Redis Sorted Set-ই serve করে।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT & CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ৩-৪ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <ul class="task-list">
+      <li><strong>Inverted Index Build করো:</strong> নিচের 4টা sentence দিয়ে manually inverted index তৈরি করো। তারপর "system design" search করলে কোন documents আসবে? "System design is important", "Design patterns matter", "Search system architecture", "System architecture review"।</li>
+      <li><strong>Trie Implement করো:</strong> Python-এ একটা simple Trie implement করো যেটা: insert(word, frequency), autocomplete(prefix, top_k=5) support করে। Test করো: insert "apple"(1M), "application"(500K), "apply"(200K), "apt"(50K)। autocomplete("app") → কী আসবে?</li>
+      <li><strong>Architecture Diagram:</strong> Search system-এর complete diagram আঁকো। Indexing pipeline (Crawler → Processor → Index Builder → Elasticsearch) এবং Query pipeline (User → Query Processor → Cache → Search Engine → Ranker → Results) আলাদা দেখাও।</li>
+      <li><strong>Redis Typeahead:</strong> Redis Sorted Set দিয়ে typeahead কীভাবে implement করবে explain করো। ZADD, ZINCRBY, ZREVRANGEBYSCORE commands কীভাবে use করবে? "ap" prefix-এর top 5 suggestions কীভাবে পাবে?</li>
+      <li><strong>Scaling Plan:</strong> Google-এর 100B pages-এর index Elasticsearch-এ রাখতে: কতটা shards দরকার? Replication factor কত রাখবে? কেন?</li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>Manual inverted index table</li>
+        <li>Trie Python implementation</li>
+        <li>Search architecture diagram</li>
+        <li>Redis typeahead explanation</li>
+        <li>Elasticsearch scaling plan</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">System Summary</div>
+    <h2 class="section-title">Search — Key Takeaways</h2>
+    <table class="compare-table">
+      <tr><th>Challenge</th><th>Solution</th><th>Technology</th></tr>
+      <tr><td>Full-text search</td><td>Inverted index</td><td>Elasticsearch/Lucene</td></tr>
+      <tr><td>Autocomplete</td><td>Trie + frequency</td><td>Redis Sorted Set</td></tr>
+      <tr><td>Relevance ranking</td><td>TF-IDF scoring</td><td>Elasticsearch scoring</td></tr>
+      <tr><td>Scale index</td><td>Sharding</td><td>Elasticsearch shards</td></tr>
+      <tr><td>Trending queries</td><td>Stream processing</td><td>Kafka + Flink</td></tr>
+      <tr><td>Typo tolerance</td><td>Edit distance</td><td>Elasticsearch fuzziness</td></tr>
+    </table>
+  </div>
+
+  <div class="next-cta" onclick="alert('System 7: Uber — পরের ফাইল খোলো!')">
+    <div>
+      <div class="next-label">Final System →</div>
+      <div class="next-title">🚗 Uber / Ride Sharing Design</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+
+</div>
+</main>
+<script>
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scroll = doc.scrollTop || document.body.scrollTop;
+  const height = doc.scrollHeight - doc.clientHeight;
+  document.getElementById('progressFill').style.width = (scroll / height * 100) + '%';
+});
+let answered = {};
+document.querySelectorAll('.option').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const block = this.closest('.question-block');
+    const qId = Array.from(document.querySelectorAll('.question-block')).indexOf(block);
+    if (answered[qId]) return;
+    answered[qId] = this.dataset.val;
+    block.querySelectorAll('.option').forEach(o => {
+      o.style.pointerEvents = 'none';
+      if (o.dataset.val === block.dataset.correct) o.classList.add('correct');
+      else if (o.dataset.val === this.dataset.val && this.dataset.val !== block.dataset.correct) o.classList.add('wrong');
+    });
+    block.querySelector('.explanation').classList.add('visible');
+    const correct = Array.from(document.querySelectorAll('.question-block')).filter((b,i) => answered[i] === b.dataset.correct).length;
+    document.getElementById('scoreDisplay').textContent = correct;
+  });
+});
+function submitMCQ() {
+  const blocks = document.querySelectorAll('.question-block');
+  const unanswered = blocks.length - Object.keys(answered).length;
+  if (unanswered > 0) { alert(`এখনও ${unanswered}টা প্রশ্নের উত্তর দাওনি!`); return; }
+  let correct = Array.from(blocks).filter((b,i) => answered[i] === b.dataset.correct).length;
+  const banner = document.getElementById('resultBanner');
+  banner.classList.add('visible');
+  if (correct >= 7) { banner.classList.add('pass'); banner.textContent = `🎉 দারুণ! ${correct}/10 সঠিক। Final system-এ যেতে পারো!`; }
+  else { banner.classList.add('fail'); banner.textContent = `📖 ${correct}/10 সঠিক। Concepts আবার পড়ো। ৭/১০ পেলেই pass।`; }
+}
+</script>
+</body>
+</html>

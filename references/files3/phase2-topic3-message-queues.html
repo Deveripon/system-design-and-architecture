@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 2 · Topic 3 — Message Queues & Event Streaming</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05080f;--surface:#090e1a;--card:#0c1220;--border:#162035;--border2:#1e2d4a;--accent:#3b82f6;--accent-glow:rgba(59,130,246,0.15);--green:#10b981;--green-glow:rgba(16,185,129,0.12);--orange:#f97316;--red:#ef4444;--yellow:#eab308;--purple:#8b5cf6;--text:#e2e8f0;--muted:#64748b;--muted2:#94a3b8}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans Bengali',sans-serif;line-height:1.7;font-size:15px}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.4}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.sidebar-logo .phase-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:4px}
+.sidebar-logo .course-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;line-height:1.3}
+.nav-section{padding:0 12px;margin-bottom:8px}
+.nav-section-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);padding:0 8px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:4px;font-size:13px;color:var(--muted2);cursor:pointer;transition:all 0.15s;text-decoration:none}
+.nav-item:hover{background:var(--card);color:var(--text)}.nav-item.active{background:var(--accent-glow);color:var(--accent)}
+.nav-item .nav-icon{font-size:14px;flex-shrink:0}.nav-item .nav-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto}
+.progress-bar{position:fixed;top:0;left:240px;right:0;height:2px;background:var(--border);z-index:200}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));width:0%;transition:width 0.1s}
+.main{margin-left:240px;min-height:100vh}.content{max-width:780px;margin:0 auto;padding:48px 40px 120px}
+.topic-header{margin-bottom:48px}
+.breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.breadcrumb span{color:var(--accent)}
+.topic-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:block}
+h1.topic-title{font-family:'Fraunces',serif;font-size:clamp(32px,5vw,48px);font-weight:900;line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,#fff 30%,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topic-meta{display:flex;gap:16px;flex-wrap:wrap}
+.meta-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 12px;border-radius:2px;border:1px solid}
+.meta-chip.time{border-color:rgba(59,130,246,0.3);color:var(--accent);background:var(--accent-glow)}
+.meta-chip.level{border-color:rgba(16,185,129,0.3);color:var(--green);background:var(--green-glow)}
+.meta-chip.type{border-color:rgba(139,92,246,0.3);color:var(--purple);background:rgba(139,92,246,0.08)}
+.section{margin-bottom:48px;scroll-margin-top:24px}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:3px;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+h2.section-title{font-family:'Fraunces',serif;font-size:24px;font-weight:700;margin-bottom:16px;color:#f1f5f9}
+h3.sub-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;margin:24px 0 10px;color:#cbd5e1}
+p{margin-bottom:14px;color:#cbd5e1}
+.info-box{border-radius:6px;padding:18px 20px;margin:20px 0;border-left:3px solid;font-size:14px}
+.info-box.concept{background:rgba(59,130,246,0.06);border-color:var(--accent)}.info-box.warning{background:rgba(249,115,22,0.06);border-color:var(--orange)}.info-box.tip{background:rgba(16,185,129,0.06);border-color:var(--green)}.info-box.important{background:rgba(234,179,8,0.06);border-color:var(--yellow)}
+.info-box .box-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:700}
+.info-box.concept .box-label{color:var(--accent)}.info-box.warning .box-label{color:var(--orange)}.info-box.tip .box-label{color:var(--green)}.info-box.important .box-label{color:var(--yellow)}
+.compare-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px}
+.compare-table th{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1px;padding:12px 16px;text-align:left;background:var(--card);border-bottom:2px solid var(--border2);color:var(--muted2)}
+.compare-table td{padding:11px 16px;border-bottom:1px solid var(--border);color:#94a3b8;vertical-align:top;line-height:1.6}
+.compare-table tr:hover td{background:rgba(255,255,255,0.02)}
+.compare-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text)}
+.tag-yes{color:var(--green);font-weight:600}.tag-no{color:var(--red)}.tag-med{color:var(--yellow)}
+.diagram{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:30px 20px;margin:24px 0;text-align:center;overflow-x:auto}
+.code-block{background:#030608;border:1px solid var(--border2);border-radius:6px;margin:20px 0;overflow:hidden}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--border)}
+.code-lang{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:1px}
+.code-file{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)}
+pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.8;color:#e2e8f0}
+.kw{color:#93c5fd}.fn{color:#6ee7b7}.str{color:#fcd34d}.cm{color:#475569;font-style:italic}.num{color:#f9a8d4}.var{color:#e2e8f0}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0}
+.scenario-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:18px}
+.scenario-card .s-title{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+.scenario-card p{font-size:13px;color:var(--muted2);margin:0}
+.mcq-section{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:28px;margin:30px 0}
+.mcq-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.mcq-icon{font-size:24px}.mcq-header h2{font-family:'Fraunces',serif;font-size:20px;font-weight:700}
+.mcq-score{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted)}
+.mcq-score span{color:var(--accent);font-size:18px;font-weight:700}
+.question-block{margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--border)}
+.question-block:last-of-type{border-bottom:none;margin-bottom:0}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.q-text{font-size:15px;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.5;font-family:'Noto Sans Bengali',sans-serif}
+.options{display:flex;flex-direction:column;gap:8px}
+.option{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:4px;border:1px solid var(--border);cursor:pointer;transition:all 0.15s;font-size:14px;color:var(--muted2);font-family:'Noto Sans Bengali',sans-serif}
+.option:hover{border-color:var(--accent);color:var(--text);background:var(--accent-glow)}.option.correct{border-color:var(--green);background:var(--green-glow);color:#6ee7b7}.option.wrong{border-color:var(--red);background:rgba(239,68,68,0.08);color:#fca5a5}
+.option-key{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--border2);padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px}
+.explanation{display:none;margin-top:12px;padding:12px 14px;background:rgba(16,185,129,0.06);border-left:2px solid var(--green);border-radius:0 4px 4px 0;font-size:13px;color:#94a3b8;line-height:1.7;font-family:'Noto Sans Bengali',sans-serif}
+.explanation.visible{display:block}.explanation strong{color:var(--green)}
+.mcq-submit{display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:12px 24px;background:var(--accent);color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;border:none;border-radius:4px;cursor:pointer;letter-spacing:1px;transition:all 0.15s}
+.mcq-submit:hover{background:#2563eb;transform:translateY(-1px)}
+.result-banner{display:none;margin-top:20px;padding:16px 20px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700}
+.result-banner.visible{display:block}.result-banner.pass{background:var(--green-glow);border:1px solid var(--green);color:var(--green)}.result-banner.fail{background:rgba(249,115,22,0.08);border:1px solid var(--orange);color:var(--orange)}
+.assignment-section{background:linear-gradient(135deg,rgba(59,130,246,0.04),rgba(139,92,246,0.04));border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:28px;margin:30px 0}
+.assignment-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.assignment-icon{font-size:28px}.assignment-header h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700}
+.assignment-meta{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.a-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 10px;border-radius:2px}
+.a-chip.time{background:rgba(234,179,8,0.1);color:var(--yellow);border:1px solid rgba(234,179,8,0.2)}.a-chip.level{background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.2)}
+.task-list{counter-reset:tasks;list-style:none;display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
+.task-list li{counter-increment:tasks;display:flex;gap:14px;padding:16px;background:var(--card);border-radius:6px;border:1px solid var(--border);font-size:14px;color:var(--muted2)}
+.task-list li::before{content:counter(tasks);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--accent);background:var(--accent-glow);border:1px solid rgba(59,130,246,0.3);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.task-list li strong{color:var(--text);display:block;margin-bottom:4px}
+.deliverable-box{background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.2);border-radius:6px;padding:18px 20px}
+.d-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;font-weight:700}
+.deliverable-box ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.deliverable-box ul li{font-size:13px;color:var(--muted2);padding-left:16px;position:relative}
+.deliverable-box ul li::before{content:'→';position:absolute;left:0;color:var(--green)}
+.project-section{background:linear-gradient(135deg,rgba(16,185,129,0.04),rgba(59,130,246,0.04));border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:28px;margin:30px 0}
+.project-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.project-header h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700}
+.step-flow{display:flex;flex-direction:column;gap:0}
+.step-item{display:flex;gap:16px;position:relative;padding-bottom:24px}
+.step-item:last-child{padding-bottom:0}
+.step-item:not(:last-child)::after{content:'';position:absolute;left:12px;top:28px;bottom:0;width:1px;background:var(--border2)}
+.step-circle{width:26px;height:26px;border-radius:50%;background:var(--accent);color:white;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;z-index:1}
+.step-content h4{font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px}
+.step-content p{font-size:13px;color:var(--muted2);margin:0}
+.next-cta{display:flex;align-items:center;justify-content:space-between;padding:24px 28px;background:var(--card);border:1px solid var(--border2);border-radius:8px;margin-top:48px;cursor:pointer;transition:all 0.2s}
+.next-cta:hover{border-color:var(--accent);background:rgba(59,130,246,0.05)}
+.next-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:6px}
+.next-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700}.next-arrow{font-size:24px;color:var(--accent)}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--card);padding:2px 7px;border-radius:3px;border:1px solid var(--border);color:#93c5fd}
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 2 · Core Components</span>
+    <div class="course-title">System Design Mastery</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">এই Topic এ</div>
+    <a class="nav-item active" href="#concept"><span class="nav-icon">💡</span> Core Concept <span class="nav-num">01</span></a>
+    <a class="nav-item" href="#why"><span class="nav-icon">❓</span> Why Async? <span class="nav-num">02</span></a>
+    <a class="nav-item" href="#patterns"><span class="nav-icon">🗂️</span> MQ Patterns <span class="nav-num">03</span></a>
+    <a class="nav-item" href="#kafka"><span class="nav-icon">📡</span> Kafka Deep Dive <span class="nav-num">04</span></a>
+    <a class="nav-item" href="#rabbitmq"><span class="nav-icon">🐰</span> RabbitMQ <span class="nav-num">05</span></a>
+    <a class="nav-item" href="#code"><span class="nav-icon">💻</span> Code Examples <span class="nav-num">06</span></a>
+    <a class="nav-item" href="#comparison"><span class="nav-icon">⚖️</span> Comparison <span class="nav-num">07</span></a>
+    <a class="nav-item" href="#interview"><span class="nav-icon">🎯</span> Interview Q&A <span class="nav-num">08</span></a>
+    <a class="nav-item" href="#mcq"><span class="nav-icon">📝</span> MCQ Quiz <span class="nav-num">09</span></a>
+    <a class="nav-item" href="#assignment"><span class="nav-icon">📋</span> Assignment <span class="nav-num">10</span></a>
+    <a class="nav-item" href="#project"><span class="nav-icon">🚀</span> Project <span class="nav-num">11</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px;">
+    <div class="nav-section-label">Phase 2 Topics</div>
+    <a class="nav-item" href="phase2-topic1-caching.html"><span class="nav-icon">🔴</span> T1: Caching & Redis</a>
+    <a class="nav-item" href="phase2-topic2-load-balancing.html"><span class="nav-icon">⚖️</span> T2: Load Balancing</a>
+    <a class="nav-item active" href="#"><span class="nav-icon">📨</span> T3: Message Queues</a>
+    <a class="nav-item" href="phase2-topic4-api-design.html"><span class="nav-icon">🔌</span> T4: API Design</a>
+    <a class="nav-item" href="phase2-topic5-db-sharding.html"><span class="nav-icon">🗄️</span> T5: DB Sharding</a>
+    <a class="nav-item" href="phase2-topic6-cdn.html"><span class="nav-icon">🌐</span> T6: CDN & Storage</a>
+  </div>
+</aside>
+
+<main class="main">
+<div class="content">
+
+  <div class="topic-header">
+    <div class="breadcrumb">System Design Mastery <span>/</span> Phase 2 <span>/</span> Topic 3</div>
+    <span class="topic-num">Phase 2 · Topic 03</span>
+    <h1 class="topic-title">Message Queues &<br>Event Streaming</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ 3-4 ঘণ্টা</span>
+      <span class="meta-chip level">📊 Junior → Mid</span>
+      <span class="meta-chip type">📨 Kafka · RabbitMQ · SQS</span>
+    </div>
+  </div>
+
+  <!-- 01 Concept -->
+  <div class="section" id="concept">
+    <div class="section-label">01 — Core Concept</div>
+    <h2 class="section-title">Message Queue কী?</h2>
+    <p>ধরো Swiggy তে order দিলে — app বলে "Order Confirmed!" এবং তুমি phone রেখে দিলে। পরে notification আসলো, restaurant prepare করলো, rider আসলো। তুমি order দেওয়ার পরেই চলে যেতে পারলে — wait করতে হলো না। এটাই <strong>asynchronous messaging</strong>। Synchronous হলে তুমি phone ধরে থাকতে হতো যতক্ষণ food deliver না হয়!</p>
+
+    <div class="info-box concept">
+      <div class="box-label">💡 Definition</div>
+      <strong>Message Queue</strong> হলো একটি middleware যেখানে <strong>Producer</strong> messages পাঠায় এবং <strong>Consumer</strong> সেগুলো নিজের pace এ process করে। দুটো service সরাসরি কথা বলে না — Queue মাঝখানে buffer হিসেবে থাকে। এতে services decoupled থাকে এবং system resilient হয়।
+    </div>
+
+    <div class="diagram">
+      <svg width="640" height="150" viewBox="0 0 640 150">
+        <text x="10" y="16" fill="#ef4444" font-family="JetBrains Mono" font-size="10" font-weight="700">SYNCHRONOUS — Tight Coupling ✗</text>
+        <rect x="10" y="24" width="90" height="32" rx="3" fill="#0c1220" stroke="#ef4444"/>
+        <text x="55" y="44" fill="#ef4444" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Service A</text>
+        <line x1="100" y1="40" x2="190" y2="40" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4"/>
+        <text x="145" y="34" fill="#64748b" font-family="JetBrains Mono" font-size="8">waits...</text>
+        <rect x="190" y="24" width="90" height="32" rx="3" fill="#0c1220" stroke="#ef4444"/>
+        <text x="235" y="44" fill="#ef4444" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Service B</text>
+        <text x="150" y="72" fill="#f97316" font-family="JetBrains Mono" font-size="9">B slow → A slow. B down → A fails!</text>
+
+        <text x="10" y="98" fill="#10b981" font-family="JetBrains Mono" font-size="10" font-weight="700">ASYNCHRONOUS — Loose Coupling ✓</text>
+        <rect x="10" y="106" width="80" height="30" rx="3" fill="#0c1220" stroke="#10b981"/>
+        <text x="50" y="126" fill="#10b981" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Producer</text>
+        <line x1="90" y1="121" x2="175" y2="121" stroke="#10b981" stroke-width="1.5"/>
+        <rect x="175" y="106" width="130" height="30" rx="3" fill="rgba(16,185,129,0.1)" stroke="#10b981"/>
+        <text x="240" y="126" fill="#10b981" font-family="JetBrains Mono" font-size="10" text-anchor="middle">📨 Queue</text>
+        <line x1="305" y1="121" x2="390" y2="121" stroke="#10b981" stroke-width="1.5"/>
+        <rect x="390" y="106" width="80" height="30" rx="3" fill="#0c1220" stroke="#10b981"/>
+        <text x="430" y="126" fill="#10b981" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Consumer</text>
+        <text x="310" y="150" fill="#6ee7b7" font-family="JetBrains Mono" font-size="8">fire &amp; forget ✓  decoupled ✓  resilient ✓</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 02 Why -->
+  <div class="section" id="why">
+    <div class="section-label">02 — Why Async?</div>
+    <h2 class="section-title">কেন Async Messaging দরকার?</h2>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">⚡ Decoupling</div>
+        <p>Service A এবং B একে অপরকে directly depend করে না। B down হলেও A কাজ করে, messages queue এ জমা থাকে।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">📈 Traffic Spike</div>
+        <p>হঠাৎ ১০,০০০ orders আসলে queue এ জমা হয়। Consumer নিজের pace এ process করে। System crash হয় না।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🔄 Retry Logic</div>
+        <p>Processing fail হলে message queue এ ফিরে আসে এবং retry হয়। Data loss হয় না।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🏗️ Microservices</div>
+        <p>Services loosely coupled থাকে। একটা service update করলে অন্যটা affect হয় না।</p>
+      </div>
+    </div>
+    <div class="info-box important">
+      <div class="box-label">📊 Real Example — E-commerce Order Flow</div>
+      Payment done → Queue তে event পাঠাও: "order_placed". তারপর parallel process: Email Service (confirmation পাঠাও), SMS Service (notify করো), Inventory Service (stock কমাও), Analytics Service (track করো)। User ২ seconds এ response পায়, বাকি সব background এ হয়।
+    </div>
+  </div>
+
+  <!-- 03 Patterns -->
+  <div class="section" id="patterns">
+    <div class="section-label">03 — MQ Patterns</div>
+    <h2 class="section-title">Message Queue Patterns</h2>
+
+    <h3 class="sub-title">1. Point-to-Point (Queue Model)</h3>
+    <p>একটা message শুধু একটাই consumer পায়। Task queue এর জন্য perfect — একটা job একবারই process হওয়া উচিত।</p>
+    <div class="diagram">
+      <svg width="520" height="90" viewBox="0 0 520 90">
+        <rect x="10" y="32" width="80" height="28" rx="3" fill="#0c1220" stroke="#3b82f6"/>
+        <text x="50" y="50" fill="#3b82f6" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Producer</text>
+        <line x1="90" y1="46" x2="165" y2="46" stroke="#3b82f6" stroke-width="1.5"/>
+        <rect x="165" y="22" width="150" height="48" rx="3" fill="rgba(59,130,246,0.1)" stroke="#3b82f6"/>
+        <text x="240" y="44" fill="#3b82f6" font-family="JetBrains Mono" font-size="10" text-anchor="middle">📨 Queue</text>
+        <text x="240" y="60" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">[M1] [M2] [M3] [M4]</text>
+        <line x1="315" y1="46" x2="390" y2="46" stroke="#10b981" stroke-width="1.5"/>
+        <text x="352" y="40" fill="#64748b" font-family="JetBrains Mono" font-size="8">one only</text>
+        <rect x="390" y="32" width="100" height="28" rx="3" fill="#0c1220" stroke="#10b981"/>
+        <text x="440" y="50" fill="#10b981" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Consumer</text>
+        <text x="240" y="85" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Each message consumed by exactly 1 consumer</text>
+      </svg>
+    </div>
+
+    <h3 class="sub-title">2. Publish-Subscribe (Topic/Fan-out)</h3>
+    <p>একটা message multiple consumers পায়। Event broadcast এর জন্য — "order_placed" event পেলে সবাই process করে।</p>
+    <div class="diagram">
+      <svg width="560" height="130" viewBox="0 0 560 130">
+        <rect x="10" y="50" width="80" height="28" rx="3" fill="#0c1220" stroke="#f97316"/>
+        <text x="50" y="68" fill="#f97316" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Publisher</text>
+        <line x1="90" y1="64" x2="165" y2="64" stroke="#f97316" stroke-width="1.5"/>
+        <rect x="165" y="40" width="110" height="48" rx="3" fill="rgba(249,115,22,0.1)" stroke="#f97316"/>
+        <text x="220" y="62" fill="#f97316" font-family="JetBrains Mono" font-size="10" text-anchor="middle">📡 Topic</text>
+        <text x="220" y="78" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">order_placed</text>
+        <line x1="275" y1="55" x2="365" y2="20" stroke="#10b981" stroke-width="1.5"/>
+        <line x1="275" y1="64" x2="365" y2="64" stroke="#10b981" stroke-width="1.5"/>
+        <line x1="275" y1="73" x2="365" y2="108" stroke="#10b981" stroke-width="1.5"/>
+        <rect x="365" y="8" width="110" height="22" rx="3" fill="#0c1220" stroke="#10b981"/>
+        <text x="420" y="23" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">📧 Email Service</text>
+        <rect x="365" y="53" width="110" height="22" rx="3" fill="#0c1220" stroke="#10b981"/>
+        <text x="420" y="68" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">📱 SMS Service</text>
+        <rect x="365" y="97" width="110" height="22" rx="3" fill="#0c1220" stroke="#10b981"/>
+        <text x="420" y="112" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">📊 Analytics</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 04 Kafka -->
+  <div class="section" id="kafka">
+    <div class="section-label">04 — Kafka Deep Dive</div>
+    <h2 class="section-title">Apache Kafka — Event Streaming Platform</h2>
+    <p>Kafka শুধু message queue না — এটা distributed event streaming platform। LinkedIn তৈরি করেছিল। এখন LinkedIn, Uber, Netflix, Airbnb সবাই use করে। প্রতিদিন trillions of events handle করে।</p>
+
+    <div class="info-box concept">
+      <div class="box-label">🔑 Kafka Key Terms</div>
+      <strong>Topic:</strong> Message category (e.g. "order-events")। <strong>Partition:</strong> Topic কে parallel শাখায় ভাগ করা। <strong>Offset:</strong> Partition এ message এর sequential ID। <strong>Producer:</strong> Message পাঠায়। <strong>Consumer Group:</strong> Messages consume করে। <strong>Broker:</strong> Kafka server node। <strong>Replication Factor:</strong> কতটা copy রাখবে।
+    </div>
+
+    <div class="diagram">
+      <svg width="660" height="190" viewBox="0 0 660 190">
+        <text x="10" y="16" fill="#64748b" font-family="JetBrains Mono" font-size="10" font-weight="700">KAFKA ARCHITECTURE</text>
+        <rect x="10" y="30" width="90" height="28" rx="3" fill="#0c1220" stroke="#3b82f6"/>
+        <text x="55" y="48" fill="#3b82f6" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Producer 1</text>
+        <rect x="10" y="65" width="90" height="28" rx="3" fill="#0c1220" stroke="#3b82f6"/>
+        <text x="55" y="83" fill="#3b82f6" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Producer 2</text>
+        <line x1="100" y1="44" x2="185" y2="80" stroke="#3b82f6" stroke-width="1"/>
+        <line x1="100" y1="79" x2="185" y2="90" stroke="#3b82f6" stroke-width="1"/>
+        <rect x="185" y="24" width="210" height="148" rx="6" fill="rgba(249,115,22,0.05)" stroke="#f97316" stroke-width="1.5"/>
+        <text x="290" y="44" fill="#f97316" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">☕ Kafka Broker</text>
+        <text x="205" y="62" fill="#64748b" font-family="JetBrains Mono" font-size="8">Topic: order-events</text>
+        <rect x="200" y="67" width="180" height="18" rx="2" fill="rgba(59,130,246,0.12)" stroke="#3b82f6"/>
+        <text x="290" y="80" fill="#93c5fd" font-family="JetBrains Mono" font-size="8" text-anchor="middle">P0: [offset0][offset1][offset2]</text>
+        <rect x="200" y="91" width="180" height="18" rx="2" fill="rgba(59,130,246,0.12)" stroke="#3b82f6"/>
+        <text x="290" y="104" fill="#93c5fd" font-family="JetBrains Mono" font-size="8" text-anchor="middle">P1: [offset0][offset1][offset2]</text>
+        <rect x="200" y="115" width="180" height="18" rx="2" fill="rgba(59,130,246,0.12)" stroke="#3b82f6"/>
+        <text x="290" y="128" fill="#93c5fd" font-family="JetBrains Mono" font-size="8" text-anchor="middle">P2: [offset0][offset1][offset2]</text>
+        <text x="205" y="152" fill="#64748b" font-family="JetBrains Mono" font-size="7">Messages never deleted (retention: 7 days default)</text>
+        <text x="205" y="164" fill="#64748b" font-family="JetBrains Mono" font-size="7">Can replay from any offset ✓</text>
+        <line x1="395" y1="86" x2="460" y2="55" stroke="#10b981" stroke-width="1.5"/>
+        <line x1="395" y1="105" x2="460" y2="105" stroke="#10b981" stroke-width="1.5"/>
+        <line x1="395" y1="124" x2="460" y2="155" stroke="#10b981" stroke-width="1.5"/>
+        <rect x="460" y="40" width="110" height="28" rx="3" fill="#0c1220" stroke="#10b981"/>
+        <text x="515" y="56" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Consumer 1 (P0)</text>
+        <rect x="460" y="90" width="110" height="28" rx="3" fill="#0c1220" stroke="#10b981"/>
+        <text x="515" y="106" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Consumer 2 (P1)</text>
+        <rect x="460" y="140" width="110" height="28" rx="3" fill="#0c1220" stroke="#10b981"/>
+        <text x="515" y="156" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Consumer 3 (P2)</text>
+        <rect x="590" y="100" width="60" height="36" rx="3" fill="rgba(16,185,129,0.08)" stroke="#10b981"/>
+        <text x="620" y="116" fill="#10b981" font-family="JetBrains Mono" font-size="7" text-anchor="middle">Consumer</text>
+        <text x="620" y="128" fill="#10b981" font-family="JetBrains Mono" font-size="7" text-anchor="middle">Group</text>
+      </svg>
+    </div>
+
+    <div class="info-box tip">
+      <div class="box-label">✅ Kafka এর Unique Power</div>
+      Messages replay করা যায় (offset থেকে)। Multiple Consumer Groups একই Topic থেকে independently read করতে পারে। Email Service, Analytics Service, Inventory Service — তিনজনই same event পাবে কিন্তু আলাদা আলাদা। এটাই Kafka কে "event log" বানায়, শুধু queue না।
+    </div>
+  </div>
+
+  <!-- 05 RabbitMQ -->
+  <div class="section" id="rabbitmq">
+    <div class="section-label">05 — RabbitMQ</div>
+    <h2 class="section-title">RabbitMQ — Traditional Message Broker</h2>
+    <p>RabbitMQ AMQP protocol ব্যবহার করে। Complex routing, acknowledgment, dead letter queue — এসব feature এর জন্য। Push-based: broker নিজেই consumer কে message push করে।</p>
+
+    <div class="info-box concept">
+      <div class="box-label">🐰 RabbitMQ Key Concepts</div>
+      <strong>Exchange:</strong> Message receive করে Queue তে route করে। Types: Direct, Topic, Fanout, Headers। <strong>Queue:</strong> Messages store করে। <strong>Binding:</strong> Exchange-Queue connection। <strong>ACK:</strong> Consumer সফলভাবে process করলে acknowledge করে। <strong>NACK + DLQ:</strong> Fail হলে Dead Letter Queue তে যায়।
+    </div>
+
+    <table class="compare-table">
+      <tr><th>Feature</th><th>Kafka</th><th>RabbitMQ</th></tr>
+      <tr><td>Model</td><td>Event Log (Pull)</td><td>Message Queue (Push)</td></tr>
+      <tr><td>Message Retention</td><td class="tag-yes">Days/weeks (replay possible)</td><td class="tag-no">Deleted after ACK</td></tr>
+      <tr><td>Throughput</td><td class="tag-yes">Millions/sec</td><td class="tag-med">Thousands/sec</td></tr>
+      <tr><td>Message Replay</td><td class="tag-yes">Yes — from any offset</td><td class="tag-no">No</td></tr>
+      <tr><td>Complex Routing</td><td class="tag-med">Topic/Partition only</td><td class="tag-yes">Exchange types (Direct, Fanout...)</td></tr>
+      <tr><td>ACK/NACK</td><td class="tag-med">Offset commit</td><td class="tag-yes">Explicit ACK/NACK + DLQ</td></tr>
+      <tr><td>Best For</td><td>Real-time streaming, analytics</td><td>Task queues, complex routing</td></tr>
+      <tr><td>Learning Curve</td><td class="tag-no">Steep</td><td class="tag-yes">Moderate</td></tr>
+    </table>
+  </div>
+
+  <!-- 06 Code -->
+  <div class="section" id="code">
+    <div class="section-label">06 — Code Examples</div>
+    <h2 class="section-title">হাতে-কলমে Code</h2>
+
+    <h3 class="sub-title">Python — Kafka Producer & Consumer</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Python</span><span class="code-file">kafka_example.py</span></div>
+      <pre><span class="kw">from</span> kafka <span class="kw">import</span> KafkaProducer, KafkaConsumer
+<span class="kw">import</span> json, time
+
+<span class="cm"># ── Producer — Order event পাঠাও ───────────────</span>
+producer = <span class="fn">KafkaProducer</span>(
+    bootstrap_servers=[<span class="str">'localhost:9092'</span>],
+    value_serializer=<span class="kw">lambda</span> v: json.<span class="fn">dumps</span>(v).<span class="fn">encode</span>()
+)
+
+<span class="kw">def</span> <span class="fn">place_order</span>(order_data):
+    event = {
+        <span class="str">'event_type'</span>: <span class="str">'order_placed'</span>,
+        <span class="str">'order_id'</span>: order_data[<span class="str">'id'</span>],
+        <span class="str">'user_id'</span>: order_data[<span class="str">'user_id'</span>],
+        <span class="str">'amount'</span>: order_data[<span class="str">'amount'</span>],
+        <span class="str">'timestamp'</span>: time.<span class="fn">time</span>()
+    }
+    <span class="cm"># Topic: 'order-events' এ publish করো</span>
+    future = producer.<span class="fn">send</span>(<span class="str">'order-events'</span>, event)
+    result = future.<span class="fn">get</span>(timeout=<span class="num">10</span>)
+    <span class="fn">print</span>(f<span class="str">f"✅ Event published → partition:{result.partition} offset:{result.offset}"</span>)
+
+<span class="cm"># ── Consumer: Email Service ─────────────────────</span>
+email_consumer = <span class="fn">KafkaConsumer</span>(
+    <span class="str">'order-events'</span>,
+    bootstrap_servers=[<span class="str">'localhost:9092'</span>],
+    group_id=<span class="str">'email-service'</span>,    <span class="cm"># Consumer group name</span>
+    value_deserializer=<span class="kw">lambda</span> m: json.<span class="fn">loads</span>(m.<span class="fn">decode</span>()),
+    auto_offset_reset=<span class="str">'earliest'</span>  <span class="cm"># Start from beginning</span>
+)
+
+<span class="fn">print</span>(<span class="str">"📧 Email service listening..."</span>)
+<span class="kw">for</span> message <span class="kw">in</span> email_consumer:
+    event = message.value
+    <span class="kw">if</span> event[<span class="str">'event_type'</span>] == <span class="str">'order_placed'</span>:
+        <span class="fn">print</span>(f<span class="str">f"📧 Sending email for order: {event['order_id']}"</span>)
+        <span class="cm"># send_confirmation_email(event['user_id'])</span>
+
+<span class="cm"># NOTE: Analytics service can ALSO consume same topic
+# with group_id='analytics-service' — independently!</span></pre>
+    </div>
+
+    <h3 class="sub-title">Node.js — RabbitMQ Task Queue</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Node.js</span><span class="code-file">rabbitmq_worker.js</span></div>
+      <pre><span class="kw">const</span> amqp = <span class="fn">require</span>(<span class="str">'amqplib'</span>);
+
+<span class="cm">// ── Publisher: Task পাঠাও ──────────────────────</span>
+<span class="kw">async function</span> <span class="fn">publishImageTask</span>(imageUrl) {
+  <span class="kw">const</span> conn = <span class="kw">await</span> amqp.<span class="fn">connect</span>(<span class="str">'amqp://localhost'</span>);
+  <span class="kw">const</span> ch = <span class="kw">await</span> conn.<span class="fn">createChannel</span>();
+
+  <span class="kw">await</span> ch.<span class="fn">assertQueue</span>(<span class="str">'image_resize'</span>, { durable: <span class="kw">true</span> });
+
+  ch.<span class="fn">sendToQueue</span>(
+    <span class="str">'image_resize'</span>,
+    Buffer.<span class="fn">from</span>(JSON.<span class="fn">stringify</span>({ imageUrl, size: <span class="str">'800x600'</span> })),
+    { persistent: <span class="kw">true</span> }  <span class="cm">// Survive broker restart</span>
+  );
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">`📤 Task queued: ${imageUrl}`</span>);
+  <span class="kw">await</span> conn.<span class="fn">close</span>();
+}
+
+<span class="cm">// ── Worker: Task process করো ───────────────────</span>
+<span class="kw">async function</span> <span class="fn">startWorker</span>() {
+  <span class="kw">const</span> conn = <span class="kw">await</span> amqp.<span class="fn">connect</span>(<span class="str">'amqp://localhost'</span>);
+  <span class="kw">const</span> ch = <span class="kw">await</span> conn.<span class="fn">createChannel</span>();
+
+  <span class="kw">await</span> ch.<span class="fn">assertQueue</span>(<span class="str">'image_resize'</span>, { durable: <span class="kw">true</span> });
+  ch.<span class="fn">prefetch</span>(<span class="num">1</span>);  <span class="cm">// Process one task at a time</span>
+
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'🔧 Worker ready, waiting for tasks...'</span>);
+  ch.<span class="fn">consume</span>(<span class="str">'image_resize'</span>, <span class="kw">async</span> (msg) => {
+    <span class="kw">const</span> task = JSON.<span class="fn">parse</span>(msg.content.<span class="fn">toString</span>());
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">`🖼️ Resizing: ${task.imageUrl}`</span>);
+
+    <span class="kw">try</span> {
+      <span class="kw">await</span> <span class="fn">resizeImage</span>(task.imageUrl, task.size);
+      ch.<span class="fn">ack</span>(msg);             <span class="cm">// ✅ Success: remove from queue</span>
+    } <span class="kw">catch</span> (err) {
+      <span class="fn">console</span>.<span class="fn">error</span>(<span class="str">'❌ Failed, requeuing...'</span>, err);
+      ch.<span class="fn">nack</span>(msg, <span class="kw">false</span>, <span class="kw">true</span>); <span class="cm">// ❌ Fail: requeue message</span>
+    }
+  });
+}
+
+<span class="fn">startWorker</span>();</pre>
+    </div>
+
+    <h3 class="sub-title">Dead Letter Queue (DLQ) — Failed Messages</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Node.js</span><span class="code-file">dlq_setup.js</span></div>
+      <pre><span class="cm">// Dead Letter Queue — failed message গুলো আলাদা queue তে যাবে</span>
+<span class="kw">await</span> ch.<span class="fn">assertExchange</span>(<span class="str">'dlx'</span>, <span class="str">'direct'</span>);
+<span class="kw">await</span> ch.<span class="fn">assertQueue</span>(<span class="str">'failed_tasks'</span>);
+<span class="kw">await</span> ch.<span class="fn">bindQueue</span>(<span class="str">'failed_tasks'</span>, <span class="str">'dlx'</span>, <span class="str">'failed'</span>);
+
+<span class="cm">// Main queue এ DLX set করো</span>
+<span class="kw">await</span> ch.<span class="fn">assertQueue</span>(<span class="str">'image_resize'</span>, {
+  durable: <span class="kw">true</span>,
+  arguments: {
+    <span class="str">'x-dead-letter-exchange'</span>: <span class="str">'dlx'</span>,
+    <span class="str">'x-dead-letter-routing-key'</span>: <span class="str">'failed'</span>,
+    <span class="str">'x-message-ttl'</span>: <span class="num">30000</span>  <span class="cm">// 30s TTL, then DLQ</span>
+  }
+});
+<span class="cm">// এখন failed/expired messages → 'failed_tasks' queue এ যাবে</span></pre>
+    </div>
+  </div>
+
+  <!-- 07 Comparison -->
+  <div class="section" id="comparison">
+    <div class="section-label">07 — Comparison</div>
+    <h2 class="section-title">Kafka vs RabbitMQ vs AWS SQS</h2>
+    <table class="compare-table">
+      <tr><th>Tool</th><th>Best For</th><th>Throughput</th><th>Complexity</th><th>Managed?</th></tr>
+      <tr><td>Apache Kafka</td><td>Real-time analytics, event sourcing, log pipeline</td><td class="tag-yes">Millions/sec</td><td class="tag-no">High</td><td class="tag-no">Self-hosted / Confluent</td></tr>
+      <tr><td>RabbitMQ</td><td>Task queues, RPC, complex routing, ACK/DLQ</td><td class="tag-med">Thousands/sec</td><td class="tag-med">Medium</td><td class="tag-no">Self-hosted</td></tr>
+      <tr><td>AWS SQS</td><td>Simple task queue in AWS ecosystem</td><td class="tag-yes">High</td><td class="tag-yes">Low</td><td class="tag-yes">Fully managed</td></tr>
+      <tr><td>AWS SNS</td><td>Pub/Sub fan-out, push notifications</td><td class="tag-yes">High</td><td class="tag-yes">Low</td><td class="tag-yes">Fully managed</td></tr>
+      <tr><td>Redis Streams</td><td>Lightweight streaming, existing Redis stack</td><td class="tag-med">High</td><td class="tag-yes">Low</td><td class="tag-med">Self-hosted</td></tr>
+    </table>
+    <div class="info-box tip">
+      <div class="box-label">🎯 Quick Decision Guide</div>
+      <strong>Kafka বেছে নাও:</strong> Real-time data pipeline, event sourcing, multiple consumers same data চাই, replay দরকার।<br>
+      <strong>RabbitMQ বেছে নাও:</strong> Complex routing, task queue, explicit ACK/NACK, Dead Letter Queue দরকার।<br>
+      <strong>AWS SQS বেছে নাও:</strong> AWS stack এ আছো, managed solution চাও, overhead কমাতে চাও।
+    </div>
+  </div>
+
+  <!-- 08 Interview -->
+  <div class="section" id="interview">
+    <div class="section-label">08 — Interview Prep</div>
+    <h2 class="section-title">Common Interview Questions</h2>
+    <div class="info-box concept">
+      <div class="box-label">❓ Q1: Kafka এ at-least-once vs exactly-once delivery কী?</div>
+      <strong>উত্তর:</strong> At-least-once: message কমপক্ষে একবার deliver হবে, কিন্তু duplicate possible। Exactly-once: Kafka transactions ব্যবহার করে duplicate ছাড়া deliver। সাধারণত at-least-once + idempotent consumer (same message দুবার process করলেও একই result) বেশি practical।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">❓ Q2: Kafka Partition কীভাবে throughput বাড়ায়?</div>
+      <strong>উত্তর:</strong> Partition parallel processing enable করে। ৩টা partition থাকলে ৩টা consumer simultaneously আলাদা partition থেকে read করতে পারে। Partition = parallelism। বেশি partition = বেশি throughput, কিন্তু overhead বাড়ে।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">❓ Q3: Message Queue vs Direct API call — কখন কোনটা?</div>
+      <strong>উত্তর:</strong> Direct API call — যখন immediate response দরকার (login, payment confirmation)। Message Queue — যখন background processing চলবে (email, notification, analytics), services decoupled রাখতে চাই, traffic spike handle করতে হবে।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">❓ Q4: Dead Letter Queue কী কাজ করে?</div>
+      <strong>উত্তর:</strong> যে messages process করতে বারবার fail হচ্ছে (max retry exceed করেছে) সেগুলো DLQ তে যায়। মূল queue block হয় না। Later DLQ inspect করে manually fix করা যায় বা alert trigger করা যায়।
+    </div>
+  </div>
+
+  <!-- 09 MCQ -->
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🧠</span>
+      <h2>MCQ Quiz — Message Queues</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">Message Queue ব্যবহারের সবচেয়ে বড় সুবিধা কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Database query fast হয়</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Services decoupled হয় — একটা down হলে অন্যটা affected হয় না</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> API response time কমে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Memory usage কমে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Decoupling হলো MQ এর core benefit। Service B down হলেও Service A কাজ করে, messages queue এ জমা থাকে। Service B উঠলে process করবে।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">Kafka এ "Partition" এর কাজ কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Topic কে encrypt করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Consumer দের আলাদা করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Topic কে parallel শাখায় ভাগ করে throughput বাড়ায়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Messages delete করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Partition = parallelism। ৩টা partition থাকলে ৩টা consumer group member simultaneously process করতে পারে। এটাই Kafka কে millions/sec throughput দেয়।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">RabbitMQ তে ACK (Acknowledgment) কী করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Consumer সফলভাবে process করলে broker কে জানায়, তখন message queue থেকে delete হয়</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Producer কে confirm করে message পৌঁছেছে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Message encrypt করে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Queue full হলে alert পাঠায়</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — RabbitMQ তে message consumer process করলে ch.ack(msg) পাঠায়। তখন broker সেটা delete করে। ACK না এলে message queue এ থেকে যায় এবং retry হয়।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">Kafka তে message replay করা মানে কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Same message দুবার পাঠানো</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Failed message retry করা</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Consumer restart করা</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> পুরানো offset থেকে আবার messages consume করা</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Kafka messages delete করে না (retention period পর্যন্ত)। Consumer offset reset করে আগের যেকোনো point থেকে re-consume করতে পারে। Bug fix করে পুরানো events reprocess করতে কাজে লাগে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">Pub/Sub pattern এ কোনটা সত্য?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> একটা message শুধু একটা subscriber পায়</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> একটা message সব subscribers পায়</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Publisher directly subscriber কে message পাঠায়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Subscriber নিজেই message তৈরি করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Pub/Sub (Publish-Subscribe) এ Publisher একটা Topic এ publish করে এবং সব Subscribers সেই message পায়। "order_placed" event → Email, SMS, Analytics সবাই পাবে।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">Dead Letter Queue (DLQ) কেন ব্যবহার করা হয়?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> পুরানো messages archive করতে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Queue backup রাখতে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Repeatedly fail হওয়া messages আলাদা রাখতে যাতে main queue block না হয়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Processed messages store করতে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — DLQ তে যায় যে messages max retry শেষ করেছে। Main queue block হয় না। Developer পরে DLQ inspect করে bug fix করে manually reprocess করতে পারে।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">Kafka vs RabbitMQ — কোন scenario তে Kafka বেশি suitable?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Real-time analytics pipeline — প্রতি second লক্ষ events process করতে হবে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Image resize task queue — ১০০টা job per minute</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Email notification — complex routing দরকার</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Simple order confirmation</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Kafka high-throughput streaming এর জন্য designed। Millions/sec events, multiple consumer groups, replay — এই সব Kafka এর strength। Image resize এর মতো low-volume task queue এ RabbitMQ simpler।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">Kafka Consumer Group এর কাজ কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Producer দের group করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Messages compress করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Topic গুলো organize করে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Multiple consumers কে coordinate করে, প্রতিটা partition একটাই consumer পায়</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Consumer Group এ একই group এর consumers partitions ভাগ করে নেয়। ৩ partition + ৩ consumers → প্রতিজন একটা partition। এতে parallel processing হয়। Different groups same topic independently consume করতে পারে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">E-commerce order place এ payment success হলে কোন approach সবচেয়ে ভালো?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Payment → synchronously Email, SMS, Analytics সব call করো</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Payment → "order_placed" event Queue তে publish করো, বাকিরা async process করবে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Payment → শুধু DB তে save করো, বাকি কিছু করো না</span></div>
+        <div class="option" data-val="d"><span class="option-key">D</span> সব কিছু একটা big function এ করো</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Payment confirmation immediate হওয়া দরকার। Email/SMS/Analytics background এ হতে পারে। Queue publish করলে user ২ seconds এ response পায়। Email service slow হলেও payment flow block হয় না।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">RabbitMQ তে prefetch(1) কী করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Queue তে ১টা message রাখে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> ১ second delay করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Worker একটা message ACK না করা পর্যন্ত পরের message নেবে না — fair dispatch</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> প্রথম message কে priority দেয়</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — prefetch(1) মানে worker একটা task নেবে, process করবে, ACK দেবে, তারপর পরেরটা নেবে। এতে slow worker কে overwhelm করা হয় না এবং fast worker automatically বেশি কাজ পায়।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT &amp; CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <!-- 10 Assignment -->
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ২-৩ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <p style="margin-bottom:16px;font-size:14px;color:#94a3b8;">নিচের tasks গুলো complete করো।</p>
+    <ul class="task-list">
+      <li>
+        <strong>Scenario Analysis:</strong> নিচের ৩টা system এর জন্য বলো কোথায় Message Queue ব্যবহার করবে এবং কেন: (ক) Online food delivery app (খ) Bank transaction alert system (গ) Video streaming platform যেখানে upload করলে multiple quality (360p, 720p, 1080p) তৈরি করতে হয়।
+      </li>
+      <li>
+        <strong>Kafka vs RabbitMQ Decision:</strong> নিচের scenarios এ কোনটা বেছে নেবে এবং কেন explain করো: (ক) একটা startup এর simple email notification system (খ) একটা fintech company যেদিন প্রতি second ৫০,০০০ transactions analyze করে (গ) E-commerce এর image processing task queue।
+      </li>
+      <li>
+        <strong>Flow Diagram:</strong> Excalidraw দিয়ে একটা Food Delivery order flow diagram বানাও: User Order → Payment Service → [Queue] → Email Service, Kitchen Service, Rider Assignment Service। Pub/Sub pattern use করো।
+      </li>
+      <li>
+        <strong>Code Practice:</strong> উপরে দেওয়া Node.js RabbitMQ code টা locally চালাও (Docker: <code>docker run -d rabbitmq:3-management</code>)। একটা simple "hello world" task publish করো এবং consume করো।
+      </li>
+      <li>
+        <strong>Research:</strong> Uber কীভাবে Kafka ব্যবহার করে? Surge pricing, real-time location tracking, ride matching — এর মধ্যে কোথায় Kafka কাজ করে? ৫-৬ লাইনে লেখো।
+      </li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>Scenario analysis (৩টা system)</li>
+        <li>Kafka vs RabbitMQ decision with reasons</li>
+        <li>Food delivery flow diagram</li>
+        <li>RabbitMQ hello world code + screenshot</li>
+        <li>Uber Kafka research summary</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 11 Project -->
+  <div class="project-section" id="project">
+    <div class="project-header">
+      <span style="font-size:24px">🚀</span>
+      <h2>Hands-On Project Task</h2>
+    </div>
+    <div class="project-body">
+      <h3 style="font-family:'Fraunces',serif;font-size:18px;margin-bottom:12px;color:#f1f5f9;">Async Order Processing System</h3>
+      <p style="font-size:14px;color:#94a3b8;margin-bottom:20px;">RabbitMQ দিয়ে একটা E-commerce order processing system বানাও যেখানে ৩টা separate worker আছে।</p>
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-circle">1</div>
+          <div class="step-content">
+            <h4>RabbitMQ চালু করো</h4>
+            <p><code>docker run -d -p 5672:5672 -p 15672:15672 rabbitmq:3-management</code> — Management UI: localhost:15672 (guest/guest)</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">2</div>
+          <div class="step-content">
+            <h4>Order API বানাও</h4>
+            <p>Express.js এ POST /order endpoint — order receive করে queue তে publish করবে এবং immediately "Order Queued!" বলবে।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">3</div>
+          <div class="step-content">
+            <h4>৩টা Worker তৈরি করো</h4>
+            <p>email_worker.js (email পাঠায়), inventory_worker.js (stock কমায়), notification_worker.js (push notification)। সবাই same queue থেকে consume করে।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">4</div>
+          <div class="step-content">
+            <h4>Test করো</h4>
+            <p>Postman দিয়ে ৫টা order POST করো। দেখো সব workers simultaneously process করছে কিনা।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">5</div>
+          <div class="step-content">
+            <h4>Failure Test করো</h4>
+            <p>একটা worker এ intentional error throw করো। দেখো message queue এ ফিরে যাচ্ছে কিনা এবং retry হচ্ছে কিনা।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">6</div>
+          <div class="step-content">
+            <h4>Management UI দেখো</h4>
+            <p>RabbitMQ Management UI তে (localhost:15672) queue depth, message rate, consumer count দেখো।</p>
+          </div>
+        </div>
+      </div>
+      <div class="info-box tip" style="margin-top:16px">
+        <div class="box-label">🎯 এটা করলে যা শিখবে</div>
+        Async processing practically দেখবে — API immediately respond করে, background এ workers কাজ করে। Failure handling বুঝবে। Multiple workers কীভাবে parallel কাজ করে সেটা দেখবে।
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-label">Lesson Summary</div>
+    <h2 class="section-title">আজকে যা শিখলাম</h2>
+    <table class="compare-table">
+      <tr><th>Concept</th><th>এক লাইনে</th></tr>
+      <tr><td>Message Queue</td><td>Producer-Consumer এর মাঝে buffer — decoupling ও async processing</td></tr>
+      <tr><td>Point-to-Point</td><td>একটা message → একটা consumer। Task queue এর জন্য</td></tr>
+      <tr><td>Pub/Sub</td><td>একটা event → সব subscribers। Broadcast এর জন্য</td></tr>
+      <tr><td>Kafka</td><td>Event streaming, high throughput, replay possible, partitioned log</td></tr>
+      <tr><td>RabbitMQ</td><td>Traditional broker, push-based, complex routing, ACK/NACK/DLQ</td></tr>
+      <tr><td>Dead Letter Queue</td><td>Failed messages আলাদা রাখো, main queue block করো না</td></tr>
+      <tr><td>Consumer Group</td><td>Multiple consumers parallel process করে, load share করে</td></tr>
+    </table>
+  </div>
+
+  <div class="next-cta" onclick="window.location='phase2-topic4-api-design.html'">
+    <div>
+      <div class="next-label">Next Topic →</div>
+      <div class="next-title">🔌 API Design & Gateway (REST, GraphQL, gRPC)</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+
+</div>
+</main>
+<script>
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  document.getElementById('progressFill').style.width = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight) * 100) + '%';
+});
+let answered = {};
+document.querySelectorAll('.option').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const block = this.closest('.question-block');
+    const qId = Array.from(document.querySelectorAll('.question-block')).indexOf(block);
+    if (answered[qId]) return;
+    answered[qId] = this.dataset.val;
+    block.querySelectorAll('.option').forEach(o => {
+      o.style.pointerEvents = 'none';
+      if (o.dataset.val === block.dataset.correct) o.classList.add('correct');
+      else if (o.dataset.val === this.dataset.val) o.classList.add('wrong');
+    });
+    block.querySelector('.explanation').classList.add('visible');
+  });
+});
+function submitMCQ() {
+  let correct = 0;
+  const blocks = document.querySelectorAll('.question-block');
+  blocks.forEach((block, i) => { if (answered[i] === block.dataset.correct) correct++; });
+  if (blocks.length - Object.keys(answered).length > 0) { alert(`এখনও ${blocks.length - Object.keys(answered).length}টা উত্তর বাকি!`); return; }
+  document.getElementById('scoreDisplay').textContent = correct;
+  const banner = document.getElementById('resultBanner');
+  banner.classList.add('visible');
+  banner.classList.add(correct >= 7 ? 'pass' : 'fail');
+  banner.textContent = correct >= 7 ? `🎉 দারুণ! ${correct}/10 সঠিক! পরের topic এ যাও।` : `📖 ${correct}/10 সঠিক। আবার পড়ো, ৭/১০ চাই।`;
+}
+document.querySelectorAll('.nav-item[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => { e.preventDefault(); document.getElementById(link.getAttribute('href').slice(1))?.scrollIntoView({behavior:'smooth'}); });
+});
+</script>
+</body>
+</html>

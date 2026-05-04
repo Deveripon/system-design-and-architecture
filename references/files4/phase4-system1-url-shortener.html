@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 4 · System 1 — URL Shortener (TinyURL)</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05080f;
+  --surface: #090e1a;
+  --card: #0c1220;
+  --border: #162035;
+  --border2: #1e2d4a;
+  --accent: #3b82f6;
+  --accent-glow: rgba(59,130,246,0.15);
+  --green: #10b981;
+  --green-glow: rgba(16,185,129,0.12);
+  --orange: #f97316;
+  --red: #ef4444;
+  --yellow: #eab308;
+  --purple: #8b5cf6;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --muted2: #94a3b8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans Bengali', sans-serif;
+  line-height: 1.7;
+  font-size: 15px;
+}
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:999;
+  opacity:0.4;
+}
+.sidebar {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: 240px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 24px 0;
+  overflow-y: auto;
+  z-index: 100;
+}
+.sidebar-logo {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.sidebar-logo .phase-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--orange);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 4px;
+}
+.sidebar-logo .course-title {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.nav-section { padding: 0 12px; margin-bottom: 8px; }
+.nav-section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--muted);
+  padding: 0 8px;
+  margin-bottom: 6px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--muted2);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+.nav-item:hover { background: var(--card); color: var(--text); }
+.nav-item.active { background: rgba(249,115,22,0.1); color: var(--orange); }
+.nav-item .nav-icon { font-size: 14px; flex-shrink:0; }
+.nav-item .nav-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); margin-left: auto; }
+.progress-bar {
+  position: fixed;
+  top: 0; left: 240px; right: 0;
+  height: 2px;
+  background: var(--border);
+  z-index: 200;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--orange), var(--yellow));
+  width: 0%;
+  transition: width 0.1s;
+}
+.main { margin-left: 240px; min-height: 100vh; }
+.content { max-width: 780px; margin: 0 auto; padding: 48px 40px 120px; }
+.topic-header { margin-bottom: 48px; }
+.breadcrumb {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.breadcrumb span { color: var(--orange); }
+.topic-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--orange);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: block;
+}
+h1.topic-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #fff 30%, #fdba74);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.topic-meta { display: flex; gap: 16px; flex-wrap: wrap; }
+.meta-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 2px;
+  border: 1px solid;
+}
+.meta-chip.time { border-color: rgba(249,115,22,0.3); color: var(--orange); background: rgba(249,115,22,0.08); }
+.meta-chip.level { border-color: rgba(16,185,129,0.3); color: var(--green); background: var(--green-glow); }
+.meta-chip.type { border-color: rgba(139,92,246,0.3); color: var(--purple); background: rgba(139,92,246,0.08); }
+.section { margin-bottom: 48px; scroll-margin-top: 24px; }
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--orange);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+h2.section-title { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 700; margin-bottom: 16px; color: #f1f5f9; }
+h3.sub-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; margin: 24px 0 10px; color: #cbd5e1; }
+p { margin-bottom: 14px; color: #cbd5e1; }
+.info-box {
+  border-radius: 6px;
+  padding: 18px 20px;
+  margin: 20px 0;
+  border-left: 3px solid;
+  font-size: 14px;
+}
+.info-box.concept { background: rgba(59,130,246,0.06); border-color: var(--accent); }
+.info-box.warning { background: rgba(249,115,22,0.06); border-color: var(--orange); }
+.info-box.tip { background: rgba(16,185,129,0.06); border-color: var(--green); }
+.info-box.important { background: rgba(234,179,8,0.06); border-color: var(--yellow); }
+.info-box .box-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+.info-box.concept .box-label { color: var(--accent); }
+.info-box.warning .box-label { color: var(--orange); }
+.info-box.tip .box-label { color: var(--green); }
+.info-box.important .box-label { color: var(--yellow); }
+.compare-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+.compare-table th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 12px 16px;
+  text-align: left;
+  background: var(--card);
+  border-bottom: 2px solid var(--border2);
+  color: var(--muted2);
+}
+.compare-table td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  color: #94a3b8;
+  vertical-align: top;
+  line-height: 1.6;
+}
+.compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+.compare-table td:first-child { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text); white-space: nowrap; }
+.tag-yes { color: var(--green); font-weight: 600; }
+.tag-no { color: var(--red); }
+.tag-med { color: var(--yellow); }
+.diagram {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 30px 20px;
+  margin: 24px 0;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  overflow-x: auto;
+}
+.diagram svg { max-width: 100%; }
+.code-block {
+  background: #030608;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  margin: 20px 0;
+  overflow: hidden;
+}
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+.code-lang { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--orange); text-transform: uppercase; letter-spacing: 1px; }
+.code-file { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+pre { padding: 20px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.8; color: #e2e8f0; }
+.kw { color: #93c5fd; }
+.fn { color: #6ee7b7; }
+.str { color: #fcd34d; }
+.cm { color: #475569; font-style: italic; }
+.num { color: #f9a8d4; }
+.var { color: #e2e8f0; }
+.scenario-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 20px 0; }
+.scenario-card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 18px; }
+.scenario-card .s-title { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--orange); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.scenario-card p { font-size: 13px; color: var(--muted2); margin: 0; }
+.mcq-section {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 28px;
+  margin: 30px 0;
+}
+.mcq-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.mcq-icon { font-size: 24px; }
+.mcq-header h2 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; }
+.mcq-score { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--muted); }
+.mcq-score span { color: var(--orange); font-size: 18px; font-weight: 700; }
+.question-block { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+.question-block:last-of-type { border-bottom: none; margin-bottom: 0; }
+.q-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.q-text { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.5; font-family: 'Noto Sans Bengali', sans-serif; }
+.options { display: flex; flex-direction: column; gap: 8px; }
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 14px;
+  color: var(--muted2);
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+.option:hover { border-color: var(--orange); color: var(--text); background: rgba(249,115,22,0.08); }
+.option.correct { border-color: var(--green); background: var(--green-glow); color: #6ee7b7; }
+.option.wrong { border-color: var(--red); background: rgba(239,68,68,0.08); color: #fca5a5; }
+.option-key { font-family: 'JetBrains Mono', monospace; font-size: 11px; background: var(--border2); padding: 2px 7px; border-radius: 2px; flex-shrink: 0; margin-top: 1px; }
+.explanation {
+  display: none;
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: rgba(16,185,129,0.06);
+  border-left: 2px solid var(--green);
+  border-radius: 0 4px 4px 0;
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.7;
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+.explanation.visible { display: block; }
+.explanation strong { color: var(--green); }
+.mcq-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: var(--orange);
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.15s;
+}
+.mcq-submit:hover { background: #ea6c00; transform: translateY(-1px); }
+.result-banner { display: none; margin-top: 20px; padding: 16px 20px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; }
+.result-banner.visible { display: block; }
+.result-banner.pass { background: var(--green-glow); border: 1px solid var(--green); color: var(--green); }
+.result-banner.fail { background: rgba(249,115,22,0.08); border: 1px solid var(--orange); color: var(--orange); }
+.assignment-section {
+  background: linear-gradient(135deg, rgba(249,115,22,0.04), rgba(139,92,246,0.04));
+  border: 1px solid rgba(249,115,22,0.2);
+  border-radius: 8px;
+  padding: 28px;
+  margin: 30px 0;
+}
+.assignment-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.assignment-icon { font-size: 28px; }
+.assignment-header h2 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; }
+.assignment-meta { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.a-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 10px; border-radius: 2px; }
+.a-chip.time { background: rgba(234,179,8,0.1); color: var(--yellow); border: 1px solid rgba(234,179,8,0.2); }
+.a-chip.level { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.task-list { counter-reset: tasks; list-style: none; margin-bottom: 20px; }
+.task-list li {
+  counter-increment: tasks;
+  padding: 14px 14px 14px 50px;
+  position: relative;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--muted2);
+  line-height: 1.7;
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+.task-list li:last-child { border-bottom: none; }
+.task-list li::before {
+  content: counter(tasks);
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  width: 24px;
+  height: 24px;
+  background: rgba(249,115,22,0.1);
+  border: 1px solid rgba(249,115,22,0.3);
+  border-radius: 3px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+.task-list li strong { color: var(--text); }
+.deliverable-box { background: var(--card); border: 1px solid var(--border2); border-radius: 6px; padding: 16px 18px; margin-top: 16px; }
+.deliverable-box .d-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--purple); margin-bottom: 10px; }
+.deliverable-box ul { list-style: none; padding: 0; }
+.deliverable-box ul li { font-size: 13px; color: var(--muted2); padding: 4px 0 4px 18px; position: relative; font-family: 'Noto Sans Bengali', sans-serif; }
+.deliverable-box ul li::before { content: '◆'; position: absolute; left: 0; font-size: 8px; color: var(--purple); top: 6px; }
+.next-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin-top: 48px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.2s;
+  cursor: pointer;
+}
+.next-cta:hover { border-color: var(--orange); }
+.next-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+.next-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; }
+.next-arrow { font-size: 24px; color: var(--orange); }
+.req-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.req-card { background: var(--card); border: 1px solid var(--border2); border-radius: 6px; padding: 20px; }
+.req-card .r-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
+.req-card.functional .r-title { color: var(--green); }
+.req-card.nonfunc .r-title { color: var(--purple); }
+.req-card ul { list-style: none; padding: 0; }
+.req-card ul li { font-size: 13px; color: var(--muted2); padding: 5px 0 5px 18px; position: relative; border-bottom: 1px solid var(--border); font-family: 'Noto Sans Bengali', sans-serif; }
+.req-card ul li:last-child { border-bottom: none; }
+.req-card ul li::before { content: '→'; position: absolute; left: 0; color: var(--muted); font-size: 12px; }
+.estimation-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0; }
+.est-card { background: var(--card); border: 1px solid var(--border2); border-radius: 6px; padding: 16px; text-align: center; }
+.est-num { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 700; color: var(--orange); display: block; margin-bottom: 4px; }
+.est-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+.tech-stack { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+.tech-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 3px;
+  border: 1px solid;
+}
+.tech-tag.db { border-color: rgba(59,130,246,0.3); color: var(--accent); background: var(--accent-glow); }
+.tech-tag.cache { border-color: rgba(234,179,8,0.3); color: var(--yellow); background: rgba(234,179,8,0.06); }
+.tech-tag.lang { border-color: rgba(16,185,129,0.3); color: var(--green); background: var(--green-glow); }
+.tech-tag.infra { border-color: rgba(139,92,246,0.3); color: var(--purple); background: rgba(139,92,246,0.08); }
+.tech-tag.queue { border-color: rgba(249,115,22,0.3); color: var(--orange); background: rgba(249,115,22,0.08); }
+.tradeoff-row { display: flex; gap: 12px; margin: 10px 0; align-items: flex-start; }
+.tradeoff-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 10px; border-radius: 2px; flex-shrink: 0; }
+.tradeoff-label.pro { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.tradeoff-label.con { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+.tradeoff-text { font-size: 13px; color: var(--muted2); line-height: 1.6; font-family: 'Noto Sans Bengali', sans-serif; }
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .content { padding: 24px 16px 80px; }
+  .scenario-grid, .req-grid, .estimation-grid { grid-template-columns: 1fr; }
+  .progress-bar { left: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 04 · Real World Systems</span>
+    <div class="course-title">System Design<br>Mastery Course</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Phase 4 Systems</div>
+    <a href="#" class="nav-item active"><span class="nav-icon">🔗</span><span>URL Shortener</span><span class="nav-num">01</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🐦</span><span>Twitter/X</span><span class="nav-num">02</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">📺</span><span>YouTube</span><span class="nav-num">03</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">💬</span><span>WhatsApp</span><span class="nav-num">04</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🛒</span><span>Amazon</span><span class="nav-num">05</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🔍</span><span>Search</span><span class="nav-num">06</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🚗</span><span>Uber</span><span class="nav-num">07</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px">
+    <div class="nav-section-label">This Lesson</div>
+    <a href="#requirements" class="nav-item"><span class="nav-icon">📋</span><span>Requirements</span></a>
+    <a href="#estimation" class="nav-item"><span class="nav-icon">🔢</span><span>Estimation</span></a>
+    <a href="#architecture" class="nav-item"><span class="nav-icon">🏗️</span><span>Architecture</span></a>
+    <a href="#deepdive" class="nav-item"><span class="nav-icon">🔬</span><span>Deep Dive</span></a>
+    <a href="#database" class="nav-item"><span class="nav-icon">🗄️</span><span>Database</span></a>
+    <a href="#scaling" class="nav-item"><span class="nav-icon">📈</span><span>Scaling</span></a>
+    <a href="#techstack" class="nav-item"><span class="nav-icon">⚙️</span><span>Tech Stack</span></a>
+    <a href="#mcq" class="nav-item"><span class="nav-icon">✅</span><span>MCQ Test</span></a>
+    <a href="#assignment" class="nav-item"><span class="nav-icon">📝</span><span>Assignment</span></a>
+  </div>
+</nav>
+
+<main class="main">
+<div class="content">
+
+  <div class="topic-header" id="requirements">
+    <div class="breadcrumb">Phase 4 — Real World Systems <span>›</span> System 01</div>
+    <span class="topic-num">SYSTEM 01 / 07</span>
+    <h1 class="topic-title">URL Shortener<br>(TinyURL)</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ ৬০-৯০ মিনিট</span>
+      <span class="meta-chip level">📊 Junior Level</span>
+      <span class="meta-chip type">🏗️ System Design</span>
+    </div>
+  </div>
+
+  <!-- Why URL Shortener -->
+  <div class="section">
+    <div class="section-label">Why This System</div>
+    <h2 class="section-title">URL Shortener কেন শিখবো?</h2>
+    <p>TinyURL, bit.ly — এই সিস্টেমগুলো দেখতে simple মনে হয়, কিন্তু এটা design করতে গেলে অনেক interesting problem আসে। Interview-তে এটা সবচেয়ে common system design question। <strong>https://www.amazon.com/dp/B0893CFLMS/ref=sr_1_1?keywords=...</strong> এই long URL কে <strong>https://tinyurl.com/y4dz9b</strong> বানানো — এই simple কাজের পেছনে অনেক complexity।</p>
+    <div class="info-box concept">
+      <div class="box-label">📌 Core Problem</div>
+      একটা long URL নিয়ে একটা unique short code generate করো। সেই code দিয়ে request আসলে original URL-এ redirect করো। এটাকে <strong>URL Redirection Service</strong> বলে।
+    </div>
+  </div>
+
+  <!-- Requirements -->
+  <div class="section">
+    <div class="section-label">Requirements</div>
+    <h2 class="section-title">কী কী লাগবে?</h2>
+    <div class="req-grid">
+      <div class="req-card functional">
+        <div class="r-title">✅ Functional Requirements</div>
+        <ul>
+          <li>Long URL দিলে short URL generate করবে</li>
+          <li>Short URL click করলে original URL-এ redirect হবে</li>
+          <li>User custom alias দিতে পারবে (optional)</li>
+          <li>URL expiration time set করা যাবে</li>
+          <li>Analytics: কতবার click হলো দেখা যাবে</li>
+        </ul>
+      </div>
+      <div class="req-card nonfunc">
+        <div class="r-title">⚡ Non-Functional Requirements</div>
+        <ul>
+          <li>High availability — 99.9% uptime</li>
+          <li>Low latency redirect — 100ms এর কম</li>
+          <li>Scalable — 100M+ URLs handle করবে</li>
+          <li>Short URL predictable না হওয়া (security)</li>
+          <li>Durability — URL কখনো হারাবে না</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-box tip">
+      <div class="box-label">💡 Interview Tip</div>
+      Interview-তে সবার আগে Functional vs Non-functional requirements পরিষ্কার করো। এটা দেখায় যে তুমি problem systematically ভাবো।
+    </div>
+  </div>
+
+  <!-- Estimation -->
+  <div class="section" id="estimation">
+    <div class="section-label">Back-of-Envelope Estimation</div>
+    <h2 class="section-title">Numbers এর হিসাব</h2>
+    <p>System design-এ numbers জানা দরকার। এটা না জানলে সঠিক architecture করা যায় না।</p>
+    <div class="estimation-grid">
+      <div class="est-card">
+        <span class="est-num">100M</span>
+        <span class="est-label">Daily URL Creations</span>
+      </div>
+      <div class="est-card">
+        <span class="est-num">10B</span>
+        <span class="est-label">Daily Redirects (reads)</span>
+      </div>
+      <div class="est-card">
+        <span class="est-num">100:1</span>
+        <span class="est-label">Read/Write Ratio</span>
+      </div>
+      <div class="est-card">
+        <span class="est-num">1160</span>
+        <span class="est-label">Writes/sec</span>
+      </div>
+      <div class="est-card">
+        <span class="est-num">115K</span>
+        <span class="est-label">Reads/sec (redirects)</span>
+      </div>
+      <div class="est-card">
+        <span class="est-num">36TB</span>
+        <span class="est-label">Storage/year</span>
+      </div>
+    </div>
+    <div class="info-box important">
+      <div class="box-label">🔢 Calculation</div>
+      <strong>Writes:</strong> 100M / 86400 ≈ 1,160 req/sec<br>
+      <strong>Reads:</strong> 10B / 86400 ≈ 115,000 req/sec<br>
+      <strong>Storage:</strong> প্রতি URL ~500 bytes → 100M × 500B × 365 days ≈ 18TB/year<br>
+      <strong>Cache:</strong> Hot URLs top 20% → 20% of 10B reads = 2B → cache these
+    </div>
+  </div>
+
+  <!-- Architecture -->
+  <div class="section" id="architecture">
+    <div class="section-label">High Level Architecture</div>
+    <h2 class="section-title">System এর Big Picture</h2>
+    <p>এই system-এ দুটো main flow আছে: (1) URL creation flow এবং (2) URL redirect flow।</p>
+
+    <div class="diagram">
+      <svg width="680" height="340" viewBox="0 0 680 340">
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#64748b"/>
+          </marker>
+          <marker id="arrO" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#f97316"/>
+          </marker>
+          <marker id="arrG" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#10b981"/>
+          </marker>
+        </defs>
+
+        <!-- Client -->
+        <rect x="10" y="140" width="80" height="50" rx="4" fill="#0c1220" stroke="#1e2d4a" stroke-width="1.5"/>
+        <text x="50" y="162" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">CLIENT</text>
+        <text x="50" y="178" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Browser/App</text>
+
+        <!-- Arrow Client to LB -->
+        <path d="M 90 165 L 130 165" stroke="#f97316" stroke-width="1.5" marker-end="url(#arrO)"/>
+
+        <!-- Load Balancer -->
+        <rect x="130" y="140" width="90" height="50" rx="4" fill="#0c1220" stroke="#f97316" stroke-width="1.5"/>
+        <text x="175" y="162" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="9">LOAD</text>
+        <text x="175" y="175" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="9">BALANCER</text>
+
+        <!-- Arrow LB to API Servers -->
+        <path d="M 220 155 L 280 120" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <path d="M 220 165 L 280 165" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <path d="M 220 175 L 280 210" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+
+        <!-- API Server 1 -->
+        <rect x="280" y="100" width="100" height="40" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.2"/>
+        <text x="330" y="118" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">API Server 1</text>
+        <text x="330" y="131" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Go / Python</text>
+
+        <!-- API Server 2 -->
+        <rect x="280" y="145" width="100" height="40" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.2"/>
+        <text x="330" y="163" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">API Server 2</text>
+        <text x="330" y="176" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Go / Python</text>
+
+        <!-- API Server 3 -->
+        <rect x="280" y="190" width="100" height="40" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.2"/>
+        <text x="330" y="208" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">API Server 3</text>
+        <text x="330" y="221" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Go / Python</text>
+
+        <!-- Arrow API to Cache -->
+        <path d="M 380 120 L 430 100" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <path d="M 380 165 L 430 100" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <path d="M 380 210 L 430 100" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+
+        <!-- Cache -->
+        <rect x="430" y="70" width="100" height="50" rx="4" fill="#0c1220" stroke="#eab308" stroke-width="1.5"/>
+        <text x="480" y="90" text-anchor="middle" fill="#eab308" font-family="JetBrains Mono" font-size="9">CACHE</text>
+        <text x="480" y="105" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Redis Cluster</text>
+
+        <!-- Arrow API to DB -->
+        <path d="M 380 165 L 430 220" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+
+        <!-- Database -->
+        <rect x="430" y="200" width="100" height="50" rx="4" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="480" y="222" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="9">DATABASE</text>
+        <text x="480" y="238" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">MySQL/Cassandra</text>
+
+        <!-- Arrow DB to DB Replica -->
+        <path d="M 530 225 L 570 225" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+
+        <!-- DB Replica -->
+        <rect x="570" y="200" width="100" height="50" rx="4" fill="#0c1220" stroke="#475569" stroke-width="1.2"/>
+        <text x="620" y="222" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">DB REPLICA</text>
+        <text x="620" y="238" text-anchor="middle" fill="#475569" font-family="JetBrains Mono" font-size="8">Read Replicas</text>
+
+        <!-- Analytics Service -->
+        <rect x="430" y="290" width="100" height="40" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.2"/>
+        <text x="480" y="308" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="9">ANALYTICS</text>
+        <text x="480" y="322" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Kafka + ClickHouse</text>
+
+        <!-- Legend -->
+        <text x="10" y="300" fill="#64748b" font-family="JetBrains Mono" font-size="9">● CREATE flow: Client → LB → API → DB (write)</text>
+        <text x="10" y="318" fill="#64748b" font-family="JetBrains Mono" font-size="9">● REDIRECT flow: Client → LB → API → Cache → DB (read)</text>
+      </svg>
+    </div>
+
+    <h3 class="sub-title">দুটো Main Flow</h3>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">📝 URL Creation Flow</div>
+        <p>User long URL পাঠায় → API Server short code generate করে → Database-এ save করে → Short URL return করে।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🔀 Redirect Flow</div>
+        <p>User short URL click করে → API Server cache check করে → Cache miss হলে DB থেকে নেয় → 301/302 redirect পাঠায়।</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deep Dive -->
+  <div class="section" id="deepdive">
+    <div class="section-label">Deep Dive</div>
+    <h2 class="section-title">Core Components বিস্তারিত</h2>
+
+    <h3 class="sub-title">🔑 Short Code Generation Algorithm</h3>
+    <p>এটাই সবচেয়ে interesting part। Long URL → 6-7 character short code কীভাবে বানাবো?</p>
+
+    <table class="compare-table">
+      <tr><th>Approach</th><th>কীভাবে কাজ করে</th><th>Problem</th><th>Production Use?</th></tr>
+      <tr><td>Random String</td><td>6 random chars generate করো</td><td>Collision check দরকার, DB round trip</td><td class="tag-med">মাঝামাঝি</td></tr>
+      <tr><td>MD5/SHA256 Hash</td><td>URL hash করো, first 7 chars নাও</td><td>Collision possible, predictable</td><td class="tag-no">সাধারণত না</td></tr>
+      <tr><td>Base62 Encoding</td><td>Auto-increment ID → Base62 convert</td><td>Sequential, predictable</td><td class="tag-med">কখনো কখনো</td></tr>
+      <tr><td>Snowflake ID + Base62</td><td>Distributed unique ID → Base62</td><td>Slightly complex setup</td><td class="tag-yes">✓ Best Practice</td></tr>
+    </table>
+
+    <div class="info-box concept">
+      <div class="box-label">💡 Base62 কী?</div>
+      Base62 = 0-9 (10) + a-z (26) + A-Z (26) = 62 characters। 7 characters দিয়ে 62⁷ = 3.5 trillion unique URLs possible। TinyURL এবং bit.ly এই approach use করে।
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Python</span>
+        <span class="code-file">url_generator.py</span>
+      </div>
+      <pre><span class="cm"># Base62 encoding for URL shortening</span>
+<span class="kw">BASE62</span> = <span class="str">"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"</span>
+
+<span class="kw">def</span> <span class="fn">encode_base62</span>(num: <span class="var">int</span>) -> <span class="var">str</span>:
+    <span class="cm">"""Auto-increment ID কে Base62 string এ convert করো"""</span>
+    <span class="kw">if</span> num == <span class="num">0</span>:
+        <span class="kw">return</span> BASE62[<span class="num">0</span>]
+    result = <span class="str">""</span>
+    <span class="kw">while</span> num > <span class="num">0</span>:
+        result = BASE62[num % <span class="num">62</span>] + result
+        num //= <span class="num">62</span>
+    <span class="kw">return</span> result.zfill(<span class="num">7</span>)  <span class="cm"># always 7 chars</span>
+
+<span class="cm"># Example: ID 125 → "0000020", ID 3521614606208 → "abcdefg"</span>
+<span class="kw">def</span> <span class="fn">create_short_url</span>(long_url: <span class="var">str</span>, db, cache) -> <span class="var">str</span>:
+    <span class="cm"># 1. DB-তে save করো, auto-increment ID পাও</span>
+    url_id = db.insert({<span class="str">"long_url"</span>: long_url, <span class="str">"created_at"</span>: now()})
+    
+    <span class="cm"># 2. ID কে Base62 encode করো</span>
+    short_code = encode_base62(url_id)
+    
+    <span class="cm"># 3. DB update করো short_code দিয়ে</span>
+    db.update(url_id, {<span class="str">"short_code"</span>: short_code})
+    
+    <span class="cm"># 4. Cache-এ রাখো future reads এর জন্য</span>
+    cache.set(short_code, long_url, ttl=<span class="num">86400</span>)
+    
+    <span class="kw">return</span> <span class="str">f"https://tinyurl.com/{short_code}"</span></pre>
+    </div>
+
+    <h3 class="sub-title">🔀 301 vs 302 Redirect — গুরুত্বপূর্ণ Trade-off</h3>
+    <table class="compare-table">
+      <tr><th>Type</th><th>Meaning</th><th>Browser Cache?</th><th>Analytics?</th><th>Use Case</th></tr>
+      <tr><td>301 Permanent</td><td>URL চিরতরে move হয়েছে</td><td class="tag-yes">হ্যাঁ, cache করে</td><td class="tag-no">কম accurate</td><td>Server load কমাতে</td></tr>
+      <tr><td>302 Temporary</td><td>এই moment এ redirect</td><td class="tag-no">না করে</td><td class="tag-yes">Accurate tracking</td><td>Analytics দরকার হলে</td></tr>
+    </table>
+    <div class="info-box warning">
+      <div class="box-label">⚠️ Decision</div>
+      Analytics চাইলে 302 use করো — প্রতিটা click track হবে। Server load কমাতে চাইলে 301 — browser cache করে রাখবে। TinyURL analytics offer করে তাই 302।
+    </div>
+  </div>
+
+  <!-- Database -->
+  <div class="section" id="database">
+    <div class="section-label">Database Choice</div>
+    <h2 class="section-title">কোন Database, কেন?</h2>
+
+    <table class="compare-table">
+      <tr><th>Database</th><th>Pros</th><th>Cons</th><th>Fit?</th></tr>
+      <tr><td>MySQL (SQL)</td><td>ACID, familiar, strong consistency</td><td>Scaling কঠিন, single point</td><td class="tag-med">Okay for small</td></tr>
+      <tr><td>PostgreSQL</td><td>ACID, better performance</td><td>Horizontal scaling কঠিন</td><td class="tag-med">Medium scale</td></tr>
+      <tr><td>Cassandra (NoSQL)</td><td>Massive scale, fault tolerant</td><td>No ACID, complex queries কঠিন</td><td class="tag-yes">✓ Large scale</td></tr>
+      <tr><td>DynamoDB</td><td>Managed, auto-scale, low latency</td><td>Expensive, vendor lock-in</td><td class="tag-yes">✓ AWS setup</td></tr>
+    </table>
+
+    <h3 class="sub-title">Schema Design</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">SQL</span>
+        <span class="code-file">schema.sql</span>
+      </div>
+      <pre><span class="kw">CREATE TABLE</span> <span class="fn">urls</span> (
+  <span class="var">id</span>           <span class="kw">BIGINT</span> <span class="kw">PRIMARY KEY</span> AUTO_INCREMENT,
+  <span class="var">short_code</span>   <span class="kw">VARCHAR</span>(<span class="num">10</span>) <span class="kw">UNIQUE NOT NULL</span>,
+  <span class="var">long_url</span>     <span class="kw">TEXT NOT NULL</span>,
+  <span class="var">user_id</span>      <span class="kw">BIGINT</span>,           <span class="cm">-- who created it</span>
+  <span class="var">created_at</span>   <span class="kw">TIMESTAMP DEFAULT</span> NOW(),
+  <span class="var">expires_at</span>   <span class="kw">TIMESTAMP</span>,        <span class="cm">-- NULL = never expires</span>
+  <span class="var">click_count</span>  <span class="kw">BIGINT DEFAULT</span> <span class="num">0</span>
+);
+
+<span class="cm">-- short_code এ index — সবচেয়ে বেশি query এখানে</span>
+<span class="kw">CREATE INDEX</span> <span class="fn">idx_short_code</span> <span class="kw">ON</span> urls (short_code);
+
+<span class="cm">-- Analytics table (separate)</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">url_clicks</span> (
+  <span class="var">id</span>         <span class="kw">BIGINT</span> <span class="kw">PRIMARY KEY</span>,
+  <span class="var">short_code</span> <span class="kw">VARCHAR</span>(<span class="num">10</span>),
+  <span class="var">clicked_at</span> <span class="kw">TIMESTAMP</span>,
+  <span class="var">ip_address</span> <span class="kw">VARCHAR</span>(<span class="num">45</span>),
+  <span class="var">user_agent</span> <span class="kw">TEXT</span>
+);</pre>
+    </div>
+
+    <div class="info-box tip">
+      <div class="box-label">💡 Cache Strategy</div>
+      <strong>Redis</strong> use করো hot URLs cache করতে। Top 20% URLs = 80% traffic (Pareto principle)। Redis এ TTL set করো, LRU eviction policy। Cache hit rate 80%+ হওয়া উচিত।
+    </div>
+  </div>
+
+  <!-- Scaling -->
+  <div class="section" id="scaling">
+    <div class="section-label">Scaling Decisions</div>
+    <h2 class="section-title">Scale করার পরিকল্পনা</h2>
+
+    <h3 class="sub-title">📈 Read Heavy System — Cache is King</h3>
+    <p>URL Shortener 100:1 read/write ratio। মানে mostly read। তাই cache দিয়েই বেশিরভাগ load handle করা যায়।</p>
+
+    <div class="tradeoff-row">
+      <span class="tradeoff-label pro">Pro</span>
+      <div class="tradeoff-text">Redis cache দিয়ে redirect latency 1-2ms এ নামানো যায়। Database-এ hit প্রায় শূন্যে নামবে।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label con">Con</span>
+      <div class="tradeoff-text">Cache invalidation কঠিন। URL expire করলে cache-ও clear করতে হবে। Stale data risk আছে।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label pro">Pro</span>
+      <div class="tradeoff-text">Database read replicas দিয়ে read scale করা যায়। Write শুধু master-এ যাবে।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label con">Con</span>
+      <div class="tradeoff-text">Replication lag এর কারণে newly created URL কিছুক্ষণ read replica-তে না-ও থাকতে পারে।</div>
+    </div>
+
+    <h3 class="sub-title">🌍 Global Scale — CDN + Multiple Regions</h3>
+    <table class="compare-table">
+      <tr><th>Problem</th><th>Solution</th><th>Result</th></tr>
+      <tr><td>High redirect latency globally</td><td>CDN edge servers এ popular URLs cache</td><td>Redirect 10ms এ নামে</td></tr>
+      <tr><td>Single region failure</td><td>Multi-region deployment (Active-Active)</td><td>99.99% availability</td></tr>
+      <tr><td>DB write bottleneck</td><td>Sharding by short_code first char</td><td>Write throughput বাড়ে</td></tr>
+      <tr><td>Hot keys in cache</td><td>Consistent hashing + replica</td><td>Cache hotspot নেই</td></tr>
+    </table>
+
+    <div class="info-box important">
+      <div class="box-label">🎯 Key Trade-off: Consistency vs Availability</div>
+      URL shortener এ Eventual Consistency acceptable। নতুন URL তৈরি হলে 1-2 second পরে সব regions এ পাওয়া গেলেই হবে। Strong consistency এর জন্য performance sacrifice করা worth না।
+    </div>
+  </div>
+
+  <!-- Tech Stack -->
+  <div class="section" id="techstack">
+    <div class="section-label">Full Tech Stack</div>
+    <h2 class="section-title">কোন Technology ব্যবহার করবো?</h2>
+
+    <h3 class="sub-title">Backend</h3>
+    <div class="tech-stack">
+      <span class="tech-tag lang">Go (Golang)</span>
+      <span class="tech-tag lang">Python (FastAPI)</span>
+      <span class="tech-tag infra">Nginx Load Balancer</span>
+      <span class="tech-tag infra">Docker + Kubernetes</span>
+    </div>
+
+    <h3 class="sub-title">Database & Cache</h3>
+    <div class="tech-stack">
+      <span class="tech-tag db">MySQL 8 (Write Master)</span>
+      <span class="tech-tag db">MySQL Replica (Read)</span>
+      <span class="tech-tag cache">Redis Cluster</span>
+      <span class="tech-tag db">Cassandra (High Scale)</span>
+    </div>
+
+    <h3 class="sub-title">Infrastructure & Analytics</h3>
+    <div class="tech-stack">
+      <span class="tech-tag infra">AWS / GCP / Azure</span>
+      <span class="tech-tag infra">CloudFront CDN</span>
+      <span class="tech-tag queue">Apache Kafka</span>
+      <span class="tech-tag db">ClickHouse (Analytics)</span>
+      <span class="tech-tag infra">Prometheus + Grafana</span>
+    </div>
+
+    <table class="compare-table">
+      <tr><th>Component</th><th>Choice</th><th>Why?</th></tr>
+      <tr><td>API Language</td><td>Go</td><td>High concurrency, low latency, compiled language</td></tr>
+      <tr><td>Primary DB</td><td>MySQL + Replication</td><td>Familiar, ACID, strong ecosystem</td></tr>
+      <tr><td>Cache</td><td>Redis</td><td>In-memory, blazing fast, TTL support</td></tr>
+      <tr><td>Analytics</td><td>Kafka + ClickHouse</td><td>Real-time streaming + OLAP queries</td></tr>
+      <tr><td>CDN</td><td>CloudFront</td><td>Global edge, S3 integration</td></tr>
+    </table>
+  </div>
+
+  <!-- MCQ -->
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🎯</span>
+      <h2>MCQ Test — URL Shortener</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">TinyURL system-এ Read/Write ratio কত হওয়া স্বাভাবিক?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> 1:1 (সমান)</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> 100:1 (Read বেশি)</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> 1:100 (Write বেশি)</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> 10:1 (Read সামান্য বেশি)</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — URL তৈরি হয় একবার, কিন্তু click হয় শতশতবার। তাই read operation অনেক বেশি। এই 100:1 ratio জানা দরকার কারণ এটা architecture decision influence করে — cache heavy system বানাতে হবে।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">Base62 encoding-এ 7 characters দিয়ে কতটি unique URL বানানো সম্ভব?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> 62 million</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> 62 billion</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> 3.5 trillion</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> 1 billion</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — 62⁷ = 3,521,614,606,208 ≈ 3.5 trillion। Base62 = 62 characters (0-9, a-z, A-Z)। 7 character দিয়ে trillions of unique codes possible — যা কোনো URL shortener এর জন্য যথেষ্ট।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">Analytics track করতে চাইলে 301 নাকি 302 redirect use করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> 302 Temporary Redirect</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> 301 Permanent Redirect</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> 200 OK with meta refresh</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> 307 Strict Redirect</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — 302 Temporary redirect প্রতিবার server-এ আসে, তাই প্রতিটা click track করা যায়। 301 browser cache করে রাখে, ফলে পরের requests server-এ আসে না — analytics miss হয়।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">URL Shortener এ cache eviction policy হিসেবে কোনটা best?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> FIFO (First In First Out)</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Random Eviction</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> LIFO (Last In First Out)</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> LRU (Least Recently Used)</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — LRU সবচেয়ে কম recent access হওয়া URLs remove করে। URL click pattern typically hot URLs বারবার access হয়। LRU এই hot URLs cache-এ রাখে, cold ones remove করে — perfect for URL shortener।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">URL Shortener এ database কোনটা সবচেয়ে বেশি scale করতে পারবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> SQLite</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Cassandra</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Microsoft Access</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Redis alone</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Cassandra একটি distributed NoSQL database। Horizontal scaling করা যায় সহজে, fault tolerant, high write throughput। Billions of URLs store করতে ideal। SQLite single-file, Redis volatile — production এ এককভাবে suitable না।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">URL Shortener system-এ single point of failure (SPOF) কোনটা?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> API Server (stateless)</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> CDN</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Database Master (single)</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Redis Cache</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Single Database Master down হলে writes বন্ধ হয়ে যাবে। Solution: Master-Slave replication + automatic failover (using tools like Orchestrator বা AWS RDS Multi-AZ)। API servers stateless তাই SPOF না।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">Custom alias feature-এ race condition কীভাবে prevent করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Database UNIQUE constraint + transaction</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Application level check (if exists)</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Timestamp comparison</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Single threaded server use করো</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Application level check safe না — দুটো request একই সময়ে check করলে দুটোই "not exists" দেখবে। Database UNIQUE constraint atomic — শুধুমাত্র একটা insert succeed করবে, অন্যটা error পাবে। এটাই correct approach।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">URL expiration implement করার সবচেয়ে efficient উপায় কোনটা?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Every request-এ DB query করো</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Cron job প্রতি second-এ run করো</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> User manually delete করবে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Redis TTL + background cleanup job</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Redis TTL set করলে cache automatically expire হবে। DB তে expires_at column থাকবে। Background job (daily/hourly) expired URLs delete করবে। Every request-এ expiry check করলে latency বাড়বে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">প্রতিদিন 100M URL create করলে 1 বছরে storage কত লাগবে (প্রতি URL ~500 bytes)?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> 1.8 GB</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> 18 TB</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> 18 GB</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> 180 TB</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — 100M × 500B = 50GB/day × 365 days = 18.25 TB/year। এই calculation interview-তে দেখানো important। 18TB manage করতে distributed DB বা cloud storage দরকার।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">URL Shortener design-এ Consistency vs Availability — কোনটা prioritize করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Strong Consistency — সব regions এ instantly same data</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Partition Tolerance ছাড়া কোনোটাই না</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Availability + Eventual Consistency</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> ACID transactions সব জায়গায়</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — URL Shortener-এ 1-2 second lag acceptable। নতুন URL সব regions-এ instantly propagate না হলেও চলে। Availability বেশি important — system down থাকলে সব redirects fail করবে। Eventual consistency দিয়ে performance + availability দুটোই পাওয়া যায়।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT & CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <!-- Assignment -->
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ২-৩ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <p style="margin-bottom:16px; font-size:14px; color:#94a3b8;">নিচের tasks complete করো। Diagram অবশ্যই আঁকতে হবে।</p>
+    <ul class="task-list">
+      <li><strong>System Diagram:</strong> Excalidraw বা draw.io তে URL Shortener-এর complete architecture diagram আঁকো। Include করো: Client → Load Balancer → API Servers → Cache (Redis) → Database (Master + Replica)। প্রতিটা component-এ label দাও।</li>
+      <li><strong>Estimation Exercise:</strong> যদি তোমার system প্রতিদিন 500M URL create করে (Twitter scale), তাহলে: (ক) writes/sec কত? (খ) reads/sec কত (1000:1 ratio)? (গ) 5 বছরে storage কত (প্রতি URL 1KB)?</li>
+      <li><strong>Code এ Base62:</strong> Python বা JavaScript-এ Base62 encode/decode function লেখো। Test করো: encode(125) কত দেয়? decode সেটা আবার 125 দেয় কিনা।</li>
+      <li><strong>Trade-off Analysis:</strong> তুমি কি MySQL নাকি Cassandra choose করবে যদি: (ক) শুধু 1M users, (খ) 1 billion users? প্রতিটার জন্য reason দাও।</li>
+      <li><strong>Cache Strategy:</strong> Redis-এ URL cache করলে TTL কত রাখবে এবং কেন? যদি URL expire হয়ে যায়, cache invalidate করার process describe করো।</li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>Architecture diagram (screenshot/file)</li>
+        <li>Estimation calculation (written)</li>
+        <li>Base62 encode/decode code</li>
+        <li>Database trade-off comparison</li>
+        <li>Cache strategy explanation</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-label">System Summary</div>
+    <h2 class="section-title">URL Shortener — Key Takeaways</h2>
+    <table class="compare-table">
+      <tr><th>Concept</th><th>Decision</th><th>Why</th></tr>
+      <tr><td>Short Code Gen</td><td>Base62 + Auto-increment ID</td><td>Collision-free, compact</td></tr>
+      <tr><td>Redirect Type</td><td>302 (analytics চাইলে)</td><td>Server-side tracking</td></tr>
+      <tr><td>Primary DB</td><td>MySQL → Cassandra (scale)</td><td>Start simple, scale later</td></tr>
+      <tr><td>Cache</td><td>Redis (LRU eviction)</td><td>100:1 read ratio handle</td></tr>
+      <tr><td>Consistency</td><td>Eventual Consistency</td><td>Availability > Consistency</td></tr>
+      <tr><td>Analytics</td><td>Async via Kafka</td><td>Don't block redirect path</td></tr>
+    </table>
+  </div>
+
+  <div class="next-cta" onclick="alert('System 2: Twitter/X — পরের ফাইল খোলো!')">
+    <div>
+      <div class="next-label">Next System →</div>
+      <div class="next-title">🐦 Twitter/X Design</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+
+</div>
+</main>
+
+<script>
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scroll = doc.scrollTop || document.body.scrollTop;
+  const height = doc.scrollHeight - doc.clientHeight;
+  document.getElementById('progressFill').style.width = (scroll / height * 100) + '%';
+});
+
+let answered = {};
+document.querySelectorAll('.option').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const block = this.closest('.question-block');
+    const qId = Array.from(document.querySelectorAll('.question-block')).indexOf(block);
+    if (answered[qId]) return;
+    answered[qId] = this.dataset.val;
+    block.querySelectorAll('.option').forEach(o => {
+      o.style.pointerEvents = 'none';
+      if (o.dataset.val === block.dataset.correct) o.classList.add('correct');
+      else if (o.dataset.val === this.dataset.val && this.dataset.val !== block.dataset.correct) o.classList.add('wrong');
+    });
+    block.querySelector('.explanation').classList.add('visible');
+    const correct = Array.from(document.querySelectorAll('.question-block')).filter((b,i) => answered[i] === b.dataset.correct).length;
+    document.getElementById('scoreDisplay').textContent = correct;
+  });
+});
+
+function submitMCQ() {
+  const blocks = document.querySelectorAll('.question-block');
+  const unanswered = blocks.length - Object.keys(answered).length;
+  if (unanswered > 0) { alert(`এখনও ${unanswered}টা প্রশ্নের উত্তর দাওনি!`); return; }
+  let correct = Array.from(blocks).filter((b,i) => answered[i] === b.dataset.correct).length;
+  const banner = document.getElementById('resultBanner');
+  banner.classList.add('visible');
+  if (correct >= 7) { banner.classList.add('pass'); banner.textContent = `🎉 দারুণ! ${correct}/10 সঠিক। System 2 এ যেতে পারো!`; }
+  else { banner.classList.add('fail'); banner.textContent = `📖 ${correct}/10 সঠিক। Concepts আবার পড়ো। ৭/১০ পেলেই pass।`; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 2 · Topic 5 — Database Sharding & Replication</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05080f;--surface:#090e1a;--card:#0c1220;--border:#162035;--border2:#1e2d4a;--accent:#3b82f6;--accent-glow:rgba(59,130,246,0.15);--green:#10b981;--green-glow:rgba(16,185,129,0.12);--orange:#f97316;--red:#ef4444;--yellow:#eab308;--purple:#8b5cf6;--text:#e2e8f0;--muted:#64748b;--muted2:#94a3b8}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans Bengali',sans-serif;line-height:1.7;font-size:15px}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.4}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.sidebar-logo .phase-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:4px}
+.sidebar-logo .course-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;line-height:1.3}
+.nav-section{padding:0 12px;margin-bottom:8px}
+.nav-section-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);padding:0 8px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:4px;font-size:13px;color:var(--muted2);cursor:pointer;transition:all 0.15s;text-decoration:none}
+.nav-item:hover{background:var(--card);color:var(--text)}.nav-item.active{background:var(--accent-glow);color:var(--accent)}
+.nav-item .nav-icon{font-size:14px;flex-shrink:0}.nav-item .nav-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto}
+.progress-bar{position:fixed;top:0;left:240px;right:0;height:2px;background:var(--border);z-index:200}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));width:0%;transition:width 0.1s}
+.main{margin-left:240px;min-height:100vh}.content{max-width:780px;margin:0 auto;padding:48px 40px 120px}
+.topic-header{margin-bottom:48px}.breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px}.breadcrumb span{color:var(--accent)}
+.topic-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:block}
+h1.topic-title{font-family:'Fraunces',serif;font-size:clamp(32px,5vw,48px);font-weight:900;line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,#fff 30%,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topic-meta{display:flex;gap:16px;flex-wrap:wrap}.meta-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 12px;border-radius:2px;border:1px solid}
+.meta-chip.time{border-color:rgba(59,130,246,0.3);color:var(--accent);background:var(--accent-glow)}.meta-chip.level{border-color:rgba(16,185,129,0.3);color:var(--green);background:var(--green-glow)}.meta-chip.type{border-color:rgba(139,92,246,0.3);color:var(--purple);background:rgba(139,92,246,0.08)}
+.section{margin-bottom:48px;scroll-margin-top:24px}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:3px;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+h2.section-title{font-family:'Fraunces',serif;font-size:24px;font-weight:700;margin-bottom:16px;color:#f1f5f9}
+h3.sub-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;margin:24px 0 10px;color:#cbd5e1}
+p{margin-bottom:14px;color:#cbd5e1}
+.info-box{border-radius:6px;padding:18px 20px;margin:20px 0;border-left:3px solid;font-size:14px}
+.info-box.concept{background:rgba(59,130,246,0.06);border-color:var(--accent)}.info-box.warning{background:rgba(249,115,22,0.06);border-color:var(--orange)}.info-box.tip{background:rgba(16,185,129,0.06);border-color:var(--green)}.info-box.important{background:rgba(234,179,8,0.06);border-color:var(--yellow)}
+.info-box .box-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:700}
+.info-box.concept .box-label{color:var(--accent)}.info-box.warning .box-label{color:var(--orange)}.info-box.tip .box-label{color:var(--green)}.info-box.important .box-label{color:var(--yellow)}
+.compare-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px}
+.compare-table th{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1px;padding:12px 16px;text-align:left;background:var(--card);border-bottom:2px solid var(--border2);color:var(--muted2)}
+.compare-table td{padding:11px 16px;border-bottom:1px solid var(--border);color:#94a3b8;vertical-align:top;line-height:1.6}
+.compare-table tr:hover td{background:rgba(255,255,255,0.02)}.compare-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text)}
+.tag-yes{color:var(--green);font-weight:600}.tag-no{color:var(--red)}.tag-med{color:var(--yellow)}
+.diagram{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:30px 20px;margin:24px 0;text-align:center;overflow-x:auto}
+.code-block{background:#030608;border:1px solid var(--border2);border-radius:6px;margin:20px 0;overflow:hidden}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--border)}
+.code-lang{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:1px}.code-file{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)}
+pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.8;color:#e2e8f0}
+.kw{color:#93c5fd}.fn{color:#6ee7b7}.str{color:#fcd34d}.cm{color:#475569;font-style:italic}.num{color:#f9a8d4}.var{color:#e2e8f0}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0}
+.scenario-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:18px}
+.scenario-card .s-title{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+.scenario-card p{font-size:13px;color:var(--muted2);margin:0}
+.mcq-section{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:28px;margin:30px 0}
+.mcq-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.mcq-icon{font-size:24px}.mcq-header h2{font-family:'Fraunces',serif;font-size:20px;font-weight:700}
+.mcq-score{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted)}
+.mcq-score span{color:var(--accent);font-size:18px;font-weight:700}
+.question-block{margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--border)}.question-block:last-of-type{border-bottom:none;margin-bottom:0}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.q-text{font-size:15px;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.5;font-family:'Noto Sans Bengali',sans-serif}
+.options{display:flex;flex-direction:column;gap:8px}
+.option{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:4px;border:1px solid var(--border);cursor:pointer;transition:all 0.15s;font-size:14px;color:var(--muted2);font-family:'Noto Sans Bengali',sans-serif}
+.option:hover{border-color:var(--accent);color:var(--text);background:var(--accent-glow)}.option.correct{border-color:var(--green);background:var(--green-glow);color:#6ee7b7}.option.wrong{border-color:var(--red);background:rgba(239,68,68,0.08);color:#fca5a5}
+.option-key{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--border2);padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px}
+.explanation{display:none;margin-top:12px;padding:12px 14px;background:rgba(16,185,129,0.06);border-left:2px solid var(--green);border-radius:0 4px 4px 0;font-size:13px;color:#94a3b8;line-height:1.7;font-family:'Noto Sans Bengali',sans-serif}
+.explanation.visible{display:block}.explanation strong{color:var(--green)}
+.mcq-submit{display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:12px 24px;background:var(--accent);color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;border:none;border-radius:4px;cursor:pointer;letter-spacing:1px;transition:all 0.15s}
+.mcq-submit:hover{background:#2563eb;transform:translateY(-1px)}
+.result-banner{display:none;margin-top:20px;padding:16px 20px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700}
+.result-banner.visible{display:block}.result-banner.pass{background:var(--green-glow);border:1px solid var(--green);color:var(--green)}.result-banner.fail{background:rgba(249,115,22,0.08);border:1px solid var(--orange);color:var(--orange)}
+.assignment-section{background:linear-gradient(135deg,rgba(59,130,246,0.04),rgba(139,92,246,0.04));border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:28px;margin:30px 0}
+.assignment-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.assignment-icon{font-size:28px}.assignment-header h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700}
+.assignment-meta{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.a-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 10px;border-radius:2px}
+.a-chip.time{background:rgba(234,179,8,0.1);color:var(--yellow);border:1px solid rgba(234,179,8,0.2)}.a-chip.level{background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.2)}
+.task-list{counter-reset:tasks;list-style:none;display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
+.task-list li{counter-increment:tasks;display:flex;gap:14px;padding:16px;background:var(--card);border-radius:6px;border:1px solid var(--border);font-size:14px;color:var(--muted2)}
+.task-list li::before{content:counter(tasks);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--accent);background:var(--accent-glow);border:1px solid rgba(59,130,246,0.3);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.task-list li strong{color:var(--text);display:block;margin-bottom:4px}
+.deliverable-box{background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.2);border-radius:6px;padding:18px 20px}
+.d-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;font-weight:700}
+.deliverable-box ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.deliverable-box ul li{font-size:13px;color:var(--muted2);padding-left:16px;position:relative}
+.deliverable-box ul li::before{content:'→';position:absolute;left:0;color:var(--green)}
+.project-section{background:linear-gradient(135deg,rgba(16,185,129,0.04),rgba(59,130,246,0.04));border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:28px;margin:30px 0}
+.project-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.project-header h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700}
+.step-flow{display:flex;flex-direction:column;gap:0}
+.step-item{display:flex;gap:16px;position:relative;padding-bottom:24px}.step-item:last-child{padding-bottom:0}
+.step-item:not(:last-child)::after{content:'';position:absolute;left:12px;top:28px;bottom:0;width:1px;background:var(--border2)}
+.step-circle{width:26px;height:26px;border-radius:50%;background:var(--accent);color:white;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;z-index:1}
+.step-content h4{font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px}
+.step-content p{font-size:13px;color:var(--muted2);margin:0}
+.next-cta{display:flex;align-items:center;justify-content:space-between;padding:24px 28px;background:var(--card);border:1px solid var(--border2);border-radius:8px;margin-top:48px;cursor:pointer;transition:all 0.2s}
+.next-cta:hover{border-color:var(--accent);background:rgba(59,130,246,0.05)}
+.next-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:6px}
+.next-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700}.next-arrow{font-size:24px;color:var(--accent)}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--card);padding:2px 7px;border-radius:3px;border:1px solid var(--border);color:#93c5fd}
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 2 · Core Components</span>
+    <div class="course-title">System Design Mastery</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">এই Topic এ</div>
+    <a class="nav-item active" href="#concept"><span class="nav-icon">💡</span> Concept <span class="nav-num">01</span></a>
+    <a class="nav-item" href="#replication"><span class="nav-icon">📋</span> Replication <span class="nav-num">02</span></a>
+    <a class="nav-item" href="#sharding"><span class="nav-icon">🔀</span> Sharding <span class="nav-num">03</span></a>
+    <a class="nav-item" href="#strategies"><span class="nav-icon">🗂️</span> Shard Strategies <span class="nav-num">04</span></a>
+    <a class="nav-item" href="#problems"><span class="nav-icon">⚠️</span> Problems <span class="nav-num">05</span></a>
+    <a class="nav-item" href="#code"><span class="nav-icon">💻</span> Code <span class="nav-num">06</span></a>
+    <a class="nav-item" href="#interview"><span class="nav-icon">🎯</span> Interview <span class="nav-num">07</span></a>
+    <a class="nav-item" href="#mcq"><span class="nav-icon">📝</span> MCQ <span class="nav-num">08</span></a>
+    <a class="nav-item" href="#assignment"><span class="nav-icon">📋</span> Assignment <span class="nav-num">09</span></a>
+    <a class="nav-item" href="#project"><span class="nav-icon">🚀</span> Project <span class="nav-num">10</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px;">
+    <div class="nav-section-label">Phase 2 Topics</div>
+    <a class="nav-item" href="phase2-topic1-caching.html"><span class="nav-icon">🔴</span> T1: Caching</a>
+    <a class="nav-item" href="phase2-topic2-load-balancing.html"><span class="nav-icon">⚖️</span> T2: Load Balancing</a>
+    <a class="nav-item" href="phase2-topic3-message-queues.html"><span class="nav-icon">📨</span> T3: Message Queues</a>
+    <a class="nav-item" href="phase2-topic4-api-design.html"><span class="nav-icon">🔌</span> T4: API Design</a>
+    <a class="nav-item active" href="#"><span class="nav-icon">🗄️</span> T5: DB Sharding</a>
+    <a class="nav-item" href="phase2-topic6-cdn.html"><span class="nav-icon">🌐</span> T6: CDN & Storage</a>
+  </div>
+</aside>
+<main class="main">
+<div class="content">
+  <div class="topic-header">
+    <div class="breadcrumb">System Design Mastery <span>/</span> Phase 2 <span>/</span> Topic 5</div>
+    <span class="topic-num">Phase 2 · Topic 05</span>
+    <h1 class="topic-title">Database Sharding<br>& Replication</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ 3-4 ঘণ্টা</span>
+      <span class="meta-chip level">📊 Junior → Mid</span>
+      <span class="meta-chip type">🗄️ PostgreSQL · MySQL · MongoDB</span>
+    </div>
+  </div>
+
+  <div class="section" id="concept">
+    <div class="section-label">01 — Core Concept</div>
+    <h2 class="section-title">Database Scaling সমস্যা</h2>
+    <p>একটা single database server এ ১ কোটি user এর data রাখা যায়। কিন্তু ১০ কোটি user হলে? Query slow হয়, disk full হয়, single server overload হয়। এই সমস্যা solve করার দুটো প্রধান উপায় হলো <strong>Replication</strong> এবং <strong>Sharding</strong>।</p>
+    <div class="info-box concept">
+      <div class="box-label">💡 দুটো Concept</div>
+      <strong>Replication:</strong> Same data কে multiple servers এ copy করা। Read performance বাড়ায়, availability বাড়ায়।<br>
+      <strong>Sharding (Horizontal Partitioning):</strong> Data কে multiple servers এ ভাগ করে রাখা। প্রতিটা shard শুধু data এর একটা অংশ রাখে। Storage এবং write performance বাড়ায়।
+    </div>
+  </div>
+
+  <div class="section" id="replication">
+    <div class="section-label">02 — Replication</div>
+    <h2 class="section-title">Database Replication</h2>
+    <p>Replication মানে same data multiple servers এ রাখা। Primary (Master) server এ write হয়, Replica (Slave) servers এ copy propagate হয়।</p>
+    <div class="diagram">
+      <svg width="620" height="160" viewBox="0 0 620 160">
+        <rect x="10" y="50" width="100" height="60" rx="4" fill="#0c1220" stroke="#3b82f6"/>
+        <text x="60" y="76" fill="#3b82f6" font-family="JetBrains Mono" font-size="9" text-anchor="middle">App Server</text>
+        <text x="60" y="92" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Reads &amp; Writes</text>
+        <line x1="110" y1="70" x2="185" y2="80" stroke="#f97316" stroke-width="2"/>
+        <text x="147" y="65" fill="#f97316" font-family="JetBrains Mono" font-size="8">WRITE</text>
+        <rect x="185" y="40" width="110" height="60" rx="4" fill="rgba(249,115,22,0.1)" stroke="#f97316" stroke-width="1.5"/>
+        <text x="240" y="67" fill="#f97316" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">🗄️ Primary</text>
+        <text x="240" y="82" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">(Master)</text>
+        <text x="240" y="96" fill="#fcd34d" font-family="JetBrains Mono" font-size="7" text-anchor="middle">All writes here</text>
+        <line x1="295" y1="65" x2="370" y2="40" stroke="#10b981" stroke-width="1" stroke-dasharray="4"/>
+        <line x1="295" y1="80" x2="370" y2="90" stroke="#10b981" stroke-width="1" stroke-dasharray="4"/>
+        <line x1="295" y1="90" x2="370" y2="140" stroke="#10b981" stroke-width="1" stroke-dasharray="4"/>
+        <text x="330" y="58" fill="#10b981" font-family="JetBrains Mono" font-size="7">async copy</text>
+        <rect x="370" y="20" width="100" height="34" rx="3" fill="#0c1220" stroke="#10b981"/>
+        <text x="420" y="42" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">📖 Replica 1</text>
+        <rect x="370" y="72" width="100" height="34" rx="3" fill="#0c1220" stroke="#10b981"/>
+        <text x="420" y="94" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">📖 Replica 2</text>
+        <rect x="370" y="124" width="100" height="34" rx="3" fill="#0c1220" stroke="#10b981"/>
+        <text x="420" y="146" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">📖 Replica 3</text>
+        <line x1="110" y1="90" x2="370" y2="89" stroke="#3b82f6" stroke-width="1" stroke-dasharray="3"/>
+        <text x="240" y="115" fill="#3b82f6" font-family="JetBrains Mono" font-size="7" text-anchor="middle">READ from replicas</text>
+      </svg>
+    </div>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">✅ Replication সুবিধা</div>
+        <p>Read scaling (replicas থেকে read করো), High availability (Primary fail → Replica promote হয়), Read-heavy apps এর জন্য excellent।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">⚠️ Replication সীমাবদ্ধতা</div>
+        <p>Replication lag: Primary তে write হওয়ার পর Replica তে sync হতে সময় লাগে। Write bottleneck: সব write primary তে যায়। Storage: সব servers এ same data।</p>
+      </div>
+    </div>
+    <table class="compare-table">
+      <tr><th>Type</th><th>কীভাবে কাজ করে</th><th>Use Case</th><th>Tradeoff</th></tr>
+      <tr><td>Synchronous</td><td>Primary AND all replicas acknowledge করলে write complete</td><td>Strong consistency needed</td><td class="tag-no">Slow writes</td></tr>
+      <tr><td>Asynchronous</td><td>Primary acknowledge করলেই write complete, replicas background এ sync</td><td>High write throughput</td><td class="tag-med">Possible data lag</td></tr>
+      <tr><td>Semi-sync</td><td>কমপক্ষে ১টা replica acknowledge করলে complete</td><td>Balance between both</td><td class="tag-yes">Good compromise</td></tr>
+    </table>
+  </div>
+
+  <div class="section" id="sharding">
+    <div class="section-label">03 — Sharding</div>
+    <h2 class="section-title">Database Sharding</h2>
+    <p>Sharding মানে data কে multiple database servers এ ভাগ করে রাখা। প্রতিটা server (shard) data এর একটা subset রাখে। ১ কোটি users থাকলে, Shard 1 এ প্রথম ৩৩ লাখ, Shard 2 এ পরের ৩৩ লাখ, Shard 3 এ বাকি ৩৪ লাখ।</p>
+    <div class="diagram">
+      <svg width="640" height="170" viewBox="0 0 640 170">
+        <rect x="10" y="65" width="100" height="40" rx="4" fill="#0c1220" stroke="#3b82f6"/>
+        <text x="60" y="85" fill="#3b82f6" font-family="JetBrains Mono" font-size="9" text-anchor="middle">App Server</text>
+        <line x1="110" y1="85" x2="180" y2="85" stroke="#3b82f6" stroke-width="1.5"/>
+        <rect x="180" y="50" width="110" height="70" rx="4" fill="rgba(234,179,8,0.08)" stroke="#eab308" stroke-width="1.5"/>
+        <text x="235" y="78" fill="#eab308" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">Shard Router</text>
+        <text x="235" y="94" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">"Which shard</text>
+        <text x="235" y="108" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">for user_id=500?"</text>
+        <line x1="290" y1="70" x2="380" y2="30" stroke="#10b981" stroke-width="1.5"/>
+        <line x1="290" y1="85" x2="380" y2="85" stroke="#10b981" stroke-width="1.5"/>
+        <line x1="290" y1="100" x2="380" y2="140" stroke="#10b981" stroke-width="1.5"/>
+        <rect x="380" y="8" width="150" height="46" rx="4" fill="#0c1220" stroke="#10b981"/>
+        <text x="455" y="28" fill="#10b981" font-family="JetBrains Mono" font-size="9" text-anchor="middle">🗄️ Shard 1</text>
+        <text x="455" y="44" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">user_id: 1 → 3,333,333</text>
+        <rect x="380" y="62" width="150" height="46" rx="4" fill="#0c1220" stroke="#10b981"/>
+        <text x="455" y="82" fill="#10b981" font-family="JetBrains Mono" font-size="9" text-anchor="middle">🗄️ Shard 2</text>
+        <text x="455" y="98" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">user_id: 3,333,334 → 6,666,666</text>
+        <rect x="380" y="116" width="150" height="46" rx="4" fill="#0c1220" stroke="#10b981"/>
+        <text x="455" y="136" fill="#10b981" font-family="JetBrains Mono" font-size="9" text-anchor="middle">🗄️ Shard 3</text>
+        <text x="455" y="152" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">user_id: 6,666,667 → 10,000,000</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section" id="strategies">
+    <div class="section-label">04 — Shard Strategies</div>
+    <h2 class="section-title">Sharding Strategies</h2>
+    <h3 class="sub-title">1. Range-based Sharding</h3>
+    <p>Data কে value range অনুযায়ী ভাগ করা। সহজ কিন্তু hotspot হতে পারে (নতুন users সবাই একই shard এ যায়)।</p>
+    <div class="info-box warning">
+      <div class="box-label">⚠️ Range Sharding Problem</div>
+      user_id 1-1M → Shard 1, 1M-2M → Shard 2। কিন্তু নতুন users সবসময় Shard 2 এ যাবে। Shard 1 idle, Shard 2 overloaded — uneven distribution।
+    </div>
+    <h3 class="sub-title">2. Hash-based Sharding</h3>
+    <p>Shard key hash করে shard select করা। Even distribution দেয়। সবচেয়ে popular।</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Python</span><span class="code-file">hash_sharding.py</span></div>
+      <pre><span class="kw">import</span> hashlib
+
+<span class="kw">def</span> <span class="fn">get_shard</span>(user_id: int, num_shards: int = <span class="num">3</span>) -> int:
+    <span class="cm"># user_id hash করে shard number বের করো</span>
+    hash_val = <span class="fn">int</span>(hashlib.<span class="fn">md5</span>(<span class="fn">str</span>(user_id).<span class="fn">encode</span>()).<span class="fn">hexdigest</span>(), <span class="num">16</span>)
+    <span class="kw">return</span> hash_val % num_shards
+
+<span class="cm"># Consistent Hashing — shard add/remove এ data movement কমায়</span>
+<span class="kw">import</span> bisect
+
+<span class="kw">class</span> <span class="fn">ConsistentHashRing</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, replicas=<span class="num">100</span>):
+        self.replicas = replicas
+        self.ring = {}
+        self.sorted_keys = []
+
+    <span class="kw">def</span> <span class="fn">add_shard</span>(self, shard_name):
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(self.replicas):
+            key = <span class="fn">hash</span>(f<span class="str">"{shard_name}:{i}"</span>)
+            self.ring[key] = shard_name
+            bisect.<span class="fn">insort</span>(self.sorted_keys, key)
+
+    <span class="kw">def</span> <span class="fn">get_shard</span>(self, key):
+        <span class="kw">if not</span> self.ring: <span class="kw">return</span> <span class="kw">None</span>
+        h = <span class="fn">hash</span>(key)
+        idx = bisect.<span class="fn">bisect</span>(self.sorted_keys, h) % <span class="fn">len</span>(self.sorted_keys)
+        <span class="kw">return</span> self.ring[self.sorted_keys[idx]]
+
+ring = <span class="fn">ConsistentHashRing</span>()
+ring.<span class="fn">add_shard</span>(<span class="str">"shard-1"</span>)
+ring.<span class="fn">add_shard</span>(<span class="str">"shard-2"</span>)
+ring.<span class="fn">add_shard</span>(<span class="str">"shard-3"</span>)
+
+<span class="fn">print</span>(ring.<span class="fn">get_shard</span>(<span class="str">"user:12345"</span>))   <span class="cm"># → shard-2</span>
+<span class="fn">print</span>(ring.<span class="fn">get_shard</span>(<span class="str">"user:67890"</span>))   <span class="cm"># → shard-1</span></pre>
+    </div>
+    <h3 class="sub-title">3. Directory-based Sharding</h3>
+    <p>একটা lookup table রাখা হয় — কোন key কোন shard এ আছে। Flexible কিন্তু lookup table নিজেই bottleneck হতে পারে।</p>
+    <table class="compare-table">
+      <tr><th>Strategy</th><th>Distribution</th><th>Resharding</th><th>Query</th><th>Best For</th></tr>
+      <tr><td>Range</td><td class="tag-no">Uneven (hotspot)</td><td class="tag-yes">Easy</td><td class="tag-yes">Range queries easy</td><td>Time-series data</td></tr>
+      <tr><td>Hash</td><td class="tag-yes">Even</td><td class="tag-no">Hard (data moves)</td><td class="tag-no">Range queries hard</td><td>User data, general</td></tr>
+      <tr><td>Consistent Hash</td><td class="tag-yes">Even</td><td class="tag-yes">Minimal movement</td><td class="tag-med">OK</td><td>Dynamic scaling</td></tr>
+      <tr><td>Directory</td><td class="tag-yes">Flexible</td><td class="tag-yes">Easy</td><td class="tag-med">Lookup overhead</td><td>Custom rules</td></tr>
+    </table>
+  </div>
+
+  <div class="section" id="problems">
+    <div class="section-label">05 — Common Problems</div>
+    <h2 class="section-title">Sharding এর সমস্যা</h2>
+    <div class="info-box warning">
+      <div class="box-label">⚠️ Cross-Shard Queries</div>
+      "সব users যাদের age > 25 দেখাও" — এটা সব shards এ query করতে হবে এবং results merge করতে হবে। এটা complex এবং slow। Shard key দিয়ে query হলে সহজ, cross-shard হলে কঠিন।
+    </div>
+    <div class="info-box warning">
+      <div class="box-label">⚠️ Cross-Shard Transactions</div>
+      User A Shard 1 এ, User B Shard 2 এ। A থেকে B তে money transfer — এটা distributed transaction। Two-Phase Commit লাগে। Complex, slow, আর potential deadlock।
+    </div>
+    <div class="info-box warning">
+      <div class="box-label">⚠️ Resharding Problem</div>
+      ৩টা shard থেকে ৪টা shard এ move করলে data redistribute করতে হবে। Application downtime possible। Consistent hashing এই pain কমায়।
+    </div>
+    <div class="info-box tip">
+      <div class="box-label">✅ Best Practice</div>
+      Shard key choose করা সবচেয়ে important decision। User-based query pattern analyze করো। user_id সাধারণত good shard key — queries mostly per-user। Avoid sharding by যে field এ cross-shard query বেশি হবে।
+    </div>
+  </div>
+
+  <div class="section" id="code">
+    <div class="section-label">06 — Code Examples</div>
+    <h2 class="section-title">Code Examples</h2>
+    <h3 class="sub-title">Node.js — Read/Write Splitting</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Node.js</span><span class="code-file">db_routing.js</span></div>
+      <pre><span class="kw">const</span> { Pool } = <span class="fn">require</span>(<span class="str">'pg'</span>);
+
+<span class="cm">// Primary (write) database</span>
+<span class="kw">const</span> primary = <span class="kw">new</span> <span class="fn">Pool</span>({ connectionString: process.env.DB_PRIMARY_URL });
+
+<span class="cm">// Read replicas — multiple</span>
+<span class="kw">const</span> replicas = [
+  <span class="kw">new</span> <span class="fn">Pool</span>({ connectionString: process.env.DB_REPLICA1_URL }),
+  <span class="kw">new</span> <span class="fn">Pool</span>({ connectionString: process.env.DB_REPLICA2_URL }),
+];
+<span class="kw">let</span> replicaIndex = <span class="num">0</span>;
+
+<span class="cm">// Round-robin replica selection</span>
+<span class="kw">function</span> <span class="fn">getReadPool</span>() {
+  <span class="kw">const</span> pool = replicas[replicaIndex % replicas.length];
+  replicaIndex++;
+  <span class="kw">return</span> pool;
+}
+
+<span class="cm">// Use primary for writes</span>
+<span class="kw">async function</span> <span class="fn">writeQuery</span>(sql, params) {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'✍️ Writing to PRIMARY'</span>);
+  <span class="kw">return</span> primary.<span class="fn">query</span>(sql, params);
+}
+
+<span class="cm">// Use replica for reads</span>
+<span class="kw">async function</span> <span class="fn">readQuery</span>(sql, params) {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'📖 Reading from REPLICA'</span>);
+  <span class="kw">return</span> <span class="fn">getReadPool</span>().<span class="fn">query</span>(sql, params);
+}
+
+<span class="cm">// Usage</span>
+<span class="kw">await</span> <span class="fn">writeQuery</span>(<span class="str">'INSERT INTO users...'</span>, [name, email]);
+<span class="kw">await</span> <span class="fn">readQuery</span>(<span class="str">'SELECT * FROM users WHERE id=$1'</span>, [userId]);</pre>
+    </div>
+    <h3 class="sub-title">Python — Shard Router</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Python</span><span class="code-file">shard_router.py</span></div>
+      <pre><span class="kw">import</span> psycopg2
+
+SHARD_CONFIGS = {
+    <span class="num">0</span>: {<span class="str">'host'</span>: <span class="str">'shard0.db.com'</span>, <span class="str">'dbname'</span>: <span class="str">'users_0'</span>},
+    <span class="num">1</span>: {<span class="str">'host'</span>: <span class="str">'shard1.db.com'</span>, <span class="str">'dbname'</span>: <span class="str">'users_1'</span>},
+    <span class="num">2</span>: {<span class="str">'host'</span>: <span class="str">'shard2.db.com'</span>, <span class="str">'dbname'</span>: <span class="str">'users_2'</span>},
+}
+
+<span class="kw">def</span> <span class="fn">get_connection</span>(user_id: int):
+    shard_num = user_id % <span class="fn">len</span>(SHARD_CONFIGS)
+    config = SHARD_CONFIGS[shard_num]
+    <span class="fn">print</span>(f<span class="str">f"User {user_id} → Shard {shard_num}"</span>)
+    <span class="kw">return</span> psycopg2.<span class="fn">connect</span>(**config)
+
+<span class="kw">def</span> <span class="fn">get_user</span>(user_id: int):
+    <span class="kw">with</span> <span class="fn">get_connection</span>(user_id) <span class="kw">as</span> conn:
+        <span class="kw">with</span> conn.<span class="fn">cursor</span>() <span class="kw">as</span> cur:
+            cur.<span class="fn">execute</span>(<span class="str">"SELECT * FROM users WHERE id=%s"</span>, (user_id,))
+            <span class="kw">return</span> cur.<span class="fn">fetchone</span>()
+
+<span class="fn">print</span>(<span class="fn">get_user</span>(<span class="num">12345</span>))   <span class="cm"># User 12345 → Shard 0 (12345 % 3 = 0)</span>
+<span class="fn">print</span>(<span class="fn">get_user</span>(<span class="num">12346</span>))   <span class="cm"># User 12346 → Shard 1 (12346 % 3 = 1)</span></pre>
+    </div>
+  </div>
+
+  <div class="section" id="interview">
+    <div class="section-label">07 — Interview Prep</div>
+    <h2 class="section-title">Common Interview Questions</h2>
+    <div class="info-box concept">
+      <div class="box-label">❓ Q1: Sharding vs Replication — পার্থক্য কী?</div>
+      <strong>উত্তর:</strong> Replication = same data, multiple servers (read scaling, availability)। Sharding = different data, multiple servers (write scaling, storage scaling)। Real systems এ দুটো একসাথে use হয়: প্রতিটা shard এর নিজস্ব replica থাকে।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">❓ Q2: Consistent Hashing কী এবং কেন দরকার?</div>
+      <strong>উত্তর:</strong> Regular hash (user_id % n_shards) এ n বাড়লে প্রায় সব keys এর shard বদলায় — massive data movement। Consistent hashing এ n বাড়লে শুধু k/n keys move হয় (k = total keys, n = shards)। Virtual nodes দিয়ে even distribution।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">❓ Q3: Shard key কীভাবে choose করবে?</div>
+      <strong>উত্তর:</strong> Good shard key: High cardinality (unique values অনেক), Even distribution, Queries mostly এই key এ, Cross-shard queries কম। Bad shard key: Gender (only 2 values → hotspot), Created_at (new data all in same shard)। user_id সাধারণত excellent shard key।
+    </div>
+  </div>
+
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🧠</span>
+      <h2>MCQ Quiz — DB Sharding & Replication</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">Database Replication এর primary সুবিধা কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Write performance বাড়ায়</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Read performance বাড়ায় এবং availability improve করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Storage কমায়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Query complexity কমায়</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Replication এ same data multiple servers এ থাকে। Reads distribute হয় replicas এ → faster read। Primary fail হলে replica promote হয় → high availability।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">Sharding এর সাথে Replication এর পার্থক্য কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> একই জিনিস, শুধু নাম আলাদা</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Replication faster, Sharding slower</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Replication = same data multiple servers; Sharding = different data split across servers</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Sharding শুধু NoSQL এ হয়</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Core difference: Replication copies, Sharding partitions। Real systems এ usually দুটোই একসাথে — প্রতিটা shard replicated।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">Hash-based sharding এর সবচেয়ে বড় সুবিধা কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Even data distribution — hotspot এর ঝুঁকি কম</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Range queries সহজ</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Resharding করা সহজ</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Setup করা সহজ</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Hash function consistent random-looking values দেয়, তাই data evenly distribute হয়। Range sharding এর মতো hotspot (একটা shard এ বেশি load) হয় না।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">Replication Lag কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Database slow হয়ে যাওয়া</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Primary server slow query</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Network latency</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Primary তে write হওয়ার পর Replica তে sync হতে delay</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Async replication এ Primary তে data লেখার পর Replica তে propagate হতে কিছু সময় লাগে। এই সময়ে replica থেকে read করলে stale data পাওয়া যেতে পারে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">একটা social media app এ posts table sharding করতে কোন shard key সবচেয়ে ভালো?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> post_category (sports, news, etc.)</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> user_id (post owner)</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> post_date</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> likes_count</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — user_id ভালো shard key কারণ: High cardinality, queries mostly "show me my posts" (same user_id), Even distribution possible। post_date এ নতুন posts সব same shard এ যাবে।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">Consistent Hashing কোন সমস্যা solve করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Database slow query</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Replication lag</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> নতুন shard add করলে minimal data movement — regular hash এ সব data move করতে হয়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Cross-shard queries</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Regular hash (key % n) এ n বাড়লে প্রায় সব keys এর mapping বদলায়। Consistent hashing এ শুধু k/n portion এর data move হয়। Amazon DynamoDB, Cassandra এটা use করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">Read/Write Splitting কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Writes primary তে, Reads replicas থেকে — load distribute করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Read এবং write আলাদা database এ রাখা</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Database backup strategy</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Sharding strategy</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Read/Write Splitting: Write operations → Primary DB। Read operations → Replica DB। এতে Primary এর load কমে, Read throughput বাড়ে। বেশিরভাগ apps এ reads >> writes।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">Sharding এর সবচেয়ে বড় challenge কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Initial setup কঠিন</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Storage cost বেশি</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Performance কমে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Cross-shard queries এবং transactions — multiple shards এ query করা complex ও slow</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Cross-shard query মানে সব shards এ query করে merge করতে হয়। Cross-shard transactions এ distributed transactions লাগে (2-Phase Commit) — complex এবং potential deadlock।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">কোন situation এ Sharding এর বদলে শুধু Replication যথেষ্ট?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> ১ billion users আছে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> App mostly read-heavy, write কম, data একটা server এ fit করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Write performance বাড়াতে হবে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Storage সমস্যা আছে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Read-heavy app এ replicas থেকে reads distribute করলেই কাজ হয়। Storage যদি একটা server এ fit করে এবং write bottleneck না থাকে, sharding এর complexity নেওয়ার দরকার নেই।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">Instagram কীভাবে ৫০+ billion photos store করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> একটা বড় database server</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> শুধু replication</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Sharding + Object Storage (S3-like) + CDN combination</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Compression only</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Photos actual files → Object Storage (S3)। Metadata (user_id, caption, likes) → Sharded PostgreSQL। Photos globally serve করতে → CDN। এটাই modern large-scale storage architecture।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT &amp; CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ২-৩ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <ul class="task-list">
+      <li><strong>Sharding Strategy Selection:</strong> নিচের scenarios এর জন্য shard key এবং strategy choose করো: (ক) Twitter-like app — 500M users, tweets store করবে (খ) E-commerce — orders store করবে (গ) IoT sensor data — প্রতি second millions of readings।</li>
+      <li><strong>Consistent Hashing Simulate:</strong> উপরে দেওয়া ConsistentHashRing Python code চালাও। 3টা shard add করো, 100টা random user_id তে কোন shard gets কত% request count করো। 4th shard add করার পর আবার count করো।</li>
+      <li><strong>Diagram:</strong> একটা Instagram-like app এর complete database architecture diagram বানাও: User profiles, Posts metadata, Comments, Likes — কোনটা কীভাবে sharded? Replicas কোথায়?</li>
+      <li><strong>Read/Write Splitting Code:</strong> উপরে দেওয়া Node.js Read/Write splitting code extend করো: 3টা replica add করো, write failure হলে retry করো, read failure হলে অন্য replica try করো।</li>
+      <li><strong>Research:</strong> Discord কীভাবে trillions of messages store করে? তারা Cassandra থেকে ScyllaDB migrate করলো কেন? ৬-৮ লাইনে।</li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>Sharding strategy decisions (৩ scenario)</li>
+        <li>Consistent hashing distribution analysis</li>
+        <li>Instagram DB architecture diagram</li>
+        <li>Extended read/write split code</li>
+        <li>Discord research summary</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="project-section" id="project">
+    <div class="project-header">
+      <span style="font-size:24px">🚀</span>
+      <h2>Hands-On Project Task</h2>
+    </div>
+    <div class="project-body">
+      <h3 style="font-family:'Fraunces',serif;font-size:18px;margin-bottom:12px;color:#f1f5f9;">Shard Router Simulation</h3>
+      <p style="font-size:14px;color:#94a3b8;margin-bottom:20px;">Python দিয়ে একটা shard router simulate করো যেটা actual PostgreSQL connections ছাড়াই routing logic demonstrate করে।</p>
+      <div class="step-flow">
+        <div class="step-item"><div class="step-circle">1</div><div class="step-content"><h4>ShardRouter class বানাও</h4><p>৩টা virtual shard, hash-based routing, add_shard() method।</p></div></div>
+        <div class="step-item"><div class="step-circle">2</div><div class="step-content"><h4>Distribution test করো</h4><p>১০,০০০ random user_ids দিয়ে কতটা per shard যাচ্ছে count করো। Even distribution হচ্ছে?</p></div></div>
+        <div class="step-item"><div class="step-circle">3</div><div class="step-content"><h4>4th shard add করো</h4><p>Regular hash vs Consistent hash — কতটা data move হলো? Compare করো।</p></div></div>
+        <div class="step-item"><div class="step-circle">4</div><div class="step-content"><h4>In-memory storage add করো</h4><p>প্রতিটা shard এর জন্য Python dict। set_user(), get_user() implement করো।</p></div></div>
+        <div class="step-item"><div class="step-circle">5</div><div class="step-content"><h4>Cross-shard query simulate করো</h4><p>"সব users যাদের age > 25" query সব shards এ run করে results merge করো।</p></div></div>
+      </div>
+      <div class="info-box tip" style="margin-top:16px">
+        <div class="box-label">🎯 এটা করলে যা শিখবে</div>
+        Hash routing practically implement করবে। Consistent hashing এর power দেখবে — 4th shard add এ কত কম data move হলো। Cross-shard query এর complexity feel করবে।
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Lesson Summary</div>
+    <h2 class="section-title">আজকে যা শিখলাম</h2>
+    <table class="compare-table">
+      <tr><th>Concept</th><th>এক লাইনে</th></tr>
+      <tr><td>Replication</td><td>Same data, multiple servers — read scaling + availability</td></tr>
+      <tr><td>Sharding</td><td>Different data, multiple servers — write/storage scaling</td></tr>
+      <tr><td>Hash Sharding</td><td>Even distribution, good for user data</td></tr>
+      <tr><td>Range Sharding</td><td>Range queries সহজ, hotspot ঝুঁকি আছে</td></tr>
+      <tr><td>Consistent Hashing</td><td>New shard add এ minimal data movement</td></tr>
+      <tr><td>Read/Write Split</td><td>Write → Primary, Read → Replica</td></tr>
+      <tr><td>Cross-shard Problem</td><td>Sharding এর সবচেয়ে বড় challenge</td></tr>
+    </table>
+  </div>
+
+  <div class="next-cta" onclick="window.location='phase2-topic6-cdn.html'">
+    <div>
+      <div class="next-label">Next Topic →</div>
+      <div class="next-title">🌐 CDN & Object Storage (S3, CloudFront)</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+</div>
+</main>
+<script>
+window.addEventListener('scroll',()=>{const d=document.documentElement;document.getElementById('progressFill').style.width=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100)+'%'});
+let answered={};
+document.querySelectorAll('.option').forEach(opt=>{opt.addEventListener('click',function(){const block=this.closest('.question-block');const qId=Array.from(document.querySelectorAll('.question-block')).indexOf(block);if(answered[qId])return;answered[qId]=this.dataset.val;block.querySelectorAll('.option').forEach(o=>{o.style.pointerEvents='none';if(o.dataset.val===block.dataset.correct)o.classList.add('correct');else if(o.dataset.val===this.dataset.val)o.classList.add('wrong')});block.querySelector('.explanation').classList.add('visible')})});
+function submitMCQ(){let c=0;const b=document.querySelectorAll('.question-block');b.forEach((bl,i)=>{if(answered[i]===bl.dataset.correct)c++});if(b.length-Object.keys(answered).length>0){alert(`এখনও ${b.length-Object.keys(answered).length}টা বাকি!`);return}document.getElementById('scoreDisplay').textContent=c;const bn=document.getElementById('resultBanner');bn.classList.add('visible');bn.classList.add(c>=7?'pass':'fail');bn.textContent=c>=7?`🎉 দারুণ! ${c}/10 সঠিক!`:`📖 ${c}/10। আবার পড়ো।`}
+document.querySelectorAll('.nav-item[href^="#"]').forEach(l=>{l.addEventListener('click',e=>{e.preventDefault();document.getElementById(l.getAttribute('href').slice(1))?.scrollIntoView({behavior:'smooth'})})});
+</script>
+</body>
+</html>

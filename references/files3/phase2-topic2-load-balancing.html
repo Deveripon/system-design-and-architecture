@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 2 · Topic 2 — Load Balancing</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05080f;--surface:#090e1a;--card:#0c1220;--border:#162035;--border2:#1e2d4a;--accent:#3b82f6;--accent-glow:rgba(59,130,246,0.15);--green:#10b981;--green-glow:rgba(16,185,129,0.12);--orange:#f97316;--red:#ef4444;--yellow:#eab308;--purple:#8b5cf6;--text:#e2e8f0;--muted:#64748b;--muted2:#94a3b8}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans Bengali',sans-serif;line-height:1.7;font-size:15px}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.4}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.sidebar-logo .phase-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:4px}
+.sidebar-logo .course-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;line-height:1.3}
+.nav-section{padding:0 12px;margin-bottom:8px}
+.nav-section-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);padding:0 8px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:4px;font-size:13px;color:var(--muted2);cursor:pointer;transition:all 0.15s;text-decoration:none}
+.nav-item:hover{background:var(--card);color:var(--text)}.nav-item.active{background:var(--accent-glow);color:var(--accent)}
+.nav-item .nav-icon{font-size:14px;flex-shrink:0}.nav-item .nav-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto}
+.progress-bar{position:fixed;top:0;left:240px;right:0;height:2px;background:var(--border);z-index:200}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));width:0%;transition:width 0.1s}
+.main{margin-left:240px;min-height:100vh}.content{max-width:780px;margin:0 auto;padding:48px 40px 120px}
+.topic-header{margin-bottom:48px}
+.breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.breadcrumb span{color:var(--accent)}
+.topic-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:block}
+h1.topic-title{font-family:'Fraunces',serif;font-size:clamp(32px,5vw,48px);font-weight:900;line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,#fff 30%,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topic-meta{display:flex;gap:16px;flex-wrap:wrap}
+.meta-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 12px;border-radius:2px;border:1px solid}
+.meta-chip.time{border-color:rgba(59,130,246,0.3);color:var(--accent);background:var(--accent-glow)}
+.meta-chip.level{border-color:rgba(16,185,129,0.3);color:var(--green);background:var(--green-glow)}
+.meta-chip.type{border-color:rgba(139,92,246,0.3);color:var(--purple);background:rgba(139,92,246,0.08)}
+.section{margin-bottom:48px;scroll-margin-top:24px}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:3px;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+h2.section-title{font-family:'Fraunces',serif;font-size:24px;font-weight:700;margin-bottom:16px;color:#f1f5f9}
+h3.sub-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;margin:24px 0 10px;color:#cbd5e1}
+p{margin-bottom:14px;color:#cbd5e1}
+.info-box{border-radius:6px;padding:18px 20px;margin:20px 0;border-left:3px solid;font-size:14px}
+.info-box.concept{background:rgba(59,130,246,0.06);border-color:var(--accent)}
+.info-box.warning{background:rgba(249,115,22,0.06);border-color:var(--orange)}
+.info-box.tip{background:rgba(16,185,129,0.06);border-color:var(--green)}
+.info-box.important{background:rgba(234,179,8,0.06);border-color:var(--yellow)}
+.info-box .box-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:700}
+.info-box.concept .box-label{color:var(--accent)}.info-box.warning .box-label{color:var(--orange)}.info-box.tip .box-label{color:var(--green)}.info-box.important .box-label{color:var(--yellow)}
+.compare-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px}
+.compare-table th{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1px;padding:12px 16px;text-align:left;background:var(--card);border-bottom:2px solid var(--border2);color:var(--muted2)}
+.compare-table td{padding:11px 16px;border-bottom:1px solid var(--border);color:#94a3b8;vertical-align:top;line-height:1.6}
+.compare-table tr:hover td{background:rgba(255,255,255,0.02)}
+.compare-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);white-space:nowrap}
+.tag-yes{color:var(--green);font-weight:600}.tag-no{color:var(--red)}.tag-med{color:var(--yellow)}
+.diagram{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:30px 20px;margin:24px 0;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;overflow-x:auto}
+.code-block{background:#030608;border:1px solid var(--border2);border-radius:6px;margin:20px 0;overflow:hidden}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--border)}
+.code-lang{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:1px}
+.code-file{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)}
+pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.8;color:#e2e8f0}
+.kw{color:#93c5fd}.fn{color:#6ee7b7}.str{color:#fcd34d}.cm{color:#475569;font-style:italic}.num{color:#f9a8d4}.var{color:#e2e8f0}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0}
+.scenario-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:18px}
+.scenario-card .s-title{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+.scenario-card p{font-size:13px;color:var(--muted2);margin:0}
+.mcq-section{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:28px;margin:30px 0}
+.mcq-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.mcq-icon{font-size:24px}.mcq-header h2{font-family:'Fraunces',serif;font-size:20px;font-weight:700}
+.mcq-score{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted)}
+.mcq-score span{color:var(--accent);font-size:18px;font-weight:700}
+.question-block{margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--border)}
+.question-block:last-of-type{border-bottom:none;margin-bottom:0}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.q-text{font-size:15px;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.5;font-family:'Noto Sans Bengali',sans-serif}
+.options{display:flex;flex-direction:column;gap:8px}
+.option{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:4px;border:1px solid var(--border);cursor:pointer;transition:all 0.15s;font-size:14px;color:var(--muted2);font-family:'Noto Sans Bengali',sans-serif}
+.option:hover{border-color:var(--accent);color:var(--text);background:var(--accent-glow)}
+.option.correct{border-color:var(--green);background:var(--green-glow);color:#6ee7b7}
+.option.wrong{border-color:var(--red);background:rgba(239,68,68,0.08);color:#fca5a5}
+.option-key{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--border2);padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px}
+.explanation{display:none;margin-top:12px;padding:12px 14px;background:rgba(16,185,129,0.06);border-left:2px solid var(--green);border-radius:0 4px 4px 0;font-size:13px;color:#94a3b8;line-height:1.7;font-family:'Noto Sans Bengali',sans-serif}
+.explanation.visible{display:block}.explanation strong{color:var(--green)}
+.mcq-submit{display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:12px 24px;background:var(--accent);color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;border:none;border-radius:4px;cursor:pointer;letter-spacing:1px;transition:all 0.15s}
+.mcq-submit:hover{background:#2563eb;transform:translateY(-1px)}
+.result-banner{display:none;margin-top:20px;padding:16px 20px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700}
+.result-banner.visible{display:block}.result-banner.pass{background:var(--green-glow);border:1px solid var(--green);color:var(--green)}.result-banner.fail{background:rgba(249,115,22,0.08);border:1px solid var(--orange);color:var(--orange)}
+.assignment-section{background:linear-gradient(135deg,rgba(59,130,246,0.04),rgba(139,92,246,0.04));border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:28px;margin:30px 0}
+.assignment-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.assignment-icon{font-size:28px}.assignment-header h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700}
+.assignment-meta{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.a-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 10px;border-radius:2px}
+.a-chip.time{background:rgba(234,179,8,0.1);color:var(--yellow);border:1px solid rgba(234,179,8,0.2)}.a-chip.level{background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.2)}
+.task-list{counter-reset:tasks;list-style:none;display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
+.task-list li{counter-increment:tasks;display:flex;gap:14px;padding:16px;background:var(--card);border-radius:6px;border:1px solid var(--border);font-size:14px;color:var(--muted2)}
+.task-list li::before{content:counter(tasks);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--accent);background:var(--accent-glow);border:1px solid rgba(59,130,246,0.3);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.task-list li strong{color:var(--text);display:block;margin-bottom:4px}
+.deliverable-box{background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.2);border-radius:6px;padding:18px 20px}
+.d-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;font-weight:700}
+.deliverable-box ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.deliverable-box ul li{font-size:13px;color:var(--muted2);padding-left:16px;position:relative}
+.deliverable-box ul li::before{content:'→';position:absolute;left:0;color:var(--green)}
+.project-section{background:linear-gradient(135deg,rgba(16,185,129,0.04),rgba(59,130,246,0.04));border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:28px;margin:30px 0}
+.project-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.project-header h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700}
+.step-flow{display:flex;flex-direction:column;gap:0}
+.step-item{display:flex;gap:16px;position:relative;padding-bottom:24px}
+.step-item:last-child{padding-bottom:0}
+.step-item:not(:last-child)::after{content:'';position:absolute;left:12px;top:28px;bottom:0;width:1px;background:var(--border2)}
+.step-circle{width:26px;height:26px;border-radius:50%;background:var(--accent);color:white;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;z-index:1}
+.step-content h4{font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px}
+.step-content p{font-size:13px;color:var(--muted2);margin:0}
+.next-cta{display:flex;align-items:center;justify-content:space-between;padding:24px 28px;background:var(--card);border:1px solid var(--border2);border-radius:8px;margin-top:48px;cursor:pointer;transition:all 0.2s}
+.next-cta:hover{border-color:var(--accent);background:rgba(59,130,246,0.05)}
+.next-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:6px}
+.next-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700}
+.next-arrow{font-size:24px;color:var(--accent)}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--card);padding:2px 7px;border-radius:3px;border:1px solid var(--border);color:#93c5fd}
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 2 · Core Components</span>
+    <div class="course-title">System Design Mastery</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">এই Topic এ</div>
+    <a class="nav-item active" href="#concept"><span class="nav-icon">💡</span> Core Concept <span class="nav-num">01</span></a>
+    <a class="nav-item" href="#layers"><span class="nav-icon">🔀</span> L4 vs L7 <span class="nav-num">02</span></a>
+    <a class="nav-item" href="#algorithms"><span class="nav-icon">⚙️</span> Algorithms <span class="nav-num">03</span></a>
+    <a class="nav-item" href="#health"><span class="nav-icon">💓</span> Health Checks <span class="nav-num">04</span></a>
+    <a class="nav-item" href="#tools"><span class="nav-icon">🛠️</span> Tools Comparison <span class="nav-num">05</span></a>
+    <a class="nav-item" href="#code"><span class="nav-icon">💻</span> Code Examples <span class="nav-num">06</span></a>
+    <a class="nav-item" href="#usecases"><span class="nav-icon">🏢</span> Real World <span class="nav-num">07</span></a>
+    <a class="nav-item" href="#interview"><span class="nav-icon">🎯</span> Interview Q&A <span class="nav-num">08</span></a>
+    <a class="nav-item" href="#mcq"><span class="nav-icon">📝</span> MCQ Quiz <span class="nav-num">09</span></a>
+    <a class="nav-item" href="#assignment"><span class="nav-icon">📋</span> Assignment <span class="nav-num">10</span></a>
+    <a class="nav-item" href="#project"><span class="nav-icon">🚀</span> Project <span class="nav-num">11</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px;">
+    <div class="nav-section-label">Phase 2 Topics</div>
+    <a class="nav-item" href="phase2-topic1-caching.html"><span class="nav-icon">🔴</span> T1: Caching & Redis</a>
+    <a class="nav-item active" href="#"><span class="nav-icon">⚖️</span> T2: Load Balancing</a>
+    <a class="nav-item" href="phase2-topic3-message-queues.html"><span class="nav-icon">📨</span> T3: Message Queues</a>
+    <a class="nav-item" href="phase2-topic4-api-design.html"><span class="nav-icon">🔌</span> T4: API Design</a>
+    <a class="nav-item" href="phase2-topic5-db-sharding.html"><span class="nav-icon">🗄️</span> T5: DB Sharding</a>
+    <a class="nav-item" href="phase2-topic6-cdn.html"><span class="nav-icon">🌐</span> T6: CDN & Storage</a>
+  </div>
+</aside>
+
+<main class="main">
+<div class="content">
+
+  <div class="topic-header">
+    <div class="breadcrumb">System Design Mastery <span>/</span> Phase 2: Core Components <span>/</span> Topic 2</div>
+    <span class="topic-num">Phase 2 · Topic 02</span>
+    <h1 class="topic-title">Load Balancing<br>L4/L7 & Algorithms</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ 3-4 ঘণ্টা</span>
+      <span class="meta-chip level">📊 Junior → Mid Level</span>
+      <span class="meta-chip type">⚖️ Nginx · HAProxy · AWS ALB</span>
+    </div>
+  </div>
+
+  <!-- Concept -->
+  <div class="section" id="concept">
+    <div class="section-label">01 — Core Concept</div>
+    <h2 class="section-title">Load Balancer কী?</h2>
+    <p>ধরো একটা ব্যাংকে ১০টা counter আছে কিন্তু সব customer একটা counter এ লাইন দিচ্ছে — বাকি ৯টা খালি। এটাই poor distribution। <strong>Load Balancer হলো সেই manager যে বলে দেয় কোন customer কোন counter এ যাবে</strong> — সব server এ সমান ভাবে traffic ভাগ করে।</p>
+
+    <div class="info-box concept">
+      <div class="box-label">💡 Definition</div>
+      Load Balancer একটা traffic distribution system যেটা incoming requests কে multiple backend servers এ distribute করে। এতে কোনো single server overload হয় না, system highly available থাকে, এবং horizontal scaling সহজ হয়।
+    </div>
+
+    <div class="diagram">
+      <svg width="660" height="200" viewBox="0 0 660 200">
+        <text x="20" y="50" fill="#94a3b8" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Users</text>
+        <rect x="5" y="20" width="50" height="24" rx="3" fill="#0c1220" stroke="#1e2d4a"/><text x="30" y="36" fill="#94a3b8" font-family="JetBrains Mono" font-size="9" text-anchor="middle">U1</text>
+        <rect x="5" y="50" width="50" height="24" rx="3" fill="#0c1220" stroke="#1e2d4a"/><text x="30" y="66" fill="#94a3b8" font-family="JetBrains Mono" font-size="9" text-anchor="middle">U2</text>
+        <rect x="5" y="80" width="50" height="24" rx="3" fill="#0c1220" stroke="#1e2d4a"/><text x="30" y="96" fill="#94a3b8" font-family="JetBrains Mono" font-size="9" text-anchor="middle">U3</text>
+        <rect x="5" y="110" width="50" height="24" rx="3" fill="#0c1220" stroke="#1e2d4a"/><text x="30" y="126" fill="#94a3b8" font-family="JetBrains Mono" font-size="9" text-anchor="middle">U4</text>
+        <line x1="55" y1="32" x2="180" y2="95" stroke="#3b82f6" stroke-width="1"/>
+        <line x1="55" y1="62" x2="180" y2="100" stroke="#3b82f6" stroke-width="1"/>
+        <line x1="55" y1="92" x2="180" y2="105" stroke="#3b82f6" stroke-width="1"/>
+        <line x1="55" y1="122" x2="180" y2="110" stroke="#3b82f6" stroke-width="1"/>
+        <rect x="180" y="72" width="120" height="56" rx="6" fill="rgba(59,130,246,0.12)" stroke="#3b82f6" stroke-width="2"/>
+        <text x="240" y="96" fill="#3b82f6" font-family="JetBrains Mono" font-size="12" text-anchor="middle" font-weight="700">⚖️ LOAD</text>
+        <text x="240" y="114" fill="#3b82f6" font-family="JetBrains Mono" font-size="12" text-anchor="middle" font-weight="700">BALANCER</text>
+        <line x1="300" y1="88" x2="380" y2="45" stroke="#10b981" stroke-width="1.5"/>
+        <line x1="300" y1="100" x2="380" y2="100" stroke="#10b981" stroke-width="1.5"/>
+        <line x1="300" y1="112" x2="380" y2="155" stroke="#10b981" stroke-width="1.5"/>
+        <rect x="380" y="28" width="100" height="36" rx="4" fill="#0c1220" stroke="#10b981"/>
+        <text x="430" y="48" fill="#10b981" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Server 1</text>
+        <rect x="380" y="82" width="100" height="36" rx="4" fill="#0c1220" stroke="#10b981"/>
+        <text x="430" y="102" fill="#10b981" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Server 2</text>
+        <rect x="380" y="136" width="100" height="36" rx="4" fill="#0c1220" stroke="#10b981"/>
+        <text x="430" y="156" fill="#10b981" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Server 3</text>
+        <line x1="480" y1="46" x2="560" y2="100" stroke="#475569" stroke-width="1" stroke-dasharray="4"/>
+        <line x1="480" y1="100" x2="560" y2="100" stroke="#475569" stroke-width="1" stroke-dasharray="4"/>
+        <line x1="480" y1="154" x2="560" y2="100" stroke="#475569" stroke-width="1" stroke-dasharray="4"/>
+        <rect x="560" y="80" width="90" height="40" rx="4" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="605" y="96" fill="#94a3b8" font-family="JetBrains Mono" font-size="9" text-anchor="middle">🗄️ Shared</text>
+        <text x="605" y="110" fill="#94a3b8" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Database</text>
+      </svg>
+    </div>
+
+    <div class="info-box tip">
+      <div class="box-label">✅ Load Balancer এর সুবিধা</div>
+      High Availability (একটা server down হলেও অন্যরা চলে), Scalability (সহজে server add করা যায়), Performance (traffic distribute হয়, কোনো server overload হয় না), এবং Zero-downtime deployment (একটা server update করার সময় অন্যরা serve করে)।
+    </div>
+  </div>
+
+  <!-- L4 vs L7 -->
+  <div class="section" id="layers">
+    <div class="section-label">02 — L4 vs L7</div>
+    <h2 class="section-title">Layer 4 vs Layer 7 Load Balancing</h2>
+    <p>Load Balancer OSI Model এর দুটো different layer এ কাজ করতে পারে — এটাই L4 এবং L7 এর পার্থক্য।</p>
+
+    <h3 class="sub-title">Layer 4 — Transport Layer (TCP/UDP)</h3>
+    <p>L4 Load Balancer শুধু IP address এবং TCP port দেখে traffic route করে। HTTP packet এর content দেখে না — শুধু network level এ কাজ করে। অনেক fast কিন্তু content-aware routing করতে পারে না।</p>
+
+    <div class="diagram">
+      <svg width="580" height="100" viewBox="0 0 580 100">
+        <rect x="10" y="30" width="100" height="40" rx="4" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="60" y="48" fill="#94a3b8" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Client</text>
+        <text x="60" y="64" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">192.168.1.5:54320</text>
+        <path d="M110 50 L190 50" stroke="#3b82f6" stroke-width="1.5"/>
+        <rect x="190" y="22" width="130" height="56" rx="4" fill="rgba(59,130,246,0.1)" stroke="#3b82f6"/>
+        <text x="255" y="46" fill="#3b82f6" font-family="JetBrains Mono" font-size="10" text-anchor="middle">L4 Load Balancer</text>
+        <text x="255" y="62" fill="#64748b" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Sees: IP + Port only</text>
+        <text x="255" y="74" fill="#f97316" font-family="JetBrains Mono" font-size="8" text-anchor="middle">NO HTTP content!</text>
+        <path d="M320 50 L400 50" stroke="#10b981" stroke-width="1.5"/>
+        <rect x="400" y="30" width="120" height="40" rx="4" fill="#0c1220" stroke="#10b981"/>
+        <text x="460" y="48" fill="#10b981" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Backend Server</text>
+        <text x="460" y="62" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">by IP hash/round-robin</text>
+      </svg>
+    </div>
+
+    <h3 class="sub-title">Layer 7 — Application Layer (HTTP/HTTPS)</h3>
+    <p>L7 Load Balancer HTTP request এর সব content দেখতে পারে — URL path, headers, cookies, query params। এতে intelligent routing করা যায়। Slower than L4 কিন্তু অনেক বেশি powerful।</p>
+
+    <div class="diagram">
+      <svg width="620" height="160" viewBox="0 0 620 160">
+        <rect x="10" y="55" width="100" height="50" rx="4" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="60" y="75" fill="#94a3b8" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Request</text>
+        <text x="60" y="89" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">GET /api/users</text>
+        <text x="60" y="101" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Host: app.com</text>
+        <path d="M110 80 L185 80" stroke="#3b82f6" stroke-width="1.5"/>
+        <rect x="185" y="30" width="140" height="100" rx="4" fill="rgba(59,130,246,0.1)" stroke="#3b82f6"/>
+        <text x="255" y="56" fill="#3b82f6" font-family="JetBrains Mono" font-size="10" text-anchor="middle">L7 Load Balancer</text>
+        <text x="255" y="72" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Reads full HTTP:</text>
+        <text x="255" y="85" fill="#6ee7b7" font-family="JetBrains Mono" font-size="8" text-anchor="middle">URL: /api/*</text>
+        <text x="255" y="98" fill="#6ee7b7" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Headers, Cookies</text>
+        <text x="255" y="111" fill="#6ee7b7" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Content-Type</text>
+        <text x="255" y="124" fill="#fcd34d" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Smart routing! ✓</text>
+        <path d="M325 55 L400 30" stroke="#10b981" stroke-width="1.5"/>
+        <path d="M325 80 L400 80" stroke="#f97316" stroke-width="1.5"/>
+        <path d="M325 105 L400 130" stroke="#8b5cf6" stroke-width="1.5"/>
+        <rect x="400" y="15" width="120" height="30" rx="3" fill="#0c1220" stroke="#10b981"/>
+        <text x="460" y="34" fill="#10b981" font-family="JetBrains Mono" font-size="9" text-anchor="middle">API Server (/api/*)</text>
+        <rect x="400" y="65" width="120" height="30" rx="3" fill="#0c1220" stroke="#f97316"/>
+        <text x="460" y="84" fill="#f97316" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Static Server (/img/*)</text>
+        <rect x="400" y="115" width="120" height="30" rx="3" fill="#0c1220" stroke="#8b5cf6"/>
+        <text x="460" y="134" fill="#8b5cf6" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Auth Server (/auth/*)</text>
+      </svg>
+    </div>
+
+    <table class="compare-table">
+      <tr><th>Feature</th><th>Layer 4</th><th>Layer 7</th></tr>
+      <tr><td>OSI Layer</td><td>Transport (TCP/UDP)</td><td>Application (HTTP)</td></tr>
+      <tr><td>Speed</td><td class="tag-yes">Very Fast</td><td class="tag-med">Fast (slight overhead)</td></tr>
+      <tr><td>Content Awareness</td><td class="tag-no">No</td><td class="tag-yes">Yes (URL, headers, cookies)</td></tr>
+      <tr><td>SSL Termination</td><td class="tag-no">No</td><td class="tag-yes">Yes</td></tr>
+      <tr><td>Path-based Routing</td><td class="tag-no">No</td><td class="tag-yes">Yes</td></tr>
+      <tr><td>Best For</td><td>TCP apps, games, raw speed</td><td>Web apps, microservices</td></tr>
+      <tr><td>Tools</td><td>AWS NLB, HAProxy (TCP)</td><td>Nginx, AWS ALB, HAProxy</td></tr>
+    </table>
+  </div>
+
+  <!-- Algorithms -->
+  <div class="section" id="algorithms">
+    <div class="section-label">03 — Algorithms</div>
+    <h2 class="section-title">Load Balancing Algorithms</h2>
+
+    <h3 class="sub-title">1. Round Robin</h3>
+    <p>সবচেয়ে simple। Request গুলো একে একে সব server এ পাঠানো হয়: Server 1 → Server 2 → Server 3 → Server 1 → ...</p>
+    <div class="diagram">
+      <svg width="560" height="80" viewBox="0 0 560 80">
+        <text x="30" y="20" fill="#64748b" font-family="JetBrains Mono" font-size="10" text-anchor="middle">R1</text>
+        <text x="80" y="20" fill="#64748b" font-family="JetBrains Mono" font-size="10" text-anchor="middle">R2</text>
+        <text x="130" y="20" fill="#64748b" font-family="JetBrains Mono" font-size="10" text-anchor="middle">R3</text>
+        <text x="180" y="20" fill="#64748b" font-family="JetBrains Mono" font-size="10" text-anchor="middle">R4</text>
+        <text x="230" y="20" fill="#64748b" font-family="JetBrains Mono" font-size="10" text-anchor="middle">R5</text>
+        <text x="280" y="20" fill="#64748b" font-family="JetBrains Mono" font-size="10" text-anchor="middle">R6</text>
+        <line x1="30" y1="25" x2="380" y2="25" stroke="#1e2d4a" stroke-width="1"/>
+        <line x1="30" y1="35" x2="30" y2="55" stroke="#10b981" stroke-width="2"/>
+        <line x1="80" y1="35" x2="80" y2="55" stroke="#3b82f6" stroke-width="2"/>
+        <line x1="130" y1="35" x2="130" y2="55" stroke="#f97316" stroke-width="2"/>
+        <line x1="180" y1="35" x2="180" y2="55" stroke="#10b981" stroke-width="2"/>
+        <line x1="230" y1="35" x2="230" y2="55" stroke="#3b82f6" stroke-width="2"/>
+        <line x1="280" y1="35" x2="280" y2="55" stroke="#f97316" stroke-width="2"/>
+        <text x="30" y="72" fill="#10b981" font-family="JetBrains Mono" font-size="9" text-anchor="middle">S1</text>
+        <text x="80" y="72" fill="#3b82f6" font-family="JetBrains Mono" font-size="9" text-anchor="middle">S2</text>
+        <text x="130" y="72" fill="#f97316" font-family="JetBrains Mono" font-size="9" text-anchor="middle">S3</text>
+        <text x="180" y="72" fill="#10b981" font-family="JetBrains Mono" font-size="9" text-anchor="middle">S1</text>
+        <text x="230" y="72" fill="#3b82f6" font-family="JetBrains Mono" font-size="9" text-anchor="middle">S2</text>
+        <text x="280" y="72" fill="#f97316" font-family="JetBrains Mono" font-size="9" text-anchor="middle">S3</text>
+        <text x="420" y="45" fill="#10b981" font-family="JetBrains Mono" font-size="10">S1=2, S2=2, S3=2</text>
+        <text x="420" y="60" fill="#64748b" font-family="JetBrains Mono" font-size="9">Equal distribution ✓</text>
+      </svg>
+    </div>
+
+    <h3 class="sub-title">2. Weighted Round Robin</h3>
+    <p>Server এর capacity অনুযায়ী weight দেওয়া হয়। বড় server বেশি request পায়।</p>
+
+    <h3 class="sub-title">3. Least Connections</h3>
+    <p>যে server এ সবচেয়ে কম active connection আছে সেখানে পাঠানো হয়। Long-lived connections (WebSocket, DB) এর জন্য ভালো।</p>
+
+    <h3 class="sub-title">4. IP Hash</h3>
+    <p>Client এর IP address hash করে সবসময় same server এ পাঠানো হয়। Session persistence দরকার হলে (stateful app) এটা কাজ করে।</p>
+
+    <h3 class="sub-title">5. Random</h3>
+    <p>Randomly একটা server choose করে। Simple কিন্তু uneven distribution হতে পারে।</p>
+
+    <table class="compare-table">
+      <tr><th>Algorithm</th><th>কীভাবে কাজ করে</th><th>Best For</th><th>Problem</th></tr>
+      <tr><td>Round Robin</td><td>একে একে সবাই</td><td>Equal capacity servers</td><td>Different capacity ignore করে</td></tr>
+      <tr><td>Weighted RR</td><td>Weight অনুযায়ী</td><td>Mixed capacity</td><td>Static weight, dynamic load না</td></tr>
+      <tr><td>Least Connections</td><td>কম connection এ পাঠাও</td><td>Long requests, varied load</td><td>Slightly complex</td></tr>
+      <tr><td>IP Hash</td><td>IP → same server</td><td>Session persistence</td><td>Server down হলে সব session হারায়</td></tr>
+      <tr><td>Random</td><td>Random choice</td><td>Simple, testing</td><td>Hot spots possible</td></tr>
+    </table>
+  </div>
+
+  <!-- Health Checks -->
+  <div class="section" id="health">
+    <div class="section-label">04 — Health Checks</div>
+    <h2 class="section-title">Health Check ও Failover</h2>
+
+    <p>Load Balancer regularly সব server কে ping করে check করে কোনটা alive। যদি কোনো server respond না করে — সেই server কে automatically বাদ দেওয়া হয়।</p>
+
+    <div class="info-box warning">
+      <div class="box-label">⚠️ Health Check Types</div>
+      <strong>TCP Check:</strong> শুধু port open আছে কিনা check। <strong>HTTP Check:</strong> নির্দিষ্ট URL এ GET request করে 200 OK আসে কিনা দেখে। <strong>Custom Script:</strong> Application-specific logic দিয়ে health check। সাধারণত <code>/health</code> বা <code>/ping</code> endpoint বানানো হয়।
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Nginx</span><span class="code-file">nginx.conf</span></div>
+      <pre><span class="kw">upstream</span> backend {
+  <span class="cm"># Load balancing algorithm</span>
+  least_conn;  <span class="cm"># or: round-robin (default), ip_hash</span>
+
+  <span class="cm"># Servers with weights</span>
+  <span class="fn">server</span> app1:<span class="num">3000</span> weight=<span class="num">3</span>;  <span class="cm"># more powerful server</span>
+  <span class="fn">server</span> app2:<span class="num">3000</span> weight=<span class="num">2</span>;
+  <span class="fn">server</span> app3:<span class="num">3000</span> weight=<span class="num">1</span>;
+
+  <span class="cm"># Health check (nginx plus feature)</span>
+  <span class="cm"># keepalive 32;</span>
+}
+
+<span class="kw">server</span> {
+  listen <span class="num">80</span>;
+
+  location / {
+    proxy_pass http://backend;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+
+    <span class="cm"># Retry on failure</span>
+    proxy_next_upstream error timeout;
+    proxy_next_upstream_tries <span class="num">3</span>;
+  }
+}
+</pre>
+    </div>
+  </div>
+
+  <!-- Tools -->
+  <div class="section" id="tools">
+    <div class="section-label">05 — Tools Comparison</div>
+    <h2 class="section-title">Popular Load Balancers</h2>
+
+    <table class="compare-table">
+      <tr><th>Tool</th><th>Type</th><th>Layer</th><th>Performance</th><th>কখন ব্যবহার</th></tr>
+      <tr><td>Nginx</td><td>Open Source</td><td>L7</td><td class="tag-yes">Excellent</td><td>Most web apps, reverse proxy</td></tr>
+      <tr><td>HAProxy</td><td>Open Source</td><td>L4 + L7</td><td class="tag-yes">Industry Best</td><td>High performance, TCP apps</td></tr>
+      <tr><td>AWS ALB</td><td>Managed Cloud</td><td>L7</td><td class="tag-yes">Excellent</td><td>AWS deployments, microservices</td></tr>
+      <tr><td>AWS NLB</td><td>Managed Cloud</td><td>L4</td><td class="tag-yes">Ultra Fast</td><td>Ultra-low latency, TCP/UDP</td></tr>
+      <tr><td>Cloudflare LB</td><td>CDN + LB</td><td>L7</td><td class="tag-yes">Global</td><td>Global apps, DDoS protection</td></tr>
+      <tr><td>Traefik</td><td>Open Source</td><td>L7</td><td class="tag-med">Good</td><td>Kubernetes, Docker containers</td></tr>
+    </table>
+  </div>
+
+  <!-- Code -->
+  <div class="section" id="code">
+    <div class="section-label">06 — Code Examples</div>
+    <h2 class="section-title">Load Balancing Code</h2>
+
+    <h3 class="sub-title">Python — Custom Round Robin Implementation</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Python</span><span class="code-file">load_balancer.py</span></div>
+      <pre><span class="kw">from</span> itertools <span class="kw">import</span> cycle
+<span class="kw">from</span> threading <span class="kw">import</span> Lock
+<span class="kw">import</span> requests
+
+<span class="kw">class</span> <span class="fn">RoundRobinLoadBalancer</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, servers: list):
+        self.servers = [s <span class="kw">for</span> s <span class="kw">in</span> servers]
+        self.healthy = servers.copy()
+        self.pool = cycle(self.healthy)
+        self.lock = Lock()
+
+    <span class="kw">def</span> <span class="fn">get_server</span>(self):
+        <span class="str">"""Get next healthy server"""</span>
+        <span class="kw">with</span> self.lock:
+            <span class="kw">if not</span> self.healthy:
+                <span class="kw">raise</span> <span class="fn">Exception</span>(<span class="str">"No healthy servers!"</span>)
+            <span class="kw">return</span> <span class="fn">next</span>(self.pool)
+
+    <span class="kw">def</span> <span class="fn">health_check</span>(self):
+        <span class="str">"""Check all servers health"""</span>
+        newly_healthy = []
+        <span class="kw">for</span> server <span class="kw">in</span> self.servers:
+            <span class="kw">try</span>:
+                resp = requests.<span class="fn">get</span>(f<span class="str">"{server}/health"</span>, timeout=<span class="num">2</span>)
+                <span class="kw">if</span> resp.status_code == <span class="num">200</span>:
+                    newly_healthy.<span class="fn">append</span>(server)
+            <span class="kw">except</span>:
+                <span class="fn">print</span>(f<span class="str">⚠️ {server} unhealthy, removing</span>)
+
+        <span class="kw">with</span> self.lock:
+            self.healthy = newly_healthy
+            self.pool = cycle(self.healthy)
+
+<span class="cm"># Usage</span>
+lb = <span class="fn">RoundRobinLoadBalancer</span>([
+    <span class="str">"http://server1:3000"</span>,
+    <span class="str">"http://server2:3000"</span>,
+    <span class="str">"http://server3:3000"</span>,
+])
+
+<span class="cm"># Proxy a request</span>
+<span class="kw">def</span> <span class="fn">proxy_request</span>(path, method=<span class="str">'GET'</span>, **kwargs):
+    server = lb.<span class="fn">get_server</span>()
+    url = f<span class="str">"{server}{path}"</span>
+    <span class="fn">print</span>(f<span class="str">f"→ Routing to: {server}"</span>)
+    <span class="kw">return</span> requests.<span class="fn">request</span>(method, url, **kwargs)</pre>
+    </div>
+
+    <h3 class="sub-title">Node.js — Least Connections Algorithm</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Node.js</span><span class="code-file">leastConnections.js</span></div>
+      <pre><span class="kw">class</span> <span class="fn">LeastConnectionsLB</span> {
+  <span class="fn">constructor</span>(servers) {
+    <span class="cm">// Track connection count per server</span>
+    this.servers = servers.<span class="fn">map</span>(s => ({
+      url: s,
+      connections: <span class="num">0</span>,
+      healthy: <span class="kw">true</span>
+    }));
+  }
+
+  <span class="fn">getServer</span>() {
+    <span class="kw">const</span> available = this.servers.<span class="fn">filter</span>(s => s.healthy);
+    <span class="kw">if</span> (!available.length) <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">'No servers!'</span>);
+
+    <span class="cm">// Pick server with minimum active connections</span>
+    <span class="kw">return</span> available.<span class="fn">reduce</span>((min, s) =>
+      s.connections < min.connections ? s : min
+    );
+  }
+
+  <span class="kw">async</span> <span class="fn">forward</span>(req, res) {
+    <span class="kw">const</span> server = this.<span class="fn">getServer</span>();
+    server.connections++;   <span class="cm">// Track active</span>
+
+    <span class="kw">try</span> {
+      <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`</span>${server.url}${req.url}<span class="str">`</span>);
+      res.<span class="fn">send</span>(<span class="kw">await</span> response.<span class="fn">text</span>());
+    } <span class="kw">finally</span> {
+      server.connections--;  <span class="cm">// Release</span>
+    }
+  }
+}
+
+<span class="kw">const</span> lb = <span class="kw">new</span> <span class="fn">LeastConnectionsLB</span>([
+  <span class="str">'http://server1:3001'</span>,
+  <span class="str">'http://server2:3001'</span>,
+  <span class="str">'http://server3:3001'</span>
+]);</pre>
+    </div>
+  </div>
+
+  <!-- Real World -->
+  <div class="section" id="usecases">
+    <div class="section-label">07 — Real World</div>
+    <h2 class="section-title">Real World Use Cases</h2>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">🎵 Spotify</div>
+        <p>AWS ALB দিয়ে microservices এর মধ্যে traffic route করে। Audio streaming, user data, playlist — সব আলাদা service এ route হয়।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🛍️ Shopify</div>
+        <p>Black Friday তে millions of requests। Nginx + HAProxy combination। Least connections algorithm use করে DB heavy requests handle করে।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🎥 Netflix</div>
+        <p>AWS NLB (Layer 4) video streaming এর জন্য — ultra low latency দরকার। AWS ALB (Layer 7) API routing এর জন্য।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🏦 Banks</div>
+        <p>IP Hash algorithm ব্যবহার করে — same user কে সবসময় same server এ route করে session consistency maintain করতে।</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interview -->
+  <div class="section" id="interview">
+    <div class="section-label">08 — Interview Prep</div>
+    <h2 class="section-title">Common Interview Questions</h2>
+    <div class="info-box concept">
+      <div class="box-label">❓ Q1: L4 vs L7 কখন কোনটা use করবে?</div>
+      <strong>উত্তর:</strong> L4 ব্যবহার করো — ultra-low latency দরকার হলে, non-HTTP protocol (game server, real-time chat), simple TCP traffic। L7 ব্যবহার করো — path-based routing, SSL termination, rate limiting, microservices। সাধারণত web app এ L7 recommended।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">❓ Q2: Sticky Session কী এবং কেন problem?</div>
+      <strong>উত্তর:</strong> Sticky session (IP Hash) মানে same user সবসময় same server এ যায়। Problem: সেই server down হলে user এর session হারায়। Better solution: Session data Redis এ store করো — তাহলে যেকোনো server session access করতে পারবে।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">❓ Q3: Load Balancer নিজে single point of failure না?</div>
+      <strong>উত্তর:</strong> হ্যাঁ এটা একটা valid concern। Solution: Active-Passive (একটা primary, একটা standby) বা Active-Active (দুটোই simultaneously serve করে) LB setup। Cloud providers (AWS ALB) automatically highly available হয়।
+    </div>
+  </div>
+
+  <!-- MCQ -->
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🧠</span>
+      <h2>MCQ Quiz — Load Balancing</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">Layer 7 Load Balancer এর সবচেয়ে বড় advantage কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Layer 4 এর চেয়ে faster</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> কম memory use করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> URL, header, cookie দেখে intelligent routing করতে পারে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> শুধু TCP protocol support করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — L7 LB HTTP content পড়তে পারে বলে content-based routing possible: /api/* → API server, /images/* → static server। এটাই L4 এর চেয়ে বড় advantage।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">Round Robin algorithm এর সবচেয়ে বড় limitation কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Implement করা কঠিন</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Server এর actual load/capacity consider করে না</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> শুধু ২টা server support করে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> SSL support করে না</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Round Robin সমানভাবে ভাগ করে, কিন্তু যদি একটা server slow request handle করছে এবং অন্যটা fast — তবুও সমান requests পাবে। Least Connections এই সমস্যা solve করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">Session persistence maintain করতে কোন load balancing algorithm উপযুক্ত?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> IP Hash</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Round Robin</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Least Connections</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Random</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — IP Hash same client কে সবসময় same server এ route করে। এতে session data maintain হয়। কিন্তু better solution হলো Redis এ session store করা — তাহলে যেকোনো server handle করতে পারবে।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">Least Connections algorithm কোন situation এ সবচেয়ে ভালো কাজ করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> সব requests একই সময় নেয়</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Server গুলো সব একই capacity এর</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Simple static file serving</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Variable request duration, যেমন DB-heavy বা file upload</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Least Connections সেই server কে request দেয় যেটায় সবচেয়ে কম active connection আছে। Long-running requests (DB query, file upload) এর ক্ষেত্রে এটা সবচেয়ে balanced distribution দেয়।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">Health check কী করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Server এর CPU usage monitor করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Server alive কিনা check করে এবং unhealthy server কে traffic পাঠানো বন্ধ করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Slow server কে speed up করে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Server এর memory সাফ করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Load Balancer periodically /health endpoint এ request করে। Server respond না করলে বা error দিলে সেই server কে rotation থেকে বাদ দেওয়া হয়। Server ঠিক হলে আবার add হয়।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">SSL Termination কোন layer এ হয়?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Layer 4</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Layer 3</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Layer 7</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Layer 2</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — SSL Termination মানে Load Balancer HTTPS request decode করে এবং backend servers এ plain HTTP পাঠায়। এটা L7 feature। Backend servers এ SSL overhead নেই — শুধু LB এ certificate manage করতে হয়।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">Load Balancer নিজে single point of failure এর সমস্যা কীভাবে solve করা যায়?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Active-Active বা Active-Passive Load Balancer setup</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> আরো বেশি backend server add করা</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Cache ব্যবহার করা</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Database replicate করা</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — LB নিজেই fail করতে পারে। Solution: Active-Passive (primary LB fail হলে standby নেয়) বা Active-Active (দুটো LB simultaneously traffic handle করে)। AWS ALB এটা automatically করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">Ultra-low latency video streaming এর জন্য কোন Load Balancer টাইপ সবচেয়ে উপযুক্ত?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> AWS ALB (Application Load Balancer)</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Nginx (HTTP)</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Traefik</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> AWS NLB (Network Load Balancer)</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — AWS NLB Layer 4 এ কাজ করে, HTTP overhead নেই। Ultra-low latency (microseconds) দেয়। Video streaming, gaming এর জন্য perfect। Netflix এই কারণেই streaming এ NLB use করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">Weighted Round Robin এ Server A weight=3, Server B weight=1 হলে ৪টা request এ কীভাবে distribute হবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> A=2, B=2</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> A=3, B=1</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> A=4, B=0</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> A=1, B=3</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Weighted Round Robin এ weight ratio অনুযায়ী বিভাজন হয়। A:B = 3:1 মানে ৪টার মধ্যে A পাবে ৩টা, B পাবে ১টা। বড় server বেশি load handle করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">Microservices architecture এ /api/users এবং /api/products আলাদা service এ route করতে কোন load balancer use করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> L4 Load Balancer</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> DNS Round Robin</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> L7 Load Balancer (path-based routing)</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> IP Hash Load Balancer</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Path-based routing শুধু L7 LB করতে পারে কারণ সে HTTP URL পড়তে পারে। /api/users → User Service, /api/products → Product Service। এটাই microservices এর core pattern।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT &amp; CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <!-- Assignment -->
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ২-৩ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <p style="margin-bottom:16px; font-size:14px; color:#94a3b8;">নিচের tasks গুলো complete করো।</p>
+    <ul class="task-list">
+      <li>
+        <strong>Algorithm Selection:</strong> নিচের ৩টা scenario তে কোন LB algorithm use করবে এবং কেন বলো: (ক) Online exam platform — ৫০,০০০ students একসাথে submit করছে (খ) Video call app — same user এর সব packets same server এ যাওয়া দরকার (গ) E-commerce — product page গুলো কিছু fast কিছু slow (image heavy)।
+      </li>
+      <li>
+        <strong>Nginx Config লেখো:</strong> ৪টা backend server এর জন্য Nginx load balancer config লেখো। Requirements: least_conn algorithm, server 1 ও 2 এর weight=3, server 3 ও 4 এর weight=1, health check এর জন্য max_fails=3।
+      </li>
+      <li>
+        <strong>Diagram বানাও:</strong> একটা e-commerce site এর load balancing architecture diagram আঁকো (draw.io বা excalidraw)। Include করো: Users → L7 LB → [Product Service, Cart Service, Auth Service] → [Redis Cache] → [Database]।
+      </li>
+      <li>
+        <strong>Research:</strong> AWS ALB এবং AWS NLB এর pricing compare করো। একটা medium-size app এর জন্য monthly cost কত হতে পারে? AWS calculator ব্যবহার করো।
+      </li>
+      <li>
+        <strong>Code Reading:</strong> উপরে দেওয়া Python RoundRobin code টা পড়ো এবং বলো: কীভাবে LeastConnections implement করবে? health_check method কে periodic করতে (প্রতি ৩০ seconds) কী করবে?
+      </li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>Algorithm selection justification (৩ scenario)</li>
+        <li>Nginx config file</li>
+        <li>Architecture diagram</li>
+        <li>AWS pricing comparison</li>
+        <li>Code modification plan</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project -->
+  <div class="project-section" id="project">
+    <div class="project-header">
+      <span style="font-size:24px">🚀</span>
+      <h2>Hands-On Project Task</h2>
+    </div>
+    <div class="project-body">
+      <h3 style="font-family:'Fraunces',serif; font-size:18px; margin-bottom:16px; color:#f1f5f9;">Docker + Nginx Load Balancer</h3>
+      <p style="font-size:14px; color:#94a3b8; margin-bottom:20px;">Nginx দিয়ে ৩টা Node.js server এ load balance করো এবং algorithms compare করো।</p>
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-circle">1</div>
+          <div class="step-content">
+            <h4>Node.js server বানাও</h4>
+            <p>প্রতিটা server তার নাম এবং request count return করবে। Artificial delay add করো — Server 1: 10ms, Server 2: 100ms, Server 3: 500ms।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">2</div>
+          <div class="step-content">
+            <h4>Round Robin config করো</h4>
+            <p>Nginx default (round robin) দিয়ে ১০০ requests পাঠাও। কোন server কতটা পেলো count করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">3</div>
+          <div class="step-content">
+            <h4>Least Connections config করো</h4>
+            <p>nginx.conf এ <code>least_conn;</code> add করো এবং একই ১০০ requests পাঠাও। Distribution কীভাবে বদলালো?</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">4</div>
+          <div class="step-content">
+            <h4>Health Check test করো</h4>
+            <p>একটা server <code>docker stop</code> করো। Request করো — দেখো LB automatically অন্য server এ route করছে কিনা।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">5</div>
+          <div class="step-content">
+            <h4>Comparison report লেখো</h4>
+            <p>Round Robin vs Least Connections এ response time এর পার্থক্য compare করো। কোনটা better এবং কেন?</p>
+          </div>
+        </div>
+      </div>
+      <div class="info-box tip" style="margin-top:16px">
+        <div class="box-label">🎯 এটা করলে যা শিখবে</div>
+        Algorithm এর পার্থক্য practically দেখবে। Nginx config লিখতে শিখবে। Health check কীভাবে কাজ করে সেটা নিজে experience করবে। Interview তে "আমি actually এটা implement করেছি" বলতে পারবে।
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-label">Lesson Summary</div>
+    <h2 class="section-title">আজকে যা শিখলাম</h2>
+    <table class="compare-table">
+      <tr><th>Concept</th><th>এক লাইনে</th></tr>
+      <tr><td>Load Balancer</td><td>Traffic কে multiple servers এ distribute করে</td></tr>
+      <tr><td>L4 LB</td><td>IP + Port দেখে route করে — ultra fast</td></tr>
+      <tr><td>L7 LB</td><td>HTTP content দেখে route করে — smart</td></tr>
+      <tr><td>Round Robin</td><td>একে একে সব server এ — simple, equal</td></tr>
+      <tr><td>Least Connections</td><td>কম busy server কে — variable request এ better</td></tr>
+      <tr><td>IP Hash</td><td>Same user → same server — session persistence</td></tr>
+      <tr><td>Health Check</td><td>Dead server automatically বাদ দাও</td></tr>
+    </table>
+  </div>
+
+  <div class="next-cta" onclick="window.location='phase2-topic3-message-queues.html'">
+    <div>
+      <div class="next-label">Next Topic →</div>
+      <div class="next-title">📨 Message Queues & Event Streaming (Kafka, RabbitMQ)</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+
+</div>
+</main>
+
+<script>
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  document.getElementById('progressFill').style.width = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight) * 100) + '%';
+});
+let answered = {};
+document.querySelectorAll('.option').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const block = this.closest('.question-block');
+    const qId = Array.from(document.querySelectorAll('.question-block')).indexOf(block);
+    if (answered[qId]) return;
+    answered[qId] = this.dataset.val;
+    block.querySelectorAll('.option').forEach(o => {
+      o.style.pointerEvents = 'none';
+      if (o.dataset.val === block.dataset.correct) o.classList.add('correct');
+      else if (o.dataset.val === this.dataset.val) o.classList.add('wrong');
+    });
+    block.querySelector('.explanation').classList.add('visible');
+  });
+});
+function submitMCQ() {
+  let correct = 0;
+  const blocks = document.querySelectorAll('.question-block');
+  blocks.forEach((block, i) => { if (answered[i] === block.dataset.correct) correct++; });
+  if (blocks.length - Object.keys(answered).length > 0) { alert(`এখনও ${blocks.length - Object.keys(answered).length}টা উত্তর বাকি!`); return; }
+  document.getElementById('scoreDisplay').textContent = correct;
+  const banner = document.getElementById('resultBanner');
+  banner.classList.add('visible');
+  banner.classList.add(correct >= 7 ? 'pass' : 'fail');
+  banner.textContent = correct >= 7 ? `🎉 দারুণ! ${correct}/10 সঠিক!` : `📖 ${correct}/10 সঠিক। আবার পড়ো।`;
+}
+document.querySelectorAll('.nav-item[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => { e.preventDefault(); document.getElementById(link.getAttribute('href').slice(1))?.scrollIntoView({behavior:'smooth'}); });
+});
+</script>
+</body>
+</html>

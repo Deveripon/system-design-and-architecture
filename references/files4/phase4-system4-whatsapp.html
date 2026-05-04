@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 4 · System 4 — WhatsApp / Chat System</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05080f; --surface: #090e1a; --card: #0c1220; --border: #162035; --border2: #1e2d4a;
+  --accent: #25d366; --accent-glow: rgba(37,211,102,0.15);
+  --green: #10b981; --green-glow: rgba(16,185,129,0.12);
+  --orange: #f97316; --red: #ef4444; --yellow: #eab308; --purple: #8b5cf6;
+  --text: #e2e8f0; --muted: #64748b; --muted2: #94a3b8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Sans Bengali', sans-serif; line-height: 1.7; font-size: 15px; }
+body::after { content:''; position:fixed; inset:0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events:none; z-index:999; opacity:0.4; }
+.sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: var(--surface); border-right: 1px solid var(--border); padding: 24px 0; overflow-y: auto; z-index: 100; }
+.sidebar-logo { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.sidebar-logo .phase-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; display: block; margin-bottom: 4px; }
+.sidebar-logo .course-title { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; line-height: 1.3; }
+.nav-section { padding: 0 12px; margin-bottom: 8px; }
+.nav-section-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); padding: 0 8px; margin-bottom: 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 4px; font-size: 13px; color: var(--muted2); cursor: pointer; transition: all 0.15s; text-decoration: none; }
+.nav-item:hover { background: var(--card); color: var(--text); }
+.nav-item.active { background: rgba(37,211,102,0.1); color: var(--accent); }
+.nav-item .nav-icon { font-size: 14px; flex-shrink:0; }
+.nav-item .nav-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); margin-left: auto; }
+.progress-bar { position: fixed; top: 0; left: 240px; right: 0; height: 2px; background: var(--border); z-index: 200; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #128c7e); width: 0%; transition: width 0.1s; }
+.main { margin-left: 240px; min-height: 100vh; }
+.content { max-width: 780px; margin: 0 auto; padding: 48px 40px 120px; }
+.topic-header { margin-bottom: 48px; }
+.breadcrumb { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.breadcrumb span { color: var(--accent); }
+.topic-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; display: block; }
+h1.topic-title { font-family: 'Fraunces', serif; font-size: clamp(32px, 5vw, 48px); font-weight: 900; line-height: 1.1; margin-bottom: 16px; background: linear-gradient(135deg, #fff 30%, #86efac); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.topic-meta { display: flex; gap: 16px; flex-wrap: wrap; }
+.meta-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 12px; border-radius: 2px; border: 1px solid; }
+.meta-chip.time { border-color: rgba(37,211,102,0.3); color: var(--accent); background: var(--accent-glow); }
+.meta-chip.level { border-color: rgba(16,185,129,0.3); color: var(--green); background: var(--green-glow); }
+.meta-chip.type { border-color: rgba(139,92,246,0.3); color: var(--purple); background: rgba(139,92,246,0.08); }
+.section { margin-bottom: 48px; scroll-margin-top: 24px; }
+.section-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+h2.section-title { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 700; margin-bottom: 16px; color: #f1f5f9; }
+h3.sub-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; margin: 24px 0 10px; color: #cbd5e1; }
+p { margin-bottom: 14px; color: #cbd5e1; }
+.info-box { border-radius: 6px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; font-size: 14px; }
+.info-box.concept { background: rgba(37,211,102,0.06); border-color: var(--accent); }
+.info-box.warning { background: rgba(249,115,22,0.06); border-color: var(--orange); }
+.info-box.tip { background: rgba(16,185,129,0.06); border-color: var(--green); }
+.info-box.important { background: rgba(234,179,8,0.06); border-color: var(--yellow); }
+.info-box .box-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; font-weight: 700; }
+.info-box.concept .box-label { color: var(--accent); }
+.info-box.warning .box-label { color: var(--orange); }
+.info-box.tip .box-label { color: var(--green); }
+.info-box.important .box-label { color: var(--yellow); }
+.compare-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+.compare-table th { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; padding: 12px 16px; text-align: left; background: var(--card); border-bottom: 2px solid var(--border2); color: var(--muted2); }
+.compare-table td { padding: 11px 16px; border-bottom: 1px solid var(--border); color: #94a3b8; vertical-align: top; line-height: 1.6; }
+.compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+.compare-table td:first-child { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text); white-space: nowrap; }
+.tag-yes { color: var(--green); font-weight: 600; }
+.tag-no { color: var(--red); }
+.tag-med { color: var(--yellow); }
+.diagram { background: var(--card); border: 1px solid var(--border2); border-radius: 8px; padding: 30px 20px; margin: 24px 0; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; overflow-x: auto; }
+.diagram svg { max-width: 100%; }
+.code-block { background: #030608; border: 1px solid var(--border2); border-radius: 6px; margin: 20px 0; overflow: hidden; }
+.code-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--card); border-bottom: 1px solid var(--border); }
+.code-lang { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+.code-file { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+pre { padding: 20px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.8; color: #e2e8f0; }
+.kw { color: #93c5fd; } .fn { color: #6ee7b7; } .str { color: #fcd34d; } .cm { color: #475569; font-style: italic; } .num { color: #f9a8d4; } .var { color: #e2e8f0; }
+.req-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.req-card { background: var(--card); border: 1px solid var(--border2); border-radius: 6px; padding: 20px; }
+.req-card .r-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
+.req-card.functional .r-title { color: var(--accent); }
+.req-card.nonfunc .r-title { color: var(--purple); }
+.req-card ul { list-style: none; padding: 0; }
+.req-card ul li { font-size: 13px; color: var(--muted2); padding: 5px 0 5px 18px; position: relative; border-bottom: 1px solid var(--border); font-family: 'Noto Sans Bengali', sans-serif; }
+.req-card ul li:last-child { border-bottom: none; }
+.req-card ul li::before { content: '→'; position: absolute; left: 0; color: var(--muted); font-size: 12px; }
+.estimation-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0; }
+.est-card { background: var(--card); border: 1px solid var(--border2); border-radius: 6px; padding: 16px; text-align: center; }
+.est-num { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 700; color: var(--accent); display: block; margin-bottom: 4px; }
+.est-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+.tech-stack { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+.tech-tag { font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 6px 14px; border-radius: 3px; border: 1px solid; }
+.tech-tag.db { border-color: rgba(37,211,102,0.3); color: var(--accent); background: var(--accent-glow); }
+.tech-tag.cache { border-color: rgba(234,179,8,0.3); color: var(--yellow); background: rgba(234,179,8,0.06); }
+.tech-tag.lang { border-color: rgba(16,185,129,0.3); color: var(--green); background: var(--green-glow); }
+.tech-tag.infra { border-color: rgba(139,92,246,0.3); color: var(--purple); background: rgba(139,92,246,0.08); }
+.tech-tag.queue { border-color: rgba(249,115,22,0.3); color: var(--orange); background: rgba(249,115,22,0.08); }
+.tradeoff-row { display: flex; gap: 12px; margin: 10px 0; align-items: flex-start; }
+.tradeoff-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 10px; border-radius: 2px; flex-shrink: 0; }
+.tradeoff-label.pro { background: rgba(37,211,102,0.1); color: var(--accent); border: 1px solid rgba(37,211,102,0.2); }
+.tradeoff-label.con { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+.tradeoff-text { font-size: 13px; color: var(--muted2); line-height: 1.6; font-family: 'Noto Sans Bengali', sans-serif; }
+.mcq-section { background: var(--surface); border: 1px solid var(--border2); border-radius: 8px; padding: 28px; margin: 30px 0; }
+.mcq-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.mcq-icon { font-size: 24px; }
+.mcq-header h2 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; }
+.mcq-score { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--muted); }
+.mcq-score span { color: var(--accent); font-size: 18px; font-weight: 700; }
+.question-block { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+.question-block:last-of-type { border-bottom: none; margin-bottom: 0; }
+.q-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.q-text { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.5; font-family: 'Noto Sans Bengali', sans-serif; }
+.options { display: flex; flex-direction: column; gap: 8px; }
+.option { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-radius: 4px; border: 1px solid var(--border); cursor: pointer; transition: all 0.15s; font-size: 14px; color: var(--muted2); font-family: 'Noto Sans Bengali', sans-serif; }
+.option:hover { border-color: var(--accent); color: var(--text); background: var(--accent-glow); }
+.option.correct { border-color: var(--green); background: var(--green-glow); color: #6ee7b7; }
+.option.wrong { border-color: var(--red); background: rgba(239,68,68,0.08); color: #fca5a5; }
+.option-key { font-family: 'JetBrains Mono', monospace; font-size: 11px; background: var(--border2); padding: 2px 7px; border-radius: 2px; flex-shrink: 0; margin-top: 1px; }
+.explanation { display: none; margin-top: 12px; padding: 12px 14px; background: rgba(16,185,129,0.06); border-left: 2px solid var(--green); border-radius: 0 4px 4px 0; font-size: 13px; color: #94a3b8; line-height: 1.7; font-family: 'Noto Sans Bengali', sans-serif; }
+.explanation.visible { display: block; }
+.explanation strong { color: var(--green); }
+.mcq-submit { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; padding: 12px 24px; background: var(--accent); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; letter-spacing: 1px; transition: all 0.15s; }
+.mcq-submit:hover { background: #128c7e; transform: translateY(-1px); }
+.result-banner { display: none; margin-top: 20px; padding: 16px 20px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; }
+.result-banner.visible { display: block; }
+.result-banner.pass { background: var(--green-glow); border: 1px solid var(--green); color: var(--green); }
+.result-banner.fail { background: rgba(249,115,22,0.08); border: 1px solid var(--orange); color: var(--orange); }
+.assignment-section { background: linear-gradient(135deg, rgba(37,211,102,0.04), rgba(139,92,246,0.04)); border: 1px solid rgba(37,211,102,0.2); border-radius: 8px; padding: 28px; margin: 30px 0; }
+.assignment-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.assignment-icon { font-size: 28px; }
+.assignment-header h2 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; }
+.assignment-meta { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.a-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 10px; border-radius: 2px; }
+.a-chip.time { background: rgba(234,179,8,0.1); color: var(--yellow); border: 1px solid rgba(234,179,8,0.2); }
+.a-chip.level { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.task-list { counter-reset: tasks; list-style: none; margin-bottom: 20px; }
+.task-list li { counter-increment: tasks; padding: 14px 14px 14px 50px; position: relative; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--muted2); line-height: 1.7; font-family: 'Noto Sans Bengali', sans-serif; }
+.task-list li:last-child { border-bottom: none; }
+.task-list li::before { content: counter(tasks); position: absolute; left: 14px; top: 14px; width: 24px; height: 24px; background: var(--accent-glow); border: 1px solid rgba(37,211,102,0.3); border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.task-list li strong { color: var(--text); }
+.deliverable-box { background: var(--card); border: 1px solid var(--border2); border-radius: 6px; padding: 16px 18px; margin-top: 16px; }
+.deliverable-box .d-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--purple); margin-bottom: 10px; }
+.deliverable-box ul { list-style: none; padding: 0; }
+.deliverable-box ul li { font-size: 13px; color: var(--muted2); padding: 4px 0 4px 18px; position: relative; font-family: 'Noto Sans Bengali', sans-serif; }
+.deliverable-box ul li::before { content: '◆'; position: absolute; left: 0; font-size: 8px; color: var(--purple); top: 6px; }
+.next-cta { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--border2); border-radius: 8px; padding: 20px 24px; margin-top: 48px; text-decoration: none; color: var(--text); transition: border-color 0.2s; cursor: pointer; }
+.next-cta:hover { border-color: var(--accent); }
+.next-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+.next-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; }
+.next-arrow { font-size: 24px; color: var(--accent); }
+@media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } .content { padding: 24px 16px 80px; } .req-grid, .estimation-grid { grid-template-columns: 1fr; } .progress-bar { left: 0; } }
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 04 · Real World Systems</span>
+    <div class="course-title">System Design<br>Mastery Course</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Phase 4 Systems</div>
+    <a href="#" class="nav-item"><span class="nav-icon">🔗</span><span>URL Shortener</span><span class="nav-num">01</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🐦</span><span>Twitter/X</span><span class="nav-num">02</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">📺</span><span>YouTube</span><span class="nav-num">03</span></a>
+    <a href="#" class="nav-item active"><span class="nav-icon">💬</span><span>WhatsApp</span><span class="nav-num">04</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🛒</span><span>Amazon</span><span class="nav-num">05</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🔍</span><span>Search</span><span class="nav-num">06</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🚗</span><span>Uber</span><span class="nav-num">07</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px">
+    <div class="nav-section-label">This Lesson</div>
+    <a href="#requirements" class="nav-item"><span class="nav-icon">📋</span><span>Requirements</span></a>
+    <a href="#estimation" class="nav-item"><span class="nav-icon">🔢</span><span>Estimation</span></a>
+    <a href="#architecture" class="nav-item"><span class="nav-icon">🏗️</span><span>Architecture</span></a>
+    <a href="#deepdive" class="nav-item"><span class="nav-icon">🔬</span><span>Deep Dive</span></a>
+    <a href="#database" class="nav-item"><span class="nav-icon">🗄️</span><span>Database</span></a>
+    <a href="#scaling" class="nav-item"><span class="nav-icon">📈</span><span>Scaling</span></a>
+    <a href="#techstack" class="nav-item"><span class="nav-icon">⚙️</span><span>Tech Stack</span></a>
+    <a href="#mcq" class="nav-item"><span class="nav-icon">✅</span><span>MCQ Test</span></a>
+    <a href="#assignment" class="nav-item"><span class="nav-icon">📝</span><span>Assignment</span></a>
+  </div>
+</nav>
+
+<main class="main">
+<div class="content">
+
+  <div class="topic-header" id="requirements">
+    <div class="breadcrumb">Phase 4 — Real World Systems <span>›</span> System 04</div>
+    <span class="topic-num">SYSTEM 04 / 07</span>
+    <h1 class="topic-title">WhatsApp /<br>Chat System</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ ৯০-১২০ মিনিট</span>
+      <span class="meta-chip level">📊 Junior Level</span>
+      <span class="meta-chip type">💬 Real-time Messaging</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Why This System</div>
+    <h2 class="section-title">Chat System-এর Unique Challenges</h2>
+    <p>WhatsApp-এ প্রতিদিন 100 billion messages send হয়। এই system-এ সবচেয়ে কঠিন সমস্যা হলো <strong>real-time delivery</strong> — message পাঠানো সাথে সাথে receiver পাবে, এমনকি receiver offline থাকলেও পরে পাবে।</p>
+    <div class="info-box concept">
+      <div class="box-label">📌 Core Challenge</div>
+      <strong>Push vs Pull:</strong> Traditional HTTP request-response কাজ করে না real-time messaging-এ। Receiver সব সময় "নতুন message আছে?" জিজ্ঞেস করতে পারে না। Server-ই push করতে হবে। এই জন্য <strong>WebSocket</strong> দরকার।
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Requirements</div>
+    <h2 class="section-title">Features কী কী?</h2>
+    <div class="req-grid">
+      <div class="req-card functional">
+        <div class="r-title">✅ Functional Requirements</div>
+        <ul>
+          <li>1-to-1 messaging</li>
+          <li>Group messaging (max 1000 members)</li>
+          <li>Online/offline status</li>
+          <li>Message delivery status (✓ ✓✓ 🔵)</li>
+          <li>Media sharing (image, video, file)</li>
+          <li>End-to-end encryption</li>
+          <li>Last seen timestamp</li>
+          <li>Message history</li>
+        </ul>
+      </div>
+      <div class="req-card nonfunc">
+        <div class="r-title">⚡ Non-Functional Requirements</div>
+        <ul>
+          <li>2 billion+ users</li>
+          <li>Message delivery < 500ms</li>
+          <li>No message loss ever</li>
+          <li>Offline message delivery (when comes online)</li>
+          <li>High availability 99.99%</li>
+          <li>End-to-end encrypted</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="estimation">
+    <div class="section-label">Back-of-Envelope Estimation</div>
+    <h2 class="section-title">WhatsApp Scale</h2>
+    <div class="estimation-grid">
+      <div class="est-card"><span class="est-num">2B</span><span class="est-label">Total Users</span></div>
+      <div class="est-card"><span class="est-num">100B</span><span class="est-label">Messages/Day</span></div>
+      <div class="est-card"><span class="est-num">1.15M</span><span class="est-label">Messages/sec</span></div>
+      <div class="est-card"><span class="est-num">500M</span><span class="est-label">Daily Active Users</span></div>
+      <div class="est-card"><span class="est-num">~100B</span><span class="est-label">WebSocket Connections</span></div>
+      <div class="est-card"><span class="est-num">~1KB</span><span class="est-label">Avg Message Size</span></div>
+    </div>
+    <div class="info-box important">
+      <div class="box-label">🔢 Interesting Fact</div>
+      WhatsApp মাত্র 50 engineers দিয়ে 450M users serve করত (2014 সালে)। Erlang language use করত — concurrent connections-এর জন্য world-class। এরপর Facebook $19 billion-এ কিনে নেয়।
+    </div>
+  </div>
+
+  <div class="section" id="architecture">
+    <div class="section-label">High Level Architecture</div>
+    <h2 class="section-title">Chat System Architecture</h2>
+
+    <div class="diagram">
+      <svg width="680" height="320" viewBox="0 0 680 320">
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#64748b"/></marker>
+          <marker id="arrG" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#25d366"/></marker>
+        </defs>
+
+        <!-- User A -->
+        <rect x="10" y="120" width="70" height="50" rx="4" fill="#0c1220" stroke="#25d366" stroke-width="1.5"/>
+        <text x="45" y="140" text-anchor="middle" fill="#25d366" font-family="JetBrains Mono" font-size="9">USER A</text>
+        <text x="45" y="153" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Online</text>
+        <text x="45" y="163" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="7">WebSocket</text>
+
+        <!-- WebSocket arrow -->
+        <path d="M 80 145 L 120 145" stroke="#25d366" stroke-width="2" marker-end="url(#arrG)"/>
+        <text x="100" y="140" text-anchor="middle" fill="#25d366" font-family="JetBrains Mono" font-size="7">WS</text>
+
+        <!-- Chat Server 1 -->
+        <rect x="120" y="100" width="100" height="90" rx="4" fill="#0c1220" stroke="#25d366" stroke-width="1.5"/>
+        <text x="170" y="125" text-anchor="middle" fill="#25d366" font-family="JetBrains Mono" font-size="9">CHAT</text>
+        <text x="170" y="138" text-anchor="middle" fill="#25d366" font-family="JetBrains Mono" font-size="9">SERVER 1</text>
+        <text x="170" y="155" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Holds User A's</text>
+        <text x="170" y="166" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">WS connection</text>
+        <text x="170" y="180" text-anchor="middle" fill="#475569" font-family="JetBrains Mono" font-size="7">Erlang/Go</text>
+
+        <!-- Arrow CS1 to MQ -->
+        <path d="M 220 145 L 260 145" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+
+        <!-- Message Queue -->
+        <rect x="260" y="115" width="100" height="60" rx="4" fill="#0c1220" stroke="#eab308" stroke-width="1.5"/>
+        <text x="310" y="138" text-anchor="middle" fill="#eab308" font-family="JetBrains Mono" font-size="9">MESSAGE</text>
+        <text x="310" y="151" text-anchor="middle" fill="#eab308" font-family="JetBrains Mono" font-size="9">QUEUE</text>
+        <text x="310" y="167" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Kafka / RabbitMQ</text>
+
+        <!-- Arrow MQ to CS2 -->
+        <path d="M 360 145 L 400 145" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+
+        <!-- Chat Server 2 -->
+        <rect x="400" y="100" width="100" height="90" rx="4" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="450" y="125" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="9">CHAT</text>
+        <text x="450" y="138" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="9">SERVER 2</text>
+        <text x="450" y="155" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Holds User B's</text>
+        <text x="450" y="166" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">WS connection</text>
+        <text x="450" y="180" text-anchor="middle" fill="#475569" font-family="JetBrains Mono" font-size="7">Erlang/Go</text>
+
+        <!-- Arrow CS2 to User B (online) -->
+        <path d="M 500 145 L 540 145" stroke="#3b82f6" stroke-width="2" marker-end="url(#arr)"/>
+        <text x="520" y="140" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="7">WS</text>
+
+        <!-- User B (online) -->
+        <rect x="540" y="120" width="70" height="50" rx="4" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="575" y="140" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="9">USER B</text>
+        <text x="575" y="153" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Online</text>
+        <text x="575" y="163" text-anchor="middle" fill="#25d366" font-family="JetBrains Mono" font-size="7">Gets msg!</text>
+
+        <!-- Offline scenario -->
+        <rect x="540" y="220" width="70" height="50" rx="4" fill="#0c1220" stroke="#64748b" stroke-width="1.5"/>
+        <text x="575" y="240" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">USER C</text>
+        <text x="575" y="253" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Offline</text>
+
+        <!-- Message DB -->
+        <rect x="260" y="230" width="100" height="50" rx="4" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="310" y="252" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="9">MSG DB</text>
+        <text x="310" y="268" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Cassandra</text>
+
+        <!-- Arrow MQ to DB -->
+        <path d="M 310 175 L 310 230" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <text x="325" y="205" fill="#64748b" font-family="JetBrains Mono" font-size="8">persist</text>
+
+        <!-- Presence Service -->
+        <rect x="120" y="240" width="100" height="40" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.2"/>
+        <text x="170" y="258" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="9">PRESENCE</text>
+        <text x="170" y="271" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Online status (Redis)</text>
+
+        <!-- Connection Service -->
+        <rect x="10" y="240" width="100" height="40" rx="4" fill="#0c1220" stroke="#f97316" stroke-width="1.2"/>
+        <text x="60" y="258" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="9">CONNECTION</text>
+        <text x="60" y="271" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Zookeeper/Redis</text>
+
+        <text x="10" y="310" fill="#64748b" font-family="JetBrains Mono" font-size="8">User C offline থাকলে → msg DB-তে stored → online হলে fetch</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section" id="deepdive">
+    <div class="section-label">Deep Dive</div>
+    <h2 class="section-title">Core Components বিস্তারিত</h2>
+
+    <h3 class="sub-title">🔌 WebSocket — Real-time-এর Secret</h3>
+    <p>HTTP request-response model real-time chat-এর জন্য suitable না। WebSocket একটা persistent bidirectional connection রাখে।</p>
+
+    <table class="compare-table">
+      <tr><th>Protocol</th><th>Connection</th><th>Direction</th><th>Latency</th><th>Chat Use?</th></tr>
+      <tr><td>HTTP Polling</td><td>New each time</td><td>Client → Server only</td><td class="tag-no">High (500ms+)</td><td class="tag-no">Terrible</td></tr>
+      <tr><td>Long Polling</td><td>Held open</td><td>Server can respond</td><td class="tag-med">Medium</td><td class="tag-med">Okay</td></tr>
+      <tr><td>Server-Sent Events</td><td>Persistent</td><td>Server → Client only</td><td class="tag-yes">Low</td><td class="tag-no">One-way only</td></tr>
+      <tr><td>WebSocket</td><td>Persistent</td><td>Both directions</td><td class="tag-yes">Very Low (< 50ms)</td><td class="tag-yes">✓ Perfect</td></tr>
+    </table>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Python</span>
+        <span class="code-file">chat_server.py</span>
+      </div>
+      <pre><span class="kw">import</span> asyncio
+<span class="kw">import</span> websockets
+<span class="kw">import</span> json
+
+<span class="cm"># Active connections: user_id → websocket</span>
+connections = {}
+
+<span class="kw">async def</span> <span class="fn">handle_connection</span>(websocket, path):
+    user_id = <span class="kw">await</span> authenticate(websocket)
+    
+    <span class="cm"># Connection register করো</span>
+    connections[user_id] = websocket
+    <span class="kw">await</span> redis.set(<span class="str">f"user:{user_id}:server"</span>, SERVER_ID)
+    <span class="kw">await</span> redis.set(<span class="str">f"user:{user_id}:online"</span>, <span class="str">"true"</span>)
+    
+    <span class="kw">try</span>:
+        <span class="kw">async for</span> raw_msg <span class="kw">in</span> websocket:
+            msg = json.loads(raw_msg)
+            <span class="kw">await</span> send_message(
+                sender_id=user_id,
+                receiver_id=msg[<span class="str">'to'</span>],
+                content=msg[<span class="str">'content'</span>]
+            )
+    <span class="kw">finally</span>:
+        <span class="cm"># Disconnect হলে cleanup</span>
+        <span class="kw">del</span> connections[user_id]
+        <span class="kw">await</span> redis.set(<span class="str">f"user:{user_id}:online"</span>, <span class="str">"false"</span>)
+        <span class="kw">await</span> redis.set(<span class="str">f"user:{user_id}:last_seen"</span>, now())
+
+<span class="kw">async def</span> <span class="fn">send_message</span>(sender_id, receiver_id, content):
+    msg_id = generate_unique_id()
+    
+    <span class="cm"># 1. DB-তে persist করো আগে</span>
+    <span class="kw">await</span> db.save_message(msg_id, sender_id, receiver_id, content)
+    
+    <span class="cm"># 2. Receiver কোন server-এ? Redis check করো</span>
+    receiver_server = <span class="kw">await</span> redis.get(<span class="str">f"user:{receiver_id}:server"</span>)
+    
+    <span class="kw">if</span> receiver_server == SERVER_ID:
+        <span class="cm"># Same server-এ আছে → direct push</span>
+        ws = connections.get(receiver_id)
+        <span class="kw">if</span> ws:
+            <span class="kw">await</span> ws.send(json.dumps({<span class="str">"msg_id"</span>: msg_id, <span class="str">"content"</span>: content}))
+    <span class="kw">else</span>:
+        <span class="cm"># Different server → Kafka-তে route করো</span>
+        <span class="kw">await</span> kafka.publish(<span class="str">f"chat:{receiver_server}"</span>, {
+            <span class="str">"receiver_id"</span>: receiver_id, <span class="str">"msg_id"</span>: msg_id
+        })</pre>
+    </div>
+
+    <h3 class="sub-title">📱 Message Delivery Status — ✓ ✓✓ 🔵</h3>
+    <table class="compare-table">
+      <tr><th>Status</th><th>Meaning</th><th>When?</th></tr>
+      <tr><td>✓ (single tick)</td><td>Server received</td><td>Message DB-তে save হলে</td></tr>
+      <tr><td>✓✓ (double tick)</td><td>Delivered to device</td><td>Receiver-এর phone-এ পৌঁছালে</td></tr>
+      <tr><td>🔵 (blue tick)</td><td>Read</td><td>Receiver message open করলে</td></tr>
+    </table>
+
+    <h3 class="sub-title">👥 Group Chat — Multi-receiver Problem</h3>
+    <div class="info-box warning">
+      <div class="box-label">⚠️ Group Chat Fanout</div>
+      1000 member group-এ 1 message → 999 users-এ deliver করতে হবে। Fan-out problem! Solution: Message DB-তে 1 copy রাখো, per-user read status track করো। Message copy করো না — pointer রাখো।
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">SQL</span>
+        <span class="code-file">schema.sql — Group Chat</span>
+      </div>
+      <pre><span class="cm">-- Group messages: 1 row per message (not per user)</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">group_messages</span> (
+  msg_id       <span class="kw">UUID PRIMARY KEY</span>,
+  group_id     <span class="kw">UUID</span>,
+  sender_id    <span class="kw">UUID</span>,
+  content      <span class="kw">TEXT</span>,
+  sent_at      <span class="kw">TIMESTAMP</span>
+);
+
+<span class="cm">-- Per-user delivery tracking (not message copy)</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">message_receipts</span> (
+  msg_id       <span class="kw">UUID</span>,
+  user_id      <span class="kw">UUID</span>,
+  delivered_at <span class="kw">TIMESTAMP</span>,
+  read_at      <span class="kw">TIMESTAMP</span>,
+  <span class="kw">PRIMARY KEY</span> (msg_id, user_id)
+);
+<span class="cm">-- 1000 member group = 1 msg + 999 receipt rows (not 1000 msg copies)</span></pre>
+    </div>
+  </div>
+
+  <div class="section" id="database">
+    <div class="section-label">Database Choice</div>
+    <h2 class="section-title">কোন Database কিসের জন্য?</h2>
+    <table class="compare-table">
+      <tr><th>Data</th><th>Database</th><th>Why?</th></tr>
+      <tr><td>Messages</td><td>Cassandra (HBase/Scylla)</td><td>Append-only, time-series, massive scale</td></tr>
+      <tr><td>User profiles</td><td>MySQL</td><td>Structured, ACID</td></tr>
+      <tr><td>Online status</td><td>Redis (TTL)</td><td>In-memory, fast, TTL for "last seen"</td></tr>
+      <tr><td>User-server mapping</td><td>Redis</td><td>Which server holds user's connection</td></tr>
+      <tr><td>Media files</td><td>S3 + CDN</td><td>Object storage</td></tr>
+      <tr><td>Message search</td><td>Elasticsearch</td><td>Full-text search in chat history</td></tr>
+    </table>
+    <div class="info-box tip">
+      <div class="box-label">💡 Message Schema in Cassandra</div>
+      Partition key = <strong>(chat_id)</strong>, Clustering key = <strong>(message_id DESC)</strong>। এতে latest messages সামনে আসে। Pagination করা সহজ। Time-ordered messages efficiently store হয়।
+    </div>
+  </div>
+
+  <div class="section" id="scaling">
+    <div class="section-label">Scaling Decisions</div>
+    <h2 class="section-title">Chat System Scale করার Strategies</h2>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label pro">Strategy</span>
+      <div class="tradeoff-text"><strong>Horizontal Chat Servers:</strong> লক্ষ লক্ষ WebSocket connections ধরে রাখতে অনেক Chat servers। Load balancer user-কে consistent server-এ route করে (sticky sessions)।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label pro">Strategy</span>
+      <div class="tradeoff-text"><strong>Service Discovery via Zookeeper:</strong> প্রতিটা Chat server register হয় Zookeeper-এ। User কোন server-এ connected তা Redis-এ cache থাকে।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label pro">Strategy</span>
+      <div class="tradeoff-text"><strong>Kafka for Cross-server Routing:</strong> User A (Server 1) → User B (Server 5)। Kafka topic per server। Server 5-এর Kafka topic-এ message publish → Server 5 consume করে User B-কে push।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label con">Trade-off</span>
+      <div class="tradeoff-text"><strong>End-to-End Encryption:</strong> E2E encryption মানে server message decrypt করতে পারে না। Spam detection, moderation কঠিন হয়। Privacy vs Safety trade-off।</div>
+    </div>
+  </div>
+
+  <div class="section" id="techstack">
+    <div class="section-label">Full Tech Stack</div>
+    <h2 class="section-title">WhatsApp-এর Real Technologies</h2>
+    <h3 class="sub-title">Backend</h3>
+    <div class="tech-stack">
+      <span class="tech-tag lang">Erlang (Chat Servers)</span>
+      <span class="tech-tag lang">Go (API Services)</span>
+      <span class="tech-tag infra">WebSocket (Real-time)</span>
+      <span class="tech-tag infra">Nginx + HAProxy</span>
+    </div>
+    <h3 class="sub-title">Data</h3>
+    <div class="tech-stack">
+      <span class="tech-tag db">Cassandra (Messages)</span>
+      <span class="tech-tag db">MySQL (Users)</span>
+      <span class="tech-tag cache">Redis (Presence + Routing)</span>
+      <span class="tech-tag db">S3 (Media)</span>
+    </div>
+    <h3 class="sub-title">Infrastructure</h3>
+    <div class="tech-stack">
+      <span class="tech-tag queue">Apache Kafka</span>
+      <span class="tech-tag infra">Zookeeper (Service Discovery)</span>
+      <span class="tech-tag infra">Signal Protocol (E2E Encryption)</span>
+      <span class="tech-tag infra">Kubernetes</span>
+    </div>
+  </div>
+
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🎯</span>
+      <h2>MCQ Test — WhatsApp/Chat System</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">Real-time chat-এর জন্য HTTP polling কেন খারাপ?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> HTTP too slow</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> HTTP doesn't support text</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> HTTP too expensive</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> প্রতিবার নতুন connection, high latency, server-side push নেই</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Polling-এ client বারবার "নতুন message আছে?" জিজ্ঞেস করে। প্রতিবার TCP connection = overhead। Message আসলেও পরের poll পর্যন্ত wait। WebSocket একটা persistent connection রাখে — message আসলেই server push করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">User A (Chat Server 1) → User B (Chat Server 5) message পাঠাবে কীভাবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Direct HTTP call Server 1 → Server 5</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Kafka/Message Queue দিয়ে route করো</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Database write করো, Server 5 poll করবে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Impossible — একই server-এ থাকতে হবে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Kafka topic per server। Server 1 → Kafka topic "server-5" → Server 5 consume করে → User B-কে push। এই pub/sub pattern দিয়ে cross-server messaging হয়। Direct HTTP call করলে tight coupling হয়।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">User-এর online/offline status কোথায় store করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Redis (with TTL)</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> MySQL</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Cassandra</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> File system</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Redis in-memory, millisecond read। TTL set করো — user disconnect হলে TTL expire হলে automatically "offline"। Heartbeat: every 30 sec Redis key refresh করো। DB-তে write করলে too many writes, too slow।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">User offline থাকলে তাকে message deliver করবে কীভাবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Message drop করে দাও</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Sender-কে error দাও</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Message DB-তে store, online হলে fetch করে push</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> SMS পাঠাও</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Persistent message store। User comes online → Chat server checks undelivered messages → pushes all pending। এটাই "offline message delivery"। Message কখনো drop হবে না।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">1000 member group chat-এ message store কীভাবে করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> 1000 copies — প্রতি user-এর জন্য</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> শুধু sender-এর কাছে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Broadcast করো, store করো না</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> 1 copy + per-user delivery receipt table</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — 1 message copy in group_messages table। 999 receipt rows in message_receipts table। এতে storage 1000x less। Delivery status per-user track হয়। WhatsApp এই approach use করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">WhatsApp Messages store করার জন্য কোন database best?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> MySQL</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Cassandra</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Redis</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> MongoDB</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Messages = append-only time-series data। Cassandra partition by chat_id, cluster by message_id desc। Massive write throughput। Facebook Messenger এবং WhatsApp দুটোই HBase/Cassandra use করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">WhatsApp কোন programming language-এ Chat Servers build করেছিল?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Erlang</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Java</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> C++</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Python</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Erlang massive concurrent connections-এর জন্য designed। Lightweight processes (actors), fault-tolerant। WhatsApp 50 engineers দিয়ে 450M users serve করত Erlang-এর কারণে। Telecom industry standard language।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">WhatsApp-এর End-to-End Encryption-এর trade-off কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Messages slow হয়</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Messages deliver হয় না</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Server message read করতে পারে না, spam detection কঠিন</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Battery বেশি খরচ হয়</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — E2E encryption মানে শুধু sender ও receiver decrypt করতে পারে। Server ciphertext দেখে। এতে user privacy বাড়ে কিন্তু spam, child abuse content detection impossible। Privacy vs Safety — ongoing debate।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">Zookeeper Chat System-এ কী কাজে ব্যবহার হয়?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Message storage</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> User authentication</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Video processing</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Service discovery — কোন Chat server available তা track করা</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Zookeeper distributed coordination service। Chat servers register করে। Load balancer জানে কোন servers available। Server down হলে automatically deregister। Kafka-ও internally Zookeeper use করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">WebSocket connection কতক্ষণ open থাকে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> শুধু message send/receive-এর সময়</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> App open থেকে close পর্যন্ত সবসময়</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> প্রতি 1 minute</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> শুধু network available হলে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — WhatsApp open থাকলে persistent WebSocket connection। Heartbeat ping/pong প্রতি 30 sec। এই connection দিয়েই messages, delivery receipts, online status update সব push হয়। App close → connection close → Redis "offline"।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT & CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ৩-৪ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <ul class="task-list">
+      <li><strong>Architecture Diagram:</strong> WhatsApp-এর complete system diagram আঁকো। User A → Chat Server 1 → Kafka → Chat Server 2 → User B (online path) AND User C (offline path: DB store → online হলে deliver)। WebSocket connections দেখাও।</li>
+      <li><strong>Message Schema:</strong> Cassandra-তে 1-to-1 chat এবং group chat-এর জন্য message schema design করো। Partition key ও clustering key specify করো এবং কেন সেটা chose করলে explain করো।</li>
+      <li><strong>Delivery Status Flow:</strong> "✓ ✓✓ 🔵" — তিনটা status-এর জন্য exactly কোন event-এ কী হয়, flow diagram বানাও।</li>
+      <li><strong>Group Chat Calculation:</strong> 1000 member group-এ 1 message। (ক) "1000 copies" approach-এ storage কত? (খ) "1 copy + receipts" approach-এ storage কত? প্রতি message 1KB ধরো।</li>
+      <li><strong>Presence System Design:</strong> User online/offline detection কীভাবে করবে? Heartbeat interval কত রাখবে? User disconnect হলে কখন "offline" mark করবে? Redis TTL কীভাবে use করবে explain করো।</li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>WhatsApp architecture diagram</li>
+        <li>Message schema (1-to-1 + group)</li>
+        <li>Delivery status flow</li>
+        <li>Group storage comparison</li>
+        <li>Presence system explanation</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">System Summary</div>
+    <h2 class="section-title">WhatsApp — Key Takeaways</h2>
+    <table class="compare-table">
+      <tr><th>Challenge</th><th>Solution</th><th>Technology</th></tr>
+      <tr><td>Real-time delivery</td><td>Persistent WebSocket</td><td>Erlang/Go</td></tr>
+      <tr><td>Cross-server routing</td><td>Pub/sub messaging</td><td>Kafka</td></tr>
+      <tr><td>Offline delivery</td><td>Persist + deliver on reconnect</td><td>Cassandra</td></tr>
+      <tr><td>Online presence</td><td>Redis TTL + heartbeat</td><td>Redis</td></tr>
+      <tr><td>Group chat storage</td><td>1 message + receipt table</td><td>Cassandra</td></tr>
+      <tr><td>Privacy</td><td>End-to-end encryption</td><td>Signal Protocol</td></tr>
+    </table>
+  </div>
+
+  <div class="next-cta" onclick="alert('System 5: Amazon E-commerce — পরের ফাইল খোলো!')">
+    <div>
+      <div class="next-label">Next System →</div>
+      <div class="next-title">🛒 Amazon E-commerce Design</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+
+</div>
+</main>
+<script>
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scroll = doc.scrollTop || document.body.scrollTop;
+  const height = doc.scrollHeight - doc.clientHeight;
+  document.getElementById('progressFill').style.width = (scroll / height * 100) + '%';
+});
+let answered = {};
+document.querySelectorAll('.option').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const block = this.closest('.question-block');
+    const qId = Array.from(document.querySelectorAll('.question-block')).indexOf(block);
+    if (answered[qId]) return;
+    answered[qId] = this.dataset.val;
+    block.querySelectorAll('.option').forEach(o => {
+      o.style.pointerEvents = 'none';
+      if (o.dataset.val === block.dataset.correct) o.classList.add('correct');
+      else if (o.dataset.val === this.dataset.val && this.dataset.val !== block.dataset.correct) o.classList.add('wrong');
+    });
+    block.querySelector('.explanation').classList.add('visible');
+    const correct = Array.from(document.querySelectorAll('.question-block')).filter((b,i) => answered[i] === b.dataset.correct).length;
+    document.getElementById('scoreDisplay').textContent = correct;
+  });
+});
+function submitMCQ() {
+  const blocks = document.querySelectorAll('.question-block');
+  const unanswered = blocks.length - Object.keys(answered).length;
+  if (unanswered > 0) { alert(`এখনও ${unanswered}টা প্রশ্নের উত্তর দাওনি!`); return; }
+  let correct = Array.from(blocks).filter((b,i) => answered[i] === b.dataset.correct).length;
+  const banner = document.getElementById('resultBanner');
+  banner.classList.add('visible');
+  if (correct >= 7) { banner.classList.add('pass'); banner.textContent = `🎉 দারুণ! ${correct}/10 সঠিক। System 5 এ যেতে পারো!`; }
+  else { banner.classList.add('fail'); banner.textContent = `📖 ${correct}/10 সঠিক। Concepts আবার পড়ো। ৭/১০ পেলেই pass।`; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 2 · Topic 6 — CDN & Object Storage</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05080f;--surface:#090e1a;--card:#0c1220;--border:#162035;--border2:#1e2d4a;--accent:#3b82f6;--accent-glow:rgba(59,130,246,0.15);--green:#10b981;--green-glow:rgba(16,185,129,0.12);--orange:#f97316;--red:#ef4444;--yellow:#eab308;--purple:#8b5cf6;--text:#e2e8f0;--muted:#64748b;--muted2:#94a3b8}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans Bengali',sans-serif;line-height:1.7;font-size:15px}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.4}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.sidebar-logo .phase-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:4px}
+.sidebar-logo .course-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;line-height:1.3}
+.nav-section{padding:0 12px;margin-bottom:8px}
+.nav-section-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);padding:0 8px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:4px;font-size:13px;color:var(--muted2);cursor:pointer;transition:all 0.15s;text-decoration:none}
+.nav-item:hover{background:var(--card);color:var(--text)}.nav-item.active{background:var(--accent-glow);color:var(--accent)}
+.nav-item .nav-icon{font-size:14px;flex-shrink:0}.nav-item .nav-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto}
+.progress-bar{position:fixed;top:0;left:240px;right:0;height:2px;background:var(--border);z-index:200}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));width:0%;transition:width 0.1s}
+.main{margin-left:240px;min-height:100vh}.content{max-width:780px;margin:0 auto;padding:48px 40px 120px}
+.topic-header{margin-bottom:48px}
+.breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px}.breadcrumb span{color:var(--accent)}
+.topic-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:block}
+h1.topic-title{font-family:'Fraunces',serif;font-size:clamp(32px,5vw,48px);font-weight:900;line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,#fff 30%,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topic-meta{display:flex;gap:16px;flex-wrap:wrap}.meta-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 12px;border-radius:2px;border:1px solid}
+.meta-chip.time{border-color:rgba(59,130,246,0.3);color:var(--accent);background:var(--accent-glow)}.meta-chip.level{border-color:rgba(16,185,129,0.3);color:var(--green);background:var(--green-glow)}.meta-chip.type{border-color:rgba(139,92,246,0.3);color:var(--purple);background:rgba(139,92,246,0.08)}
+.section{margin-bottom:48px;scroll-margin-top:24px}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:3px;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+h2.section-title{font-family:'Fraunces',serif;font-size:24px;font-weight:700;margin-bottom:16px;color:#f1f5f9}
+h3.sub-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;margin:24px 0 10px;color:#cbd5e1}
+p{margin-bottom:14px;color:#cbd5e1}
+.info-box{border-radius:6px;padding:18px 20px;margin:20px 0;border-left:3px solid;font-size:14px}
+.info-box.concept{background:rgba(59,130,246,0.06);border-color:var(--accent)}.info-box.warning{background:rgba(249,115,22,0.06);border-color:var(--orange)}.info-box.tip{background:rgba(16,185,129,0.06);border-color:var(--green)}.info-box.important{background:rgba(234,179,8,0.06);border-color:var(--yellow)}
+.info-box .box-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:700}
+.info-box.concept .box-label{color:var(--accent)}.info-box.warning .box-label{color:var(--orange)}.info-box.tip .box-label{color:var(--green)}.info-box.important .box-label{color:var(--yellow)}
+.compare-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px}
+.compare-table th{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1px;padding:12px 16px;text-align:left;background:var(--card);border-bottom:2px solid var(--border2);color:var(--muted2)}
+.compare-table td{padding:11px 16px;border-bottom:1px solid var(--border);color:#94a3b8;vertical-align:top;line-height:1.6}
+.compare-table tr:hover td{background:rgba(255,255,255,0.02)}.compare-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text)}
+.tag-yes{color:var(--green);font-weight:600}.tag-no{color:var(--red)}.tag-med{color:var(--yellow)}
+.diagram{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:30px 20px;margin:24px 0;text-align:center;overflow-x:auto}
+.code-block{background:#030608;border:1px solid var(--border2);border-radius:6px;margin:20px 0;overflow:hidden}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--border)}
+.code-lang{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:1px}.code-file{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)}
+pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.8;color:#e2e8f0}
+.kw{color:#93c5fd}.fn{color:#6ee7b7}.str{color:#fcd34d}.cm{color:#475569;font-style:italic}.num{color:#f9a8d4}.var{color:#e2e8f0}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0}
+.scenario-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:18px}
+.scenario-card .s-title{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+.scenario-card p{font-size:13px;color:var(--muted2);margin:0}
+.mcq-section{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:28px;margin:30px 0}
+.mcq-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.mcq-icon{font-size:24px}.mcq-header h2{font-family:'Fraunces',serif;font-size:20px;font-weight:700}
+.mcq-score{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted)}
+.mcq-score span{color:var(--accent);font-size:18px;font-weight:700}
+.question-block{margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--border)}.question-block:last-of-type{border-bottom:none;margin-bottom:0}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.q-text{font-size:15px;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.5;font-family:'Noto Sans Bengali',sans-serif}
+.options{display:flex;flex-direction:column;gap:8px}
+.option{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:4px;border:1px solid var(--border);cursor:pointer;transition:all 0.15s;font-size:14px;color:var(--muted2);font-family:'Noto Sans Bengali',sans-serif}
+.option:hover{border-color:var(--accent);color:var(--text);background:var(--accent-glow)}.option.correct{border-color:var(--green);background:var(--green-glow);color:#6ee7b7}.option.wrong{border-color:var(--red);background:rgba(239,68,68,0.08);color:#fca5a5}
+.option-key{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--border2);padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px}
+.explanation{display:none;margin-top:12px;padding:12px 14px;background:rgba(16,185,129,0.06);border-left:2px solid var(--green);border-radius:0 4px 4px 0;font-size:13px;color:#94a3b8;line-height:1.7;font-family:'Noto Sans Bengali',sans-serif}
+.explanation.visible{display:block}.explanation strong{color:var(--green)}
+.mcq-submit{display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:12px 24px;background:var(--accent);color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;border:none;border-radius:4px;cursor:pointer;letter-spacing:1px;transition:all 0.15s}
+.mcq-submit:hover{background:#2563eb;transform:translateY(-1px)}
+.result-banner{display:none;margin-top:20px;padding:16px 20px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700}
+.result-banner.visible{display:block}.result-banner.pass{background:var(--green-glow);border:1px solid var(--green);color:var(--green)}.result-banner.fail{background:rgba(249,115,22,0.08);border:1px solid var(--orange);color:var(--orange)}
+.assignment-section{background:linear-gradient(135deg,rgba(59,130,246,0.04),rgba(139,92,246,0.04));border:1px solid rgba(59,130,246,0.2);border-radius:8px;padding:28px;margin:30px 0}
+.assignment-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.assignment-icon{font-size:28px}.assignment-header h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700}
+.assignment-meta{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.a-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 10px;border-radius:2px}
+.a-chip.time{background:rgba(234,179,8,0.1);color:var(--yellow);border:1px solid rgba(234,179,8,0.2)}.a-chip.level{background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.2)}
+.task-list{counter-reset:tasks;list-style:none;display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
+.task-list li{counter-increment:tasks;display:flex;gap:14px;padding:16px;background:var(--card);border-radius:6px;border:1px solid var(--border);font-size:14px;color:var(--muted2)}
+.task-list li::before{content:counter(tasks);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--accent);background:var(--accent-glow);border:1px solid rgba(59,130,246,0.3);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.task-list li strong{color:var(--text);display:block;margin-bottom:4px}
+.deliverable-box{background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.2);border-radius:6px;padding:18px 20px}
+.d-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;font-weight:700}
+.deliverable-box ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.deliverable-box ul li{font-size:13px;color:var(--muted2);padding-left:16px;position:relative}
+.deliverable-box ul li::before{content:'→';position:absolute;left:0;color:var(--green)}
+.project-section{background:linear-gradient(135deg,rgba(16,185,129,0.04),rgba(59,130,246,0.04));border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:28px;margin:30px 0}
+.project-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.project-header h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700}
+.step-flow{display:flex;flex-direction:column;gap:0}
+.step-item{display:flex;gap:16px;position:relative;padding-bottom:24px}.step-item:last-child{padding-bottom:0}
+.step-item:not(:last-child)::after{content:'';position:absolute;left:12px;top:28px;bottom:0;width:1px;background:var(--border2)}
+.step-circle{width:26px;height:26px;border-radius:50%;background:var(--accent);color:white;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;z-index:1}
+.step-content h4{font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px}
+.step-content p{font-size:13px;color:var(--muted2);margin:0}
+.complete-banner{background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(59,130,246,0.08));border:1px solid rgba(16,185,129,0.3);border-radius:10px;padding:32px;margin-top:48px;text-align:center}
+.complete-banner h2{font-family:'Fraunces',serif;font-size:28px;font-weight:900;margin-bottom:12px;background:linear-gradient(135deg,#10b981,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.complete-banner p{color:var(--muted2);font-size:14px;margin-bottom:20px}
+.phase-links{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:16px}
+.phase-link{background:var(--card);border:1px solid var(--border2);border-radius:6px;padding:14px;text-align:center;text-decoration:none;transition:all 0.2s;cursor:pointer}
+.phase-link:hover{border-color:var(--accent);background:var(--accent-glow)}
+.phase-link .pl-num{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.phase-link .pl-title{font-family:'Fraunces',serif;font-size:13px;font-weight:700;color:var(--text)}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--card);padding:2px 7px;border-radius:3px;border:1px solid var(--border);color:#93c5fd}
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 2 · Core Components</span>
+    <div class="course-title">System Design Mastery</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">এই Topic এ</div>
+    <a class="nav-item active" href="#concept"><span class="nav-icon">💡</span> Core Concept <span class="nav-num">01</span></a>
+    <a class="nav-item" href="#cdn"><span class="nav-icon">🌐</span> CDN How it Works <span class="nav-num">02</span></a>
+    <a class="nav-item" href="#s3"><span class="nav-icon">🗂️</span> Object Storage (S3) <span class="nav-num">03</span></a>
+    <a class="nav-item" href="#cloudfront"><span class="nav-icon">☁️</span> CloudFront <span class="nav-num">04</span></a>
+    <a class="nav-item" href="#architecture"><span class="nav-icon">🏗️</span> Full Architecture <span class="nav-num">05</span></a>
+    <a class="nav-item" href="#code"><span class="nav-icon">💻</span> Code Examples <span class="nav-num">06</span></a>
+    <a class="nav-item" href="#interview"><span class="nav-icon">🎯</span> Interview Q&A <span class="nav-num">07</span></a>
+    <a class="nav-item" href="#mcq"><span class="nav-icon">📝</span> MCQ Quiz <span class="nav-num">08</span></a>
+    <a class="nav-item" href="#assignment"><span class="nav-icon">📋</span> Assignment <span class="nav-num">09</span></a>
+    <a class="nav-item" href="#project"><span class="nav-icon">🚀</span> Project <span class="nav-num">10</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px;">
+    <div class="nav-section-label">Phase 2 Topics</div>
+    <a class="nav-item" href="phase2-topic1-caching.html"><span class="nav-icon">🔴</span> T1: Caching</a>
+    <a class="nav-item" href="phase2-topic2-load-balancing.html"><span class="nav-icon">⚖️</span> T2: Load Balancing</a>
+    <a class="nav-item" href="phase2-topic3-message-queues.html"><span class="nav-icon">📨</span> T3: Message Queues</a>
+    <a class="nav-item" href="phase2-topic4-api-design.html"><span class="nav-icon">🔌</span> T4: API Design</a>
+    <a class="nav-item" href="phase2-topic5-db-sharding.html"><span class="nav-icon">🗄️</span> T5: DB Sharding</a>
+    <a class="nav-item active" href="#"><span class="nav-icon">🌐</span> T6: CDN & Storage</a>
+  </div>
+</aside>
+<main class="main">
+<div class="content">
+  <div class="topic-header">
+    <div class="breadcrumb">System Design Mastery <span>/</span> Phase 2 <span>/</span> Topic 6</div>
+    <span class="topic-num">Phase 2 · Topic 06 · Final</span>
+    <h1 class="topic-title">CDN & Object<br>Storage</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ 3-4 ঘণ্টা</span>
+      <span class="meta-chip level">📊 Junior → Mid</span>
+      <span class="meta-chip type">🌐 S3 · CloudFront · Cloudflare</span>
+    </div>
+  </div>
+
+  <!-- 01 Concept -->
+  <div class="section" id="concept">
+    <div class="section-label">01 — Core Concept</div>
+    <h2 class="section-title">CDN ও Object Storage কী?</h2>
+    <p>ধরো তুমি ঢাকায় বসে Netflix এ একটা movie দেখছো। সেই movie র file কি USA এর server থেকে আসছে? না! Netflix CDN এর মাধ্যমে সেই file টা তোমার কাছাকাছি একটা server এ (হয়তো Singapore বা Mumbai তে) cache করে রাখে। তুমি সেখান থেকেই পাচ্ছো — ১০x faster।</p>
+    <div class="info-box concept">
+      <div class="box-label">💡 দুটো Key Concept</div>
+      <strong>CDN (Content Delivery Network):</strong> বিশ্বের বিভিন্ন স্থানে PoP (Point of Presence) servers রেখে static content (images, videos, CSS, JS) কাছে থেকে serve করে। Latency কমায়।<br><br>
+      <strong>Object Storage (S3-like):</strong> Files, images, videos কে key-value store এ রাখা। Unlimited storage, highly durable (99.999999999% — 11 nines!), cheap। Database এর মতো query করা যায় না কিন্তু files store এর জন্য perfect।
+    </div>
+    <div class="info-box important">
+      <div class="box-label">📊 CDN ছাড়া vs CDN সহ</div>
+      ঢাকা → USA server: ~200-300ms latency। ঢাকা → Singapore CDN PoP: ~30-50ms latency। ৫-১০x faster! Netflix, YouTube, Facebook সবাই CDN use করে। CDN ছাড়া global scale impossible।
+    </div>
+  </div>
+
+  <!-- 02 CDN -->
+  <div class="section" id="cdn">
+    <div class="section-label">02 — CDN How it Works</div>
+    <h2 class="section-title">CDN কীভাবে কাজ করে?</h2>
+    <p>CDN এর মূল concept হলো <strong>Edge Caching</strong>। User এর request প্রথমে nearest CDN edge server এ যায়। Cache hit হলে সেখান থেকেই response। Miss হলে origin server থেকে content fetch করে cache করে রাখে।</p>
+    <div class="diagram">
+      <svg width="660" height="200" viewBox="0 0 660 200">
+        <text x="10" y="16" fill="#64748b" font-family="JetBrains Mono" font-size="10" font-weight="700">CDN GLOBAL ARCHITECTURE</text>
+        <!-- Origin -->
+        <rect x="270" y="80" width="120" height="50" rx="5" fill="rgba(249,115,22,0.1)" stroke="#f97316" stroke-width="1.5"/>
+        <text x="330" y="102" fill="#f97316" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">🏢 Origin Server</text>
+        <text x="330" y="118" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">USA (us-east-1)</text>
+        <!-- CDN PoPs -->
+        <rect x="10" y="155" width="100" height="36" rx="3" fill="rgba(16,185,129,0.1)" stroke="#10b981"/>
+        <text x="60" y="171" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">⚡ PoP: London</text>
+        <text x="60" y="183" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">EU users ~10ms</text>
+        <rect x="130" y="155" width="100" height="36" rx="3" fill="rgba(16,185,129,0.1)" stroke="#10b981"/>
+        <text x="180" y="171" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">⚡ PoP: Singapore</text>
+        <text x="180" y="183" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">BD users ~35ms</text>
+        <rect x="250" y="155" width="100" height="36" rx="3" fill="rgba(16,185,129,0.1)" stroke="#10b981"/>
+        <text x="300" y="171" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">⚡ PoP: Mumbai</text>
+        <text x="300" y="183" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">IN users ~5ms</text>
+        <rect x="370" y="155" width="100" height="36" rx="3" fill="rgba(16,185,129,0.1)" stroke="#10b981"/>
+        <text x="420" y="171" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">⚡ PoP: Tokyo</text>
+        <text x="420" y="183" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">JP users ~5ms</text>
+        <rect x="490" y="155" width="100" height="36" rx="3" fill="rgba(16,185,129,0.1)" stroke="#10b981"/>
+        <text x="540" y="171" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">⚡ PoP: NYC</text>
+        <text x="540" y="183" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">US users ~5ms</text>
+        <!-- Lines from Origin to PoPs -->
+        <line x1="300" y1="130" x2="60" y2="155" stroke="#f97316" stroke-width="1" stroke-dasharray="4"/>
+        <line x1="310" y1="130" x2="180" y2="155" stroke="#f97316" stroke-width="1" stroke-dasharray="4"/>
+        <line x1="330" y1="130" x2="300" y2="155" stroke="#f97316" stroke-width="1" stroke-dasharray="4"/>
+        <line x1="350" y1="130" x2="420" y2="155" stroke="#f97316" stroke-width="1" stroke-dasharray="4"/>
+        <line x1="360" y1="130" x2="540" y2="155" stroke="#f97316" stroke-width="1" stroke-dasharray="4"/>
+        <!-- Users -->
+        <circle cx="180" cy="50" r="14" fill="#0c1220" stroke="#3b82f6"/>
+        <text x="180" y="55" fill="#3b82f6" font-family="JetBrains Mono" font-size="10" text-anchor="middle">BD</text>
+        <line x1="180" y1="64" x2="180" y2="155" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="150" y="110" fill="#10b981" font-family="JetBrains Mono" font-size="8">~35ms ✓</text>
+        <text x="405" y="50" fill="#64748b" font-family="JetBrains Mono" font-size="8">without CDN: USA = ~250ms ✗</text>
+      </svg>
+    </div>
+    <h3 class="sub-title">CDN Cache Control</h3>
+    <p>কতক্ষণ CDN এ cache থাকবে সেটা <strong>Cache-Control header</strong> দিয়ে control করা যায়।</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">HTTP Headers</span><span class="code-file">cache-control.txt</span></div>
+      <pre><span class="cm"># Static assets — দীর্ঘ সময় cache করো</span>
+Cache-Control: public, max-age=<span class="num">31536000</span>, immutable
+<span class="cm"># ১ বছর cache (হ্যাশ-based filename use করো)</span>
+
+<span class="cm"># HTML pages — কম সময়</span>
+Cache-Control: public, max-age=<span class="num">3600</span>
+<span class="cm"># ১ ঘণ্টা cache</span>
+
+<span class="cm"># Private (user-specific) — CDN cache করবে না</span>
+Cache-Control: private, no-cache
+<span class="cm"># Browser cache করতে পারে, CDN পারবে না</span>
+
+<span class="cm"># Never cache করো না</span>
+Cache-Control: no-store
+<span class="cm"># Real-time data, sensitive information</span></pre>
+    </div>
+    <table class="compare-table">
+      <tr><th>CDN Provider</th><th>PoP Count</th><th>Best For</th><th>Price</th></tr>
+      <tr><td>Cloudflare</td><td>300+</td><td>DDoS protection, global sites</td><td class="tag-yes">Free tier available</td></tr>
+      <tr><td>AWS CloudFront</td><td>450+</td><td>AWS ecosystem integration</td><td class="tag-med">Pay per use</td></tr>
+      <tr><td>Fastly</td><td>100+</td><td>Programmable CDN, edge compute</td><td class="tag-no">Expensive</td></tr>
+      <tr><td>Akamai</td><td>4000+</td><td>Enterprise, largest network</td><td class="tag-no">Very expensive</td></tr>
+      <tr><td>BunnyCDN</td><td>100+</td><td>Budget-friendly, simple</td><td class="tag-yes">Cheapest</td></tr>
+    </table>
+  </div>
+
+  <!-- 03 S3 -->
+  <div class="section" id="s3">
+    <div class="section-label">03 — Object Storage (S3)</div>
+    <h2 class="section-title">AWS S3 — Object Storage</h2>
+    <p>S3 (Simple Storage Service) হলো AWS এর object storage। File upload করো, একটা URL পাও — ব্যস। Database এর মতো complex — না, শুধু key-value: key = file path, value = file content।</p>
+    <div class="info-box concept">
+      <div class="box-label">🗂️ S3 Concepts</div>
+      <strong>Bucket:</strong> Files এর container (folder এর মতো)। Globally unique name। <strong>Object:</strong> একটা file + metadata। <strong>Key:</strong> Object এর path/name। <strong>Storage Class:</strong> Standard (frequent access), Glacier (archival, cheap), Intelligent-Tiering (auto)।
+    </div>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">✅ S3 ব্যবহার করো</div>
+        <p>User uploaded files (images, videos, documents), Static website hosting, Backup and archive, Application logs, ML training data।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">❌ S3 ব্যবহার করো না</div>
+        <p>Frequently updated structured data (database use করো), Real-time queries needed, Strong consistency needed (S3 eventually consistent ছিল, now strong), File system operations (rename, move costly)।</p>
+      </div>
+    </div>
+    <h3 class="sub-title">S3 Storage Classes</h3>
+    <table class="compare-table">
+      <tr><th>Class</th><th>Access</th><th>Cost</th><th>Use Case</th></tr>
+      <tr><td>S3 Standard</td><td class="tag-yes">Instant</td><td class="tag-no">Highest</td><td>Frequently accessed — profile photos, app assets</td></tr>
+      <tr><td>S3-IA</td><td class="tag-yes">Instant</td><td class="tag-med">30% cheaper</td><td>Infrequent access — backups, older files</td></tr>
+      <tr><td>S3 Glacier</td><td class="tag-no">Minutes/hours</td><td class="tag-yes">Very cheap</td><td>Long-term archive — compliance, audit logs</td></tr>
+      <tr><td>Glacier Deep</td><td class="tag-no">12 hours</td><td class="tag-yes">Cheapest</td><td>7-10 year retention, rarely accessed</td></tr>
+      <tr><td>Intelligent-Tier</td><td class="tag-yes">Instant</td><td class="tag-med">Auto-optimize</td><td>Unknown access pattern — auto moves between tiers</td></tr>
+    </table>
+    <div class="info-box tip">
+      <div class="box-label">💰 Cost Saving Tip</div>
+      S3 Lifecycle Policy দিয়ে auto-transition করো: প্রথম ৩০ দিন Standard, ৩০-৯০ দিন S3-IA, ৯০+ দিন Glacier। এতে automatically cost কমে। Instagram এই approach এ petabytes of photos manage করে।
+    </div>
+  </div>
+
+  <!-- 04 CloudFront -->
+  <div class="section" id="cloudfront">
+    <div class="section-label">04 — CloudFront</div>
+    <h2 class="section-title">AWS CloudFront — CDN</h2>
+    <p>CloudFront হলো AWS এর CDN। S3 এর সাথে perfectly integrate হয়। S3 bucket কে origin set করো, CloudFront globally distribute করবে।</p>
+    <div class="diagram">
+      <svg width="620" height="130" viewBox="0 0 620 130">
+        <rect x="10" y="45" width="80" height="40" rx="3" fill="#0c1220" stroke="#3b82f6"/>
+        <text x="50" y="65" fill="#3b82f6" font-family="JetBrains Mono" font-size="8" text-anchor="middle">User</text>
+        <text x="50" y="78" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">Bangladesh</text>
+        <line x1="90" y1="65" x2="165" y2="65" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="127" y="58" fill="#64748b" font-family="JetBrains Mono" font-size="7">DNS lookup</text>
+        <rect x="165" y="28" width="130" height="74" rx="4" fill="rgba(234,179,8,0.08)" stroke="#eab308" stroke-width="1.5"/>
+        <text x="230" y="52" fill="#eab308" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">☁️ CloudFront</text>
+        <text x="230" y="67" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">Edge: Singapore PoP</text>
+        <text x="230" y="80" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Cache HIT → serve ✓</text>
+        <text x="230" y="94" fill="#f97316" font-family="JetBrains Mono" font-size="7" text-anchor="middle">Cache MISS → fetch origin</text>
+        <line x1="295" y1="65" x2="370" y2="65" stroke="#f97316" stroke-width="1" stroke-dasharray="3"/>
+        <text x="332" y="58" fill="#64748b" font-family="JetBrains Mono" font-size="7">on miss only</text>
+        <rect x="370" y="28" width="120" height="74" rx="4" fill="rgba(249,115,22,0.08)" stroke="#f97316" stroke-width="1.5"/>
+        <text x="430" y="52" fill="#f97316" font-family="JetBrains Mono" font-size="10" text-anchor="middle">🗂️ S3 Origin</text>
+        <text x="430" y="68" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">us-east-1</text>
+        <text x="430" y="82" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">images/, videos/</text>
+        <text x="430" y="96" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">static assets</text>
+        <text x="230" y="115" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">95%+ requests served from edge — origin barely touched</text>
+      </svg>
+    </div>
+    <div class="info-box tip">
+      <div class="box-label">✅ CloudFront Key Features</div>
+      <strong>Origin Shield:</strong> Origin এর সামনে extra caching layer — origin এ আরো কম requests। <strong>Lambda@Edge:</strong> CDN edge এ code run করো — geolocation, A/B testing, auth। <strong>Signed URLs:</strong> Private content এ time-limited access। <strong>WAF Integration:</strong> DDoS এবং bot protection।
+    </div>
+  </div>
+
+  <!-- 05 Full Architecture -->
+  <div class="section" id="architecture">
+    <div class="section-label">05 — Full Architecture</div>
+    <h2 class="section-title">Production-Ready Media Upload Architecture</h2>
+    <p>একটা social media app এ user photo upload করলে কীভাবে S3 + CloudFront কাজ করে:</p>
+    <div class="diagram">
+      <svg width="660" height="200" viewBox="0 0 660 200">
+        <!-- User -->
+        <rect x="10" y="80" width="70" height="40" rx="3" fill="#0c1220" stroke="#3b82f6"/>
+        <text x="45" y="104" fill="#3b82f6" font-family="JetBrains Mono" font-size="8" text-anchor="middle">📱 User</text>
+        <!-- Step 1: Get presigned URL -->
+        <line x1="80" y1="95" x2="150" y2="85" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="115" y="82" fill="#64748b" font-family="JetBrains Mono" font-size="7">1. Request upload URL</text>
+        <!-- API Server -->
+        <rect x="150" y="65" width="100" height="50" rx="3" fill="#0c1220" stroke="#8b5cf6"/>
+        <text x="200" y="87" fill="#8b5cf6" font-family="JetBrains Mono" font-size="8" text-anchor="middle">🔌 API Server</text>
+        <text x="200" y="101" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">generate</text>
+        <text x="200" y="111" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">presigned URL</text>
+        <!-- Step 2: Presigned URL return -->
+        <line x1="150" y1="105" x2="80" y2="112" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="3"/>
+        <text x="85" y="125" fill="#8b5cf6" font-family="JetBrains Mono" font-size="7">2. presigned URL</text>
+        <!-- Step 3: Direct upload to S3 -->
+        <line x1="80" y1="115" x2="320" y2="100" stroke="#f97316" stroke-width="1.5"/>
+        <text x="200" y="140" fill="#f97316" font-family="JetBrains Mono" font-size="7" text-anchor="middle">3. Direct upload to S3 (no server!)</text>
+        <!-- S3 -->
+        <rect x="320" y="65" width="100" height="50" rx="3" fill="rgba(249,115,22,0.1)" stroke="#f97316" stroke-width="1.5"/>
+        <text x="370" y="87" fill="#f97316" font-family="JetBrains Mono" font-size="9" text-anchor="middle">🗂️ S3</text>
+        <text x="370" y="101" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">raw-uploads/</text>
+        <text x="370" y="111" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">photo.jpg</text>
+        <!-- S3 Event → Lambda -->
+        <line x1="370" y1="115" x2="370" y2="155" stroke="#eab308" stroke-width="1.5"/>
+        <text x="375" y="140" fill="#eab308" font-family="JetBrains Mono" font-size="7">4. S3 Event trigger</text>
+        <rect x="310" y="155" width="120" height="36" rx="3" fill="rgba(234,179,8,0.08)" stroke="#eab308"/>
+        <text x="370" y="171" fill="#eab308" font-family="JetBrains Mono" font-size="8" text-anchor="middle">⚡ Lambda</text>
+        <text x="370" y="183" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">resize: 800px, 400px, thumbnail</text>
+        <!-- Processed → CDN bucket -->
+        <line x1="430" y1="173" x2="520" y2="140" stroke="#10b981" stroke-width="1.5"/>
+        <text x="475" y="148" fill="#10b981" font-family="JetBrains Mono" font-size="7">5. Store processed</text>
+        <rect x="520" y="110" width="110" height="50" rx="3" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1.5"/>
+        <text x="575" y="130" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">S3 + CloudFront</text>
+        <text x="575" y="145" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">cdn.app.com/</text>
+        <text x="575" y="155" fill="#64748b" font-family="JetBrains Mono" font-size="7" text-anchor="middle">photo_800.webp</text>
+        <text x="200" y="16" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Presigned URL: Direct S3 upload (API server bandwidth save হয়)</text>
+      </svg>
+    </div>
+    <div class="info-box tip">
+      <div class="box-label">🔑 Presigned URL — কেন Important?</div>
+      User file upload করলে API server এর bandwidth waste হবে। Presigned URL দিলে user সরাসরি S3 তে upload করে। API server শুধু temporary signed URL generate করে — নিজে file handle করে না। Security maintained, bandwidth saved।
+    </div>
+  </div>
+
+  <!-- 06 Code -->
+  <div class="section" id="code">
+    <div class="section-label">06 — Code Examples</div>
+    <h2 class="section-title">হাতে-কলমে Code</h2>
+    <h3 class="sub-title">Python — S3 Upload & Presigned URL</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Python</span><span class="code-file">s3_operations.py</span></div>
+      <pre><span class="kw">import</span> boto3
+<span class="kw">from</span> botocore.exceptions <span class="kw">import</span> NoCredentialsError
+
+s3 = boto3.<span class="fn">client</span>(
+    <span class="str">'s3'</span>,
+    aws_access_key_id=<span class="str">'YOUR_KEY'</span>,
+    aws_secret_access_key=<span class="str">'YOUR_SECRET'</span>,
+    region_name=<span class="str">'ap-southeast-1'</span>  <span class="cm"># Singapore</span>
+)
+
+<span class="cm"># ── File Upload ────────────────────────────────</span>
+<span class="kw">def</span> <span class="fn">upload_file</span>(local_path, bucket, s3_key):
+    <span class="kw">try</span>:
+        s3.<span class="fn">upload_file</span>(
+            local_path, bucket, s3_key,
+            ExtraArgs={
+                <span class="str">'ContentType'</span>: <span class="str">'image/webp'</span>,
+                <span class="str">'CacheControl'</span>: <span class="str">'public, max-age=31536000'</span>,
+                <span class="str">'ACL'</span>: <span class="str">'public-read'</span>
+            }
+        )
+        <span class="fn">print</span>(f<span class="str">f"✅ Uploaded to s3://{bucket}/{s3_key}"</span>)
+        <span class="kw">return</span> f<span class="str">f"https://cdn.myapp.com/{s3_key}"</span>
+    <span class="kw">except</span> NoCredentialsError:
+        <span class="kw">raise</span> <span class="fn">Exception</span>(<span class="str">"AWS credentials not found"</span>)
+
+<span class="cm"># ── Presigned URL — Direct Browser Upload ──────</span>
+<span class="kw">def</span> <span class="fn">generate_presigned_url</span>(bucket, s3_key, expiry=<span class="num">3600</span>):
+    url = s3.<span class="fn">generate_presigned_url</span>(
+        ClientMethod=<span class="str">'put_object'</span>,
+        Params={
+            <span class="str">'Bucket'</span>: bucket,
+            <span class="str">'Key'</span>: s3_key,
+            <span class="str">'ContentType'</span>: <span class="str">'image/jpeg'</span>
+        },
+        ExpiresIn=expiry  <span class="cm"># 1 hour</span>
+    )
+    <span class="fn">print</span>(f<span class="str">"⏰ Presigned URL expires in {expiry}s"</span>)
+    <span class="kw">return</span> url
+
+<span class="cm"># ── Lifecycle Policy — Auto archive ────────────</span>
+s3.<span class="fn">put_bucket_lifecycle_configuration</span>(
+    Bucket=<span class="str">'my-app-uploads'</span>,
+    LifecycleConfiguration={
+        <span class="str">'Rules'</span>: [{
+            <span class="str">'ID'</span>: <span class="str">'auto-archive'</span>,
+            <span class="str">'Status'</span>: <span class="str">'Enabled'</span>,
+            <span class="str">'Transitions'</span>: [
+                {<span class="str">'Days'</span>: <span class="num">30</span>, <span class="str">'StorageClass'</span>: <span class="str">'STANDARD_IA'</span>},
+                {<span class="str">'Days'</span>: <span class="num">90</span>, <span class="str">'StorageClass'</span>: <span class="str">'GLACIER'</span>},
+            ]
+        }]
+    }
+)</pre>
+    </div>
+    <h3 class="sub-title">Node.js — Express + S3 Upload API</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Node.js</span><span class="code-file">upload_api.js</span></div>
+      <pre><span class="kw">const</span> { S3Client, PutObjectCommand } = <span class="fn">require</span>(<span class="str">'@aws-sdk/client-s3'</span>);
+<span class="kw">const</span> { getSignedUrl } = <span class="fn">require</span>(<span class="str">'@aws-sdk/s3-request-presigner'</span>);
+<span class="kw">const</span> { v4: uuidv4 } = <span class="fn">require</span>(<span class="str">'uuid'</span>);
+
+<span class="kw">const</span> s3 = <span class="kw">new</span> <span class="fn">S3Client</span>({ region: <span class="str">'ap-southeast-1'</span> });
+
+<span class="cm">// Generate presigned URL for direct browser upload</span>
+app.<span class="fn">post</span>(<span class="str">'/api/upload-url'</span>, <span class="kw">async</span> (req, res) => {
+  <span class="kw">const</span> { fileType, fileName } = req.body;
+
+  <span class="cm">// Unique key prevent overwrite</span>
+  <span class="kw">const</span> key = <span class="str">`uploads/${uuidv4()}-${fileName}`</span>;
+
+  <span class="kw">const</span> command = <span class="kw">new</span> <span class="fn">PutObjectCommand</span>({
+    Bucket: <span class="str">'my-app-bucket'</span>,
+    Key: key,
+    ContentType: fileType,
+  });
+
+  <span class="cm">// URL expires in 15 minutes</span>
+  <span class="kw">const</span> uploadUrl = <span class="kw">await</span> <span class="fn">getSignedUrl</span>(s3, command, { expiresIn: <span class="num">900</span> });
+  <span class="kw">const</span> publicUrl = <span class="str">`https://cdn.myapp.com/${key}`</span>;
+
+  res.<span class="fn">json</span>({ uploadUrl, publicUrl, key });
+  <span class="cm">// Frontend: PUT uploadUrl সরাসরি, তারপর publicUrl save করো</span>
+});</pre>
+    </div>
+  </div>
+
+  <!-- 07 Interview -->
+  <div class="section" id="interview">
+    <div class="section-label">07 — Interview Prep</div>
+    <h2 class="section-title">Common Interview Questions</h2>
+    <div class="info-box concept">
+      <div class="box-label">❓ Q1: CDN ব্যবহার না করলে কী হবে?</div>
+      <strong>উত্তর:</strong> Global users কে origin server থেকে serve করতে হবে। USA → Bangladesh: ~250ms latency। CDN সহ: Singapore PoP → ~35ms। ৭x slow। Large files (videos) এ এটা catastrophic। Origin server এ extra load।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">❓ Q2: CDN Cache Invalidation কীভাবে করবে?</div>
+      <strong>উত্তর:</strong> ৩টা approach: (১) Versioned filenames — logo.v2.png (সবচেয়ে reliable)। (২) CloudFront Invalidation API — নির্দিষ্ট paths invalidate করো (কিছুটা delay)। (৩) Short TTL — frequent updates এর files এ কম TTL দাও।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">❓ Q3: S3 vs Database — কখন কোনটা?</div>
+      <strong>উত্তর:</strong> S3 — Binary files (images, video, PDF), Large objects, No complex queries, High durability cheap। Database — Structured data, Complex queries (JOIN, filter), Transactions needed, Frequently updated। Instagram: Photos → S3, User data/likes/comments → PostgreSQL।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">❓ Q4: Presigned URL কেন ব্যবহার করবে?</div>
+      <strong>উত্তর:</strong> File upload এ API server কে bypass করা। Client সরাসরি S3 এ upload করে → API server এর bandwidth ও CPU save। Time-limited URL (15 mins expire) → secure। Server scaling করতে হয় না শুধু uploads এর জন্য।
+    </div>
+  </div>
+
+  <!-- 08 MCQ -->
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🧠</span>
+      <h2>MCQ Quiz — CDN & Object Storage</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">CDN ব্যবহারের প্রধান সুবিধা কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Database query fast হয়</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Users এর কাছাকাছি edge server থেকে content serve হয় — latency কমে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Server এর CPU কমে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Code execution faster হয়</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — CDN এর মূল কাজ হলো geographically distributed edge servers এ content cache করা। ঢাকার user Singapore PoP থেকে content পাবে (~35ms), USA origin থেকে নয় (~250ms)।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">S3 Object Storage কোন ধরনের data store এর জন্য সবচেয়ে উপযুক্ত?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> User profile data (name, email, age)</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Real-time transaction data</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Images, videos, documents, backups</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Session data</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — S3 binary files এর জন্য perfect: unlimited storage, highly durable, cheap। Complex queries করা যায় না, কিন্তু files store এবং serve এর জন্য ideal।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">CDN Cache-Control: max-age=31536000 মানে কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> ১ বছর (31,536,000 seconds) CDN এ cache থাকবে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> ৩১ দিন cache থাকবে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> ৩১ মিলিয়ন requests serve করবে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> ৩১ MB পর্যন্ত file cache হবে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — max-age value seconds এ। 31,536,000 = 365 days = 1 year। Static assets (CSS, JS, images) এ এটা common — কিন্তু তখন file এর নামে hash দিতে হয় (app.abc123.js) যাতে update করলে নতুন URL হয়।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">Presigned URL কেন ব্যবহার করা হয়?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Files encrypt করতে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> URL shorten করতে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> CDN bypass করতে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Client সরাসরি S3 এ upload করতে পারে — API server bandwidth waste হয় না</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উत্তর: D</strong> — Presigned URL একটা temporary signed URL যা client কে সরাসরি S3 এ upload করতে দেয়। API server টা শুধু URL generate করে — file দেখে না। API server এর bandwidth ও scaling সমস্যা কমে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">S3 Glacier কোন use case এর জন্য?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Frequently accessed images</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Long-term archival data যেখানে retrieval time কোনো ব্যাপার না</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Real-time video streaming</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Session storage</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — S3 Glacier archival storage। Retrieval time minutes to hours। কিন্তু Standard এর তুলনায় ৮০%+ সস্তা। Compliance logs, old backups, audit records এর জন্য perfect।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">CDN এ cache করা content update করতে হলে কী করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> CDN server restart করবে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> কিছু করতে হবে না, auto update হয়</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Cache invalidation করবে অথবা নতুন filename/version use করবে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> User কে browser cache clear করতে বলবে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Cache invalidation approach: CloudFront Invalidation API দিয়ে specific paths purge করো। অথবা file এ version/hash add করো (logo.v2.png) — নতুন URL মানে CDN এ নতুন entry।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">একটা video streaming app এ 4K videos globally fast serve করতে কোন architecture?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> S3 (storage) + CloudFront/CDN (global distribution)</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Single server এ সব videos রাখো</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Database এ video store করো</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> FTP server use করো</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — S3 এ videos store (durable, cheap, unlimited), CloudFront globally cache করে serve করে (low latency)। এটাই Netflix, YouTube এর approach। Database এ binary large objects রাখা terrible idea।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">Cache-Control: private মানে কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Encrypted content</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> শুধু admin access</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Content delete হবে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Browser cache করতে পারবে কিন্তু CDN/proxy cache করবে না</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — private মানে শুধু end-user এর browser cache করতে পারবে। CDN বা shared proxy cache করবে না। User-specific content (dashboard, account info) এর জন্য use করো।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">S3 Lifecycle Policy কেন ব্যবহার করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Files encrypt করতে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> পুরানো files automatically সস্তা storage class এ move করে cost কমাতে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> CDN cache invalidate করতে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Files backup করতে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Lifecycle Policy auto-transition করে: 30 days → Standard-IA, 90 days → Glacier। এতে manual কিছু করতে হয় না এবং storage cost automatically কমে। Old photos, logs, backups এর জন্য excellent।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">Instagram এ user profile photo কোথায় store হয় এবং কীভাবে serve হয়?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> PostgreSQL database এ</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Instagram এর নিজস্ব server এ</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Object Storage (S3-like) এ store, CDN দিয়ে globally serve</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Redis cache এ</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Instagram photos → Facebook এর object storage (Haystack/f4)। CDN globally cache করে serve করে। Database এ শুধু photo URL এবং metadata (user_id, caption, timestamp) থাকে।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT &amp; CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <!-- 09 Assignment -->
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ২-৩ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <ul class="task-list">
+      <li><strong>CDN Strategy Design:</strong> একটা Bangladeshi news portal design করো যেখানে content ঢাকা থেকে publish হয় কিন্তু global audience (USA, UK, Middle East) আছে। CDN PoP selection, cache TTL, invalidation strategy — সব explain করো।</li>
+      <li><strong>AWS S3 Explore করো:</strong> AWS Free Tier account বানাও। একটা S3 bucket create করো। একটা image upload করো। Public access দাও। Browser থেকে URL দিয়ে access করো। Screenshot নাও।</li>
+      <li><strong>Cache-Control Headers:</strong> নিচের resources এর জন্য সঠিক Cache-Control header লেখো: (ক) React app এর CSS bundle (hash filename আছে) (খ) News article HTML page (ঘ) User dashboard (private) (ঙ) API response (JSON)।</li>
+      <li><strong>Architecture Diagram:</strong> E-commerce site এর media architecture diagram বানাও: User product image upload → Resize → CDN serve। S3, Lambda, CloudFront সব include করো।</li>
+      <li><strong>Cost Calculation:</strong> AWS S3 pricing calculator ব্যবহার করো। ১০০ GB storage + ১ TB data transfer per month এ monthly cost কত? Standard vs Glacier compare করো।</li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>CDN strategy document for BD news portal</li>
+        <li>S3 bucket screenshot (uploaded image accessible)</li>
+        <li>Cache-Control header answers (৫টা)</li>
+        <li>E-commerce media architecture diagram</li>
+        <li>S3 cost comparison (Standard vs Glacier)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 10 Project -->
+  <div class="project-section" id="project">
+    <div class="project-header">
+      <span style="font-size:24px">🚀</span>
+      <h2>Hands-On Project Task</h2>
+    </div>
+    <div class="project-body">
+      <h3 style="font-family:'Fraunces',serif;font-size:18px;margin-bottom:12px;color:#f1f5f9;">Image Upload API with S3 + Presigned URLs</h3>
+      <p style="font-size:14px;color:#94a3b8;margin-bottom:20px;">Express.js API বানাও যেটা S3 presigned URL generate করে এবং uploaded images CDN থেকে serve করে।</p>
+      <div class="step-flow">
+        <div class="step-item"><div class="step-circle">1</div><div class="step-content"><h4>AWS Setup</h4><p>S3 bucket create করো। IAM user create করো (S3 access only)। Credentials local এ configure করো।</p></div></div>
+        <div class="step-item"><div class="step-circle">2</div><div class="step-content"><h4>Presigned URL API</h4><p>POST /api/upload → presigned URL return করবে। Frontend সরাসরি S3 তে PUT করবে।</p></div></div>
+        <div class="step-item"><div class="step-circle">3</div><div class="step-content"><h4>Simple Frontend</h4><p>HTML form: file input → fetch presigned URL → PUT to S3 → show uploaded image URL।</p></div></div>
+        <div class="step-item"><div class="step-circle">4</div><div class="step-content"><h4>CloudFront Setup (Optional)</h4><p>S3 bucket কে CloudFront origin set করো। CDN URL দিয়ে same image access করো।</p></div></div>
+        <div class="step-item"><div class="step-circle">5</div><div class="step-content"><h4>Direct vs CDN Compare করো</h4><p>S3 direct URL এবং CloudFront URL — browser Dev Tools Network tab এ response time compare করো।</p></div></div>
+      </div>
+      <div class="info-box tip" style="margin-top:16px">
+        <div class="box-label">🎯 এটা করলে যা শিখবে</div>
+        AWS S3 practically use করবে। Presigned URL এর power বুঝবে। CDN এর latency difference নিজে measure করবে। Portfolio এ "AWS S3 + CloudFront integration" লিখতে পারবে।
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-label">Lesson Summary</div>
+    <h2 class="section-title">আজকে যা শিখলাম</h2>
+    <table class="compare-table">
+      <tr><th>Concept</th><th>এক লাইনে</th></tr>
+      <tr><td>CDN</td><td>Edge servers এ content cache — globally fast delivery</td></tr>
+      <tr><td>Object Storage (S3)</td><td>Files/images/videos store করো — unlimited, cheap, durable</td></tr>
+      <tr><td>CloudFront</td><td>AWS CDN — S3 + CloudFront = globally fast static content</td></tr>
+      <tr><td>Presigned URL</td><td>Client সরাসরি S3 তে upload — API server bypass</td></tr>
+      <tr><td>Cache-Control</td><td>CDN কতক্ষণ cache রাখবে সেটা control করো</td></tr>
+      <tr><td>S3 Lifecycle</td><td>Auto-archive পুরানো files — cost save</td></tr>
+      <tr><td>PoP</td><td>CDN এর edge location — users এর কাছাকাছি</td></tr>
+    </table>
+  </div>
+
+  <!-- Phase Complete Banner -->
+  <div class="complete-banner">
+    <div style="font-size:48px;margin-bottom:12px">🎉</div>
+    <h2>Phase 2 Complete!</h2>
+    <p>তুমি System Design Mastery Course এর Phase 2 — Core Components সম্পন্ন করেছো! ৬টা critical topic master করেছো যেগুলো প্রতিটা large-scale system এ use হয়।</p>
+    <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.2);border-radius:6px;padding:16px;margin:16px 0;text-align:left">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">✅ Phase 2 এ যা শিখলে</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;color:var(--muted2)">
+        <div>🔴 Caching Strategy & Redis</div>
+        <div>⚖️ Load Balancing (L4/L7)</div>
+        <div>📨 Message Queues (Kafka, RabbitMQ)</div>
+        <div>🔌 API Design (REST, GraphQL, gRPC)</div>
+        <div>🗄️ Database Sharding & Replication</div>
+        <div>🌐 CDN & Object Storage (S3)</div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--muted2);margin-top:8px">Phase 3 এ যাবে: System Design Patterns — Circuit Breaker, CQRS, Event Sourcing, Saga Pattern এবং আরো।</p>
+  </div>
+
+</div>
+</main>
+<script>
+window.addEventListener('scroll',()=>{const d=document.documentElement;document.getElementById('progressFill').style.width=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100)+'%'});
+let answered={};
+document.querySelectorAll('.option').forEach(opt=>{opt.addEventListener('click',function(){const block=this.closest('.question-block');const qId=Array.from(document.querySelectorAll('.question-block')).indexOf(block);if(answered[qId])return;answered[qId]=this.dataset.val;block.querySelectorAll('.option').forEach(o=>{o.style.pointerEvents='none';if(o.dataset.val===block.dataset.correct)o.classList.add('correct');else if(o.dataset.val===this.dataset.val)o.classList.add('wrong')});block.querySelector('.explanation').classList.add('visible')})});
+function submitMCQ(){let c=0;const b=document.querySelectorAll('.question-block');b.forEach((bl,i)=>{if(answered[i]===bl.dataset.correct)c++});if(b.length-Object.keys(answered).length>0){alert(`এখনও ${b.length-Object.keys(answered).length}টা বাকি!`);return}document.getElementById('scoreDisplay').textContent=c;const bn=document.getElementById('resultBanner');bn.classList.add('visible');bn.classList.add(c>=7?'pass':'fail');bn.textContent=c>=7?`🎉 দারুণ! ${c}/10 — Phase 2 Complete! 🏆`:`📖 ${c}/10 সঠিক। আবার পড়ো, ৭/১০ পেলেই pass।`}
+document.querySelectorAll('.nav-item[href^="#"]').forEach(l=>{l.addEventListener('click',e=>{e.preventDefault();document.getElementById(l.getAttribute('href').slice(1))?.scrollIntoView({behavior:'smooth'})})});
+</script>
+</body>
+</html>

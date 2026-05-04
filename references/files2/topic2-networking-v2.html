@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 1 · Topic 2 — Networking Basics for Engineers</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05080f;
+  --surface: #090e1a;
+  --card: #0c1220;
+  --border: #162035;
+  --border2: #1e2d4a;
+  --accent: #3b82f6;
+  --accent-glow: rgba(59,130,246,0.15);
+  --green: #10b981;
+  --green-glow: rgba(16,185,129,0.12);
+  --orange: #f97316;
+  --red: #ef4444;
+  --yellow: #eab308;
+  --purple: #8b5cf6;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --muted2: #94a3b8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Sans Bengali', sans-serif; line-height: 1.7; font-size: 15px; }
+body::after { content:''; position:fixed; inset:0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events:none; z-index:999; opacity:0.4; }
+.sidebar { position:fixed; left:0; top:0; bottom:0; width:240px; background:var(--surface); border-right:1px solid var(--border); padding:24px 0; overflow-y:auto; z-index:100; }
+.sidebar-logo { padding:0 20px 20px; border-bottom:1px solid var(--border); margin-bottom:16px; }
+.sidebar-logo .phase-tag { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent); letter-spacing:2px; text-transform:uppercase; display:block; margin-bottom:4px; }
+.sidebar-logo .course-title { font-family:'Fraunces',serif; font-size:16px; font-weight:700; line-height:1.3; }
+.nav-section { padding:0 12px; margin-bottom:8px; }
+.nav-section-label { font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:2px; color:var(--muted); padding:0 8px; margin-bottom:6px; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:4px; font-size:13px; color:var(--muted2); cursor:pointer; transition:all 0.15s; text-decoration:none; }
+.nav-item:hover { background:var(--card); color:var(--text); }
+.nav-item.active { background:var(--accent-glow); color:var(--accent); }
+.nav-item .nav-icon { font-size:14px; flex-shrink:0; }
+.nav-item .nav-num { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); margin-left:auto; }
+.progress-bar { position:fixed; top:0; left:240px; right:0; height:2px; background:var(--border); z-index:200; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--green)); width:0%; transition:width 0.1s; }
+.main { margin-left:240px; min-height:100vh; }
+.content { max-width:780px; margin:0 auto; padding:48px 40px 120px; }
+.topic-header { margin-bottom:48px; }
+.breadcrumb { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+.breadcrumb span { color:var(--accent); }
+.topic-num { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-bottom:10px; display:block; }
+h1.topic-title { font-family:'Fraunces',serif; font-size:clamp(32px,5vw,48px); font-weight:900; line-height:1.1; margin-bottom:16px; background:linear-gradient(135deg,#fff 30%,#93c5fd); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.topic-meta { display:flex; gap:16px; flex-wrap:wrap; }
+.meta-chip { font-family:'JetBrains Mono',monospace; font-size:11px; padding:4px 12px; border-radius:2px; border:1px solid; }
+.meta-chip.time { border-color:rgba(59,130,246,0.3); color:var(--accent); background:var(--accent-glow); }
+.meta-chip.level { border-color:rgba(16,185,129,0.3); color:var(--green); background:var(--green-glow); }
+.meta-chip.type { border-color:rgba(139,92,246,0.3); color:var(--purple); background:rgba(139,92,246,0.08); }
+.section { margin-bottom:48px; scroll-margin-top:24px; }
+.section-label { font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:3px; color:var(--accent); margin-bottom:12px; display:flex; align-items:center; gap:10px; }
+.section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+h2.section-title { font-family:'Fraunces',serif; font-size:24px; font-weight:700; margin-bottom:16px; color:#f1f5f9; }
+h3.sub-title { font-family:'Fraunces',serif; font-size:18px; font-weight:700; margin:24px 0 10px; color:#cbd5e1; }
+p { margin-bottom:14px; color:#cbd5e1; }
+.info-box { border-radius:6px; padding:18px 20px; margin:20px 0; border-left:3px solid; font-size:14px; }
+.info-box.concept { background:rgba(59,130,246,0.06); border-color:var(--accent); }
+.info-box.warning { background:rgba(249,115,22,0.06); border-color:var(--orange); }
+.info-box.tip { background:rgba(16,185,129,0.06); border-color:var(--green); }
+.info-box.important { background:rgba(234,179,8,0.06); border-color:var(--yellow); }
+.info-box .box-label { font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px; font-weight:700; }
+.info-box.concept .box-label { color:var(--accent); }
+.info-box.warning .box-label { color:var(--orange); }
+.info-box.tip .box-label { color:var(--green); }
+.info-box.important .box-label { color:var(--yellow); }
+.compare-table { width:100%; border-collapse:collapse; margin:20px 0; font-size:13px; }
+.compare-table th { font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:1px; padding:12px 16px; text-align:left; background:var(--card); border-bottom:2px solid var(--border2); color:var(--muted2); }
+.compare-table td { padding:11px 16px; border-bottom:1px solid var(--border); color:#94a3b8; vertical-align:top; line-height:1.6; }
+.compare-table tr:hover td { background:rgba(255,255,255,0.02); }
+.compare-table td:first-child { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text); white-space:nowrap; }
+.tag-yes { color:var(--green); font-weight:600; }
+.tag-no { color:var(--red); }
+.tag-med { color:var(--yellow); }
+.diagram { background:var(--card); border:1px solid var(--border2); border-radius:8px; padding:30px 20px; margin:24px 0; text-align:center; font-family:'JetBrains Mono',monospace; font-size:12px; overflow-x:auto; }
+.diagram svg { max-width:100%; }
+.code-block { background:#030608; border:1px solid var(--border2); border-radius:6px; margin:20px 0; overflow:hidden; }
+.code-header { display:flex; align-items:center; justify-content:space-between; padding:10px 16px; background:var(--card); border-bottom:1px solid var(--border); }
+.code-lang { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent); text-transform:uppercase; letter-spacing:1px; }
+.code-file { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); }
+pre { padding:20px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.8; color:#e2e8f0; }
+.kw { color:#93c5fd; } .fn { color:#6ee7b7; } .str { color:#fcd34d; } .cm { color:#475569; font-style:italic; } .num { color:#f9a8d4; } .var { color:#e2e8f0; }
+.scenario-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:20px 0; }
+.scenario-card { background:var(--card); border:1px solid var(--border); border-radius:6px; padding:18px; }
+.scenario-card .s-title { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; }
+.scenario-card p { font-size:13px; color:var(--muted2); margin:0; }
+.mcq-section { background:var(--surface); border:1px solid var(--border2); border-radius:8px; padding:28px; margin:30px 0; }
+.mcq-header { display:flex; align-items:center; gap:12px; margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+.mcq-icon { font-size:24px; }
+.mcq-header h2 { font-family:'Fraunces',serif; font-size:20px; font-weight:700; }
+.mcq-score { margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--muted); }
+.mcq-score span { color:var(--accent); font-size:18px; font-weight:700; }
+.question-block { margin-bottom:28px; padding-bottom:28px; border-bottom:1px solid var(--border); }
+.question-block:last-of-type { border-bottom:none; margin-bottom:0; }
+.q-num { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+.q-text { font-size:15px; font-weight:600; color:var(--text); margin-bottom:14px; line-height:1.5; font-family:'Noto Sans Bengali',sans-serif; }
+.options { display:flex; flex-direction:column; gap:8px; }
+.option { display:flex; align-items:flex-start; gap:12px; padding:12px 14px; border-radius:4px; border:1px solid var(--border); cursor:pointer; transition:all 0.15s; font-size:14px; color:var(--muted2); font-family:'Noto Sans Bengali',sans-serif; }
+.option:hover { border-color:var(--accent); color:var(--text); background:var(--accent-glow); }
+.option.correct { border-color:var(--green); background:var(--green-glow); color:#6ee7b7; }
+.option.wrong { border-color:var(--red); background:rgba(239,68,68,0.08); color:#fca5a5; }
+.option-key { font-family:'JetBrains Mono',monospace; font-size:11px; background:var(--border2); padding:2px 7px; border-radius:2px; flex-shrink:0; margin-top:1px; }
+.explanation { display:none; margin-top:12px; padding:12px 14px; background:rgba(16,185,129,0.06); border-left:2px solid var(--green); border-radius:0 4px 4px 0; font-size:13px; color:#94a3b8; line-height:1.7; font-family:'Noto Sans Bengali',sans-serif; }
+.explanation.visible { display:block; }
+.explanation strong { color:var(--green); }
+.mcq-submit { display:inline-flex; align-items:center; gap:8px; margin-top:20px; padding:12px 24px; background:var(--accent); color:#fff; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; border:none; border-radius:4px; cursor:pointer; letter-spacing:1px; transition:all 0.15s; }
+.mcq-submit:hover { background:#2563eb; transform:translateY(-1px); }
+.result-banner { display:none; margin-top:20px; padding:16px 20px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; }
+.result-banner.visible { display:block; }
+.result-banner.pass { background:var(--green-glow); border:1px solid var(--green); color:var(--green); }
+.result-banner.fail { background:rgba(249,115,22,0.08); border:1px solid var(--orange); color:var(--orange); }
+.assignment-section { background:linear-gradient(135deg,rgba(59,130,246,0.04),rgba(139,92,246,0.04)); border:1px solid rgba(59,130,246,0.2); border-radius:8px; padding:28px; margin:30px 0; }
+.assignment-header { display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+.assignment-icon { font-size:28px; }
+.assignment-header h2 { font-family:'Fraunces',serif; font-size:22px; font-weight:700; }
+.assignment-meta { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+.a-chip { font-family:'JetBrains Mono',monospace; font-size:11px; padding:3px 10px; border-radius:2px; }
+.a-chip.time { background:rgba(234,179,8,0.1); color:var(--yellow); border:1px solid rgba(234,179,8,0.2); }
+.a-chip.level { background:rgba(16,185,129,0.1); color:var(--green); border:1px solid rgba(16,185,129,0.2); }
+.task-list { counter-reset:tasks; list-style:none; margin-bottom:20px; }
+.task-list li { counter-increment:tasks; padding:14px 14px 14px 50px; position:relative; border-bottom:1px solid var(--border); font-size:14px; color:var(--muted2); line-height:1.7; font-family:'Noto Sans Bengali',sans-serif; }
+.task-list li:last-child { border-bottom:none; }
+.task-list li::before { content:counter(tasks); position:absolute; left:14px; top:14px; width:24px; height:24px; background:var(--accent-glow); border:1px solid rgba(59,130,246,0.3); border-radius:3px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent); display:flex; align-items:center; justify-content:center; font-weight:700; }
+.task-list li strong { color:var(--text); }
+.deliverable-box { background:var(--card); border:1px solid var(--border2); border-radius:6px; padding:16px 18px; margin-top:16px; }
+.deliverable-box .d-label { font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--purple); margin-bottom:10px; }
+.deliverable-box ul { list-style:none; padding:0; }
+.deliverable-box ul li { font-size:13px; color:var(--muted2); padding:4px 0 4px 18px; position:relative; font-family:'Noto Sans Bengali',sans-serif; }
+.deliverable-box ul li::before { content:'◆'; position:absolute; left:0; font-size:8px; color:var(--purple); top:6px; }
+.project-section { background:var(--card); border:1px solid var(--border2); border-radius:8px; overflow:hidden; margin:30px 0; }
+.project-header { background:linear-gradient(90deg,rgba(16,185,129,0.1),transparent); padding:18px 24px; border-bottom:1px solid var(--border2); display:flex; align-items:center; gap:12px; }
+.project-header h2 { font-family:'Fraunces',serif; font-size:20px; font-weight:700; color:var(--green); }
+.project-body { padding:24px; }
+.step-flow { display:flex; flex-direction:column; gap:0; margin:16px 0; }
+.step-item { display:flex; gap:16px; padding-bottom:24px; position:relative; }
+.step-item:last-child { padding-bottom:0; }
+.step-item::before { content:''; position:absolute; left:15px; top:32px; bottom:0; width:1px; background:var(--border2); }
+.step-item:last-child::before { display:none; }
+.step-circle { width:32px; height:32px; border-radius:50%; background:var(--green-glow); border:2px solid var(--green); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:var(--green); flex-shrink:0; z-index:1; }
+.step-content { flex:1; }
+.step-content h4 { font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text); margin-bottom:4px; }
+.step-content p { font-size:13px; color:var(--muted2); margin:0; }
+.next-cta { display:flex; align-items:center; justify-content:space-between; background:var(--surface); border:1px solid var(--border2); border-radius:8px; padding:20px 24px; margin-top:48px; text-decoration:none; color:var(--text); transition:border-color 0.2s; }
+.next-cta:hover { border-color:var(--accent); }
+.next-label { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:4px; }
+.next-title { font-family:'Fraunces',serif; font-size:18px; font-weight:700; }
+.next-arrow { font-size:24px; color:var(--accent); }
+code { font-family:'JetBrains Mono',monospace; font-size:12px; background:var(--card); border:1px solid var(--border2); padding:1px 6px; border-radius:3px; color:#93c5fd; }
+@media (max-width:768px) { .sidebar{display:none;} .main{margin-left:0;} .content{padding:24px 16px 80px;} .scenario-grid{grid-template-columns:1fr;} .progress-bar{left:0;} }
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 01 · Foundations</span>
+    <div class="course-title">System Design<br>Mastery Course</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Phase 1 Topics</div>
+    <a href="#" class="nav-item"><span class="nav-icon">🔢</span><span>Scalability</span><span class="nav-num">01</span></a>
+    <a href="#concept" class="nav-item active"><span class="nav-icon">🌐</span><span>Networking</span><span class="nav-num">02</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🗄️</span><span>Databases</span><span class="nav-num">03</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">📦</span><span>CAP Theorem</span><span class="nav-num">04</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px">
+    <div class="nav-section-label">This Lesson</div>
+    <a href="#concept" class="nav-item"><span class="nav-icon">💡</span><span>Concept</span></a>
+    <a href="#osi" class="nav-item"><span class="nav-icon">📊</span><span>OSI Model</span></a>
+    <a href="#tcp-udp" class="nav-item"><span class="nav-icon">🔄</span><span>TCP vs UDP</span></a>
+    <a href="#http" class="nav-item"><span class="nav-icon">🌍</span><span>HTTP &amp; DNS</span></a>
+    <a href="#lb" class="nav-item"><span class="nav-icon">⚖️</span><span>Load Balancing</span></a>
+    <a href="#realworld" class="nav-item"><span class="nav-icon">🏢</span><span>Real World</span></a>
+    <a href="#tools" class="nav-item"><span class="nav-icon">🔧</span><span>Tools Comparison</span></a>
+    <a href="#mcq" class="nav-item"><span class="nav-icon">✅</span><span>MCQ Test</span></a>
+    <a href="#assignment" class="nav-item"><span class="nav-icon">📝</span><span>Assignment</span></a>
+    <a href="#project" class="nav-item"><span class="nav-icon">🚀</span><span>Project Task</span></a>
+  </div>
+</nav>
+
+<main class="main">
+<div class="content">
+
+  <div class="topic-header" id="concept">
+    <div class="breadcrumb">Phase 1 — Foundations <span>›</span> Topic 02</div>
+    <span class="topic-num">TOPIC 02 / 04</span>
+    <h1 class="topic-title">Networking Basics<br>for Engineers</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ ৬০-৯০ মিনিট</span>
+      <span class="meta-chip level">📊 Junior Level</span>
+      <span class="meta-chip type">🌐 Infrastructure</span>
+    </div>
+  </div>
+
+  <!-- Why it matters -->
+  <div class="section">
+    <div class="section-label">Why It Matters</div>
+    <h2 class="section-title">Networking কেন শিখতে হবে?</h2>
+    <p>তুমি একটা API লিখলে। Production এ গিয়ে হঠাৎ slow হয়ে গেলো। Logs দেখলে কিছু বুঝছো না। Problem কোথায়? — Network layer এ। Networking না জানলে এই debug করা impossible।</p>
+    <p>System Design interview এ "Design Twitter" বললে — Load balancer কোথায় বসবে? CDN কেন লাগবে? TCP নাকি UDP? HTTP/2 কেন better? — এই সব answer দিতে হবে। <em>Networking হলো System Design এর backbone।</em></p>
+    <div class="info-box concept">
+      <div class="box-label">📌 Definition</div>
+      <strong>Networking</strong> হলো computers এর মধ্যে data exchange করার system। তুমি যখন <code>google.com</code> type করো — DNS lookup, TCP connection, HTTP request, TLS encryption — সব মিলিয়ে মাত্র ১০০ms এ response আসে। এই পুরো journey টাই networking।
+    </div>
+  </div>
+
+  <!-- OSI Model -->
+  <div class="section" id="osi">
+    <div class="section-label">OSI Model</div>
+    <h2 class="section-title">OSI Model — ৭টি Layer বোঝো</h2>
+    <p>OSI (Open Systems Interconnection) Model হলো networking এর conceptual framework। ৭টি layer এ কাজ ভাগ করা হয়। প্রতিটি layer শুধু নিচের layer এর সাথে কথা বলে।</p>
+    <p>মনে রাখার trick: <strong>"Please Do Not Throw Sausage Pizza Away"</strong> — Physical, Data Link, Network, Transport, Session, Presentation, Application।</p>
+
+    <div class="diagram">
+      <svg width="580" height="295" viewBox="0 0 580 295">
+        <!-- Layer 7 -->
+        <rect x="60" y="10" width="380" height="32" rx="3" fill="rgba(239,68,68,0.1)" stroke="rgba(239,68,68,0.5)" stroke-width="1"/>
+        <text x="250" y="31" text-anchor="middle" fill="#fca5a5" font-family="JetBrains Mono" font-size="11" font-weight="700">7 — APPLICATION</text>
+        <text x="460" y="31" fill="#64748b" font-family="JetBrains Mono" font-size="10">HTTP, DNS, SMTP</text>
+        <!-- Layer 6 -->
+        <rect x="60" y="47" width="380" height="32" rx="3" fill="rgba(249,115,22,0.08)" stroke="rgba(249,115,22,0.4)" stroke-width="1"/>
+        <text x="250" y="68" text-anchor="middle" fill="#fdba74" font-family="JetBrains Mono" font-size="11" font-weight="700">6 — PRESENTATION</text>
+        <text x="460" y="68" fill="#64748b" font-family="JetBrains Mono" font-size="10">TLS, SSL, JSON</text>
+        <!-- Layer 5 -->
+        <rect x="60" y="84" width="380" height="32" rx="3" fill="rgba(234,179,8,0.08)" stroke="rgba(234,179,8,0.4)" stroke-width="1"/>
+        <text x="250" y="105" text-anchor="middle" fill="#fde047" font-family="JetBrains Mono" font-size="11" font-weight="700">5 — SESSION</text>
+        <text x="460" y="105" fill="#64748b" font-family="JetBrains Mono" font-size="10">NetBIOS, PPTP</text>
+        <!-- Layer 4 — highlighted -->
+        <rect x="55" y="121" width="390" height="36" rx="3" fill="rgba(59,130,246,0.12)" stroke="#3b82f6" stroke-width="2"/>
+        <text x="250" y="144" text-anchor="middle" fill="#93c5fd" font-family="JetBrains Mono" font-size="12" font-weight="700">4 — TRANSPORT  ★  Key Layer</text>
+        <text x="460" y="144" fill="#3b82f6" font-family="JetBrains Mono" font-size="10">TCP, UDP</text>
+        <!-- Layer 3 — highlighted -->
+        <rect x="55" y="162" width="390" height="36" rx="3" fill="rgba(139,92,246,0.1)" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="250" y="185" text-anchor="middle" fill="#c4b5fd" font-family="JetBrains Mono" font-size="12" font-weight="700">3 — NETWORK  ★  Key Layer</text>
+        <text x="460" y="185" fill="#8b5cf6" font-family="JetBrains Mono" font-size="10">IP, ICMP, ARP</text>
+        <!-- Layer 2 -->
+        <rect x="60" y="203" width="380" height="32" rx="3" fill="rgba(16,185,129,0.07)" stroke="rgba(16,185,129,0.3)" stroke-width="1"/>
+        <text x="250" y="224" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="11" font-weight="700">2 — DATA LINK</text>
+        <text x="460" y="224" fill="#64748b" font-family="JetBrains Mono" font-size="10">Ethernet, MAC</text>
+        <!-- Layer 1 -->
+        <rect x="60" y="240" width="380" height="32" rx="3" fill="rgba(100,116,139,0.08)" stroke="rgba(100,116,139,0.3)" stroke-width="1"/>
+        <text x="250" y="261" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="11" font-weight="700">1 — PHYSICAL</text>
+        <text x="460" y="261" fill="#64748b" font-family="JetBrains Mono" font-size="10">Cables, Fiber</text>
+        <!-- Arrow label -->
+        <text x="25" y="30" fill="#3b82f6" font-family="JetBrains Mono" font-size="9">USER</text>
+        <text x="22" y="255" fill="#64748b" font-family="JetBrains Mono" font-size="9">WIRE</text>
+      </svg>
+    </div>
+
+    <div class="info-box tip">
+      <div class="box-label">💡 Interview এ মনে রাখো</div>
+      System Design এ সবচেয়ে বেশি Layer 4 (TCP/UDP) এবং Layer 7 (HTTP) নিয়ে কথা হয়। "Layer 7 Load Balancer" মানে HTTP header, URL path দেখে routing করে। "Layer 4 Load Balancer" মানে শুধু IP:Port দেখে route করে।
+    </div>
+  </div>
+
+  <!-- TCP vs UDP -->
+  <div class="section" id="tcp-udp">
+    <div class="section-label">Transport Layer</div>
+    <h2 class="section-title">TCP vs UDP — সবচেয়ে গুরুত্বপূর্ণ পার্থক্য</h2>
+
+    <h3 class="sub-title">TCP — 3-Way Handshake দিয়ে Connection</h3>
+    <p>TCP connection শুরু হওয়ার আগে তিনটা step এ handshake করে। তারপর reliable data transfer হয়। প্রতিটি packet এর acknowledgement (ACK) পাঠানো হয়।</p>
+
+    <div class="diagram">
+      <svg width="500" height="210" viewBox="0 0 500 210">
+        <defs>
+          <marker id="ar1" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#3b82f6"/></marker>
+          <marker id="ar2" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#10b981"/></marker>
+          <marker id="ar3" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#eab308"/></marker>
+        </defs>
+        <rect x="20" y="15" width="80" height="28" rx="3" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="60" y="33" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="10">CLIENT</text>
+        <line x1="60" y1="43" x2="60" y2="200" stroke="#1e2d4a" stroke-width="1" stroke-dasharray="4,3"/>
+        <rect x="400" y="15" width="80" height="28" rx="3" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="440" y="33" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="10">SERVER</text>
+        <line x1="440" y1="43" x2="440" y2="200" stroke="#1e2d4a" stroke-width="1" stroke-dasharray="4,3"/>
+        <!-- SYN -->
+        <path d="M 65 70 L 435 85" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#ar1)"/>
+        <text x="250" y="67" text-anchor="middle" fill="#93c5fd" font-family="JetBrains Mono" font-size="10">① SYN  (seq=100)  "আমি connect করতে চাই"</text>
+        <!-- SYN-ACK -->
+        <path d="M 435 105 L 65 120" stroke="#10b981" stroke-width="1.5" marker-end="url(#ar2)"/>
+        <text x="250" y="103" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="10">② SYN-ACK  (ack=101)  "ঠিক আছে, আমি ready"</text>
+        <!-- ACK -->
+        <path d="M 65 138 L 435 150" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#ar1)"/>
+        <text x="250" y="136" text-anchor="middle" fill="#93c5fd" font-family="JetBrains Mono" font-size="10">③ ACK  (ack=201)  "Connection confirmed!"</text>
+        <!-- Data -->
+        <path d="M 65 168 L 435 178" stroke="#eab308" stroke-width="2" stroke-dasharray="6,2" marker-end="url(#ar3)"/>
+        <text x="250" y="165" text-anchor="middle" fill="#fde047" font-family="JetBrains Mono" font-size="10">DATA TRANSFER শুরু</text>
+        <text x="250" y="200" text-anchor="middle" fill="#475569" font-family="JetBrains Mono" font-size="9">— Connection Established — এর পরেই data যায় —</text>
+      </svg>
+    </div>
+
+    <h3 class="sub-title">UDP — Fire and Forget</h3>
+    <p>UDP তে কোনো handshake নেই। Data পাঠিয়ে দাও — পৌঁছালো কিনা দেখো না। Overhead কম, তাই speed বেশি। Real-time applications এর জন্য perfect।</p>
+
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">✅ TCP use করো যখন</div>
+        <p>Data integrity critical। File transfer, Email, Banking, Database, Web pages (HTTP)। কোনো packet হারানো চলবে না।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">✅ UDP use করো যখন</div>
+        <p>Speed critical, কিছু packet loss acceptable। Online gaming, Video call, Live streaming, DNS। Latency সবচেয়ে গুরুত্বপূর্ণ।</p>
+      </div>
+    </div>
+
+    <table class="compare-table">
+      <tr><th>বিষয়</th><th>TCP</th><th>UDP</th></tr>
+      <tr><td>Connection</td><td>Connection-oriented (handshake)</td><td>Connectionless</td></tr>
+      <tr><td>Reliability</td><td class="tag-yes">✅ Guaranteed delivery</td><td class="tag-no">❌ Best-effort, no guarantee</td></tr>
+      <tr><td>Order</td><td class="tag-yes">✅ In-order delivery</td><td class="tag-no">❌ No ordering</td></tr>
+      <tr><td>Speed</td><td class="tag-med">⚠️ Slower (overhead বেশি)</td><td class="tag-yes">✅ Faster (overhead কম)</td></tr>
+      <tr><td>Header size</td><td>20 bytes</td><td>8 bytes</td></tr>
+      <tr><td>Use case</td><td>HTTP, FTP, Email, SSH, Banking</td><td>DNS, Gaming, Video call, IoT</td></tr>
+    </table>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Node.js</span>
+        <span class="code-file">tcp-vs-udp.js</span>
+      </div>
+      <pre><span class="kw">const</span> <span class="var">net</span> = <span class="fn">require</span>(<span class="str">'net'</span>);      <span class="cm">// TCP</span>
+<span class="kw">const</span> <span class="var">dgram</span> = <span class="fn">require</span>(<span class="str">'dgram'</span>);  <span class="cm">// UDP</span>
+
+<span class="cm">// TCP Server — reliable, connection-oriented</span>
+<span class="kw">const</span> <span class="var">tcpServer</span> = net.<span class="fn">createServer</span>((socket) => {
+  socket.<span class="fn">on</span>(<span class="str">'data'</span>, (data) => {
+    socket.<span class="fn">write</span>(`Echo: ${data}`);  <span class="cm">// ACK পাঠায়</span>
+  });
+});
+<span class="var">tcpServer</span>.<span class="fn">listen</span>(<span class="num">3000</span>);
+
+<span class="cm">// UDP Server — fast, connectionless, fire and forget</span>
+<span class="kw">const</span> <span class="var">udpServer</span> = dgram.<span class="fn">createSocket</span>(<span class="str">'udp4'</span>);
+<span class="var">udpServer</span>.<span class="fn">on</span>(<span class="str">'message'</span>, (msg, rinfo) => {
+  <span class="cm">// No ACK! Just process and move on</span>
+  console.<span class="fn">log</span>(`From ${rinfo.address}: ${msg}`);
+});
+<span class="var">udpServer</span>.<span class="fn">bind</span>(<span class="num">4000</span>);</pre>
+    </div>
+  </div>
+
+  <!-- HTTP & DNS -->
+  <div class="section" id="http">
+    <div class="section-label">Application Layer</div>
+    <h2 class="section-title">HTTP এবং DNS — প্রতিদিনের কাজ</h2>
+
+    <h3 class="sub-title">DNS — Internet এর Phone Book</h3>
+    <p>তুমি <code>facebook.com</code> type করো — কিন্তু computer বোঝে IP address। DNS এই translation করে। DNS lookup সবসময় cache থেকে শুরু হয়।</p>
+
+    <div class="diagram">
+      <svg width="600" height="155" viewBox="0 0 600 155">
+        <defs>
+          <marker id="dns-a" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#3b82f6"/></marker>
+        </defs>
+        <rect x="5" y="58" width="74" height="28" rx="3" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="42" y="76" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">BROWSER</text>
+        <path d="M 81 72 L 125 72" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#dns-a)"/>
+        <text x="103" y="65" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">① cache?</text>
+        <rect x="127" y="58" width="68" height="28" rx="3" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="161" y="76" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">OS CACHE</text>
+        <path d="M 197 72 L 245 72" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#dns-a)"/>
+        <text x="221" y="65" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">② miss!</text>
+        <rect x="247" y="55" width="76" height="36" rx="3" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="285" y="69" text-anchor="middle" fill="#93c5fd" font-family="JetBrains Mono" font-size="8">RECURSIVE</text>
+        <text x="285" y="82" text-anchor="middle" fill="#93c5fd" font-family="JetBrains Mono" font-size="8">RESOLVER</text>
+        <!-- Root -->
+        <rect x="365" y="10" width="72" height="28" rx="3" fill="#0c1220" stroke="#8b5cf6"/>
+        <text x="401" y="28" text-anchor="middle" fill="#c4b5fd" font-family="JetBrains Mono" font-size="9">ROOT NS</text>
+        <path d="M 325 65 L 398 38" stroke="#8b5cf6" stroke-width="1" marker-end="url(#dns-a)"/>
+        <text x="352" y="47" fill="#475569" font-family="JetBrains Mono" font-size="7">③</text>
+        <!-- TLD -->
+        <rect x="365" y="55" width="72" height="28" rx="3" fill="#0c1220" stroke="#10b981"/>
+        <text x="401" y="73" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9">TLD NS</text>
+        <path d="M 325 73 L 363 73" stroke="#10b981" stroke-width="1" marker-end="url(#dns-a)"/>
+        <text x="345" y="68" fill="#475569" font-family="JetBrains Mono" font-size="7">④</text>
+        <!-- Auth -->
+        <rect x="365" y="100" width="72" height="28" rx="3" fill="#0c1220" stroke="#f97316"/>
+        <text x="401" y="118" text-anchor="middle" fill="#fdba74" font-family="JetBrains Mono" font-size="9">AUTH NS</text>
+        <path d="M 325 78 L 398 100" stroke="#f97316" stroke-width="1" marker-end="url(#dns-a)"/>
+        <text x="352" y="96" fill="#475569" font-family="JetBrains Mono" font-size="7">⑤</text>
+        <!-- Return IP -->
+        <path d="M 365 114 L 295 80" stroke="#eab308" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#dns-a)"/>
+        <text x="460" y="118" fill="#fde047" font-family="JetBrains Mono" font-size="9">IP ফিরে আসে!</text>
+        <text x="285" y="148" text-anchor="middle" fill="#475569" font-family="JetBrains Mono" font-size="8">⑥ IP → Browser → TCP Connect → HTTP Request</text>
+      </svg>
+    </div>
+
+    <h3 class="sub-title">HTTP/1.1 vs HTTP/2 vs HTTP/3</h3>
+    <table class="compare-table">
+      <tr><th>Feature</th><th>HTTP/1.1</th><th>HTTP/2</th><th>HTTP/3</th></tr>
+      <tr><td>Year</td><td>1997</td><td>2015</td><td>2022</td></tr>
+      <tr><td>Multiplexing</td><td class="tag-no">❌ নেই</td><td class="tag-yes">✅ আছে</td><td class="tag-yes">✅ আছে</td></tr>
+      <tr><td>Transport</td><td>TCP</td><td>TCP</td><td>QUIC (UDP)</td></tr>
+      <tr><td>Header Compression</td><td class="tag-no">❌ নেই</td><td class="tag-yes">✅ HPACK</td><td class="tag-yes">✅ QPACK</td></tr>
+      <tr><td>Head-of-Line Blocking</td><td class="tag-no">❌ আছে</td><td class="tag-med">⚠️ TCP level এ</td><td class="tag-yes">✅ সমাধান</td></tr>
+      <tr><td>Use</td><td>Legacy</td><td>বেশিরভাগ sites</td><td>Google, Cloudflare</td></tr>
+    </table>
+
+    <div class="info-box warning">
+      <div class="box-label">⚠️ Head-of-Line Blocking কি?</div>
+      HTTP/1.1 এ একটি slow request পুরো queue block করে। ৫টা resource লোড হচ্ছে — একটা slow হলে বাকি ৪টা wait করে। HTTP/2 Multiplexing দিয়ে এটা fix করে — সব resource parallel এ আসে একই connection এ।
+    </div>
+  </div>
+
+  <!-- Load Balancing -->
+  <div class="section" id="lb">
+    <div class="section-label">Load Balancing</div>
+    <h2 class="section-title">Load Balancing — Traffic কীভাবে ভাগ হয়</h2>
+    <p>যখন একটা server handle করতে পারছে না, load balancer multiple servers এ traffic distribute করে। Server healthy আছে কিনা health check দিয়ে monitor করে — down হলে automatically বাদ দেয়।</p>
+
+    <div class="diagram">
+      <svg width="560" height="160" viewBox="0 0 560 160">
+        <defs>
+          <marker id="lb-a" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#3b82f6"/></marker>
+          <marker id="lb-b" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#6b7280"/></marker>
+        </defs>
+        <text x="30" y="82" text-anchor="middle" font-size="28">👥</text>
+        <text x="30" y="100" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">USERS</text>
+        <path d="M 55 80 L 95 80" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#lb-a)"/>
+        <rect x="97" y="60" width="96" height="40" rx="4" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="145" y="78" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="9">LOAD</text>
+        <text x="145" y="91" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="9">BALANCER</text>
+        <path d="M 195 68 L 285 30" stroke="#6b7280" stroke-width="1" marker-end="url(#lb-b)"/>
+        <path d="M 195 80 L 285 80" stroke="#6b7280" stroke-width="1" marker-end="url(#lb-b)"/>
+        <path d="M 195 92 L 285 130" stroke="#6b7280" stroke-width="1" marker-end="url(#lb-b)"/>
+        <rect x="287" y="14" width="90" height="30" rx="3" fill="#0c1220" stroke="#10b981" stroke-width="1"/>
+        <text x="332" y="33" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9">Server 1</text>
+        <rect x="287" y="64" width="90" height="30" rx="3" fill="#0c1220" stroke="#10b981" stroke-width="1"/>
+        <text x="332" y="83" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9">Server 2</text>
+        <rect x="287" y="114" width="90" height="30" rx="3" fill="#0c1220" stroke="#10b981" stroke-width="1"/>
+        <text x="332" y="133" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9">Server 3</text>
+        <path d="M 379 29 L 430 70" stroke="#475569" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#lb-b)"/>
+        <path d="M 379 79 L 430 79" stroke="#475569" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#lb-b)"/>
+        <path d="M 379 129 L 430 90" stroke="#475569" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#lb-b)"/>
+        <rect x="432" y="60" width="80" height="38" rx="3" fill="#0c1220" stroke="#8b5cf6" stroke-width="1"/>
+        <text x="472" y="77" text-anchor="middle" fill="#c4b5fd" font-family="JetBrains Mono" font-size="8">DATABASE</text>
+        <text x="472" y="90" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">(Shared)</text>
+      </svg>
+    </div>
+
+    <h3 class="sub-title">Load Balancing Algorithms</h3>
+    <table class="compare-table">
+      <tr><th>Algorithm</th><th>কীভাবে কাজ করে</th><th>Best For</th></tr>
+      <tr><td>Round Robin</td><td>একে একে প্রতিটি server এ পাঠায় (1→2→3→1→2→3)</td><td>Stateless apps, equal servers</td></tr>
+      <tr><td>Least Connections</td><td>সবচেয়ে কম active connection আছে সেখানে পাঠায়</td><td>Variable request duration</td></tr>
+      <tr><td>IP Hash</td><td>Client IP hash করে same server এ পাঠায়</td><td>Session persistence দরকার</td></tr>
+      <tr><td>Weighted RR</td><td>Powerful server বেশি traffic পায় (weight অনুযায়ী)</td><td>Heterogeneous servers</td></tr>
+    </table>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Nginx</span>
+        <span class="code-file">nginx-lb.conf</span>
+      </div>
+      <pre><span class="cm"># Layer 7 Load Balancer — URL দেখে intelligent routing</span>
+<span class="kw">upstream</span> <span class="fn">api_backend</span> {
+    least_conn;  <span class="cm"># Algorithm: least connections</span>
+    <span class="var">server</span> <span class="str">192.168.1.10:3000</span> weight=<span class="num">3</span>;  <span class="cm"># বেশি powerful server</span>
+    <span class="var">server</span> <span class="str">192.168.1.11:3000</span> weight=<span class="num">2</span>;
+    <span class="var">server</span> <span class="str">192.168.1.12:3000</span> weight=<span class="num">1</span>;
+}
+
+<span class="kw">server</span> {
+    listen <span class="num">80</span>;
+    <span class="cm"># API requests → backend</span>
+    location /api/ {
+        <span class="fn">proxy_pass</span> http://api_backend;
+        <span class="var">proxy_set_header</span> X-Real-IP $remote_addr;
+        <span class="var">proxy_connect_timeout</span> <span class="num">5s</span>;
+    }
+    <span class="cm"># Static files → CDN / local cache</span>
+    location /static/ {
+        root /var/www/static;
+        expires <span class="num">30d</span>;
+    }
+}</pre>
+    </div>
+  </div>
+
+  <!-- Real World -->
+  <div class="section" id="realworld">
+    <div class="section-label">Real World Examples</div>
+    <h2 class="section-title">বড় কোম্পানিগুলো কীভাবে করেছে</h2>
+
+    <h3 class="sub-title">📺 Netflix — UDP দিয়ে Streaming</h3>
+    <p>Netflix শুরুতে TCP দিয়ে streaming করতো। Problem ছিল TCP এর head-of-line blocking — একটা packet miss হলে video stutter করতো। তারা HTTP/3 (QUIC) তে migrate করে যা UDP-based। QUIC এ individual stream গুলো independent — একটা packet miss হলে শুধু সেই stream affected, বাকিগুলো চলে। Result: buffering উল্লেখযোগ্যভাবে কমে।</p>
+
+    <h3 class="sub-title">🎮 PUBG / Online Gaming — UDP এর ব্যবহার</h3>
+    <p>Game position updates UDP তে পাঠায় — প্রতি 60ms এ। কিছু packet miss হলেও problem নেই, পরের frame এ নতুন position আসবে। কিন্তু in-game purchase TCP তে — এখানে reliability দরকার। <strong>এটাই হলো real-world mixed protocol approach।</strong></p>
+
+    <div class="info-box tip">
+      <div class="box-label">💡 CDN — Content Delivery Network</div>
+      CDN globally distributed servers এ content cache করে। Bangladesh এর user Singapore CDN থেকে content পায় — ৩০০ms এর বদলে ৩০ms latency। Static assets (images, CSS, JS, videos) CDN এ দিলে app ১০x faster মনে হয়। Cloudflare, AWS CloudFront, Akamai popular CDN।
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Node.js</span>
+        <span class="code-file">websocket-chat.js</span>
+      </div>
+      <pre><span class="kw">const</span> <span class="var">WebSocket</span> = <span class="fn">require</span>(<span class="str">'ws'</span>);
+<span class="kw">const</span> <span class="var">http</span> = <span class="fn">require</span>(<span class="str">'http'</span>);
+
+<span class="cm">// WebSocket — HTTP upgrade করে persistent bidirectional connection</span>
+<span class="cm">// REST API তে server প্রথমে push করতে পারে না — WebSocket পারে!</span>
+<span class="kw">const</span> <span class="var">server</span> = http.<span class="fn">createServer</span>();
+<span class="kw">const</span> <span class="var">wss</span> = <span class="kw">new</span> WebSocket.<span class="fn">Server</span>({ server });
+<span class="kw">const</span> <span class="var">clients</span> = <span class="kw">new</span> Set();
+
+<span class="var">wss</span>.<span class="fn">on</span>(<span class="str">'connection'</span>, (ws) => {
+  clients.<span class="fn">add</span>(ws);
+  ws.<span class="fn">on</span>(<span class="str">'message'</span>, (msg) => {
+    <span class="cm">// Server push করছে — সব connected clients এ broadcast</span>
+    clients.<span class="fn">forEach</span>((c) => {
+      <span class="kw">if</span> (c.readyState === WebSocket.OPEN) c.<span class="fn">send</span>(`${msg}`);
+    });
+  });
+  ws.<span class="fn">on</span>(<span class="str">'close'</span>, () => clients.<span class="fn">delete</span>(ws));
+});
+server.<span class="fn">listen</span>(<span class="num">3000</span>);
+<span class="cm">// Use: Chat apps, Live feeds, Notifications, Collaborative tools</span></pre>
+    </div>
+  </div>
+
+  <!-- Tools Comparison -->
+  <div class="section" id="tools">
+    <div class="section-label">Tools Comparison</div>
+    <h2 class="section-title">Networking Tools — কোনটা কখন ব্যবহার করবে</h2>
+    <table class="compare-table">
+      <tr><th>Tool</th><th>Type</th><th>Best For</th><th>Protocol</th><th>কে ব্যবহার করে</th></tr>
+      <tr><td>Nginx</td><td>Reverse Proxy / LB</td><td>HTTP traffic, static files</td><td>HTTP/1.1, HTTP/2</td><td>Instagram, Dropbox</td></tr>
+      <tr><td>HAProxy</td><td>Load Balancer</td><td>High-perf TCP/HTTP LB</td><td>TCP, HTTP</td><td>GitHub, Reddit</td></tr>
+      <tr><td>AWS ALB</td><td>App Load Balancer</td><td>AWS, microservices</td><td>HTTP/2, WebSocket</td><td>Netflix, Airbnb</td></tr>
+      <tr><td>Cloudflare</td><td>CDN + DNS + DDoS</td><td>Global distribution</td><td>HTTP/3, QUIC</td><td>Discord, Canva</td></tr>
+      <tr><td>WebSocket</td><td>Protocol</td><td>Real-time bidirectional</td><td>TCP upgrade</td><td>Slack, WhatsApp Web</td></tr>
+      <tr><td>gRPC</td><td>RPC Framework</td><td>Microservice communication</td><td>HTTP/2</td><td>Google, Netflix</td></tr>
+    </table>
+
+    <div class="info-box important">
+      <div class="box-label">🎯 Interview এ এটা বলো</div>
+      "Real-time features এর জন্য WebSocket use করবো। Static assets CDN এ রাখবো। Load balancing এর জন্য Layer 7 (Nginx/ALB) ব্যবহার করবো যাতে URL-based routing করতে পারি। Microservices communication এ gRPC কারণ HTTP/2 এ binary protocol faster।" — এই কথাগুলো interviewer কে impress করে।
+    </div>
+  </div>
+
+  <!-- MCQ -->
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🧪</span>
+      <h2>MCQ Test</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">TCP এর 3-way handshake এর সঠিক sequence কোনটি?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> ACK → SYN → SYN-ACK</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> SYN → SYN-ACK → ACK</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> SYN → ACK → SYN-ACK</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> CONNECT → ACCEPT → CONFIRM</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Client প্রথমে SYN পাঠায় (connect করতে চাই), Server SYN-ACK দিয়ে respond করে (ready আছি), তারপর Client ACK পাঠিয়ে confirm করে। এই ৩টা step complete হলেই data transfer শুরু হয়।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">Online gaming এর জন্য কোন protocol বেশি উপযুক্ত?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> TCP — কারণ reliable delivery দরকার</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> HTTP/2 — কারণ multiplexing আছে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> UDP — low latency দরকার, কিছু packet loss acceptable</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> WebSocket — bidirectional বলে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Gaming এ latency সবচেয়ে গুরুত্বপূর্ণ। পুরোনো game state discard করে নতুনটা নেওয়া হয়, তাই packet loss সহনীয়। TCP এর retransmission overhead gaming এ unacceptable lag তৈরি করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">DNS resolution এর সঠিক order কোনটি?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Root NS → TLD NS → Browser Cache</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Authoritative NS → Root NS → Browser</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> ISP DNS → Root NS → OS Cache</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Browser Cache → OS Cache → Recursive Resolver → Root NS → TLD NS → Authoritative NS</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — DNS resolution সবসময় cache থেকে শুরু হয়। Browser cache miss হলে OS cache, তারপর ISP এর Recursive Resolver, তারপর Root → TLD → Authoritative server। প্রতিটি step TTL অনুযায়ী cache হয়।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">HTTP/2 এর সবচেয়ে বড় advantage কোনটি?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> UDP transport ব্যবহার করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Multiplexing — একই connection এ multiple parallel requests পাঠানো যায়</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Built-in end-to-end encryption</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Server-side sessions maintain করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — HTTP/1.1 এ requests serial বা আলাদা connection দরকার। HTTP/2 তে multiplexing — একই TCP connection এ simultaneous requests। এটাই most significant improvement যা page load অনেক fast করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">Layer 7 Load Balancer কি দেখে traffic route করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> HTTP headers, URL path, cookies — application content</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> শুধু IP address এবং Port number</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> MAC address</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> DNS records</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — L7 LB Application layer এ কাজ করে তাই HTTP content দেখতে পারে। /api/* → backend servers, /images/* → CDN এভাবে intelligent routing সম্ভব। L4 LB শুধু IP:Port দেখে — content বোঝে না।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">HTTPS এর default port number কত?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> 80</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> 8080</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> 443</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> 22</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — HTTP = port 80, HTTPS = port 443, SSH = port 22, MySQL = port 3306। এগুলো well-known ports (0-1023 range)। Development এ 8080/8443 ব্যবহার হয় কারণ 80/443 এ Linux এ root permission লাগে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">CDN এর primary purpose কি?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Database queries speed up করা</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> User এর কাছের server থেকে content serve করে latency কমানো</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Server-side rendering করা</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> User authentication handle করা</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — CDN globally distributed servers এ content cache করে। Bangladesh থেকে US server = ৩০০ms। Bangladesh থেকে Singapore CDN = ৩০ms। ১০x কম latency! Origin server এর load ও অনেক কমে।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">WebSocket HTTP থেকে মূলত কীভাবে আলাদা?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> WebSocket UDP ব্যবহার করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> WebSocket এ encryption নেই</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> WebSocket শুধু server থেকে client এ যায়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> WebSocket persistent bidirectional — server যেকোনো সময় push করতে পারে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — HTTP এ client request না করলে server data পাঠাতে পারে না। WebSocket এ persistent connection থাকে — server নতুন message আসলে সাথে সাথে push করে। Chat app, live notifications এর জন্য perfect।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">Reverse Proxy কি করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Client এর সামনে backend servers hide করে, SSL termination ও load balancing করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Client এর identity hide করে (VPN এর মতো)</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> শুধু DNS queries handle করে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Database connection pool manage করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Reverse proxy backend এর সামনে থাকে। Client জানে না পেছনে কতটা server। SSL termination, load balancing, caching, rate limiting সব করতে পারে। Forward proxy client এর সামনে থাকে, client এর identity hide করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">HTTP/3 কোন transport protocol ব্যবহার করে এবং কেন?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> TCP — backward compatible বলে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> TCP + TLS — security বলে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> QUIC (UDP-based) — TCP এর head-of-line blocking solve করতে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Raw UDP — সবচেয়ে fast বলে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — HTTP/3 QUIC protocol ব্যবহার করে যা UDP এর উপর built কিন্তু reliability add করে। TCP তে একটা packet miss হলে সব streams block হয়। QUIC এ streams independent — একটা miss করলে শুধু সেই stream affected। Mobile networks এ বিশেষভাবে effective।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT &amp; CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <!-- Assignment -->
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ২-৩ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <p style="margin-bottom:16px; font-size:14px; color:#94a3b8;">নিচের tasks গুলো complete করো। Networking practically বোঝার জন্য এগুলো অপরিহার্য।</p>
+    <ul class="task-list">
+      <li>
+        <strong>HTTP Headers Analysis:</strong> Browser DevTools (F12 → Network tab) খোলো। তোমার পছন্দের ৩টা website visit করো। প্রতিটির জন্য note করো — HTTP version কত? Server header কি? Cache-Control কি বলছে? কোনো WebSocket connection আছে? Screenshot সহ report লেখো।
+      </li>
+      <li>
+        <strong>DNS Lookup Practice:</strong> Terminal এ <code>nslookup google.com</code> এবং <code>dig google.com +trace</code> command run করো। Output বিশ্লেষণ করো — কোন nameserver use হলো? A record, CNAME record চেনো। TTL value কত? ৩টা আলাদা domain এ চেষ্টা করো।
+      </li>
+      <li>
+        <strong>Protocol Scenario Design:</strong> একটা live cricket score app design করো। লেখো — score update real-time পাঠাতে WebSocket নাকি HTTP polling? Player statistics API এ TCP নাকি UDP? Video highlights CDN থেকে নাকি origin? প্রতিটি decision justify করো।
+      </li>
+      <li>
+        <strong>TCP vs UDP Decision Table:</strong> নিচের ৫টি use case এর জন্য TCP বা UDP choose করো এবং কারণ লেখো: (ক) Gmail পাঠানো (খ) YouTube Live stream দেখা (গ) bKash mobile banking (ঘ) Online PUBG game (ঙ) ৫GB file download।
+      </li>
+      <li>
+        <strong>Latency Measurement:</strong> Terminal এ <code>curl -w "\nConnect: %{time_connect}s\nTTFB: %{time_starttransfer}s\nTotal: %{time_total}s\n" -o /dev/null -s https://google.com</code> run করো। ৫টা আলাদা site measure করো এবং CDN আছে কিনা অনুমান করো।
+      </li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables (কী জমা দিতে হবে)</div>
+      <ul>
+        <li>DevTools screenshot সহ HTTP headers analysis</li>
+        <li>DNS lookup output এর বাংলায় ব্যাখ্যা</li>
+        <li>Cricket app networking design (diagram সহ)</li>
+        <li>TCP vs UDP decision table with justification</li>
+        <li>Latency benchmark result comparison</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project -->
+  <div class="project-section" id="project">
+    <div class="project-header">
+      <span style="font-size:24px">🚀</span>
+      <h2>Hands-On Project Task</h2>
+    </div>
+    <div class="project-body">
+      <p style="font-size:14px; color:#94a3b8; margin-bottom:20px;">WebSocket Chat Server তৈরি করো — Nginx Load Balancer সহ। Practically দেখবে network connection কীভাবে কাজ করে।</p>
+
+      <h3 style="font-family:'Fraunces',serif; font-size:18px; margin-bottom:16px; color:#f1f5f9;">Real-time Chat with WebSocket + Nginx LB</h3>
+
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-circle">1</div>
+          <div class="step-content">
+            <h4>Node.js WebSocket Server — দুটো instance</h4>
+            <p><code>ws</code> library দিয়ে port 3001 এবং 3002 তে দুটো server বানাও। Message এলে সব connected clients এ broadcast করবে।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">2</div>
+          <div class="step-content">
+            <h4>Nginx IP Hash — WebSocket Sticky Session</h4>
+            <p>WebSocket এ sticky session দরকার। <code>ip_hash</code> algorithm configure করো — একই client সবসময় একই server এ যাবে।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">3</div>
+          <div class="step-content">
+            <h4>HTML Client বানাও</h4>
+            <p>Browser এ WebSocket connect করবে। Chat input এবং message display। কোন server handle করছে সেটা দেখাও।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">4</div>
+          <div class="step-content">
+            <h4>Docker Compose দিয়ে Run করো</h4>
+            <p>২টা Node.js service + ১টা Nginx service। <code>docker-compose up</code> দিলেই সব চলবে।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">5</div>
+          <div class="step-content">
+            <h4>DevTools এ WebSocket দেখো</h4>
+            <p>F12 → Network → WS filter। WebSocket frames দেখো। HTTP Upgrade header observe করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">6</div>
+          <div class="step-content">
+            <h4>Bonus — একটা server kill করো</h4>
+            <p><code>docker stop</code> দিয়ে একটা server বন্ধ করো। IP Hash এর কারণে কি ঘটে? Reconnect কি হয়?</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block" style="margin-top:20px">
+        <div class="code-header">
+          <span class="code-lang">Node.js</span>
+          <span class="code-file">ws-server.js</span>
+        </div>
+        <pre><span class="kw">const</span> <span class="var">WebSocket</span> = <span class="fn">require</span>(<span class="str">'ws'</span>);
+<span class="kw">const</span> <span class="var">http</span> = <span class="fn">require</span>(<span class="str">'http'</span>);
+
+<span class="kw">const</span> <span class="var">PORT</span> = process.env.PORT || <span class="num">3001</span>;
+<span class="kw">const</span> <span class="var">NAME</span> = process.env.SERVER_NAME || <span class="str">'Server-1'</span>;
+
+<span class="kw">const</span> <span class="var">server</span> = http.<span class="fn">createServer</span>();
+<span class="kw">const</span> <span class="var">wss</span> = <span class="kw">new</span> WebSocket.<span class="fn">Server</span>({ server });
+<span class="kw">const</span> <span class="var">clients</span> = <span class="kw">new</span> Set();
+
+<span class="var">wss</span>.<span class="fn">on</span>(<span class="str">'connection'</span>, (ws) => {
+  clients.<span class="fn">add</span>(ws);
+  <span class="cm">// Server কোনটা handle করছে সেটা client কে জানাও</span>
+  ws.<span class="fn">send</span>(JSON.<span class="fn">stringify</span>({ type: <span class="str">'info'</span>, server: NAME }));
+
+  ws.<span class="fn">on</span>(<span class="str">'message'</span>, (msg) => {
+    <span class="cm">// সব clients এ broadcast করো</span>
+    clients.<span class="fn">forEach</span>((c) => {
+      <span class="kw">if</span> (c.readyState === WebSocket.OPEN)
+        c.<span class="fn">send</span>(JSON.<span class="fn">stringify</span>({ type: <span class="str">'msg'</span>, text: `${msg}`, from: NAME }));
+    });
+  });
+  ws.<span class="fn">on</span>(<span class="str">'close'</span>, () => clients.<span class="fn">delete</span>(ws));
+});
+
+server.<span class="fn">listen</span>(<span class="var">PORT</span>, () => console.<span class="fn">log</span>(`${NAME} on :${PORT}`));</pre>
+      </div>
+
+      <div class="info-box tip" style="margin-top:16px">
+        <div class="box-label">🎯 এটা করলে যা শিখবে</div>
+        DevTools এ WebSocket connection দেখবে কীভাবে HTTP থেকে upgrade হয়। IP Hash কেন WebSocket এ দরকার সেটা practically বুঝবে। একটা server kill করলে কী ঘটে — এটাই real production challenge।
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-label">Lesson Summary</div>
+    <h2 class="section-title">আজকে যা শিখলাম</h2>
+    <table class="compare-table">
+      <tr><th>Concept</th><th>এক লাইনে</th></tr>
+      <tr><td>OSI Model</td><td>৭ layer — Physical থেকে Application, প্রতিটির আলাদা role</td></tr>
+      <tr><td>TCP</td><td>Reliable, connection-oriented — HTTP, banking, file transfer</td></tr>
+      <tr><td>UDP</td><td>Fast, no guarantee — gaming, video call, DNS</td></tr>
+      <tr><td>DNS</td><td>Domain → IP translation, cache hierarchy দিয়ে fast</td></tr>
+      <tr><td>HTTP/2</td><td>Multiplexing — একই connection এ multiple parallel requests</td></tr>
+      <tr><td>Load Balancer L4</td><td>IP:Port দেখে route — fast, simple</td></tr>
+      <tr><td>Load Balancer L7</td><td>URL/Header দেখে route — intelligent, flexible</td></tr>
+      <tr><td>WebSocket</td><td>Persistent bidirectional — server push করতে পারে</td></tr>
+      <tr><td>CDN</td><td>User এর কাছে content cache = অনেক কম latency</td></tr>
+    </table>
+  </div>
+
+  <!-- Next Topic CTA -->
+  <div class="next-cta">
+    <div>
+      <div class="next-label">Next Topic →</div>
+      <div class="next-title">🗄️ Database Fundamentals</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+
+</div>
+</main>
+
+<script>
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scroll = doc.scrollTop || document.body.scrollTop;
+  const height = doc.scrollHeight - doc.clientHeight;
+  document.getElementById('progressFill').style.width = ((scroll / height) * 100) + '%';
+});
+
+let answered = {};
+
+document.querySelectorAll('.option').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const block = this.closest('.question-block');
+    const qId = Array.from(document.querySelectorAll('.question-block')).indexOf(block);
+    if (answered[qId]) return;
+    answered[qId] = this.dataset.val;
+    block.querySelectorAll('.option').forEach(o => {
+      o.style.pointerEvents = 'none';
+      if (o.dataset.val === block.dataset.correct) o.classList.add('correct');
+      else if (o.dataset.val === this.dataset.val && this.dataset.val !== block.dataset.correct) o.classList.add('wrong');
+    });
+    block.querySelector('.explanation').classList.add('visible');
+  });
+});
+
+function submitMCQ() {
+  let correct = 0;
+  const blocks = document.querySelectorAll('.question-block');
+  blocks.forEach((block, i) => { if (answered[i] === block.dataset.correct) correct++; });
+  const unanswered = blocks.length - Object.keys(answered).length;
+  if (unanswered > 0) { alert(`এখনও ${unanswered}টা প্রশ্নের উত্তর দাওনি!`); return; }
+  document.getElementById('scoreDisplay').textContent = correct;
+  const banner = document.getElementById('resultBanner');
+  banner.classList.add('visible');
+  if (correct >= 7) { banner.classList.add('pass'); banner.textContent = `🎉 দারুণ! ${correct}/10 সঠিক। পরের topic এ যেতে পারো!`; }
+  else { banner.classList.add('fail'); banner.textContent = `📖 ${correct}/10 সঠিক। Concept গুলো আবার পড়ো এবং retry করো। ৭/১০ পেলেই pass।`; }
+}
+
+document.querySelectorAll('.nav-item[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    document.getElementById(link.getAttribute('href').slice(1))?.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>

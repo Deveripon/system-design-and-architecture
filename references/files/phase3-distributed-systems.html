@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 3 — Distributed Systems</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:wght@300;700;900&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05080f;--surface:#090e1a;--card:#0c1220;--border:#162035;--border2:#1e2d4a;--accent:#3b82f6;--ag:rgba(59,130,246,0.12);--green:#10b981;--gg:rgba(16,185,129,0.1);--orange:#f97316;--red:#ef4444;--yellow:#eab308;--purple:#8b5cf6;--text:#e2e8f0;--muted:#64748b;--muted2:#94a3b8}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans Bengali',sans-serif;line-height:1.7;font-size:15px}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.phase-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--orange);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:4px}
+.course-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;line-height:1.3}
+.nav-section{padding:0 12px;margin-bottom:8px}
+.nav-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);padding:0 8px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:4px;font-size:13px;color:var(--muted2);cursor:pointer;transition:all .15s;text-decoration:none}
+.nav-item:hover{background:var(--card);color:var(--text)}
+.nav-item.active{background:rgba(249,115,22,.1);color:var(--orange)}
+.nav-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto}
+.progress-bar{position:fixed;top:0;left:240px;right:0;height:2px;background:var(--border);z-index:200}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--yellow));width:0%;transition:width .1s}
+.main{margin-left:240px;min-height:100vh}
+.content{max-width:800px;margin:0 auto;padding:48px 40px 120px}
+.topic-header{margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border)}
+.breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.breadcrumb span{color:var(--orange)}
+h1.topic-title{font-family:'Fraunces',serif;font-size:clamp(28px,4vw,44px);font-weight:900;line-height:1.1;margin-bottom:14px;background:linear-gradient(135deg,#fff 30%,#fdba74);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topic-meta{display:flex;gap:12px;flex-wrap:wrap}
+.meta-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 12px;border-radius:2px;border:1px solid}
+.mc-orange{border-color:rgba(249,115,22,.3);color:var(--orange);background:rgba(249,115,22,.08)}
+.mc-green{border-color:rgba(16,185,129,.3);color:var(--green);background:var(--gg)}
+.mc-purple{border-color:rgba(139,92,246,.3);color:var(--purple);background:rgba(139,92,246,.08)}
+.section{margin-bottom:52px;scroll-margin-top:24px}
+.sec-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:3px;color:var(--orange);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+h2.sec-title{font-family:'Fraunces',serif;font-size:26px;font-weight:700;margin-bottom:16px;color:#f1f5f9}
+h3.sub{font-family:'Fraunces',serif;font-size:19px;font-weight:700;margin:28px 0 10px;color:#cbd5e1}
+h4.subsub{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;margin:18px 0 8px;color:var(--orange)}
+p{margin-bottom:14px;color:#cbd5e1}
+strong{color:#f1f5f9}
+.ib{border-radius:6px;padding:18px 20px;margin:20px 0;border-left:3px solid;font-size:14px;line-height:1.7}
+.ib-blue{background:rgba(59,130,246,.06);border-color:var(--accent)}
+.ib-orange{background:rgba(249,115,22,.06);border-color:var(--orange)}
+.ib-green{background:rgba(16,185,129,.06);border-color:var(--green)}
+.ib-yellow{background:rgba(234,179,8,.06);border-color:var(--yellow)}
+.ib-purple{background:rgba(139,92,246,.06);border-color:var(--purple)}
+.ib-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:700}
+.ib-blue .ib-label{color:var(--accent)}.ib-orange .ib-label{color:var(--orange)}.ib-green .ib-label{color:var(--green)}.ib-yellow .ib-label{color:var(--yellow)}.ib-purple .ib-label{color:var(--purple)}
+table.ct{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px}
+table.ct th{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1px;padding:12px 16px;text-align:left;background:var(--card);border-bottom:2px solid var(--border2);color:var(--muted2)}
+table.ct td{padding:11px 16px;border-bottom:1px solid var(--border);color:#94a3b8;vertical-align:top;line-height:1.6}
+table.ct tr:hover td{background:rgba(255,255,255,.02)}
+table.ct td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text)}
+.tg{color:var(--green);font-weight:600}.tr{color:var(--red)}.ty{color:var(--yellow)}
+.diagram{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:30px 20px;margin:24px 0;text-align:center;overflow-x:auto}
+.code-block{background:#030608;border:1px solid var(--border2);border-radius:6px;margin:20px 0;overflow:hidden}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--border)}
+.code-lang{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--orange);text-transform:uppercase;letter-spacing:1px}
+.code-file{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)}
+pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.8;color:#e2e8f0}
+.kw{color:#93c5fd}.fn{color:#6ee7b7}.str{color:#fcd34d}.cm{color:#475569;font-style:italic}.num{color:#f9a8d4}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:20px 0}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:18px}
+.sc-title{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--orange);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+.sc p{font-size:13px;color:var(--muted2);margin:0;line-height:1.6}
+.topic-divider{border:none;border-top:2px solid var(--border2);margin:60px 0;position:relative}
+.topic-divider::before{content:attr(data-label);position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--bg);padding:0 16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--orange);letter-spacing:2px;text-transform:uppercase}
+.mcq-section{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:28px;margin:30px 0}
+.mcq-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.mcq-score{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted)}
+.mcq-score span{color:var(--orange);font-size:18px;font-weight:700}
+.qblock{margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--border)}
+.qblock:last-of-type{border-bottom:none;margin-bottom:0}
+.qnum{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.qtext{font-size:15px;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.5}
+.options{display:flex;flex-direction:column;gap:8px}
+.option{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:4px;border:1px solid var(--border);cursor:pointer;transition:all .15s;font-size:14px;color:var(--muted2)}
+.option:hover{border-color:var(--orange);color:var(--text);background:rgba(249,115,22,.06)}
+.option.correct{border-color:var(--green);background:var(--gg);color:#6ee7b7}
+.option.wrong{border-color:var(--red);background:rgba(239,68,68,.08);color:#fca5a5}
+.okey{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--border2);padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px}
+.expl{display:none;margin-top:12px;padding:12px 14px;background:rgba(16,185,129,.06);border-left:2px solid var(--green);border-radius:0 4px 4px 0;font-size:13px;color:#94a3b8;line-height:1.7}
+.expl.visible{display:block}
+.mcq-btn{display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:12px 24px;background:var(--orange);color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;border:none;border-radius:4px;cursor:pointer;letter-spacing:1px;transition:all .15s}
+.mcq-btn:hover{background:#ea580c;transform:translateY(-1px)}
+.result{display:none;margin-top:20px;padding:16px 20px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700}
+.result.visible{display:block}
+.result.pass{background:var(--gg);border:1px solid var(--green);color:var(--green)}
+.result.fail{background:rgba(249,115,22,.08);border:1px solid var(--orange);color:var(--orange)}
+.assign{background:linear-gradient(135deg,rgba(249,115,22,.04),rgba(234,179,8,.04));border:1px solid rgba(249,115,22,.2);border-radius:8px;padding:28px;margin:30px 0}
+.assign h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700;margin-bottom:12px}
+.a-meta{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.ac{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 10px;border-radius:2px}
+.ac-y{background:rgba(234,179,8,.1);color:var(--yellow);border:1px solid rgba(234,179,8,.2)}
+.ac-g{background:rgba(16,185,129,.1);color:var(--green);border:1px solid rgba(16,185,129,.2)}
+.task-list{counter-reset:tasks;list-style:none;margin-bottom:20px}
+.task-list li{counter-increment:tasks;padding:14px 14px 14px 50px;position:relative;border-bottom:1px solid var(--border);font-size:14px;color:var(--muted2);line-height:1.7}
+.task-list li:last-child{border-bottom:none}
+.task-list li::before{content:counter(tasks);position:absolute;left:14px;top:14px;width:24px;height:24px;background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.3);border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--orange);display:flex;align-items:center;justify-content:center;font-weight:700}
+.deliver{background:var(--card);border:1px solid var(--border2);border-radius:6px;padding:16px 18px;margin-top:16px}
+.deliver-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--purple);margin-bottom:10px}
+.deliver ul{list-style:none;padding:0}
+.deliver ul li{font-size:13px;color:var(--muted2);padding:4px 0 4px 18px;position:relative}
+.deliver ul li::before{content:'◆';position:absolute;left:0;font-size:8px;color:var(--purple);top:6px}
+.project{background:var(--card);border:1px solid var(--border2);border-radius:8px;overflow:hidden;margin:30px 0}
+.proj-header{background:linear-gradient(90deg,rgba(16,185,129,.1),transparent);padding:18px 24px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:12px}
+.proj-header h2{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--green)}
+.proj-body{padding:24px}
+.steps{display:flex;flex-direction:column}
+.step{display:flex;gap:16px;padding-bottom:24px;position:relative}
+.step:last-child{padding-bottom:0}
+.step::before{content:'';position:absolute;left:15px;top:32px;bottom:0;width:1px;background:var(--border2)}
+.step:last-child::before{display:none}
+.step-circle{width:32px;height:32px;border-radius:50%;background:var(--gg);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--green);flex-shrink:0;z-index:1}
+.step-content h4{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);margin-bottom:4px}
+.step-content p{font-size:13px;color:var(--muted2);margin:0}
+@media(max-width:768px){.sidebar{display:none}.main{margin-left:0}.content{padding:24px 16px 80px}.grid2,.grid3{grid-template-columns:1fr}.progress-bar{left:0}}
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="pf"></div></div>
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 03 · Distributed Systems</span>
+    <div class="course-title">System Design<br>Mastery Course</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Phase 3 Topics</div>
+    <a href="#t1" class="nav-item active"><span>🧩</span><span>Microservices</span><span class="nav-num">01</span></a>
+    <a href="#t2" class="nav-item"><span>🔒</span><span>Consensus</span><span class="nav-num">02</span></a>
+    <a href="#t3" class="nav-item"><span>🔄</span><span>Circuit Breaker</span><span class="nav-num">03</span></a>
+    <a href="#t4" class="nav-item"><span>🌊</span><span>Rate Limiting</span><span class="nav-num">04</span></a>
+    <a href="#t5" class="nav-item"><span>🔑</span><span>Service Discovery</span><span class="nav-num">05</span></a>
+    <a href="#t6" class="nav-item"><span>📋</span><span>Saga Pattern</span><span class="nav-num">06</span></a>
+    <a href="#mcq" class="nav-item"><span>✅</span><span>MCQ Test</span></a>
+    <a href="#assign" class="nav-item"><span>📝</span><span>Assignment</span></a>
+    <a href="#project" class="nav-item"><span>🚀</span><span>Project</span></a>
+  </div>
+</nav>
+<main class="main">
+<div class="content">
+
+<div class="topic-header">
+  <div class="breadcrumb">System Design Course <span>›</span> Phase 3</div>
+  <h1 class="topic-title">Distributed Systems</h1>
+  <div class="topic-meta">
+    <span class="meta-chip mc-orange">⏱ ৬-৮ সপ্তাহ</span>
+    <span class="meta-chip mc-green">📊 Mid → Senior Level</span>
+    <span class="meta-chip mc-purple">🏗️ 6 Topics</span>
+  </div>
+</div>
+
+<!-- TOPIC 1: MICROSERVICES -->
+<div class="section" id="t1">
+<div class="sec-label">Topic 01</div>
+<h2 class="sec-title">🧩 Microservices Architecture</h2>
+
+<p>Microservices মানে একটা বড় app কে ছোট ছোট independent service এ ভাগ করা যেগুলো নিজেদের মধ্যে communicate করে। প্রতিটা service একটাই কাজ ভালো করে।</p>
+
+<h3 class="sub">Monolith vs Microservices — কখন কোনটা?</h3>
+<table class="ct">
+<tr><th>বিষয়</th><th>Monolith</th><th>Microservices</th></tr>
+<tr><td>শুরুতে</td><td class="tg">Simple, fast development</td><td class="tr">Over-engineering</td></tr>
+<tr><td>Team size</td><td class="tg">ছোট team (&lt;20)</td><td class="tg">বড় team (100+)</td></tr>
+<tr><td>Deploy</td><td class="tr">পুরো app একসাথে</td><td class="tg">Individual services</td></tr>
+<tr><td>Scale</td><td class="tr">পুরো app scale করতে হয়</td><td class="tg">Specific service scale করো</td></tr>
+<tr><td>Fault isolation</td><td class="tr">একটা bug সব down করে</td><td class="tg">Isolated failures</td></tr>
+<tr><td>Database</td><td class="tg">Shared, easy joins</td><td class="tr">Per-service DB, complex</td></tr>
+<tr><td>Best for</td><td>Startup, MVP, simple apps</td><td>Large scale, multiple teams</td></tr>
+</table>
+
+<div class="ib ib-yellow"><div class="ib-label">🎯 Industry Advice</div>
+Martin Fowler বলেন: <strong>"Don't start with microservices."</strong> Monolith দিয়ে শুরু করো, boundaries বোঝো, তারপর microservices এ extract করো। Amazon, Netflix সবাই monolith দিয়ে শুরু করেছিলো।
+</div>
+
+<h3 class="sub">Service Communication Patterns</h3>
+<div class="grid2">
+<div class="sc"><div class="sc-title">🔗 Synchronous (REST/gRPC)</div><p>Service A → Service B কে directly call করে, response আসা পর্যন্ত wait করে। Simple কিন্তু tight coupling। B slow হলে A ও slow।</p></div>
+<div class="sc"><div class="sc-title">📨 Asynchronous (Queue/Event)</div><p>Service A message পাঠায়, wait করে না। B নিজের pace এ process করে। Loose coupling, resilient কিন্তু complex debugging।</p></div>
+</div>
+
+<h3 class="sub">Service Mesh — Istio/Linkerd</h3>
+<p>Microservices এ প্রতিটা service-to-service call এ auth, retry, timeout, circuit breaking লাগে। এটা প্রতিটা service এ লেখা DRY violation। <strong>Service Mesh</strong> এটা infrastructure level এ handle করে।</p>
+<div class="ib ib-blue"><div class="ib-label">📌 Service Mesh Features</div>
+<strong>mTLS:</strong> Service-to-service encrypted এবং authenticated communication<br>
+<strong>Load Balancing:</strong> Smart L7 load balancing<br>
+<strong>Circuit Breaking:</strong> Automatic failure detection<br>
+<strong>Observability:</strong> Automatic tracing, metrics<br>
+<strong>Traffic Management:</strong> Canary deployment, A/B testing
+</div>
+
+<div class="code-block">
+<div class="code-header"><span class="code-lang">Docker Compose</span><span class="code-file">microservices.yml</span></div>
+<pre><span class="cm"># Simple microservices setup</span>
+<span class="kw">version:</span> <span class="str">'3.8'</span>
+<span class="kw">services:</span>
+  <span class="cm"># API Gateway — single entry point</span>
+  <span class="fn">api-gateway:</span>
+    <span class="kw">image:</span> nginx
+    <span class="kw">ports:</span> [<span class="str">"80:80"</span>]
+    <span class="kw">volumes:</span> [<span class="str">"./gateway.conf:/etc/nginx/nginx.conf"</span>]
+
+  <span class="cm"># User Service — নিজের database</span>
+  <span class="fn">user-service:</span>
+    <span class="kw">build:</span> ./user-service
+    <span class="kw">environment:</span>
+      <span class="kw">DB_URL:</span> <span class="str">postgresql://user-db/users</span>
+  <span class="fn">user-db:</span>
+    <span class="kw">image:</span> postgres:15
+
+  <span class="cm"># Order Service — আলাদা database</span>
+  <span class="fn">order-service:</span>
+    <span class="kw">build:</span> ./order-service
+    <span class="kw">environment:</span>
+      <span class="kw">DB_URL:</span> <span class="str">mongodb://order-db/orders</span>
+  <span class="fn">order-db:</span>
+    <span class="kw">image:</span> mongo:6
+
+  <span class="cm"># Message broker — async communication</span>
+  <span class="fn">kafka:</span>
+    <span class="kw">image:</span> confluentinc/cp-kafka</pre>
+</div>
+</div>
+
+<hr class="topic-divider" data-label="Topic 02">
+
+<!-- TOPIC 2: CONSENSUS -->
+<div class="section" id="t2">
+<div class="sec-label">Topic 02</div>
+<h2 class="sec-title">🔒 Distributed Consensus & Coordination</h2>
+
+<p>Distributed system এ সবচেয়ে কঠিন সমস্যা — কীভাবে নিশ্চিত করবে সব nodes একমত? Network partition হলে কী করবে? Leader down হলে কে নতুন leader হবে?</p>
+
+<h3 class="sub">Raft Algorithm — Leader Election</h3>
+<div class="ib ib-blue"><div class="ib-label">📌 Raft কীভাবে কাজ করে</div>
+<strong>States:</strong> প্রতিটা node হয় Follower, Candidate, বা Leader।<br>
+<strong>Election:</strong> Leader heartbeat না পেলে Follower → Candidate। Vote request পাঠায়। Majority vote পেলে Leader।<br>
+<strong>Log Replication:</strong> Leader সব writes নেয়, Followers এ replicate করে। Majority acknowledge করলে committed।<br>
+<strong>Split Brain Prevention:</strong> Majority quorum দরকার — odd number nodes রাখো (3, 5, 7)।
+</div>
+
+<h3 class="sub">Distributed Lock — Concurrent access prevent</h3>
+<div class="code-block">
+<div class="code-header"><span class="code-lang">Python</span><span class="code-file">distributed_lock.py</span></div>
+<pre><span class="kw">import</span> redis, uuid, time
+
+<span class="kw">class</span> <span class="fn">DistributedLock</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, redis_client, key, ttl=<span class="num">30</span>):
+        self.r = redis_client
+        self.key = <span class="str">f"lock:{key}"</span>
+        self.ttl = ttl
+        self.token = <span class="fn">str</span>(uuid.<span class="fn">uuid4</span>())
+    
+    <span class="kw">def</span> <span class="fn">acquire</span>(self, timeout=<span class="num">10</span>):
+        <span class="cm">"""Lock acquire করার চেষ্টা করো"""</span>
+        deadline = time.<span class="fn">time</span>() + timeout
+        <span class="kw">while</span> time.<span class="fn">time</span>() < deadline:
+            <span class="cm"># SET NX = only if not exists (atomic)</span>
+            acquired = self.r.<span class="fn">set</span>(
+                self.key, self.token,
+                nx=<span class="kw">True</span>, ex=self.ttl
+            )
+            <span class="kw">if</span> acquired:
+                <span class="kw">return True</span>
+            time.<span class="fn">sleep</span>(<span class="num">0.1</span>)
+        <span class="kw">return False</span>
+    
+    <span class="kw">def</span> <span class="fn">release</span>(self):
+        <span class="cm">"""Lua script — atomic check and delete"""</span>
+        script = <span class="str">"""
+        if redis.call('get', KEYS[1]) == ARGV[1] then
+            return redis.call('del', KEYS[1])
+        else return 0 end
+        """</span>
+        self.r.<span class="fn">eval</span>(script, <span class="num">1</span>, self.key, self.token)
+
+<span class="cm"># Usage</span>
+lock = <span class="fn">DistributedLock</span>(r, <span class="str">"payment:user:123"</span>)
+<span class="kw">if</span> lock.<span class="fn">acquire</span>():
+    <span class="kw">try</span>:
+        <span class="fn">process_payment</span>()
+    <span class="kw">finally</span>:
+        lock.<span class="fn">release</span>()</pre>
+</div>
+
+<h3 class="sub">CAP Theorem — Practical Application</h3>
+<table class="ct">
+<tr><th>System</th><th>C</th><th>A</th><th>P</th><th>Use Case</th></tr>
+<tr><td>Traditional SQL (Single)</td><td class="tg">✓</td><td class="tg">✓</td><td class="tr">✗</td><td>Local apps, no partition</td></tr>
+<tr><td>Zookeeper, etcd</td><td class="tg">✓</td><td class="tr">✗</td><td class="tg">✓</td><td>Coordination, config</td></tr>
+<tr><td>Cassandra, DynamoDB</td><td class="tr">✗</td><td class="tg">✓</td><td class="tg">✓</td><td>Social, e-commerce</td></tr>
+<tr><td>HBase</td><td class="tg">✓</td><td class="tr">✗</td><td class="tg">✓</td><td>Financial transactions</td></tr>
+<tr><td>MongoDB (default)</td><td class="ty">~</td><td class="tg">✓</td><td class="tg">✓</td><td>General purpose</td></tr>
+</table>
+</div>
+
+<hr class="topic-divider" data-label="Topic 03">
+
+<!-- TOPIC 3: CIRCUIT BREAKER -->
+<div class="section" id="t3">
+<div class="sec-label">Topic 03</div>
+<h2 class="sec-title">🔄 Circuit Breaker & Resilience Patterns</h2>
+
+<p>একটা service fail হলে সেটা যেন পুরো system না ভাঙে — এটাই resilience। Cascading failure মানে একটা service down হয়ে chain reaction এ সব service down।</p>
+
+<h3 class="sub">Circuit Breaker — Three States</h3>
+<div class="diagram">
+<svg width="520" height="120" viewBox="0 0 520 120">
+  <defs><marker id="a" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#64748b"/></marker></defs>
+  <rect x="10" y="35" width="130" height="50" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="2"/>
+  <text x="75" y="57" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="11">CLOSED</text>
+  <text x="75" y="72" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">Normal operation</text>
+  <path d="M140 60 L190 60" stroke="#ef4444" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="165" y="52" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="8">Failures &gt; threshold</text>
+  <rect x="190" y="35" width="130" height="50" rx="4" fill="#0c1220" stroke="#ef4444" stroke-width="2"/>
+  <text x="255" y="57" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="11">OPEN</text>
+  <text x="255" y="72" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">All requests fail fast</text>
+  <path d="M320 60 L370 60" stroke="#eab308" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="345" y="52" text-anchor="middle" fill="#eab308" font-family="JetBrains Mono" font-size="8">After timeout</text>
+  <rect x="370" y="35" width="140" height="50" rx="4" fill="#0c1220" stroke="#eab308" stroke-width="2"/>
+  <text x="440" y="57" text-anchor="middle" fill="#eab308" font-family="JetBrains Mono" font-size="11">HALF-OPEN</text>
+  <text x="440" y="72" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">Test requests</text>
+  <path d="M440 35 Q440 10 75 10 L75 35" stroke="#10b981" stroke-width="1.2" fill="none" marker-end="url(#a)"/>
+  <text x="257" y="8" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="8">Success → CLOSED</text>
+  <path d="M440 85 Q440 110 255 110 L255 85" stroke="#ef4444" stroke-width="1.2" fill="none" marker-end="url(#a)"/>
+  <text x="350" y="108" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="8">Failure → OPEN again</text>
+</svg>
+</div>
+
+<div class="code-block">
+<div class="code-header"><span class="code-lang">Python</span><span class="code-file">circuit_breaker.py</span></div>
+<pre><span class="kw">import</span> time
+<span class="kw">from</span> enum <span class="kw">import</span> Enum
+
+<span class="kw">class</span> <span class="fn">State</span>(Enum):
+    CLOSED = <span class="str">"closed"</span>
+    OPEN = <span class="str">"open"</span>
+    HALF_OPEN = <span class="str">"half_open"</span>
+
+<span class="kw">class</span> <span class="fn">CircuitBreaker</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, failure_threshold=<span class="num">5</span>, recovery_timeout=<span class="num">60</span>):
+        self.state = State.CLOSED
+        self.failures = <span class="num">0</span>
+        self.threshold = failure_threshold
+        self.recovery_timeout = recovery_timeout
+        self.last_failure = <span class="kw">None</span>
+    
+    <span class="kw">def</span> <span class="fn">call</span>(self, func, *args):
+        <span class="kw">if</span> self.state == State.OPEN:
+            <span class="cm"># Check করো timeout হয়েছে কিনা</span>
+            <span class="kw">if</span> time.<span class="fn">time</span>() - self.last_failure > self.recovery_timeout:
+                self.state = State.HALF_OPEN
+            <span class="kw">else</span>:
+                <span class="kw">raise</span> <span class="fn">Exception</span>(<span class="str">"Circuit OPEN — service unavailable"</span>)
+        
+        <span class="kw">try</span>:
+            result = <span class="fn">func</span>(*args)
+            self.<span class="fn">on_success</span>()
+            <span class="kw">return</span> result
+        <span class="kw">except</span> Exception <span class="kw">as</span> e:
+            self.<span class="fn">on_failure</span>()
+            <span class="kw">raise</span> e
+    
+    <span class="kw">def</span> <span class="fn">on_success</span>(self):
+        self.failures = <span class="num">0</span>
+        self.state = State.CLOSED
+    
+    <span class="kw">def</span> <span class="fn">on_failure</span>(self):
+        self.failures += <span class="num">1</span>
+        self.last_failure = time.<span class="fn">time</span>()
+        <span class="kw">if</span> self.failures >= self.threshold:
+            self.state = State.OPEN</pre>
+</div>
+
+<h3 class="sub">Resilience Patterns — সব একসাথে</h3>
+<div class="grid2">
+<div class="sc"><div class="sc-title">⏰ Timeout</div><p>কোনো request কত সময় wait করবে সেটা define করো। Service hang করলে resource free হয়। Default timeout সবসময় set করো।</p></div>
+<div class="sc"><div class="sc-title">🔁 Retry with Backoff</div><p>Fail হলে retry করো। কিন্তু immediately না — exponential backoff: 1s, 2s, 4s, 8s। Jitter যোগ করো।</p></div>
+<div class="sc"><div class="sc-title">🧱 Bulkhead</div><p>Resource pool isolate করো। Payment service এর জন্য আলাদা thread pool — এটা fail হলে অন্য services affected হয় না।</p></div>
+<div class="sc"><div class="sc-title">🔙 Fallback</div><p>Service fail হলে default/cached response দাও। Netflix: recommendation fail → popular movies দেখাও।</p></div>
+</div>
+
+<div class="code-block">
+<div class="code-header"><span class="code-lang">Python</span><span class="code-file">retry_backoff.py</span></div>
+<pre><span class="kw">import</span> time, random
+
+<span class="kw">def</span> <span class="fn">retry_with_backoff</span>(func, max_retries=<span class="num">3</span>, base_delay=<span class="num">1</span>):
+    <span class="kw">for</span> attempt <span class="kw">in</span> <span class="fn">range</span>(max_retries):
+        <span class="kw">try</span>:
+            <span class="kw">return</span> <span class="fn">func</span>()
+        <span class="kw">except</span> Exception <span class="kw">as</span> e:
+            <span class="kw">if</span> attempt == max_retries - <span class="num">1</span>:
+                <span class="kw">raise</span> e
+            <span class="cm"># Exponential backoff + jitter</span>
+            delay = base_delay * (<span class="num">2</span> ** attempt)
+            jitter = random.<span class="fn">uniform</span>(<span class="num">0</span>, delay * <span class="num">0.1</span>)
+            time.<span class="fn">sleep</span>(delay + jitter)
+            <span class="fn">print</span>(<span class="str">f"Retry {attempt+1} after {delay:.1f}s"</span>)</pre>
+</div>
+</div>
+
+<hr class="topic-divider" data-label="Topic 04">
+
+<!-- TOPIC 4: RATE LIMITING -->
+<div class="section" id="t4">
+<div class="sec-label">Topic 04</div>
+<h2 class="sec-title">🌊 Rate Limiting & Throttling</h2>
+
+<p>Rate limiting ছাড়া একটা angry user বা bot তোমার পুরো system ডুবিয়ে দিতে পারে। এটা DDoS protection এবং fair usage নিশ্চিত করার জন্য।</p>
+
+<h3 class="sub">4 টা Rate Limiting Algorithms</h3>
+<table class="ct">
+<tr><th>Algorithm</th><th>কীভাবে কাজ করে</th><th>Pros</th><th>Cons</th></tr>
+<tr><td>Token Bucket</td><td>Bucket এ tokens থাকে। Request এলে token নাও। Tokens নির্দিষ্ট rate এ refill হয়।</td><td>Burst traffic allow করে</td><td>Burst হলে DB hit বেশি</td></tr>
+<tr><td>Leaky Bucket</td><td>Queue তে request আসে। Constant rate এ process করো।</td><td>Smooth, steady traffic</td><td>Queue full হলে drop</td></tr>
+<tr><td>Fixed Window</td><td>১ minute window: ১০০ request। নতুন minute = reset।</td><td>Simple implement</td><td>Window boundary তে 2x burst possible</td></tr>
+<tr><td>Sliding Window</td><td>Last 60 seconds এ কতটা request হয়েছে count করো।</td><td>Most accurate</td><td>বেশি memory</td></tr>
+</table>
+
+<div class="code-block">
+<div class="code-header"><span class="code-lang">Python + Redis</span><span class="code-file">token_bucket.py</span></div>
+<pre><span class="kw">import</span> time
+
+<span class="kw">class</span> <span class="fn">TokenBucket</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, capacity=<span class="num">100</span>, refill_rate=<span class="num">10</span>):
+        <span class="cm"># capacity: max burst, refill_rate: tokens/second</span>
+        self.capacity = capacity
+        self.refill_rate = refill_rate
+    
+    <span class="kw">def</span> <span class="fn">allow_request</span>(self, user_id):
+        key = <span class="str">f"bucket:{user_id}"</span>
+        now = time.<span class="fn">time</span>()
+        
+        <span class="cm"># Lua script — atomic operation</span>
+        lua_script = <span class="str">"""
+        local key = KEYS[1]
+        local capacity = tonumber(ARGV[1])
+        local refill_rate = tonumber(ARGV[2])
+        local now = tonumber(ARGV[3])
+        
+        local data = redis.call('HMGET', key, 'tokens', 'last_refill')
+        local tokens = tonumber(data[1]) or capacity
+        local last_refill = tonumber(data[2]) or now
+        
+        -- Refill tokens
+        local elapsed = now - last_refill
+        tokens = math.min(capacity, tokens + elapsed * refill_rate)
+        
+        if tokens >= 1 then
+            tokens = tokens - 1
+            redis.call('HMSET', key, 'tokens', tokens, 'last_refill', now)
+            redis.call('EXPIRE', key, 3600)
+            return 1  -- allowed
+        else
+            return 0  -- blocked
+        end
+        """</span>
+        result = r.<span class="fn">eval</span>(lua_script, <span class="num">1</span>, key, self.capacity, self.refill_rate, now)
+        <span class="kw">return</span> result == <span class="num">1</span></pre>
+</div>
+
+<h3 class="sub">Rate Limiting Granularity</h3>
+<div class="ib ib-blue"><div class="ib-label">📌 Different Levels</div>
+<strong>Global:</strong> পুরো API: ১ মিলিয়ন req/minute<br>
+<strong>Per-User:</strong> User A: ১০০ req/minute, Paid user: ১০০০ req/minute<br>
+<strong>Per-IP:</strong> Unauthenticated: ২০ req/minute (bots block)<br>
+<strong>Per-Endpoint:</strong> /login: ৫ req/minute (brute force prevent)<br>
+<strong>Per-API-Key:</strong> Free tier: ১০০/day, Pro: unlimited
+</div>
+</div>
+
+<hr class="topic-divider" data-label="Topic 05">
+
+<!-- TOPIC 5: SERVICE DISCOVERY -->
+<div class="section" id="t5">
+<div class="sec-label">Topic 05</div>
+<h2 class="sec-title">🔑 Service Discovery</h2>
+
+<p>Microservices এ প্রতিটা service dynamically scale করে। IP address বদলে যায়। Service A কীভাবে জানবে Service B কোথায় আছে?</p>
+
+<h3 class="sub">Client-Side vs Server-Side Discovery</h3>
+<div class="grid2">
+<div class="sc"><div class="sc-title">👤 Client-Side Discovery</div><p>Client নিজেই Service Registry থেকে available instances জানে এবং load balance করে। Example: Netflix Eureka + Ribbon।</p></div>
+<div class="sc"><div class="sc-title">🖥️ Server-Side Discovery</div><p>Client Load Balancer কে call করে। LB Registry চেক করে route করে। Client কিছু জানে না। Example: AWS ALB + ECS।</p></div>
+</div>
+
+<div class="code-block">
+<div class="code-header"><span class="code-lang">Python</span><span class="code-file">service_registry.py</span></div>
+<pre><span class="kw">import</span> consul
+
+c = consul.<span class="fn">Consul</span>()
+
+<span class="cm"># Service register করো (startup এ)</span>
+c.agent.service.<span class="fn">register</span>(
+    name=<span class="str">'user-service'</span>,
+    service_id=<span class="str">'user-service-1'</span>,
+    address=<span class="str">'10.0.0.5'</span>,
+    port=<span class="num">8080</span>,
+    check=consul.Check.<span class="fn">http</span>(<span class="str">'http://10.0.0.5:8080/health'</span>, interval=<span class="str">'10s'</span>)
+)
+
+<span class="cm"># Service discover করো (request করার সময়)</span>
+_, services = c.health.<span class="fn">service</span>(<span class="str">'user-service'</span>, passing=<span class="kw">True</span>)
+instances = [(s[<span class="str">'Service'</span>][<span class="str">'Address'</span>], s[<span class="str">'Service'</span>][<span class="str">'Port'</span>]) <span class="kw">for</span> s <span class="kw">in</span> services]
+<span class="cm"># Round robin বা random select করো</span>
+host, port = random.<span class="fn">choice</span>(instances)
+url = <span class="str">f"http://{host}:{port}/users"</span></pre>
+</div>
+
+<div class="ib ib-green"><div class="ib-label">💡 Kubernetes তে Service Discovery</div>
+Kubernetes এ DNS-based service discovery built-in। user-service কে call করতে শুধু http://user-service:8080 লেখো। K8s internal DNS automatically correct pod এ route করে।
+</div>
+</div>
+
+<hr class="topic-divider" data-label="Topic 06">
+
+<!-- TOPIC 6: SAGA PATTERN -->
+<div class="section" id="t6">
+<div class="sec-label">Topic 06</div>
+<h2 class="sec-title">📋 Saga Pattern — Distributed Transactions</h2>
+
+<p>Microservices এ একটা business transaction multiple services span করে। Payment, Inventory, Shipping — তিনটাই succeed করতে হবে। একটা fail হলে rollback করতে হবে। Traditional 2PC কাজ করে না। এই সমস্যার সমাধান <strong>Saga Pattern।</strong></p>
+
+<h3 class="sub">Choreography vs Orchestration</h3>
+<div class="grid2">
+<div class="sc"><div class="sc-title">💃 Choreography</div><p>কোনো central controller নেই। প্রতিটা service event publish করে, অন্যরা subscribe করে react করে। Loose coupling কিন্তু debug করা কঠিন।</p></div>
+<div class="sc"><div class="sc-title">🎼 Orchestration</div><p>Central Saga Orchestrator সব steps পরিচালনা করে। কোন service কখন কী করবে orchestrator জানে। Debug সহজ কিন্তু central component।</p></div>
+</div>
+
+<div class="code-block">
+<div class="code-header"><span class="code-lang">Python</span><span class="code-file">saga_orchestrator.py</span></div>
+<pre><span class="kw">class</span> <span class="fn">OrderSagaOrchestrator</span>:
+    <span class="kw">async def</span> <span class="fn">execute</span>(self, order):
+        saga_log = []
+        
+        <span class="kw">try</span>:
+            <span class="cm"># Step 1: Payment</span>
+            <span class="kw">await</span> payment_service.<span class="fn">charge</span>(order.user_id, order.amount)
+            saga_log.<span class="fn">append</span>(<span class="str">'payment'</span>)
+            
+            <span class="cm"># Step 2: Inventory reserve</span>
+            <span class="kw">await</span> inventory_service.<span class="fn">reserve</span>(order.items)
+            saga_log.<span class="fn">append</span>(<span class="str">'inventory'</span>)
+            
+            <span class="cm"># Step 3: Shipping schedule</span>
+            <span class="kw">await</span> shipping_service.<span class="fn">schedule</span>(order)
+            saga_log.<span class="fn">append</span>(<span class="str">'shipping'</span>)
+            
+            <span class="kw">return</span> <span class="str">"SUCCESS"</span>
+            
+        <span class="kw">except</span> Exception <span class="kw">as</span> e:
+            <span class="cm"># Compensating transactions — reverse order</span>
+            <span class="kw">if</span> <span class="str">'inventory'</span> <span class="kw">in</span> saga_log:
+                <span class="kw">await</span> inventory_service.<span class="fn">release</span>(order.items)
+            <span class="kw">if</span> <span class="str">'payment'</span> <span class="kw">in</span> saga_log:
+                <span class="kw">await</span> payment_service.<span class="fn">refund</span>(order.user_id, order.amount)
+            <span class="kw">raise</span> e</pre>
+</div>
+</div>
+
+<!-- MCQ -->
+<div class="mcq-section" id="mcq">
+<div class="mcq-header">
+  <span style="font-size:24px">🧠</span>
+  <h2 style="font-family:'Fraunces',serif;font-size:20px;font-weight:700">Phase 3 — MCQ Test</h2>
+  <div class="mcq-score">Score: <span id="sc">0</span>/12</div>
+</div>
+
+<div class="qblock" data-correct="c">
+<div class="qnum">প্রশ্ন 01</div>
+<div class="qtext">Microservices architecture এ প্রতিটা service এর জন্য আলাদা database রাখার সুবিধা কী?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> Database খরচ কম হয়</div>
+  <div class="option" data-val="b"><span class="okey">B</span> Backup নেওয়া সহজ হয়</div>
+  <div class="option" data-val="c"><span class="okey">C</span> Services independently scale এবং deploy করা যায়, একটার failure অন্যটাকে affect করে না</div>
+  <div class="option" data-val="d"><span class="okey">D</span> Query করা সহজ হয়</div>
+</div>
+<div class="expl"><strong>সঠিক: C</strong> — Database per service = loose coupling। User service PostgreSQL ব্যবহার করতে পারে, Order service MongoDB। Independent scaling, independent deployment, independent failure. Shared database = tight coupling।</div>
+</div>
+
+<div class="qblock" data-correct="b">
+<div class="qnum">প্রশ্ন 02</div>
+<div class="qtext">Raft algorithm এ "Split Brain" prevent করতে কী করতে হয়?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> সব nodes এ same data রাখো</div>
+  <div class="option" data-val="b"><span class="okey">B</span> Odd number of nodes রাখো (3, 5, 7) যাতে majority quorum সম্ভব হয়</div>
+  <div class="option" data-val="c"><span class="okey">C</span> একটাই node রাখো</div>
+  <div class="option" data-val="d"><span class="okey">D</span> Network partition disable করো</div>
+</div>
+<div class="expl"><strong>সঠিক: B</strong> — Split brain: network partition এ দুটো group নিজেদের leader মনে করে। Majority quorum (N/2 + 1): 3 nodes → 2 majority। Partition হলে smaller group commit করতে পারবে না। Even number = tie possible।</div>
+</div>
+
+<div class="qblock" data-correct="d">
+<div class="qnum">প্রশ্ন 03</div>
+<div class="qtext">Circuit Breaker OPEN state এ কী হয়?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> সব requests normal এ pass হয়</div>
+  <div class="option" data-val="b"><span class="okey">B</span> Requests queue এ wait করে</div>
+  <div class="option" data-val="c"><span class="okey">C</span> Requests slowly forward হয়</div>
+  <div class="option" data-val="d"><span class="okey">D</span> সব requests immediately fail হয় (fail fast), downstream service কে call না করেই</div>
+</div>
+<div class="expl"><strong>সঠিক: D</strong> — OPEN = circuit ভাঙা। Failing service কে আর call না করে immediately error/fallback return করো। এতে: (1) Failing service recover করার সময় পায়, (2) Resources waste হয় না, (3) Cascading failure থামে।</div>
+</div>
+
+<div class="qblock" data-correct="a">
+<div class="qnum">প্রশ্ন 04</div>
+<div class="qtext">Token Bucket algorithm এ "burst traffic" handle করা যায় কারণ —</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> Bucket এ accumulated tokens থাকলে একসাথে অনেক request allow করা যায়</div>
+  <div class="option" data-val="b"><span class="okey">B</span> Requests queue এ hold করা হয়</div>
+  <div class="option" data-val="c"><span class="okey">C</span> Extra servers automatically add হয়</div>
+  <div class="option" data-val="d"><span class="okey">D</span> Requests compress করা হয়</div>
+</div>
+<div class="expl"><strong>সঠিক: A</strong> — Token bucket: user যদি ৫ মিনিট কিছু না করে tokens জমে। তারপর একসাথে burst করলে জমা tokens use করতে পারে। Leaky bucket এ এটা possible না — constant rate enforce করে।</div>
+</div>
+
+<div class="qblock" data-correct="c">
+<div class="qnum">প্রশ্ন 05</div>
+<div class="qtext">Service Mesh (Istio) ব্যবহার করলে কোন কাজটা প্রতিটা service এ আলাদা করতে হয় না?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> Business logic লেখা</div>
+  <div class="option" data-val="b"><span class="okey">B</span> Database query</div>
+  <div class="option" data-val="c"><span class="okey">C</span> mTLS, retry, circuit breaking, tracing — infrastructure concerns</div>
+  <div class="option" data-val="d"><span class="okey">D</span> API endpoint define করা</div>
+</div>
+<div class="expl"><strong>সঠিক: C</strong> — Service Mesh sidecar proxy (Envoy) প্রতিটা service এর পাশে থাকে। Cross-cutting concerns (auth, observability, retry) infrastructure level এ handle করে। Service শুধু business logic নিয়ে ভাবে।</div>
+</div>
+
+<div class="qblock" data-correct="b">
+<div class="qnum">প্রশ্ন 06</div>
+<div class="qtext">Saga Pattern এ "Compensating Transaction" মানে কী?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> Transaction দ্রুত করার technique</div>
+  <div class="option" data-val="b"><span class="okey">B</span> একটা step fail হলে আগের steps undo করার operation</div>
+  <div class="option" data-val="c"><span class="okey">C</span> Transaction fee compensate করা</div>
+  <div class="option" data-val="d"><span class="okey">D</span> Database transaction এর alternative</div>
+</div>
+<div class="expl"><strong>সঠিক: B</strong> — Order Saga: Payment ✓ → Inventory ✓ → Shipping ✗ (fail)। Compensate: Inventory release → Payment refund। Reverse order এ undo করো। এটাই distributed transaction এর "rollback"।</div>
+</div>
+
+<div class="qblock" data-correct="d">
+<div class="qnum">প্রশ্ন 07</div>
+<div class="qtext">Distributed Lock ব্যবহার করতে হয় কারণ —</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> Database lock insufficient</div>
+  <div class="option" data-val="b"><span class="okey">B</span> Code faster হয়</div>
+  <div class="option" data-val="c"><span class="okey">C</span> Security বাড়ে</div>
+  <div class="option" data-val="d"><span class="okey">D</span> Multiple servers এ একই shared resource এ concurrent access prevent করতে</div>
+</div>
+<div class="expl"><strong>সঠিক: D</strong> — In-memory lock শুধু একটা process এ কাজ করে। Multiple servers এ "flash sale: শেষ ১টা item" concurrent checkout হলে oversell হবে। Redis distributed lock সব servers এ coordinate করে।</div>
+</div>
+
+<div class="qblock" data-correct="a">
+<div class="qnum">প্রশ্ন 08</div>
+<div class="qtext">Kubernetes এ service discovery কীভাবে কাজ করে?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> DNS-based: service name দিয়ে call করলে K8s internal DNS correct pod এ route করে</div>
+  <div class="option" data-val="b"><span class="okey">B</span> Manual IP address configure করতে হয়</div>
+  <div class="option" data-val="c"><span class="okey">C</span> External load balancer দরকার</div>
+  <div class="option" data-val="d"><span class="okey">D</span> প্রতিটা service সব pod এর IP জানে</div>
+</div>
+<div class="expl"><strong>সঠিক: A</strong> — K8s DNS: "user-service" নামের Service create করলে cluster এর যেকোনো pod http://user-service:8080 দিয়ে access করতে পারে। Pod IP বদলালেও DNS একই থাকে।</div>
+</div>
+
+<div class="qblock" data-correct="c">
+<div class="qnum">প্রশ্ন 09</div>
+<div class="qtext">Bulkhead pattern কোথা থেকে নামটা এসেছে এবং এটা কী করে?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> Fire protection থেকে — requests block করে</div>
+  <div class="option" data-val="b"><span class="okey">B</span> Wall থেকে — services আলাদা করে</div>
+  <div class="option" data-val="c"><span class="okey">C</span> Ship এর watertight compartment থেকে — resource pool isolate করে failure spread থামায়</div>
+  <div class="option" data-val="d"><span class="okey">D</span> Electrical circuit থেকে — circuit break করে</div>
+</div>
+<div class="expl"><strong>সঠিক: C</strong> — Ship এর bulkhead: এক compartment এ পানি ঢুকলে পুরো ship ডোবে না। Software: payment service এর জন্য আলাদা thread pool। Payment flood হলে অন্য services এর thread available থাকে।</div>
+</div>
+
+<div class="qblock" data-correct="b">
+<div class="qnum">প্রশ্ন 10</div>
+<div class="qtext">CAP Theorem অনুযায়ী bank এর transaction system (যেখানে data inconsistency acceptable না) কোন type হবে?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> AP (Available + Partition Tolerant)</div>
+  <div class="option" data-val="b"><span class="okey">B</span> CP (Consistent + Partition Tolerant)</div>
+  <div class="option" data-val="c"><span class="okey">C</span> CA (Consistent + Available)</div>
+  <div class="option" data-val="d"><span class="okey">D</span> CAP তিনটাই</div>
+</div>
+<div class="expl"><strong>সঠিক: B</strong> — Bank: ৳১০০০ টাকা দুটো account থেকে একসাথে deduct হওয়া মানে বিপর্যয়। Strong consistency মাস্ট। Network partition হলে সাময়িক unavailable থাকা acceptable, কিন্তু inconsistent data না।</div>
+</div>
+
+<div class="qblock" data-correct="d">
+<div class="qnum">প্রশ্ন 11</div>
+<div class="qtext">Choreography Saga এর সবচেয়ে বড় সমস্যা কোনটি?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> Central point of failure</div>
+  <div class="option" data-val="b"><span class="okey">B</span> বেশি database লাগে</div>
+  <div class="option" data-val="c"><span class="okey">C</span> Slow performance</div>
+  <div class="option" data-val="d"><span class="okey">D</span> Distributed business logic debug করা কঠিন — সব services এ কী হচ্ছে trace করা জটিল</div>
+</div>
+<div class="expl"><strong>সঠিক: D</strong> — Choreography: কোনো central view নেই। Order saga step 3 এ fail হলে কোন service কী করেছে বুঝতে সব service এর logs দেখতে হবে। Orchestration এ একটা জায়গায় সব flow দেখা যায়।</div>
+</div>
+
+<div class="qblock" data-correct="a">
+<div class="qnum">প্রশ্ন 12</div>
+<div class="qtext">Exponential backoff এ retry delay কেন linearly না বেড়ে exponentially বাড়ে?</div>
+<div class="options">
+  <div class="option" data-val="a"><span class="okey">A</span> Overloaded service কে recover করার বেশি সময় দিতে এবং thundering herd avoid করতে</div>
+  <div class="option" data-val="b"><span class="okey">B</span> Code সহজ বলে</div>
+  <div class="option" data-val="c"><span class="okey">C</span> Network bandwidth বাঁচাতে</div>
+  <div class="option" data-val="d"><span class="okey">D</span> Random হওয়ার জন্য</div>
+</div>
+<div class="expl"><strong>সঠিক: A</strong> — Linear retry: সব clients 1s, 2s, 3s... একসাথে retry করে, service আবার overwhelmed। Exponential: 1s, 2s, 4s, 8s... প্রতিটা attempt এ কম clients retry করে। Server recover করার time পায়।</div>
+</div>
+
+<button class="mcq-btn" onclick="checkMCQ('sc','result3')">📊 SUBMIT & CHECK SCORE</button>
+<div class="result" id="result3"></div>
+</div>
+
+<!-- Assignment -->
+<div class="assign" id="assign">
+<h2>📝 Assignment — Phase 3</h2>
+<div class="a-meta"><span class="ac ac-y">⏱ ৫-৬ ঘণ্টা</span><span class="ac ac-g">📊 Advanced</span></div>
+<ul class="task-list">
+  <li><strong>Microservices Decomposition:</strong> একটা ride-sharing app (Uber-like) কে কয়টা microservices এ ভাগ করবে? প্রতিটার নাম, responsibility, এবং কোন database technology দিয়ে বানাবে সেটা বলো। Service গুলো কীভাবে communicate করবে?</li>
+  <li><strong>Circuit Breaker Design:</strong> Payment service এ circuit breaker implement করো। Threshold: ৫ failures। Recovery timeout: ৩০ seconds। Circuit open হলে fallback: "Payment service temporarily unavailable, please retry." লেখো।</li>
+  <li><strong>Rate Limiting Strategy:</strong> একটা public API এর জন্য rate limiting strategy design করো। Free users, paid users, admin users — তিন tier এর জন্য আলাদা limit। API gateway তে কীভাবে implement করবে?</li>
+  <li><strong>Saga Design:</strong> Flight booking saga design করো। Steps: (1) Seat reserve (2) Payment charge (3) Boarding pass generate। যদি Step 3 fail হলে compensating transactions কী হবে?</li>
+  <li><strong>CAP Analysis:</strong> নিচের apps এর জন্য CAP থেকে কোনটা choose করবে এবং কেন: (ক) WhatsApp message delivery (খ) Stock trading platform (গ) Netflix watch history।</li>
+</ul>
+<div class="deliver">
+  <div class="deliver-label">📦 Deliverables</div>
+  <ul>
+    <li>Microservices architecture diagram</li>
+    <li>Circuit breaker code implementation</li>
+    <li>Rate limiting tier table</li>
+    <li>Saga flow diagram with compensations</li>
+    <li>CAP analysis written explanation</li>
+  </ul>
+</div>
+</div>
+
+<!-- Project -->
+<div class="project" id="project">
+<div class="proj-header"><span style="font-size:24px">🚀</span><h2>Phase 3 — Project: Resilient Microservices</h2></div>
+<div class="proj-body">
+<p style="font-size:14px;color:#94a3b8;margin-bottom:20px">Circuit Breaker এবং Rate Limiting সহ ২টা microservices বানাও।</p>
+<div class="steps">
+  <div class="step"><div class="step-circle">1</div><div class="step-content"><h4>দুটো Service</h4><p>User Service (port 8001) এবং Product Service (port 8002)। FastAPI দিয়ে।</p></div></div>
+  <div class="step"><div class="step-circle">2</div><div class="step-content"><h4>Circuit Breaker যোগ করো</h4><p>User Service থেকে Product Service call করো। Product Service artificially slow করো (time.sleep(5))। Circuit Breaker দিয়ে ৩ failures এর পর open করো।</p></div></div>
+  <div class="step"><div class="step-circle">3</div><div class="step-content"><h4>Rate Limiting</h4><p>Redis দিয়ে per-user rate limiting। Free: 10 req/min, Paid: 100 req/min।</p></div></div>
+  <div class="step"><div class="step-circle">4</div><div class="step-content"><h4>Test করো</h4><p>Product Service kill করো। দেখো Circuit Breaker open হচ্ছে কিনা। Fallback response আসছে কিনা।</p></div></div>
+  <div class="step"><div class="step-circle">5</div><div class="step-content"><h4>Logs দেখো</h4><p>Circuit state transitions log করো। Rate limit hits log করো। Pattern বোঝো।</p></div></div>
+</div>
+</div>
+</div>
+
+</div>
+</main>
+<script>
+window.addEventListener('scroll',()=>{const d=document.documentElement;document.getElementById('pf').style.width=(((d.scrollTop||document.body.scrollTop)/(d.scrollHeight-d.clientHeight))*100)+'%'});
+document.querySelectorAll('.option').forEach(o=>{o.addEventListener('click',function(){const b=this.closest('.qblock');const q=Array.from(document.querySelectorAll('.qblock')).indexOf(b);if(b.dataset.done)return;b.dataset.done='1';b.querySelectorAll('.option').forEach(x=>{x.style.pointerEvents='none';if(x.dataset.val===b.dataset.correct)x.classList.add('correct');else if(x.dataset.val===this.dataset.val&&this.dataset.val!==b.dataset.correct)x.classList.add('wrong');});b.querySelector('.expl').classList.add('visible');})});
+function checkMCQ(sid,rid){let c=0;document.querySelectorAll('.qblock').forEach(b=>{if(!b.querySelector('.option.wrong')&&b.querySelector('.option.correct'))c++;});document.getElementById(sid).textContent=c;const r=document.getElementById(rid);r.classList.add('visible');const t=document.querySelectorAll('.qblock').length;if(c>=Math.ceil(t*0.7)){r.classList.add('pass');r.textContent=`🎉 দারুণ! ${c}/${t} সঠিক। Phase 4 এ যাও!`;}else{r.classList.add('fail');r.textContent=`📖 ${c}/${t}। ${Math.ceil(t*0.7)}/${t} পেলেই pass। আবার পড়ো।`;}}
+document.querySelectorAll('.nav-item[href^="#"]').forEach(l=>{l.addEventListener('click',e=>{e.preventDefault();document.querySelector(l.getAttribute('href'))?.scrollIntoView({behavior:'smooth'})})});
+</script>
+</body>
+</html>

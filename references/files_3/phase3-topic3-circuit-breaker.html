@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 3 · Topic 3 — Circuit Breaker & Resilience Patterns</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05080f;--surface:#090e1a;--card:#0c1220;--border:#162035;--border2:#1e2d4a;--accent:#3b82f6;--accent-glow:rgba(59,130,246,0.15);--green:#10b981;--green-glow:rgba(16,185,129,0.12);--orange:#f97316;--red:#ef4444;--yellow:#eab308;--purple:#8b5cf6;--text:#e2e8f0;--muted:#64748b;--muted2:#94a3b8;}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans Bengali',sans-serif;line-height:1.7;font-size:15px;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.4;}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100;}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo .phase-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--red);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:4px;}
+.sidebar-logo .course-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;line-height:1.3;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-section-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);padding:0 8px;margin-bottom:6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:4px;font-size:13px;color:var(--muted2);cursor:pointer;transition:all 0.15s;text-decoration:none;}
+.nav-item:hover{background:var(--card);color:var(--text);}
+.nav-item.active{background:rgba(239,68,68,0.1);color:var(--red);}
+.nav-item .nav-icon{font-size:14px;flex-shrink:0;}
+.nav-item .nav-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto;}
+.progress-bar{position:fixed;top:0;left:240px;right:0;height:2px;background:var(--border);z-index:200;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--orange));width:0%;transition:width 0.1s;}
+.main{margin-left:240px;min-height:100vh;}
+.content{max-width:780px;margin:0 auto;padding:48px 40px 120px;}
+.topic-header{margin-bottom:48px;}
+.breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.breadcrumb span{color:var(--red);}
+.topic-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--red);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:block;}
+h1.topic-title{font-family:'Fraunces',serif;font-size:clamp(32px,5vw,48px);font-weight:900;line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,#fff 30%,#fca5a5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.topic-meta{display:flex;gap:16px;flex-wrap:wrap;}
+.meta-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 12px;border-radius:2px;border:1px solid;}
+.meta-chip.time{border-color:rgba(59,130,246,0.3);color:var(--accent);background:var(--accent-glow);}
+.meta-chip.level{border-color:rgba(16,185,129,0.3);color:var(--green);background:var(--green-glow);}
+.meta-chip.type{border-color:rgba(239,68,68,0.3);color:var(--red);background:rgba(239,68,68,0.08);}
+.section{margin-bottom:48px;scroll-margin-top:24px;}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:3px;color:var(--red);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+h2.section-title{font-family:'Fraunces',serif;font-size:24px;font-weight:700;margin-bottom:16px;color:#f1f5f9;}
+h3.sub-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;margin:24px 0 10px;color:#cbd5e1;}
+p{margin-bottom:14px;color:#cbd5e1;}
+.info-box{border-radius:6px;padding:18px 20px;margin:20px 0;border-left:3px solid;font-size:14px;}
+.info-box.concept{background:rgba(59,130,246,0.06);border-color:var(--accent);}
+.info-box.warning{background:rgba(249,115,22,0.06);border-color:var(--orange);}
+.info-box.tip{background:rgba(16,185,129,0.06);border-color:var(--green);}
+.info-box.important{background:rgba(234,179,8,0.06);border-color:var(--yellow);}
+.info-box .box-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:700;}
+.info-box.concept .box-label{color:var(--accent);}
+.info-box.warning .box-label{color:var(--orange);}
+.info-box.tip .box-label{color:var(--green);}
+.info-box.important .box-label{color:var(--yellow);}
+.compare-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;}
+.compare-table th{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1px;padding:12px 16px;text-align:left;background:var(--card);border-bottom:2px solid var(--border2);color:var(--muted2);}
+.compare-table td{padding:11px 16px;border-bottom:1px solid var(--border);color:#94a3b8;vertical-align:top;line-height:1.6;}
+.compare-table tr:hover td{background:rgba(255,255,255,0.02);}
+.compare-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);}
+.tag-yes{color:var(--green);font-weight:600;}.tag-no{color:var(--red);}.tag-med{color:var(--yellow);}
+.diagram{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:30px 20px;margin:24px 0;overflow-x:auto;}
+.diagram svg{max-width:100%;}
+.code-block{background:#030608;border:1px solid var(--border2);border-radius:6px;margin:20px 0;overflow:hidden;}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--border);}
+.code-lang{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--red);text-transform:uppercase;letter-spacing:1px;}
+.code-file{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);}
+pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.8;color:#e2e8f0;}
+.kw{color:#93c5fd;}.fn{color:#6ee7b7;}.str{color:#fcd34d;}.cm{color:#475569;font-style:italic;}.num{color:#f9a8d4;}.var{color:#e2e8f0;}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0;}
+.scenario-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:18px;}
+.scenario-card .s-title{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--red);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;}
+.scenario-card p{font-size:13px;color:var(--muted2);margin:0;}
+.state-row{display:flex;align-items:stretch;gap:0;margin:24px 0;border:1px solid var(--border2);border-radius:8px;overflow:hidden;}
+.state-box{flex:1;padding:20px 14px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;}
+.state-box h4{font-size:13px;font-weight:700;margin-bottom:6px;}
+.state-box p{font-size:11px;color:var(--muted2);margin:0;font-family:'Noto Sans Bengali',sans-serif;}
+.state-closed{background:rgba(16,185,129,0.08);border-right:1px solid var(--border2);}
+.state-closed h4{color:var(--green);}
+.state-open{background:rgba(239,68,68,0.08);border-right:1px solid var(--border2);}
+.state-open h4{color:var(--red);}
+.state-half{background:rgba(234,179,8,0.08);}
+.state-half h4{color:var(--yellow);}
+.mcq-section{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:28px;margin:30px 0;}
+.mcq-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.mcq-icon{font-size:24px;}
+.mcq-header h2{font-family:'Fraunces',serif;font-size:20px;font-weight:700;}
+.mcq-score{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);}
+.mcq-score span{color:var(--red);font-size:18px;font-weight:700;}
+.question-block{margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--border);}
+.question-block:last-of-type{border-bottom:none;margin-bottom:0;}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.q-text{font-size:15px;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.5;font-family:'Noto Sans Bengali',sans-serif;}
+.options{display:flex;flex-direction:column;gap:8px;}
+.option{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:4px;border:1px solid var(--border);cursor:pointer;transition:all 0.15s;font-size:14px;color:var(--muted2);font-family:'Noto Sans Bengali',sans-serif;}
+.option:hover{border-color:var(--red);color:var(--text);background:rgba(239,68,68,0.05);}
+.option.correct{border-color:var(--green);background:var(--green-glow);color:#6ee7b7;}
+.option.wrong{border-color:var(--red);background:rgba(239,68,68,0.08);color:#fca5a5;}
+.option-key{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--border2);padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;}
+.explanation{display:none;margin-top:12px;padding:12px 14px;background:rgba(16,185,129,0.06);border-left:2px solid var(--green);border-radius:0 4px 4px 0;font-size:13px;color:#94a3b8;line-height:1.7;font-family:'Noto Sans Bengali',sans-serif;}
+.explanation.visible{display:block;}
+.explanation strong{color:var(--green);}
+.mcq-submit{display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:12px 24px;background:var(--red);color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;border:none;border-radius:4px;cursor:pointer;letter-spacing:1px;transition:all 0.15s;}
+.mcq-submit:hover{background:#dc2626;transform:translateY(-1px);}
+.result-banner{display:none;margin-top:20px;padding:16px 20px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;}
+.result-banner.visible{display:block;}
+.result-banner.pass{background:var(--green-glow);border:1px solid var(--green);color:var(--green);}
+.result-banner.fail{background:rgba(249,115,22,0.08);border:1px solid var(--orange);color:var(--orange);}
+.assignment-section{background:linear-gradient(135deg,rgba(239,68,68,0.04),rgba(249,115,22,0.04));border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:28px;margin:30px 0;}
+.assignment-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.assignment-icon{font-size:28px;}
+.assignment-header h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700;}
+.assignment-meta{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.a-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 10px;border-radius:2px;}
+.a-chip.time{background:rgba(234,179,8,0.1);color:var(--yellow);border:1px solid rgba(234,179,8,0.2);}
+.a-chip.level{background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.2);}
+.task-list{counter-reset:tasks;list-style:none;margin-bottom:20px;}
+.task-list li{counter-increment:tasks;padding:14px 14px 14px 50px;position:relative;border-bottom:1px solid var(--border);font-size:14px;color:var(--muted2);line-height:1.7;font-family:'Noto Sans Bengali',sans-serif;}
+.task-list li:last-child{border-bottom:none;}
+.task-list li::before{content:counter(tasks);position:absolute;left:14px;top:14px;width:24px;height:24px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--red);display:flex;align-items:center;justify-content:center;font-weight:700;}
+.task-list li strong{color:var(--text);}
+.deliverable-box{background:var(--card);border:1px solid var(--border2);border-radius:6px;padding:16px 18px;margin-top:16px;}
+.deliverable-box .d-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--red);margin-bottom:10px;}
+.deliverable-box ul{list-style:none;padding:0;}
+.deliverable-box ul li{font-size:13px;color:var(--muted2);padding:4px 0 4px 18px;position:relative;font-family:'Noto Sans Bengali',sans-serif;}
+.deliverable-box ul li::before{content:'◆';position:absolute;left:0;font-size:8px;color:var(--red);top:6px;}
+.project-section{background:var(--card);border:1px solid var(--border2);border-radius:8px;overflow:hidden;margin:30px 0;}
+.project-header{background:linear-gradient(90deg,rgba(16,185,129,0.1),transparent);padding:18px 24px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:12px;}
+.project-header h2{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--green);}
+.project-body{padding:24px;}
+.step-flow{display:flex;flex-direction:column;gap:0;margin:16px 0;}
+.step-item{display:flex;gap:16px;padding-bottom:24px;position:relative;}
+.step-item:last-child{padding-bottom:0;}
+.step-item::before{content:'';position:absolute;left:15px;top:32px;bottom:0;width:1px;background:var(--border2);}
+.step-item:last-child::before{display:none;}
+.step-circle{width:32px;height:32px;border-radius:50%;background:var(--green-glow);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--green);flex-shrink:0;z-index:1;}
+.step-content{flex:1;}
+.step-content h4{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);margin-bottom:4px;}
+.step-content p{font-size:13px;color:var(--muted2);margin:0;}
+.next-cta{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:20px 24px;margin-top:48px;text-decoration:none;color:var(--text);transition:border-color 0.2s;}
+.next-cta:hover{border-color:var(--red);}
+.next-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;}
+.next-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;}
+.next-arrow{font-size:24px;color:var(--red);}
+@media(max-width:768px){.sidebar{display:none;}.main{margin-left:0;}.content{padding:24px 16px 80px;}.scenario-grid{grid-template-columns:1fr;}.progress-bar{left:0;}}
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 03 · Distributed Systems</span>
+    <div class="course-title">System Design<br>Mastery Course</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Phase 3 Topics</div>
+    <a href="#" class="nav-item"><span class="nav-icon">🧩</span><span>Microservices</span><span class="nav-num">01</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🗳️</span><span>Distributed Consensus</span><span class="nav-num">02</span></a>
+    <a href="#" class="nav-item active"><span class="nav-icon">⚡</span><span>Circuit Breaker</span><span class="nav-num">03</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🚦</span><span>Rate Limiting</span><span class="nav-num">04</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🔍</span><span>Service Discovery</span><span class="nav-num">05</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🔄</span><span>Saga Pattern</span><span class="nav-num">06</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px">
+    <div class="nav-section-label">This Lesson</div>
+    <a href="#concept" class="nav-item"><span class="nav-icon">💡</span><span>Concept</span></a>
+    <a href="#states" class="nav-item"><span class="nav-icon">🔄</span><span>CB States</span></a>
+    <a href="#patterns" class="nav-item"><span class="nav-icon">🏗️</span><span>Resilience Patterns</span></a>
+    <a href="#code" class="nav-item"><span class="nav-icon">💻</span><span>Code Examples</span></a>
+    <a href="#realworld" class="nav-item"><span class="nav-icon">🌍</span><span>Real World</span></a>
+    <a href="#interview" class="nav-item"><span class="nav-icon">🎯</span><span>Interview Q&A</span></a>
+    <a href="#mcq" class="nav-item"><span class="nav-icon">✅</span><span>MCQ Test</span></a>
+    <a href="#assignment" class="nav-item"><span class="nav-icon">📝</span><span>Assignment</span></a>
+    <a href="#project" class="nav-item"><span class="nav-icon">🚀</span><span>Project Task</span></a>
+  </div>
+</nav>
+<main class="main">
+<div class="content">
+
+  <div class="topic-header" id="concept">
+    <div class="breadcrumb">Phase 3 — Distributed Systems <span>›</span> Topic 03</div>
+    <span class="topic-num">TOPIC 03 / 06</span>
+    <h1 class="topic-title">Circuit Breaker &<br>Resilience Patterns</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ ৬০-৯০ মিনিট</span>
+      <span class="meta-chip level">📊 Junior Level</span>
+      <span class="meta-chip type">⚡ Resilience</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Why It Matters</div>
+    <h2 class="section-title">Resilience কেন শিখতে হবে?</h2>
+    <p>তোমার e-commerce app এ Payment service কাজ করছে না। কিন্তু Payment service down থাকলেই কি পুরো app down হওয়া উচিত? User কি product browse করতে পারবে না?</p>
+    <p>Distributed system এ <strong>Cascading Failure</strong> সবচেয়ে ভয়ানক সমস্যা। একটা service slow হলে সেটা অন্য services কে block করে — সব collapse করে। Circuit Breaker এই cascade থামায়।</p>
+    <div class="info-box warning">
+      <div class="box-label">⚡ Real Incident</div>
+      Amazon Prime Day 2018 এ প্রথম ঘণ্টায় checkout down ছিল। একটা downstream service timeout করছিল এবং সেই timeout অন্য services কে block করছিল। Circuit Breaker থাকলে এটা prevent করা যেত।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">📌 Definition</div>
+      <strong>Circuit Breaker</strong> কাজ করে electrical circuit breaker এর মতো। যখন কোনো service এ অনেক বেশি failure হয়, circuit breaker সেই service এ call করা বন্ধ করে দেয় — fast failure দেয়, cascade রোধ করে, fallback response দেয়।
+    </div>
+  </div>
+
+  <div class="section" id="states">
+    <div class="section-label">Circuit Breaker States</div>
+    <h2 class="section-title">তিনটা State — বুঝে রাখো</h2>
+    <div class="state-row">
+      <div class="state-box state-closed">
+        <h4>🟢 CLOSED</h4>
+        <p>Normal operation। সব requests pass। Failure count track হচ্ছে। Threshold পার হলে OPEN।</p>
+      </div>
+      <div class="state-box state-open">
+        <h4>🔴 OPEN</h4>
+        <p>Circuit broken। কোনো request downstream যাচ্ছে না। Fast fail + fallback। Timeout পরে HALF-OPEN।</p>
+      </div>
+      <div class="state-box state-half">
+        <h4>🟡 HALF-OPEN</h4>
+        <p>Test phase। কিছু requests allow। Success → CLOSED। Failure → OPEN আবার।</p>
+      </div>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 680 170" xmlns="http://www.w3.org/2000/svg">
+        <text x="340" y="20" fill="#94a3b8" font-family="JetBrains Mono" font-size="11" text-anchor="middle">STATE TRANSITION DIAGRAM</text>
+        <!-- CLOSED -->
+        <ellipse cx="120" cy="100" rx="90" ry="40" fill="#0c1220" stroke="#10b981" stroke-width="2"/>
+        <text x="120" y="95" fill="#6ee7b7" font-family="JetBrains Mono" font-size="11" text-anchor="middle" font-weight="700">CLOSED</text>
+        <text x="120" y="112" fill="#64748b" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Requests pass through</text>
+        <!-- OPEN -->
+        <ellipse cx="400" cy="100" rx="90" ry="40" fill="#0c1220" stroke="#ef4444" stroke-width="2"/>
+        <text x="400" y="95" fill="#fca5a5" font-family="JetBrains Mono" font-size="11" text-anchor="middle" font-weight="700">OPEN</text>
+        <text x="400" y="112" fill="#64748b" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Fast fail immediately</text>
+        <!-- HALF-OPEN -->
+        <ellipse cx="260" cy="30" rx="90" ry="28" fill="#0c1220" stroke="#eab308" stroke-width="1.5"/>
+        <text x="260" y="25" fill="#fcd34d" font-family="JetBrains Mono" font-size="11" text-anchor="middle" font-weight="700">HALF-OPEN</text>
+        <text x="260" y="40" fill="#64748b" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Probe requests</text>
+        <!-- Arrows -->
+        <path d="M 210 100 L 312 100" stroke="#ef4444" stroke-width="1.5" fill="none" marker-end="url(#ra)"/>
+        <defs><marker id="ra" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#ef4444"/></marker></defs>
+        <text x="260" y="94" fill="#ef4444" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Failure threshold exceeded</text>
+        <!-- OPEN to HALF-OPEN -->
+        <path d="M 340 75 Q 300 50 350 30" stroke="#eab308" stroke-width="1.5" fill="none" marker-end="url(#ya)"/>
+        <defs><marker id="ya" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#eab308"/></marker></defs>
+        <text x="375" y="52" fill="#eab308" font-family="JetBrains Mono" font-size="8" text-anchor="middle">timeout</text>
+        <!-- HALF-OPEN to CLOSED -->
+        <path d="M 175 30 Q 145 60 130 60" stroke="#10b981" stroke-width="1.5" fill="none" marker-end="url(#ga)"/>
+        <defs><marker id="ga" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#10b981"/></marker></defs>
+        <text x="148" y="44" fill="#10b981" font-family="JetBrains Mono" font-size="8">Success</text>
+        <!-- HALF-OPEN to OPEN -->
+        <path d="M 345 30 Q 400 50 400 60" stroke="#ef4444" stroke-width="1.5" fill="none" stroke-dasharray="4" marker-end="url(#ra2)"/>
+        <defs><marker id="ra2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#ef4444"/></marker></defs>
+        <text x="400" y="44" fill="#ef4444" font-family="JetBrains Mono" font-size="8">Fail again</text>
+      </svg>
+    </div>
+
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">📊 Typical Thresholds</div>
+        <p>৫ seconds এ ৫০% failure rate → OPEN। ৩০ seconds পর → HALF-OPEN। ৩টা success → CLOSED। এগুলো configurable।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">⚡ Fast Fail Benefits</div>
+        <p>OPEN state এ thread waste হয় না। Downstream এ load পড়ে না। User কে instant response দেওয়া যায়। System recover করার সুযোগ পায়।</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="patterns">
+    <div class="section-label">Resilience Patterns</div>
+    <h2 class="section-title">Circuit Breaker ছাড়াও আরো Patterns</h2>
+
+    <h3 class="sub-title">1. Retry Pattern — Transient Failure Handle করো</h3>
+    <p>Network blip, temporary overload — এই ধরনের transient failure এ একবার fail করলেই দিয়ে দেওয়া ঠিক না। কয়েকবার try করো।</p>
+    <div class="info-box warning">
+      <div class="box-label">⚠️ Retry Storm Problem</div>
+      সব clients একসাথে retry করলে failing service এ আরো বেশি load পড়ে। সমাধান: <strong>Exponential Backoff + Jitter</strong> — প্রতিটা retry তে wait time বাড়াও (100ms → 200ms → 400ms) এবং random jitter যোগ করো।
+    </div>
+
+    <h3 class="sub-title">2. Bulkhead Pattern — Isolate করো</h3>
+    <p>জাহাজের watertight compartment এর মতো। Thread pools, connection pools কে isolate করো। Payment thread pool full হলেও Search pool available থাকে।</p>
+    <div class="diagram">
+      <svg viewBox="0 0 660 155" xmlns="http://www.w3.org/2000/svg">
+        <text x="330" y="18" fill="#94a3b8" font-family="JetBrains Mono" font-size="11" text-anchor="middle">BULKHEAD: Isolated Thread Pools</text>
+        <rect x="10" y="28" width="195" height="115" rx="6" fill="#0c1220" stroke="#ef4444" stroke-width="1.5"/>
+        <text x="107" y="48" fill="#fca5a5" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">Payment Pool (10 threads)</text>
+        <rect x="25" y="58" width="18" height="14" rx="2" fill="#ef4444" opacity="0.7"/>
+        <rect x="50" y="58" width="18" height="14" rx="2" fill="#ef4444" opacity="0.7"/>
+        <rect x="75" y="58" width="18" height="14" rx="2" fill="#ef4444" opacity="0.7"/>
+        <rect x="100" y="58" width="18" height="14" rx="2" fill="#ef4444" opacity="0.3"/>
+        <rect x="125" y="58" width="18" height="14" rx="2" fill="#ef4444" opacity="0.3"/>
+        <text x="107" y="95" fill="#ef4444" font-family="JetBrains Mono" font-size="9" text-anchor="middle">3/10 busy ✅</text>
+        <text x="107" y="130" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Isolated — safe</text>
+
+        <rect x="233" y="28" width="195" height="115" rx="6" fill="#0c1220" stroke="#f97316" stroke-width="1.5"/>
+        <text x="330" y="48" fill="#fdba74" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">Inventory Pool (5 threads)</text>
+        <rect x="248" y="58" width="18" height="14" rx="2" fill="#f97316" opacity="0.7"/>
+        <rect x="273" y="58" width="18" height="14" rx="2" fill="#f97316" opacity="0.7"/>
+        <rect x="298" y="58" width="18" height="14" rx="2" fill="#f97316" opacity="0.7"/>
+        <rect x="323" y="58" width="18" height="14" rx="2" fill="#f97316" opacity="0.7"/>
+        <rect x="348" y="58" width="18" height="14" rx="2" fill="#f97316" opacity="0.7"/>
+        <text x="330" y="95" fill="#f97316" font-family="JetBrains Mono" font-size="9" text-anchor="middle">5/5 FULL 🔥</text>
+        <text x="330" y="112" fill="#fca5a5" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Rejecting new requests</text>
+        <text x="330" y="130" fill="#fca5a5" font-family="JetBrains Mono" font-size="9" text-anchor="middle">ONLY this pool affected!</text>
+
+        <rect x="456" y="28" width="195" height="115" rx="6" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="553" y="48" fill="#6ee7b7" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">Search Pool (8 threads)</text>
+        <rect x="471" y="58" width="18" height="14" rx="2" fill="#10b981" opacity="0.4"/>
+        <text x="553" y="95" fill="#10b981" font-family="JetBrains Mono" font-size="9" text-anchor="middle">1/8 busy ✅</text>
+        <text x="553" y="130" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Completely unaffected!</text>
+      </svg>
+    </div>
+
+    <h3 class="sub-title">3. Timeout Pattern — Forever Block করো না</h3>
+    <p>Service response এর জন্য কতক্ষণ wait করবে define করো। ৩০ seconds thread block করা catastrophic। Typical values: ৫০০ms–২০০০ms। SLA এর ৩x হওয়া উচিত।</p>
+
+    <h3 class="sub-title">4. Fallback Pattern — Graceful Degradation</h3>
+    <p>Service fail করলে alternative response দাও। Recommendation service down? Popular products দেখাও। Search down? Cached results দেখাও। এটাই graceful degradation।</p>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">🎬 Netflix Fallback</div>
+        <p>Recommendation service down → "Popular in your area" দেখায়। User experience maintain হয়। Service recover হলে personalized আবার শুরু।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🛒 Amazon Fallback</div>
+        <p>Review service down → Cached reviews দেখায়। Inventory service slow → Stale stock count দেখায়। Order process চলতে থাকে।</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="code">
+    <div class="section-label">Code Examples</div>
+    <h2 class="section-title">Practical Code</h2>
+
+    <h3 class="sub-title">Python: Circuit Breaker Class</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Python</span><span class="code-file">circuit_breaker.py</span></div>
+      <pre><span class="kw">import</span> time
+<span class="kw">from</span> enum <span class="kw">import</span> Enum
+
+<span class="kw">class</span> <span class="fn">State</span>(Enum):
+    CLOSED = <span class="str">"closed"</span>
+    OPEN = <span class="str">"open"</span>
+    HALF_OPEN = <span class="str">"half_open"</span>
+
+<span class="kw">class</span> <span class="fn">CircuitBreaker</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, failure_threshold=<span class="num">5</span>, recovery_timeout=<span class="num">30</span>):
+        self.failure_threshold = failure_threshold
+        self.recovery_timeout = recovery_timeout
+        self.state = State.CLOSED
+        self.failure_count = <span class="num">0</span>
+        self.success_count = <span class="num">0</span>
+        self.last_failure_time = <span class="kw">None</span>
+
+    <span class="kw">def</span> <span class="fn">call</span>(self, func, *args, fallback=<span class="kw">None</span>, **kwargs):
+        <span class="cm"># OPEN state check</span>
+        <span class="kw">if</span> self.state == State.OPEN:
+            <span class="kw">if</span> time.<span class="fn">time</span>() - self.last_failure_time > self.recovery_timeout:
+                self.state = State.HALF_OPEN
+                <span class="fn">print</span>(<span class="str">"🟡 HALF-OPEN: Testing service..."</span>)
+            <span class="kw">else</span>:
+                <span class="fn">print</span>(<span class="str">"🔴 OPEN: Fast fail!"</span>)
+                <span class="kw">return</span> <span class="fn">fallback</span>() <span class="kw">if</span> fallback <span class="kw">else None</span>
+
+        <span class="kw">try</span>:
+            result = <span class="fn">func</span>(*args, **kwargs)
+            self.<span class="fn">_handle_success</span>()
+            <span class="kw">return</span> result
+        <span class="kw">except</span> Exception <span class="kw">as</span> e:
+            self.<span class="fn">_handle_failure</span>()
+            <span class="kw">return</span> <span class="fn">fallback</span>() <span class="kw">if</span> fallback <span class="kw">else None</span>
+
+    <span class="kw">def</span> <span class="fn">_handle_success</span>(self):
+        <span class="kw">if</span> self.state == State.HALF_OPEN:
+            self.success_count += <span class="num">1</span>
+            <span class="kw">if</span> self.success_count >= <span class="num">2</span>:
+                self.state = State.CLOSED
+                self.failure_count = self.success_count = <span class="num">0</span>
+                <span class="fn">print</span>(<span class="str">"🟢 CLOSED: Service recovered!"</span>)
+
+    <span class="kw">def</span> <span class="fn">_handle_failure</span>(self):
+        self.failure_count += <span class="num">1</span>
+        self.last_failure_time = time.<span class="fn">time</span>()
+        <span class="kw">if</span> self.failure_count >= self.failure_threshold:
+            self.state = State.OPEN
+            <span class="fn">print</span>(<span class="str">f"🔴 OPEN: {self.failure_count} failures!"</span>)
+
+<span class="cm"># Usage</span>
+cb = <span class="fn">CircuitBreaker</span>(failure_threshold=<span class="num">3</span>)
+
+<span class="kw">def</span> <span class="fn">payment_call</span>():
+    <span class="kw">raise</span> <span class="fn">Exception</span>(<span class="str">"Payment down!"</span>)
+
+<span class="kw">def</span> <span class="fn">fallback</span>():
+    <span class="kw">return</span> {<span class="str">"status"</span>: <span class="str">"pending"</span>, <span class="str">"msg"</span>: <span class="str">"Processing soon"</span>}
+
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>):
+    result = cb.<span class="fn">call</span>(payment_call, fallback=fallback)
+    <span class="fn">print</span>(<span class="str">f"Attempt {i+1}:"</span>, result)</pre>
+    </div>
+
+    <h3 class="sub-title">Node.js: Retry with Exponential Backoff + Jitter</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Node.js</span><span class="code-file">retry_backoff.js</span></div>
+      <pre><span class="kw">async function</span> <span class="fn">retryWithBackoff</span>(fn, maxRetries = <span class="num">3</span>, baseDelay = <span class="num">100</span>) {
+    <span class="kw">for</span> (<span class="kw">let</span> attempt = <span class="num">1</span>; attempt <= maxRetries; attempt++) {
+        <span class="kw">try</span> {
+            <span class="kw">return await</span> <span class="fn">fn</span>();
+        } <span class="kw">catch</span> (err) {
+            <span class="kw">if</span> (attempt === maxRetries) <span class="kw">throw</span> err;
+            <span class="cm">// Exponential Backoff: 100 → 200 → 400ms</span>
+            <span class="kw">const</span> delay = baseDelay * Math.<span class="fn">pow</span>(<span class="num">2</span>, attempt - <span class="num">1</span>);
+            <span class="cm">// Jitter: random 0-100ms extra (prevent thundering herd)</span>
+            <span class="kw">const</span> jitter = Math.<span class="fn">random</span>() * <span class="num">100</span>;
+            <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">`❌ Attempt ${attempt} failed. Wait ${(delay+jitter).toFixed(0)}ms...`</span>);
+            <span class="kw">await new</span> <span class="fn">Promise</span>(r => <span class="fn">setTimeout</span>(r, delay + jitter));
+        }
+    }
+}
+
+<span class="cm">// Usage: wrap any async service call</span>
+<span class="kw">const</span> result = <span class="kw">await</span> <span class="fn">retryWithBackoff</span>(<span class="kw">async</span> () => {
+    <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'http://payment-service/charge'</span>, {
+        method: <span class="str">'POST'</span>,
+        signal: AbortSignal.<span class="fn">timeout</span>(<span class="num">2000</span>)  <span class="cm">// 2s timeout</span>
+    });
+    <span class="kw">if</span> (!res.ok) <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">`HTTP ${res.status}`</span>);
+    <span class="kw">return</span> res.<span class="fn">json</span>();
+}, <span class="num">3</span>, <span class="num">200</span>);</pre>
+    </div>
+  </div>
+
+  <div class="section" id="realworld">
+    <div class="section-label">Real World</div>
+    <h2 class="section-title">Tools Comparison</h2>
+    <table class="compare-table">
+      <tr><th>Tool</th><th>Language</th><th>Type</th><th>Best For</th></tr>
+      <tr><td>Resilience4j</td><td>Java</td><td>Library</td><td>Spring Boot microservices (Hystrix replacement)</td></tr>
+      <tr><td>Hystrix</td><td>Java</td><td>Library</td><td>Legacy Netflix stack (deprecated 2018)</td></tr>
+      <tr><td>Polly</td><td>.NET</td><td>Library</td><td>.NET microservices — retry, CB, bulkhead</td></tr>
+      <tr><td>opossum</td><td>Node.js</td><td>Library</td><td>Node.js service calls</td></tr>
+      <tr><td>pybreaker</td><td>Python</td><td>Library</td><td>Python microservices</td></tr>
+      <tr><td>Istio</td><td>Any</td><td>Service Mesh</td><td>K8s level — infrastructure, no code change</td></tr>
+    </table>
+  </div>
+
+  <div class="section" id="interview">
+    <div class="section-label">Interview Preparation</div>
+    <h2 class="section-title">Common Interview Questions</h2>
+    <div class="info-box concept">
+      <div class="box-label">🎯 Q1: Circuit Breaker আর Retry এর পার্থক্য কী?</div>
+      <strong>Retry:</strong> Transient failure এ কয়েকবার try করো। Short-term optimism।<br>
+      <strong>Circuit Breaker:</strong> Ongoing failure detect করে fast fail দেয়। Long-term protection।<br>
+      <strong>Best practice:</strong> দুটো একসাথে ব্যবহার করো — Retry + Circuit Breaker।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">🎯 Q2: Cascading Failure কীভাবে prevent করবে?</div>
+      একটা service failure অন্য services কে block করে domino effect হয়। Prevention toolkit: <strong>Circuit Breaker</strong> (fast fail), <strong>Bulkhead</strong> (isolation), <strong>Timeout</strong> (don't wait forever), <strong>Fallback</strong> (graceful degradation)।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">🎯 Q3: Fallback এর real example দাও</div>
+      Spotify recommendation down → Most popular songs। Netflix personalization down → Generic popular content। Payment service timeout → "Will process in background"। Search down → Cached results from 5 minutes ago।
+    </div>
+  </div>
+
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">⚡</span>
+      <h2>MCQ Test</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">Circuit Breaker OPEN state এ কী করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Requests queue করে রাখে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Requests ৫ বার retry করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Downstream call না করে immediately fail করে fallback দেয়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> নতুন server spawn করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — OPEN state = circuit broken। কোনো request downstream যায় না। Fast fail করে fallback response দেয়। Threads block হয় না, cascade হয় না। Service recover করার সুযোগ পায়।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">Cascading Failure কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Server এ হাজারো request আসা</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> একটা service failure অন্য services কে ব্লক করে পুরো system collapse করা</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Database connection leak</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Memory overflow</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Cascading: Service A calls B (slow) → A এর threads block → A ও slow → C calls A → C ও block → পুরো system। Domino effect। Circuit Breaker এই chain ভাঙে।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">Bulkhead Pattern কোন analogy থেকে এসেছে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Electrical circuit</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Traffic light</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Computer firewall</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> জাহাজের watertight compartment — একটা flood হলে বাকিগুলো safe</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Bulkhead এর নাম জাহাজের watertight compartment থেকে। Thread pools isolate করো — Payment pool full হলেও Search pool available থাকে। Failure isolation।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">Exponential Backoff + Jitter কেন দরকার?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> সব clients একসাথে retry করলে failing service আরো overload হয় — Backoff+Jitter এটা prevent করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Database query fast করতে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Encryption করতে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Cache warm করতে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Thundering Herd / Retry Storm: সব clients একসাথে retry → failing service আরো চাপে পড়ে। Exponential Backoff: wait বাড়াও (100→200→400ms)। Jitter: random delay যোগ করো। Load spread হয়।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">HALF-OPEN state এ কী হয়?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> সব requests block</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> সব requests pass</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Limited probe requests allow — success হলে CLOSED, fail হলে OPEN</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> New election trigger</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — HALF-OPEN = probe state। Recovery timeout পরে কিছু test requests allow হয়। Service recover করেছে? Success → CLOSED। এখনো fail? → OPEN আবার।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">Graceful Degradation মানে কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> System বন্ধ করে দেওয়া</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Service fail হলেও reduced functionality দিয়ে চলতে থাকা</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Database delete করা</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Server restart করা</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Graceful Degradation: Recommendation service down হলেও Netflix চলে (generic content দেখায়)। Full service না হলেও কিছুটা functionality দেওয়া। "Partially working is better than completely broken।"</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">Timeout কত হওয়া উচিত?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Unlimited</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> ৫ minutes</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> ১ second সবসময়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> P99 latency এর ৩-৫x — usually ৫০০ms–২০০০ms</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Timeout অনেক বেশি → threads block, resources waste। অনেক কম → unnecessary failures। Best practice: P99 latency measure করো, তার ৩-৫x set করো। Critical paths: ৫০০ms। Non-critical: ২০০০ms।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">Istio তে Circuit Breaker configure করার সুবিধা কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Application code change ছাড়াই infrastructure level এ circuit breaking পাওয়া যায়</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Database faster হয়</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> UI design করা যায়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Code automatically লেখা হয়</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Istio (Service Mesh) infrastructure level এ circuit breaking করে। প্রতিটা service এ library import না করেও পাওয়া যায়। DestinationRule YAML এ configure করো। Language-agnostic।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">Circuit Breaker pattern টা কোথা থেকে inspired?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Computer network</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Database transaction</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Electrical circuit breaker — overload এ power cut করে damage prevent করে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Traffic light system</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Electrical circuit breaker overload বা short circuit এ circuit open করে দেয় — equipment damage prevent করে। Software circuit breaker ঠিক একইভাবে failing service এ calls বন্ধ করে cascade prevent করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">তুমি একটা microservices app বানাচ্ছো। Payment service কে call করতে গিয়ে timeout হলে user কে কী দেওয়া উচিত?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> 500 Internal Server Error এবং app crash</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Friendly message: "Payment being processed, we'll notify you" — order pending রাখো</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> User কে ৩০ seconds wait করাও</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Database এ rollback করো সব কিছু</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Fallback Pattern + Graceful Degradation। Payment timeout হলে order pending রাখো, async process করো, user কে notify করো। User experience maintain করো। "503 Service Unavailable" দিলে user frustrate হয়।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT & CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ২-৩ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <ul class="task-list">
+      <li><strong>State Diagram:</strong> একটা ride-sharing app (যেমন Pathao) এর জন্য Circuit Breaker design করো। কোন services এ CB লাগাবে? Threshold কত হবে? Fallback কী হবে? সব লেখো।</li>
+      <li><strong>Code Fix:</strong> উপরের Python CircuitBreaker code পড়ো। যদি service intermittently fail করে (প্রতি ২য় call fail) তাহলে কি CB কখনো OPEN হবে? কেন বা কেন না explain করো।</li>
+      <li><strong>Resilience Audit:</strong> তোমার পরিচিত বা কাজ করা কোনো project এ কতটা resilience pattern আছে? (Timeout আছে? Retry আছে? Fallback আছে?) ৫ লাইনে বর্ণনা করো।</li>
+      <li><strong>Comparison:</strong> Resilience4j এবং Istio Circuit Breaker — দুটোর approach এর পার্থক্য লেখো। কোন situation এ কোনটা নেবে?</li>
+      <li><strong>Bonus Code:</strong> দেওয়া Retry function এ একটা <code>shouldRetry(error)</code> callback যোগ করো — শুধু network errors এ retry, business errors এ retry না।</li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>Circuit Breaker design for ride-sharing app</li>
+        <li>Code analysis answer</li>
+        <li>Resilience audit of known project</li>
+        <li>Resilience4j vs Istio comparison</li>
+        <li>Extended retry function with error filtering</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="project-section" id="project">
+    <div class="project-header">
+      <span style="font-size:24px">🚀</span>
+      <h2>Hands-On Project Task</h2>
+    </div>
+    <div class="project-body">
+      <h3 style="font-family:'Fraunces',serif;font-size:18px;margin-bottom:16px;color:#f1f5f9;">Resilient Microservice Demo</h3>
+      <p style="font-size:14px;color:#94a3b8;margin-bottom:20px;">Python দিয়ে একটা service বানাও যেটা Circuit Breaker + Retry দিয়ে একটা flaky external service কে handle করে।</p>
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-circle">1</div>
+          <div class="step-content">
+            <h4>Flaky Service বানাও</h4>
+            <p>একটা FastAPI endpoint যেটা random ৫০% time 500 error দেয়। Real unreliable service simulate করবে।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">2</div>
+          <div class="step-content">
+            <h4>Retry logic যোগ করো</h4>
+            <p>Exponential backoff সহ retry wrapper লেখো। ৩ attempts, 100ms base delay।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">3</div>
+          <div class="step-content">
+            <h4>Circuit Breaker wrap করো</h4>
+            <p>উপরের CircuitBreaker class ব্যবহার করো। ৫ failures → OPEN, ১০s পর HALF-OPEN।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">4</div>
+          <div class="step-content">
+            <h4>Fallback implement করো</h4>
+            <p>Service OPEN state এ cached/static response দেবে। User experience maintain হবে।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">5</div>
+          <div class="step-content">
+            <h4>Test করো</h4>
+            <p>১০০টা requests পাঠাও। Success rate দেখো। Circuit state transitions log করো।</p>
+          </div>
+        </div>
+      </div>
+      <div class="info-box tip" style="margin-top:16px">
+        <div class="box-label">🎯 এটা করলে যা শিখবে</div>
+        Circuit Breaker theory নয় — actually দেখবে OPEN state fast fail কীভাবে কাজ করে, retry storm কীভাবে prevent হয়, এবং fallback user কে কীভাবে protect করে।
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Lesson Summary</div>
+    <h2 class="section-title">আজকে যা শিখলাম</h2>
+    <table class="compare-table">
+      <tr><th>Concept</th><th>এক লাইনে</th></tr>
+      <tr><td>Circuit Breaker</td><td>Failing service এ fast fail — cascade রোধ করে</td></tr>
+      <tr><td>CLOSED → OPEN</td><td>Failure threshold exceed করলে</td></tr>
+      <tr><td>OPEN → HALF-OPEN</td><td>Recovery timeout পরে probe করে</td></tr>
+      <tr><td>Retry + Backoff</td><td>Transient failure handle, retry storm prevent</td></tr>
+      <tr><td>Bulkhead</td><td>Thread pool isolate — একটার failure সব থামায় না</td></tr>
+      <tr><td>Timeout</td><td>Forever wait করো না — ৫০০ms–২s</td></tr>
+      <tr><td>Fallback</td><td>Graceful degradation — কিছু দাও, কিছু না থেকে</td></tr>
+    </table>
+  </div>
+
+  <div class="next-cta">
+    <div>
+      <div class="next-label">Next Topic →</div>
+      <div class="next-title">🚦 Rate Limiting & Throttling</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+
+</div>
+</main>
+<script>
+window.addEventListener('scroll',()=>{const d=document.documentElement;const s=d.scrollTop||document.body.scrollTop;const h=d.scrollHeight-d.clientHeight;document.getElementById('progressFill').style.width=((s/h)*100)+'%';});
+let answered={};
+document.querySelectorAll('.option').forEach(opt=>{opt.addEventListener('click',function(){const block=this.closest('.question-block');const qId=Array.from(document.querySelectorAll('.question-block')).indexOf(block);if(answered[qId])return;answered[qId]=this.dataset.val;block.querySelectorAll('.option').forEach(o=>{o.style.pointerEvents='none';if(o.dataset.val===block.dataset.correct)o.classList.add('correct');else if(o.dataset.val===this.dataset.val)o.classList.add('wrong');});block.querySelector('.explanation').classList.add('visible');});});
+function submitMCQ(){let correct=0;const blocks=document.querySelectorAll('.question-block');blocks.forEach((b,i)=>{if(answered[i]===b.dataset.correct)correct++;});const un=blocks.length-Object.keys(answered).length;if(un>0){alert(`এখনও ${un}টা প্রশ্নের উত্তর দাওনি!`);return;}document.getElementById('scoreDisplay').textContent=correct;const banner=document.getElementById('resultBanner');banner.classList.add('visible');if(correct>=7){banner.classList.add('pass');banner.textContent=`🎉 দারুণ! ${correct}/10 সঠিক। পরের topic এ যাও!`;}else{banner.classList.add('fail');banner.textContent=`📖 ${correct}/10 সঠিক। আবার পড়ো। ৭/১০ পেলেই pass।`;}}
+</script>
+</body>
+</html>

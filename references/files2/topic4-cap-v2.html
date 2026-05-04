@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 1 · Topic 4 — CAP Theorem &amp; Consistency</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root { --bg:#05080f; --surface:#090e1a; --card:#0c1220; --border:#162035; --border2:#1e2d4a; --accent:#3b82f6; --accent-glow:rgba(59,130,246,0.15); --green:#10b981; --green-glow:rgba(16,185,129,0.12); --orange:#f97316; --red:#ef4444; --yellow:#eab308; --purple:#8b5cf6; --text:#e2e8f0; --muted:#64748b; --muted2:#94a3b8; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:'Noto Sans Bengali',sans-serif; line-height:1.7; font-size:15px; }
+body::after { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events:none; z-index:999; opacity:0.4; }
+.sidebar { position:fixed; left:0; top:0; bottom:0; width:240px; background:var(--surface); border-right:1px solid var(--border); padding:24px 0; overflow-y:auto; z-index:100; }
+.sidebar-logo { padding:0 20px 20px; border-bottom:1px solid var(--border); margin-bottom:16px; }
+.sidebar-logo .phase-tag { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent); letter-spacing:2px; text-transform:uppercase; display:block; margin-bottom:4px; }
+.sidebar-logo .course-title { font-family:'Fraunces',serif; font-size:16px; font-weight:700; line-height:1.3; }
+.nav-section { padding:0 12px; margin-bottom:8px; }
+.nav-section-label { font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:2px; color:var(--muted); padding:0 8px; margin-bottom:6px; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:4px; font-size:13px; color:var(--muted2); cursor:pointer; transition:all 0.15s; text-decoration:none; }
+.nav-item:hover { background:var(--card); color:var(--text); }
+.nav-item.active { background:var(--accent-glow); color:var(--accent); }
+.nav-item .nav-icon { font-size:14px; flex-shrink:0; }
+.nav-item .nav-num { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); margin-left:auto; }
+.progress-bar { position:fixed; top:0; left:240px; right:0; height:2px; background:var(--border); z-index:200; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--green)); width:0%; transition:width 0.1s; }
+.main { margin-left:240px; min-height:100vh; }
+.content { max-width:780px; margin:0 auto; padding:48px 40px 120px; }
+.topic-header { margin-bottom:48px; }
+.breadcrumb { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+.breadcrumb span { color:var(--accent); }
+.topic-num { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-bottom:10px; display:block; }
+h1.topic-title { font-family:'Fraunces',serif; font-size:clamp(32px,5vw,48px); font-weight:900; line-height:1.1; margin-bottom:16px; background:linear-gradient(135deg,#fff 30%,#93c5fd); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.topic-meta { display:flex; gap:16px; flex-wrap:wrap; }
+.meta-chip { font-family:'JetBrains Mono',monospace; font-size:11px; padding:4px 12px; border-radius:2px; border:1px solid; }
+.meta-chip.time { border-color:rgba(59,130,246,0.3); color:var(--accent); background:var(--accent-glow); }
+.meta-chip.level { border-color:rgba(16,185,129,0.3); color:var(--green); background:var(--green-glow); }
+.meta-chip.type { border-color:rgba(139,92,246,0.3); color:var(--purple); background:rgba(139,92,246,0.08); }
+.section { margin-bottom:48px; scroll-margin-top:24px; }
+.section-label { font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:3px; color:var(--accent); margin-bottom:12px; display:flex; align-items:center; gap:10px; }
+.section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+h2.section-title { font-family:'Fraunces',serif; font-size:24px; font-weight:700; margin-bottom:16px; color:#f1f5f9; }
+h3.sub-title { font-family:'Fraunces',serif; font-size:18px; font-weight:700; margin:24px 0 10px; color:#cbd5e1; }
+p { margin-bottom:14px; color:#cbd5e1; }
+.info-box { border-radius:6px; padding:18px 20px; margin:20px 0; border-left:3px solid; font-size:14px; }
+.info-box.concept { background:rgba(59,130,246,0.06); border-color:var(--accent); }
+.info-box.warning { background:rgba(249,115,22,0.06); border-color:var(--orange); }
+.info-box.tip { background:rgba(16,185,129,0.06); border-color:var(--green); }
+.info-box.important { background:rgba(234,179,8,0.06); border-color:var(--yellow); }
+.info-box .box-label { font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px; font-weight:700; }
+.info-box.concept .box-label { color:var(--accent); }
+.info-box.warning .box-label { color:var(--orange); }
+.info-box.tip .box-label { color:var(--green); }
+.info-box.important .box-label { color:var(--yellow); }
+.compare-table { width:100%; border-collapse:collapse; margin:20px 0; font-size:13px; }
+.compare-table th { font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:1px; padding:12px 16px; text-align:left; background:var(--card); border-bottom:2px solid var(--border2); color:var(--muted2); }
+.compare-table td { padding:11px 16px; border-bottom:1px solid var(--border); color:#94a3b8; vertical-align:top; line-height:1.6; }
+.compare-table tr:hover td { background:rgba(255,255,255,0.02); }
+.compare-table td:first-child { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text); white-space:nowrap; }
+.tag-yes { color:var(--green); font-weight:600; }
+.tag-no { color:var(--red); }
+.tag-med { color:var(--yellow); }
+.diagram { background:var(--card); border:1px solid var(--border2); border-radius:8px; padding:30px 20px; margin:24px 0; text-align:center; font-family:'JetBrains Mono',monospace; font-size:12px; overflow-x:auto; }
+.diagram svg { max-width:100%; }
+.code-block { background:#030608; border:1px solid var(--border2); border-radius:6px; margin:20px 0; overflow:hidden; }
+.code-header { display:flex; align-items:center; justify-content:space-between; padding:10px 16px; background:var(--card); border-bottom:1px solid var(--border); }
+.code-lang { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent); text-transform:uppercase; letter-spacing:1px; }
+.code-file { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); }
+pre { padding:20px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.8; color:#e2e8f0; }
+.kw{color:#93c5fd;} .fn{color:#6ee7b7;} .str{color:#fcd34d;} .cm{color:#475569;font-style:italic;} .num{color:#f9a8d4;} .var{color:#e2e8f0;}
+.scenario-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:20px 0; }
+.scenario-card { background:var(--card); border:1px solid var(--border); border-radius:6px; padding:18px; }
+.scenario-card .s-title { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; }
+.scenario-card p { font-size:13px; color:var(--muted2); margin:0; }
+.mcq-section { background:var(--surface); border:1px solid var(--border2); border-radius:8px; padding:28px; margin:30px 0; }
+.mcq-header { display:flex; align-items:center; gap:12px; margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+.mcq-icon { font-size:24px; }
+.mcq-header h2 { font-family:'Fraunces',serif; font-size:20px; font-weight:700; }
+.mcq-score { margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--muted); }
+.mcq-score span { color:var(--accent); font-size:18px; font-weight:700; }
+.question-block { margin-bottom:28px; padding-bottom:28px; border-bottom:1px solid var(--border); }
+.question-block:last-of-type { border-bottom:none; margin-bottom:0; }
+.q-num { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+.q-text { font-size:15px; font-weight:600; color:var(--text); margin-bottom:14px; line-height:1.5; font-family:'Noto Sans Bengali',sans-serif; }
+.options { display:flex; flex-direction:column; gap:8px; }
+.option { display:flex; align-items:flex-start; gap:12px; padding:12px 14px; border-radius:4px; border:1px solid var(--border); cursor:pointer; transition:all 0.15s; font-size:14px; color:var(--muted2); font-family:'Noto Sans Bengali',sans-serif; }
+.option:hover { border-color:var(--accent); color:var(--text); background:var(--accent-glow); }
+.option.correct { border-color:var(--green); background:var(--green-glow); color:#6ee7b7; }
+.option.wrong { border-color:var(--red); background:rgba(239,68,68,0.08); color:#fca5a5; }
+.option-key { font-family:'JetBrains Mono',monospace; font-size:11px; background:var(--border2); padding:2px 7px; border-radius:2px; flex-shrink:0; margin-top:1px; }
+.explanation { display:none; margin-top:12px; padding:12px 14px; background:rgba(16,185,129,0.06); border-left:2px solid var(--green); border-radius:0 4px 4px 0; font-size:13px; color:#94a3b8; line-height:1.7; font-family:'Noto Sans Bengali',sans-serif; }
+.explanation.visible { display:block; }
+.explanation strong { color:var(--green); }
+.mcq-submit { display:inline-flex; align-items:center; gap:8px; margin-top:20px; padding:12px 24px; background:var(--accent); color:#fff; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; border:none; border-radius:4px; cursor:pointer; letter-spacing:1px; transition:all 0.15s; }
+.mcq-submit:hover { background:#2563eb; transform:translateY(-1px); }
+.result-banner { display:none; margin-top:20px; padding:16px 20px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; }
+.result-banner.visible { display:block; }
+.result-banner.pass { background:var(--green-glow); border:1px solid var(--green); color:var(--green); }
+.result-banner.fail { background:rgba(249,115,22,0.08); border:1px solid var(--orange); color:var(--orange); }
+.assignment-section { background:linear-gradient(135deg,rgba(59,130,246,0.04),rgba(139,92,246,0.04)); border:1px solid rgba(59,130,246,0.2); border-radius:8px; padding:28px; margin:30px 0; }
+.assignment-header { display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+.assignment-icon { font-size:28px; }
+.assignment-header h2 { font-family:'Fraunces',serif; font-size:22px; font-weight:700; }
+.assignment-meta { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+.a-chip { font-family:'JetBrains Mono',monospace; font-size:11px; padding:3px 10px; border-radius:2px; }
+.a-chip.time { background:rgba(234,179,8,0.1); color:var(--yellow); border:1px solid rgba(234,179,8,0.2); }
+.a-chip.level { background:rgba(16,185,129,0.1); color:var(--green); border:1px solid rgba(16,185,129,0.2); }
+.task-list { counter-reset:tasks; list-style:none; margin-bottom:20px; }
+.task-list li { counter-increment:tasks; padding:14px 14px 14px 50px; position:relative; border-bottom:1px solid var(--border); font-size:14px; color:var(--muted2); line-height:1.7; font-family:'Noto Sans Bengali',sans-serif; }
+.task-list li:last-child { border-bottom:none; }
+.task-list li::before { content:counter(tasks); position:absolute; left:14px; top:14px; width:24px; height:24px; background:var(--accent-glow); border:1px solid rgba(59,130,246,0.3); border-radius:3px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent); display:flex; align-items:center; justify-content:center; font-weight:700; }
+.task-list li strong { color:var(--text); }
+.deliverable-box { background:var(--card); border:1px solid var(--border2); border-radius:6px; padding:16px 18px; margin-top:16px; }
+.deliverable-box .d-label { font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--purple); margin-bottom:10px; }
+.deliverable-box ul { list-style:none; padding:0; }
+.deliverable-box ul li { font-size:13px; color:var(--muted2); padding:4px 0 4px 18px; position:relative; font-family:'Noto Sans Bengali',sans-serif; }
+.deliverable-box ul li::before { content:'◆'; position:absolute; left:0; font-size:8px; color:var(--purple); top:6px; }
+.project-section { background:var(--card); border:1px solid var(--border2); border-radius:8px; overflow:hidden; margin:30px 0; }
+.project-header { background:linear-gradient(90deg,rgba(16,185,129,0.1),transparent); padding:18px 24px; border-bottom:1px solid var(--border2); display:flex; align-items:center; gap:12px; }
+.project-header h2 { font-family:'Fraunces',serif; font-size:20px; font-weight:700; color:var(--green); }
+.project-body { padding:24px; }
+.step-flow { display:flex; flex-direction:column; gap:0; margin:16px 0; }
+.step-item { display:flex; gap:16px; padding-bottom:24px; position:relative; }
+.step-item:last-child { padding-bottom:0; }
+.step-item::before { content:''; position:absolute; left:15px; top:32px; bottom:0; width:1px; background:var(--border2); }
+.step-item:last-child::before { display:none; }
+.step-circle { width:32px; height:32px; border-radius:50%; background:var(--green-glow); border:2px solid var(--green); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:var(--green); flex-shrink:0; z-index:1; }
+.step-content { flex:1; }
+.step-content h4 { font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text); margin-bottom:4px; }
+.step-content p { font-size:13px; color:var(--muted2); margin:0; }
+.next-cta { display:flex; align-items:center; justify-content:space-between; background:var(--surface); border:1px solid var(--border2); border-radius:8px; padding:20px 24px; margin-top:48px; text-decoration:none; color:var(--text); transition:border-color 0.2s; }
+.next-cta:hover { border-color:var(--accent); }
+.next-label { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:4px; }
+.next-title { font-family:'Fraunces',serif; font-size:18px; font-weight:700; }
+.next-arrow { font-size:24px; color:var(--accent); }
+code { font-family:'JetBrains Mono',monospace; font-size:12px; background:var(--card); border:1px solid var(--border2); padding:1px 6px; border-radius:3px; color:#93c5fd; }
+.phase-complete { background:linear-gradient(135deg,rgba(59,130,246,0.06),rgba(16,185,129,0.06)); border:1px solid rgba(59,130,246,0.3); border-radius:8px; padding:32px; margin-top:48px; text-align:center; }
+.phase-complete h3 { font-family:'Fraunces',serif; font-size:24px; font-weight:900; color:#f1f5f9; margin-bottom:12px; }
+.phase-complete p { color:var(--muted2); font-size:14px; margin-bottom:20px; }
+.phase-badges { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:16px; }
+.phase-badge { font-family:'JetBrains Mono',monospace; font-size:11px; padding:6px 14px; border-radius:3px; background:var(--green-glow); border:1px solid rgba(16,185,129,0.3); color:var(--green); }
+@media (max-width:768px) { .sidebar{display:none;} .main{margin-left:0;} .content{padding:24px 16px 80px;} .scenario-grid{grid-template-columns:1fr;} .progress-bar{left:0;} }
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 01 · Foundations</span>
+    <div class="course-title">System Design<br>Mastery Course</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Phase 1 Topics</div>
+    <a href="#" class="nav-item"><span class="nav-icon">🔢</span><span>Scalability</span><span class="nav-num">01</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🌐</span><span>Networking</span><span class="nav-num">02</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🗄️</span><span>Databases</span><span class="nav-num">03</span></a>
+    <a href="#concept" class="nav-item active"><span class="nav-icon">📦</span><span>CAP Theorem</span><span class="nav-num">04</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px">
+    <div class="nav-section-label">This Lesson</div>
+    <a href="#concept" class="nav-item"><span class="nav-icon">💡</span><span>Concept</span></a>
+    <a href="#cap-deep" class="nav-item"><span class="nav-icon">△</span><span>CAP Deep Dive</span></a>
+    <a href="#cp-ap" class="nav-item"><span class="nav-icon">⚖️</span><span>CP vs AP Systems</span></a>
+    <a href="#consistency" class="nav-item"><span class="nav-icon">📊</span><span>Consistency Levels</span></a>
+    <a href="#pacelc" class="nav-item"><span class="nav-icon">⚡</span><span>PACELC Theorem</span></a>
+    <a href="#realworld" class="nav-item"><span class="nav-icon">🏢</span><span>Real World</span></a>
+    <a href="#tools" class="nav-item"><span class="nav-icon">🔧</span><span>Tools Comparison</span></a>
+    <a href="#mcq" class="nav-item"><span class="nav-icon">✅</span><span>MCQ Test</span></a>
+    <a href="#assignment" class="nav-item"><span class="nav-icon">📝</span><span>Assignment</span></a>
+    <a href="#project" class="nav-item"><span class="nav-icon">🚀</span><span>Project Task</span></a>
+  </div>
+</nav>
+
+<main class="main">
+<div class="content">
+
+  <div class="topic-header" id="concept">
+    <div class="breadcrumb">Phase 1 — Foundations <span>›</span> Topic 04</div>
+    <span class="topic-num">TOPIC 04 / 04 — Phase 1 Final</span>
+    <h1 class="topic-title">CAP Theorem &amp;<br>Consistency</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ ৬০-৯০ মিনিট</span>
+      <span class="meta-chip level">📊 Junior Level</span>
+      <span class="meta-chip type">🏁 Phase 1 Final</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Why It Matters</div>
+    <h2 class="section-title">CAP Theorem কেন শিখতে হবে?</h2>
+    <p>তুমি একটা distributed system design করছো। Interview এ জিজ্ঞেস করলো — "তোমার system এ network failure হলে কী হবে? User কি wrong data দেখবে নাকি error পাবে?" — এই question এর answer হলো CAP Theorem।</p>
+    <p>Cassandra vs MongoDB vs PostgreSQL কোনটা choose করবে — এই decision এর পেছনে CAP আছে। <em>Senior engineer হতে হলে এই trade-off বুঝতেই হবে।</em></p>
+    <div class="info-box concept">
+      <div class="box-label">📌 Definition</div>
+      <strong>CAP Theorem</strong> বলে: একটা distributed system এ সর্বোচ্চ দুটো guarantee দেওয়া সম্ভব — Consistency, Availability, Partition Tolerance এর মধ্যে। তিনটা একসাথে impossible। Eric Brewer 2000 সালে propose করেন, 2002 সালে formally prove হয়।
+    </div>
+  </div>
+
+  <div class="section" id="cap-deep">
+    <div class="section-label">CAP Theorem</div>
+    <h2 class="section-title">C, A, P — তিনটা কি মানে?</h2>
+
+    <div class="diagram">
+      <svg width="500" height="240" viewBox="0 0 500 240">
+        <!-- Triangle -->
+        <polygon points="250,20 60,200 440,200" fill="none" stroke="#1e2d4a" stroke-width="2"/>
+        <!-- C node top -->
+        <circle cx="250" cy="20" r="40" fill="rgba(59,130,246,0.12)" stroke="#3b82f6" stroke-width="2"/>
+        <text x="250" y="14" text-anchor="middle" fill="#3b82f6" font-family="Fraunces,serif" font-size="20" font-weight="900">C</text>
+        <text x="250" y="28" text-anchor="middle" fill="#93c5fd" font-family="JetBrains Mono" font-size="8">CONSISTENCY</text>
+        <!-- A node left -->
+        <circle cx="60" cy="200" r="40" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="2"/>
+        <text x="60" y="194" text-anchor="middle" fill="#10b981" font-family="Fraunces,serif" font-size="20" font-weight="900">A</text>
+        <text x="60" y="208" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="8">AVAILABILITY</text>
+        <!-- P node right -->
+        <circle cx="440" cy="200" r="40" fill="rgba(139,92,246,0.1)" stroke="#8b5cf6" stroke-width="2"/>
+        <text x="440" y="194" text-anchor="middle" fill="#8b5cf6" font-family="Fraunces,serif" font-size="20" font-weight="900">P</text>
+        <text x="440" y="208" text-anchor="middle" fill="#c4b5fd" font-family="JetBrains Mono" font-size="8">PARTITION TOL.</text>
+        <!-- Labels on sides -->
+        <text x="145" y="100" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="10" font-weight="700">CP</text>
+        <text x="145" y="114" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">HBase, Zookeeper</text>
+        <text x="355" y="100" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="10" font-weight="700">CA</text>
+        <text x="355" y="114" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">Single-node RDBMS</text>
+        <text x="250" y="228" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="10" font-weight="700">AP</text>
+        <text x="250" y="240" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">Cassandra, DynamoDB</text>
+      </svg>
+    </div>
+
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">C — Consistency</div>
+        <p>সব nodes এ same time এ same data। Write করার পর যেকোনো node থেকে read করলে latest value পাওয়া যাবে। "All nodes see the same data simultaneously।"</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">A — Availability</div>
+        <p>প্রতিটি request এর response আসবেই — error নয়, timeout নয়। কিছু nodes down থাকলেও system respond করবে। তবে response টা stale হতে পারে।</p>
+      </div>
+    </div>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">P — Partition Tolerance</div>
+        <p>Network partition (nodes এর communication বিচ্ছিন্ন) হলেও system কাজ করতে থাকে। Distributed system এ P সবসময় দরকার — network কখনো ১০০% reliable না।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">💡 Real Choice</div>
+        <p>Distributed system এ P বাদ দেওয়া যায় না। তাই real choice হলো: <strong>CP নাকি AP?</strong> Network partition হলে কোনটা sacrifice করবো — Consistency নাকি Availability?</p>
+      </div>
+    </div>
+
+    <div class="info-box important">
+      <div class="box-label">🎯 Key Insight — Interview এ বলো</div>
+      "CAP এ P সবসময় থাকবে কারণ network failure real world এ inevitable। তাই practical choice হলো CP বা AP। Financial systems এ CP — wrong data catastrophic। Social media তে AP — stale data কয়েক seconds acceptable।"
+    </div>
+  </div>
+
+  <div class="section" id="cp-ap">
+    <div class="section-label">CP vs AP</div>
+    <h2 class="section-title">Network Partition হলে কি হয়?</h2>
+
+    <div class="diagram">
+      <svg width="560" height="220" viewBox="0 0 560 220">
+        <defs>
+          <marker id="pa" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#3b82f6"/></marker>
+        </defs>
+        <!-- Normal -->
+        <text x="130" y="15" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">NORMAL STATE</text>
+        <rect x="30" y="22" width="70" height="28" rx="3" fill="#0c1220" stroke="#10b981"/>
+        <text x="65" y="40" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="8">Node A</text>
+        <text x="65" y="52" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="7">bal=1000</text>
+        <path d="M 102 36 L 155 36" stroke="#10b981" stroke-width="1.5" marker-end="url(#pa)"/>
+        <text x="128" y="30" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="7">sync</text>
+        <rect x="157" y="22" width="70" height="28" rx="3" fill="#0c1220" stroke="#10b981"/>
+        <text x="192" y="40" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="8">Node B</text>
+        <text x="192" y="52" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="7">bal=1000</text>
+        <!-- Divider -->
+        <line x1="270" y1="10" x2="270" y2="215" stroke="#1e2d4a" stroke-width="1" stroke-dasharray="4,3"/>
+        <!-- Partition -->
+        <text x="420" y="15" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="9">AFTER PARTITION + WRITE</text>
+        <rect x="290" y="22" width="70" height="28" rx="3" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="325" y="37" text-anchor="middle" fill="#93c5fd" font-family="JetBrains Mono" font-size="8">Node A</text>
+        <text x="325" y="49" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="7">bal=500 ✍</text>
+        <text x="380" y="36" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="10">✂✂✂</text>
+        <text x="380" y="50" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="7">no network</text>
+        <rect x="420" y="22" width="70" height="28" rx="3" fill="#0c1220" stroke="#ef4444" stroke-width="1"/>
+        <text x="455" y="37" text-anchor="middle" fill="#fca5a5" font-family="JetBrains Mono" font-size="8">Node B</text>
+        <text x="455" y="49" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="7">bal=1000 ← stale!</text>
+        <!-- CP choice -->
+        <rect x="286" y="80" width="200" height="55" rx="4" fill="rgba(59,130,246,0.07)" stroke="#3b82f6" stroke-width="1"/>
+        <text x="386" y="98" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="9" font-weight="700">CP CHOICE</text>
+        <text x="386" y="112" text-anchor="middle" fill="#94a3b8" font-family="Noto Sans Bengali" font-size="9">Node B reads → Error দেয়</text>
+        <text x="386" y="126" text-anchor="middle" fill="#94a3b8" font-family="Noto Sans Bengali" font-size="9">"Service unavailable"</text>
+        <!-- AP choice -->
+        <rect x="286" y="150" width="200" height="55" rx="4" fill="rgba(16,185,129,0.07)" stroke="#10b981" stroke-width="1"/>
+        <text x="386" y="168" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9" font-weight="700">AP CHOICE</text>
+        <text x="386" y="182" text-anchor="middle" fill="#94a3b8" font-family="Noto Sans Bengali" font-size="9">Node B reads → 1000 দেয়</text>
+        <text x="386" y="196" text-anchor="middle" fill="#94a3b8" font-family="Noto Sans Bengali" font-size="9">(stale but available!)</text>
+      </svg>
+    </div>
+
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">CP Systems — Consistency Priority</div>
+        <p>Partition হলে কিছু requests reject করে। Wrong data দেবে না। Banking, coordination (Zookeeper), configuration management এর জন্য।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">AP Systems — Availability Priority</div>
+        <p>Partition হলেও respond করে, কিন্তু stale data দিতে পারে। Eventually consistent। Social feeds, caching, DNS, shopping cart এর জন্য।</p>
+      </div>
+    </div>
+
+    <table class="compare-table">
+      <tr><th>Use Case</th><th>CP নাকি AP?</th><th>কারণ</th></tr>
+      <tr><td>Bank balance</td><td class="tag-yes">CP</td><td>Wrong balance দেখালে double-spending হবে</td></tr>
+      <tr><td>Facebook likes</td><td class="tag-med">AP</td><td>কয়েক seconds stale count দেখানো acceptable</td></tr>
+      <tr><td>Online booking (flight)</td><td class="tag-yes">CP</td><td>Double-booking prevent করতে হবে</td></tr>
+      <tr><td>DNS records</td><td class="tag-med">AP</td><td>Always available, propagation delay acceptable</td></tr>
+      <tr><td>Shopping cart</td><td class="tag-med">AP</td><td>Cart lock হলে sale হারাবে, stale cart acceptable</td></tr>
+      <tr><td>Leader election</td><td class="tag-yes">CP</td><td>Split-brain হলে catastrophic</td></tr>
+    </table>
+  </div>
+
+  <div class="section" id="consistency">
+    <div class="section-label">Consistency Levels</div>
+    <h2 class="section-title">Consistency — Strong থেকে Eventual</h2>
+    <p>Consistency binary না — একটা spectrum। কতটা strong consistency চাই সেটা per-use-case decide করতে হয়।</p>
+
+    <table class="compare-table">
+      <tr><th>Level</th><th>মানে কি</th><th>Real Example</th></tr>
+      <tr><td>Strong</td><td>Write এর পর সব nodes এ latest value। Slowest</td><td>Bank balance, Stock inventory</td></tr>
+      <tr><td>Linearizable</td><td>Real-time order maintain। Operations globally ordered</td><td>Zookeeper, etcd</td></tr>
+      <tr><td>Causal</td><td>Causally related operations ordered। Reply এর আগে post দেখা যাবে</td><td>Chat apps, Comments</td></tr>
+      <tr><td>Read-your-writes</td><td>তুমি নিজের write সবসময় দেখবে। অন্যরা হয়তো দেখবে না</td><td>Instagram — নিজের post দেখা</td></tr>
+      <tr><td>Eventual</td><td>Eventually সব nodes same data। কখন হবে guarantee নেই</td><td>DNS, YouTube view count, Likes</td></tr>
+    </table>
+
+    <div class="info-box tip">
+      <div class="box-label">💡 Eventual Consistency — বাস্তব উদাহরণ</div>
+      DNS update করলে সারা বিশ্বে propagate হতে ২৪-৪৮ ঘণ্টা লাগতে পারে। এই সময় কেউ old IP দেখছে, কেউ new IP। এটাই Eventual Consistency। Facebook likes, YouTube view count, Twitter follower count — সবই eventually consistent।
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Cassandra</span><span class="code-file">tunable-consistency.cql</span></div>
+      <pre><span class="cm">-- Cassandra তে per-query consistency level configure করা যায়!</span>
+<span class="cm">-- এটাই practical CAP flexibility</span>
+
+<span class="cm">-- QUORUM: majority nodes (N/2+1) agree করলে success</span>
+<span class="cm">-- 3 nodes থাকলে QUORUM = 2 nodes agree করতে হবে</span>
+INSERT INTO accounts (id, balance)
+VALUES (uuid(), <span class="num">10000</span>)
+USING CONSISTENCY QUORUM;   <span class="cm">-- Strong-ish, balanced</span>
+
+<span class="cm">-- ONE: শুধু একটা node respond করলেই success (fastest)</span>
+SELECT * FROM user_activity WHERE user_id = <span class="num">101</span>
+CONSISTENCY ONE;            <span class="cm">-- Fast, eventually consistent</span>
+
+<span class="cm">-- ALL: সব nodes confirm করতে হবে (strongest, slowest)</span>
+UPDATE accounts SET balance = balance - <span class="num">5000</span>
+WHERE account_id = <span class="num">101</span>
+CONSISTENCY ALL;            <span class="cm">-- Critical financial op</span></pre>
+    </div>
+  </div>
+
+  <div class="section" id="pacelc">
+    <div class="section-label">PACELC Theorem</div>
+    <h2 class="section-title">PACELC — CAP এর Extension</h2>
+    <p>CAP শুধু partition সময়ের কথা বলে। কিন্তু normal operation এও trade-off আছে। Daniel Abadi 2012 সালে PACELC propose করেন।</p>
+
+    <div class="info-box concept">
+      <div class="box-label">📌 PACELC মানে</div>
+      <strong>P</strong>artition থাকলে <strong>A</strong>vailability vs <strong>C</strong>onsistency; <strong>E</strong>lse (normal এ) <strong>L</strong>atency vs <strong>C</strong>onsistency। যত বেশি nodes এ replicate করবে, তত বেশি consistent কিন্তু তত বেশি latency।
+    </div>
+
+    <table class="compare-table">
+      <tr><th>Database</th><th>Partition Time</th><th>Normal Operation</th><th>সহজ কথায়</th></tr>
+      <tr><td>DynamoDB</td><td class="tag-med">PA (available)</td><td class="tag-yes">EL (low latency)</td><td>Fast, eventual consistency</td></tr>
+      <tr><td>Cassandra</td><td class="tag-med">PA (available)</td><td class="tag-yes">EL (configurable)</td><td>Tunable, default fast</td></tr>
+      <tr><td>MongoDB</td><td class="tag-yes">PC (consistent)</td><td class="tag-med">EC (some latency)</td><td>Strong consistency</td></tr>
+      <tr><td>PostgreSQL</td><td class="tag-yes">PC (consistent)</td><td class="tag-med">EC (ACID overhead)</td><td>Full ACID, slower</td></tr>
+    </table>
+  </div>
+
+  <div class="section" id="realworld">
+    <div class="section-label">Real World Examples</div>
+    <h2 class="section-title">বড় কোম্পানিগুলো কীভাবে করেছে</h2>
+
+    <h3 class="sub-title">📦 Amazon DynamoDB — AP by Design</h3>
+    <p>Amazon consciously AP choose করেছে। "Always available" guarantee। Werner Vogels (Amazon CTO): "Network partition হলে তোমাকে পুরোনো cart দেখাবো কিন্তু cart lock করবো না।" Availability থেকে Consistency বেশি important — cart lock হলে sale হারাবে। তবে checkout এ CP enforce হয়।</p>
+
+    <h3 class="sub-title">🔒 Apache Zookeeper — CP by Design</h3>
+    <p>Distributed coordination service — CP choice। Leader election, distributed locks, config management। Wrong value এখানে catastrophic — দুটো nodes যদি একসাথে leader মনে করে, split-brain problem হয়। Partition এ কিছু clients reject হলেও correct data দেওয়া জরুরি। Kafka broker coordination, HDFS এ Zookeeper use হয়।</p>
+
+    <div class="info-box tip">
+      <div class="box-label">💡 Split-brain কি?</div>
+      Network partition এ দুটো partition নিজেকেই primary মনে করে — conflicting states তৈরি হয়। Solution: Quorum (majority voting) — ছোট partition writes accept করে না। Zookeeper, etcd এভাবে handle করে।
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Python</span><span class="code-file">eventual-consistency-sim.py</span></div>
+      <pre><span class="kw">import</span> asyncio, time, random
+
+<span class="kw">class</span> <span class="fn">Node</span>:
+    <span class="kw">def</span> __init__(self, node_id):
+        self.node_id = node_id
+        self.data = {}       <span class="cm"># Local state</span>
+        self.peers = []
+
+    <span class="kw">async def</span> <span class="fn">write</span>(self, key, value):
+        <span class="cm"># AP: Local write, async sync — fire and forget</span>
+        self.data[key] = {<span class="str">'value'</span>: value, <span class="str">'ts'</span>: time.time()}
+        print(f<span class="str">"[{self.node_id}] Wrote {key}={value} (local)"</span>)
+        asyncio.create_task(self._propagate(key))  <span class="cm"># Async!</span>
+
+    <span class="kw">async def</span> <span class="fn">read</span>(self, key):
+        <span class="cm"># May return stale data!</span>
+        entry = self.data.get(key)
+        val = entry[<span class="str">'value'</span>] <span class="kw">if</span> entry <span class="kw">else</span> <span class="kw">None</span>
+        print(f<span class="str">"[{self.node_id}] Read {key}={val}"</span>)
+        <span class="kw">return</span> val
+
+    <span class="kw">async def</span> <span class="fn">_propagate</span>(self, key):
+        <span class="cm"># Simulate network delay (0.5-3 seconds)</span>
+        <span class="kw">await</span> asyncio.sleep(random.uniform(<span class="num">0.5</span>, <span class="num">3.0</span>))
+        <span class="kw">for</span> peer <span class="kw">in</span> self.peers:
+            <span class="kw">await</span> peer._sync(key, self.data[key])
+
+    <span class="kw">async def</span> <span class="fn">_sync</span>(self, key, entry):
+        <span class="cm"># Last-Write-Wins conflict resolution</span>
+        existing = self.data.get(key)
+        <span class="kw">if not</span> existing <span class="kw">or</span> existing[<span class="str">'ts'</span>] < entry[<span class="str">'ts'</span>]:
+            self.data[key] = entry
+            print(f<span class="str">"[{self.node_id}] Synced {key}={entry['value']}"</span>)
+
+<span class="kw">async def</span> <span class="fn">demo</span>():
+    a, b = Node(<span class="str">"A"</span>), Node(<span class="str">"B"</span>)
+    a.peers = [b]; b.peers = [a]
+
+    <span class="kw">await</span> a.write(<span class="str">"likes"</span>, <span class="num">100</span>)
+    <span class="kw">await</span> b.read(<span class="str">"likes"</span>)    <span class="cm"># None! Not synced yet</span>
+    <span class="kw">await</span> asyncio.sleep(<span class="num">4</span>)  <span class="cm"># Wait for propagation</span>
+    <span class="kw">await</span> b.read(<span class="str">"likes"</span>)    <span class="cm"># 100 — eventually consistent!</span>
+
+asyncio.run(demo())</pre>
+    </div>
+  </div>
+
+  <div class="section" id="tools">
+    <div class="section-label">Tools Comparison</div>
+    <h2 class="section-title">Database CAP Classification</h2>
+    <table class="compare-table">
+      <tr><th>Database</th><th>CAP Type</th><th>Consistency</th><th>Availability</th><th>Best For</th></tr>
+      <tr><td>Zookeeper</td><td class="tag-yes">CP</td><td class="tag-yes">Strong</td><td class="tag-med">Partition = reject</td><td>Leader election, locks</td></tr>
+      <tr><td>HBase</td><td class="tag-yes">CP</td><td class="tag-yes">Strong</td><td class="tag-med">Partition = reject</td><td>Big data analytics</td></tr>
+      <tr><td>MongoDB</td><td class="tag-yes">CP</td><td class="tag-yes">Strong (default)</td><td class="tag-med">Primary must respond</td><td>Content, catalogs</td></tr>
+      <tr><td>Cassandra</td><td class="tag-med">AP (tunable)</td><td class="tag-med">Tunable ONE→ALL</td><td class="tag-yes">Always responds</td><td>Social, IoT, logging</td></tr>
+      <tr><td>DynamoDB</td><td class="tag-med">AP (default)</td><td class="tag-med">Eventually/Strong</td><td class="tag-yes">99.999% SLA</td><td>E-commerce, gaming</td></tr>
+      <tr><td>CouchDB</td><td class="tag-med">AP</td><td class="tag-med">Eventual</td><td class="tag-yes">Always available</td><td>Offline-first apps</td></tr>
+      <tr><td>PostgreSQL</td><td class="tag-yes">CP</td><td class="tag-yes">Strong (ACID)</td><td class="tag-med">Single-node limit</td><td>Finance, e-commerce</td></tr>
+    </table>
+  </div>
+
+  <!-- MCQ -->
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🧪</span>
+      <h2>MCQ Test — Phase 1 Final</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">CAP Theorem এ Distributed System এ কোনটা sacrifice করা যায় না?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Consistency — stale data কয়েক seconds চলে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Availability — কিছু errors চলে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Partition Tolerance — network failure সবসময় হবে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> সবগুলোই sacrifice করা যায়</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Distributed system এ network partition inevitable — prevent করা যায় না। তাই P বাদ দেওয়া impossible। Real choice: C বা A sacrifice করা, অর্থাৎ CP বা AP choose করা।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">Cassandra default কোন CAP type?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> CP — always strongly consistent</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> AP — available, eventually consistent (tunable)</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> CA — consistent and available</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> তিনটোই</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Cassandra default AP। Partition হলেও available থাকে, stale data দিতে পারে। কিন্তু QUORUM বা ALL consistency level দিলে CP এর কাছাকাছি হয়। এই per-query configurability ই Cassandra এর strength।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">Bank account balance update এর জন্য কোন consistency model choose করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Eventual Consistency — fast enough</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Read-your-writes — নিজে দেখলেই হবে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Causal Consistency — causally ordered</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Strong Consistency — সবাই সবসময় correct balance দেখবে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Financial systems এ Strong Consistency mandatory। Double-spending prevent করতে সব nodes এ latest balance দেখাতে হবে। Eventual Consistency মানে কেউ ৫,০০০ তুলে নিল কিন্তু অন্য ATM এখনো ১০,০০০ দেখাচ্ছে — catastrophic!</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">YouTube এর view counter এর জন্য কোন consistency best?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Eventual Consistency — approximate count acceptable</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Strong Consistency — exact real-time count দরকার</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Linearizability — real-time ordering দরকার</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> ACID transaction — atomicity দরকার</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — "Approximately 1.2M views" দেখানোই যথেষ্ট। Strong Consistency হলে প্রতিটি view তে সব nodes sync করতে হবে — billions of views এ impossible। Eventual Consistency perfect here।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">PACELC Theorem CAP এর উপর কি extra add করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Security considerations</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Storage trade-offs</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Normal operation এও Latency vs Consistency trade-off আছে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Database indexing strategy</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — CAP শুধু partition সময়। PACELC বলে partition না হলেও (Else) Latency vs Consistency trade-off থাকে। বেশি replication = বেশি consistency কিন্তু বেশি latency।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">Split-brain problem কি?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Database index corruption</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Partition এ দুটো nodes নিজেকে primary মনে করে conflicting state তৈরি করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Memory overflow এ process crash</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> CPU bottleneck এ slow queries</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Split-brain: partition হলে দুটো side নিজেকে leader মনে করে আলাদাভাবে write accept করে। Partition heal হলে conflicting state থাকে। Quorum voting দিয়ে prevent করা হয় — minority side writes reject করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">Cassandra তে QUORUM consistency মানে কি?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> শুধু একটা node respond করলেই হবে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> সব nodes respond করতে হবে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> যেকোনো দুটো node respond করলেই হবে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Majority nodes (N/2 + 1) respond করতে হবে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — QUORUM = floor(N/2) + 1। 3 nodes এ QUORUM = 2। 5 nodes এ QUORUM = 3। একটা node down থাকলেও কাজ করে কিন্তু majority এর agreement নেওয়া হয় — balance between availability and consistency।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">Read-your-writes consistency কি guarantee করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> তুমি নিজের write সবসময় দেখবে, অন্যরা হয়তো দেখবে না</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> সবাই সবার write সবসময় দেখবে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Write এর আগে read করা যাবে না</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Writes automatically rollback হবে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — তুমি post করলে নিজের feed এ সাথে সাথে দেখবে। কিন্তু friends হয়তো কয়েক seconds পরে দেখবে। Instagram, Twitter এই model follow করে। Sticky session বা Primary read দিয়ে implement করা হয়।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">Eventual Consistency তে conflict resolution এর common strategy?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> First-Write-Wins (FWW)</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Random selection</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Last-Write-Wins (LWW) based on timestamp</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Alphabetical ordering</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Last-Write-Wins (LWW): latest timestamp এর value জেতে। Simple কিন্তু clock skew problem আছে। Advanced: Vector Clocks (causality tracking), CRDTs (Conflict-free Replicated Data Types — merge always works)।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">DNS system কোন CAP type?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> CP — always shows latest IP</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> AP — always available, eventually consistent</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> CA — consistent and available, no partition</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> CAP এর বাইরে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — DNS classic AP example। Domain update হলে সারা বিশ্বে propagate হতে ২৪-৪৮ ঘণ্টা লাগে। এই সময় কেউ old IP দেখে, কেউ new IP — eventual consistency। কিন্তু DNS always responds — কখনো queries reject করে না।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT &amp; CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <!-- Assignment -->
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ২-৩ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <p style="margin-bottom:16px; font-size:14px; color:#94a3b8;">নিচের tasks গুলো complete করো। CAP Theorem practically বোঝার জন্য এগুলো essential।</p>
+    <ul class="task-list">
+      <li>
+        <strong>CAP Classification Research:</strong> ৫টি popular databases (Redis, MongoDB, DynamoDB, Cassandra, CockroachDB) এর official documentation পড়ো। প্রতিটির CAP classification, default consistency level, tuning options table আকারে document করো।
+      </li>
+      <li>
+        <strong>Scenario Decision Exercise:</strong> নিচের ৫টি systems এর জন্য CP নাকি AP choose করবে এবং কেন লেখো: (ক) bKash mobile payment (খ) Facebook post like count (গ) Online exam seat booking (ঘ) Live cricket score update (ঙ) Hospital patient records।
+      </li>
+      <li>
+        <strong>Eventual Consistency Simulator:</strong> Python বা Node.js দিয়ে ৩-node distributed key-value store তৈরি করো। Write করলে local এ save হবে, background এ peers এ sync হবে (random delay)। Last-Write-Wins implement করো।
+      </li>
+      <li>
+        <strong>Cassandra Consistency Test:</strong> Docker এ Cassandra run করো। ONE, QUORUM, ALL consistency level এ same query এর response time measure করো। Latency vs Consistency trade-off চার্ট আকারে দেখাও।
+      </li>
+      <li>
+        <strong>Phase 1 Reflection:</strong> Scalability, Networking, Databases, CAP — এই ৪টা topic থেকে সবচেয়ে important ৫টা concept বাছো এবং real-world scenario দিয়ে explain করো। নিজের ভাষায়।
+      </li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>Database CAP classification comparison table</li>
+        <li>Scenario decisions সহ justification (written)</li>
+        <li>Eventual Consistency simulator code</li>
+        <li>Consistency level latency benchmark chart</li>
+        <li>Phase 1 personal reflection note</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project -->
+  <div class="project-section" id="project">
+    <div class="project-header">
+      <span style="font-size:24px">🚀</span>
+      <h2>Hands-On Project Task — Phase 1 Final</h2>
+    </div>
+    <div class="project-body">
+      <p style="font-size:14px; color:#94a3b8; margin-bottom:20px;">Tunable Consistency Key-Value Store তৈরি করো — CAP Theorem practically demonstrate করবে।</p>
+
+      <h3 style="font-family:'Fraunces',serif; font-size:18px; margin-bottom:16px; color:#f1f5f9;">Mini Distributed KV Store with CP/AP Mode</h3>
+      <p style="font-size:14px; color:#94a3b8; margin-bottom:20px;">৩-node cluster তৈরি করো যেখানে consistency level configure করা যাবে — ঠিক Cassandra এর মতো।</p>
+
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-circle">1</div>
+          <div class="step-content">
+            <h4>৩টা Node.js Server</h4>
+            <p>Port 3001, 3002, 3003 তে তিনটা server। প্রতিটিতে in-memory Map data store।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">2</div>
+          <div class="step-content">
+            <h4>TCP Communication</h4>
+            <p>Nodes এর মধ্যে TCP দিয়ে replicate message পাঠাও। Async sync implement করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">3</div>
+          <div class="step-content">
+            <h4>Consistency Level API</h4>
+            <p>HTTP API: <code>GET /key?consistency=ONE</code>, <code>PUT /key?consistency=QUORUM</code> — তিনটা level implement করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">4</div>
+          <div class="step-content">
+            <h4>Partition Simulate করো</h4>
+            <p>একটা node কে artificially disconnect করো। CP mode: write reject করো। AP mode: accept করো, পরে sync করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">5</div>
+          <div class="step-content">
+            <h4>Latency Measure করো</h4>
+            <p>ONE, QUORUM, ALL এ response time compare করো। Tradeoff clearly দেখা যাবে।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">6</div>
+          <div class="step-content">
+            <h4>Bonus: Last-Write-Wins</h4>
+            <p>Concurrent writes conflict হলে timestamp দিয়ে resolve করো। Vector Clock implement করো।</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block" style="margin-top:20px">
+        <div class="code-header"><span class="code-lang">Node.js</span><span class="code-file">distributed-node.js</span></div>
+        <pre><span class="kw">const</span> express = <span class="fn">require</span>(<span class="str">'express'</span>);
+<span class="kw">const</span> http = <span class="fn">require</span>(<span class="str">'http'</span>);
+
+<span class="kw">const</span> PORT = process.env.PORT || <span class="num">3001</span>;
+<span class="kw">const</span> PEERS = (process.env.PEERS || <span class="str">''</span>).split(<span class="str">','</span>).filter(<span class="var">Boolean</span>);
+
+<span class="kw">const</span> store = <span class="kw">new</span> Map();  <span class="cm">// In-memory KV store</span>
+<span class="kw">const</span> app = <span class="fn">express</span>();
+app.use(express.json());
+
+<span class="kw">async function</span> <span class="fn">replicateToPeers</span>(key, entry, needed) {
+  <span class="kw">let</span> acks = <span class="num">0</span>;
+  <span class="kw">for</span> (<span class="kw">const</span> peer <span class="kw">of</span> PEERS) {
+    <span class="kw">try</span> {
+      <span class="kw">await</span> <span class="fn">fetch</span>(`http://${peer}/replicate`, {
+        method: <span class="str">'POST'</span>,
+        headers: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
+        body: JSON.stringify({ key, entry })
+      });
+      acks++;
+    } <span class="kw">catch</span> (e) { <span class="cm">/* peer unreachable */</span> }
+  }
+  <span class="kw">return</span> acks;
+}
+
+app.put(<span class="str">'/:key'</span>, <span class="kw">async</span> (req, res) => {
+  <span class="kw">const</span> { key } = req.params;
+  <span class="kw">const</span> consistency = req.query.consistency || <span class="str">'QUORUM'</span>;
+  <span class="kw">const</span> entry = { value: req.body.value, ts: Date.now() };
+
+  store.set(key, entry);  <span class="cm">// Local write</span>
+
+  <span class="kw">const</span> needed = { ONE: <span class="num">0</span>, QUORUM: <span class="num">1</span>, ALL: PEERS.length }[consistency];
+  <span class="kw">const</span> acks = <span class="kw">await</span> <span class="fn">replicateToPeers</span>(key, entry, needed);
+
+  <span class="kw">if</span> (acks < needed) <span class="kw">return</span> res.status(<span class="num">503</span>).json({ error: <span class="str">'Insufficient acks'</span> });
+  res.json({ ok: <span class="kw">true</span>, acks: acks + <span class="num">1</span> });
+});
+
+app.listen(PORT, () => console.log(`Node on :${PORT}`));</pre>
+      </div>
+
+      <div class="info-box tip" style="margin-top:16px">
+        <div class="box-label">🎯 এটা করলে যা শিখবে</div>
+        ONE, QUORUM, ALL consistency level এ আসলে কতটা latency difference হয় সেটা নিজে measure করবে। Partition simulate করলে CP mode কেন error দেয় সেটা বুঝবে। এটাই CAP Theorem এর heart।
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-label">Lesson Summary</div>
+    <h2 class="section-title">আজকে যা শিখলাম</h2>
+    <table class="compare-table">
+      <tr><th>Concept</th><th>এক লাইনে</th></tr>
+      <tr><td>CAP Theorem</td><td>C + A + P একসাথে impossible। P সবসময় থাকে, তাই CP বা AP choose করো</td></tr>
+      <tr><td>CP Systems</td><td>Partition হলে reject করে। Correct data guarantee। Banking, Zookeeper</td></tr>
+      <tr><td>AP Systems</td><td>Partition হলেও respond করে। Stale হতে পারে। Social, DNS, Cache</td></tr>
+      <tr><td>Eventual Consistency</td><td>Eventually সব nodes same। কখন? Guarantee নেই। DNS, Likes</td></tr>
+      <tr><td>QUORUM</td><td>Majority (N/2+1) nodes agree করলে success। Balance CP/AP</td></tr>
+      <tr><td>PACELC</td><td>Normal operation এও Latency vs Consistency trade-off আছে</td></tr>
+      <tr><td>Split-brain</td><td>Partition এ দুটো leaders — Quorum দিয়ে prevent করো</td></tr>
+    </table>
+  </div>
+
+  <!-- Phase Complete -->
+  <div class="phase-complete">
+    <div style="font-size:48px; margin-bottom:16px;">🎉</div>
+    <h3>Phase 1 — Foundations Complete!</h3>
+    <p>তুমি System Design Mastery Course এর Phase 1 সম্পূর্ণ করেছো। চারটি fundamental topic এ solid foundation তৈরি হয়েছে।</p>
+    <div class="phase-badges">
+      <span class="phase-badge">✅ Topic 1: Scalability</span>
+      <span class="phase-badge">✅ Topic 2: Networking</span>
+      <span class="phase-badge">✅ Topic 3: Databases</span>
+      <span class="phase-badge">✅ Topic 4: CAP Theorem</span>
+    </div>
+    <div style="margin-top:20px; padding:16px; background:var(--card); border-radius:6px; border:1px solid var(--border2);">
+      <p style="font-size:13px; color:var(--accent); font-family:'JetBrains Mono',monospace; margin-bottom:6px;">PHASE 2 — Next Topics:</p>
+      <p style="font-size:13px; color:var(--muted2); margin:0;">Caching Strategies · Message Queues · API Design · Microservices · Rate Limiting · System Design Case Studies</p>
+    </div>
+  </div>
+
+  <div class="next-cta" style="margin-top:24px">
+    <div>
+      <div class="next-label">Phase 2 →</div>
+      <div class="next-title">⚡ Caching Strategies</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+
+</div>
+</main>
+
+<script>
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scroll = doc.scrollTop || document.body.scrollTop;
+  const height = doc.scrollHeight - doc.clientHeight;
+  document.getElementById('progressFill').style.width = ((scroll / height) * 100) + '%';
+});
+let answered = {};
+document.querySelectorAll('.option').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const block = this.closest('.question-block');
+    const qId = Array.from(document.querySelectorAll('.question-block')).indexOf(block);
+    if (answered[qId]) return;
+    answered[qId] = this.dataset.val;
+    block.querySelectorAll('.option').forEach(o => {
+      o.style.pointerEvents = 'none';
+      if (o.dataset.val === block.dataset.correct) o.classList.add('correct');
+      else if (o.dataset.val === this.dataset.val && this.dataset.val !== block.dataset.correct) o.classList.add('wrong');
+    });
+    block.querySelector('.explanation').classList.add('visible');
+  });
+});
+function submitMCQ() {
+  let correct = 0;
+  const blocks = document.querySelectorAll('.question-block');
+  blocks.forEach((block, i) => { if (answered[i] === block.dataset.correct) correct++; });
+  const unanswered = blocks.length - Object.keys(answered).length;
+  if (unanswered > 0) { alert(`এখনও ${unanswered}টা প্রশ্নের উত্তর দাওনি!`); return; }
+  document.getElementById('scoreDisplay').textContent = correct;
+  const banner = document.getElementById('resultBanner');
+  banner.classList.add('visible');
+  if (correct >= 7) { banner.classList.add('pass'); banner.textContent = `🎉 দারুণ! ${correct}/10 সঠিক। Phase 1 complete! Phase 2 তে যাও!`; }
+  else { banner.classList.add('fail'); banner.textContent = `📖 ${correct}/10 সঠিক। Concept গুলো আবার পড়ো এবং retry করো। ৭/১০ পেলেই pass।`; }
+}
+document.querySelectorAll('.nav-item[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    document.getElementById(link.getAttribute('href').slice(1))?.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>

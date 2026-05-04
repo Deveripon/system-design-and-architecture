@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 3 · Topic 1 — Microservices Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05080f;
+  --surface: #090e1a;
+  --card: #0c1220;
+  --border: #162035;
+  --border2: #1e2d4a;
+  --accent: #3b82f6;
+  --accent-glow: rgba(59,130,246,0.15);
+  --green: #10b981;
+  --green-glow: rgba(16,185,129,0.12);
+  --orange: #f97316;
+  --red: #ef4444;
+  --yellow: #eab308;
+  --purple: #8b5cf6;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --muted2: #94a3b8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans Bengali', sans-serif;
+  line-height: 1.7;
+  font-size: 15px;
+}
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:999;
+  opacity:0.4;
+}
+.sidebar {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: 240px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 24px 0;
+  overflow-y: auto;
+  z-index: 100;
+}
+.sidebar-logo {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.sidebar-logo .phase-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--purple);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 4px;
+}
+.sidebar-logo .course-title {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.nav-section { padding: 0 12px; margin-bottom: 8px; }
+.nav-section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--muted);
+  padding: 0 8px;
+  margin-bottom: 6px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--muted2);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+.nav-item:hover { background: var(--card); color: var(--text); }
+.nav-item.active { background: rgba(139,92,246,0.12); color: var(--purple); }
+.nav-item .nav-icon { font-size: 14px; flex-shrink:0; }
+.nav-item .nav-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  margin-left: auto;
+}
+.progress-bar {
+  position: fixed;
+  top: 0; left: 240px; right: 0;
+  height: 2px;
+  background: var(--border);
+  z-index: 200;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--purple), var(--accent));
+  width: 0%;
+  transition: width 0.1s;
+}
+.main { margin-left: 240px; min-height: 100vh; }
+.content { max-width: 780px; margin: 0 auto; padding: 48px 40px 120px; }
+.topic-header { margin-bottom: 48px; }
+.breadcrumb {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.breadcrumb span { color: var(--purple); }
+.topic-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--purple);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: block;
+}
+h1.topic-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #fff 30%, #c4b5fd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.topic-meta { display: flex; gap: 16px; flex-wrap: wrap; }
+.meta-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 2px;
+  border: 1px solid;
+}
+.meta-chip.time { border-color: rgba(59,130,246,0.3); color: var(--accent); background: var(--accent-glow); }
+.meta-chip.level { border-color: rgba(16,185,129,0.3); color: var(--green); background: var(--green-glow); }
+.meta-chip.type { border-color: rgba(139,92,246,0.3); color: var(--purple); background: rgba(139,92,246,0.08); }
+.section { margin-bottom: 48px; scroll-margin-top: 24px; }
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--purple);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+h2.section-title {
+  font-family: 'Fraunces', serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #f1f5f9;
+}
+h3.sub-title {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 24px 0 10px;
+  color: #cbd5e1;
+}
+p { margin-bottom: 14px; color: #cbd5e1; }
+.info-box {
+  border-radius: 6px;
+  padding: 18px 20px;
+  margin: 20px 0;
+  border-left: 3px solid;
+  font-size: 14px;
+}
+.info-box.concept { background: rgba(59,130,246,0.06); border-color: var(--accent); }
+.info-box.warning { background: rgba(249,115,22,0.06); border-color: var(--orange); }
+.info-box.tip { background: rgba(16,185,129,0.06); border-color: var(--green); }
+.info-box.important { background: rgba(234,179,8,0.06); border-color: var(--yellow); }
+.info-box .box-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+.info-box.concept .box-label { color: var(--accent); }
+.info-box.warning .box-label { color: var(--orange); }
+.info-box.tip .box-label { color: var(--green); }
+.info-box.important .box-label { color: var(--yellow); }
+.compare-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+.compare-table th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 12px 16px;
+  text-align: left;
+  background: var(--card);
+  border-bottom: 2px solid var(--border2);
+  color: var(--muted2);
+}
+.compare-table td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  color: #94a3b8;
+  vertical-align: top;
+  line-height: 1.6;
+}
+.compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+.compare-table td:first-child {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+}
+.tag-yes { color: var(--green); font-weight: 600; }
+.tag-no { color: var(--red); }
+.tag-med { color: var(--yellow); }
+.diagram {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 30px 20px;
+  margin: 24px 0;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  overflow-x: auto;
+}
+.diagram svg { max-width: 100%; }
+.code-block {
+  background: #030608;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  margin: 20px 0;
+  overflow: hidden;
+}
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+.code-lang {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--purple);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.code-file { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+pre {
+  padding: 20px;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #e2e8f0;
+}
+.kw { color: #93c5fd; }
+.fn { color: #6ee7b7; }
+.str { color: #fcd34d; }
+.cm { color: #475569; font-style: italic; }
+.num { color: #f9a8d4; }
+.var { color: #e2e8f0; }
+.scenario-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 20px 0; }
+.scenario-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 18px;
+}
+.scenario-card .s-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--purple);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.scenario-card p { font-size: 13px; color: var(--muted2); margin: 0; }
+.mcq-section {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 28px;
+  margin: 30px 0;
+}
+.mcq-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.mcq-icon { font-size: 24px; }
+.mcq-header h2 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; }
+.mcq-score { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--muted); }
+.mcq-score span { color: var(--purple); font-size: 18px; font-weight: 700; }
+.question-block { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+.question-block:last-of-type { border-bottom: none; margin-bottom: 0; }
+.q-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.q-text { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.5; font-family: 'Noto Sans Bengali', sans-serif; }
+.options { display: flex; flex-direction: column; gap: 8px; }
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 14px;
+  color: var(--muted2);
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+.option:hover { border-color: var(--purple); color: var(--text); background: rgba(139,92,246,0.08); }
+.option.correct { border-color: var(--green); background: var(--green-glow); color: #6ee7b7; }
+.option.wrong { border-color: var(--red); background: rgba(239,68,68,0.08); color: #fca5a5; }
+.option-key {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  background: var(--border2);
+  padding: 2px 7px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.explanation {
+  display: none;
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: rgba(16,185,129,0.06);
+  border-left: 2px solid var(--green);
+  border-radius: 0 4px 4px 0;
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.7;
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+.explanation.visible { display: block; }
+.explanation strong { color: var(--green); }
+.mcq-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: var(--purple);
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.15s;
+}
+.mcq-submit:hover { background: #7c3aed; transform: translateY(-1px); }
+.result-banner {
+  display: none;
+  margin-top: 20px;
+  padding: 16px 20px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+}
+.result-banner.visible { display: block; }
+.result-banner.pass { background: var(--green-glow); border: 1px solid var(--green); color: var(--green); }
+.result-banner.fail { background: rgba(249,115,22,0.08); border: 1px solid var(--orange); color: var(--orange); }
+.assignment-section {
+  background: linear-gradient(135deg, rgba(139,92,246,0.04), rgba(59,130,246,0.04));
+  border: 1px solid rgba(139,92,246,0.2);
+  border-radius: 8px;
+  padding: 28px;
+  margin: 30px 0;
+}
+.assignment-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.assignment-icon { font-size: 28px; }
+.assignment-header h2 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; }
+.assignment-meta { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.a-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 10px; border-radius: 2px; }
+.a-chip.time { background: rgba(234,179,8,0.1); color: var(--yellow); border: 1px solid rgba(234,179,8,0.2); }
+.a-chip.level { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.task-list { counter-reset: tasks; list-style: none; margin-bottom: 20px; }
+.task-list li {
+  counter-increment: tasks;
+  padding: 14px 14px 14px 50px;
+  position: relative;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--muted2);
+  line-height: 1.7;
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+.task-list li:last-child { border-bottom: none; }
+.task-list li::before {
+  content: counter(tasks);
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  width: 24px;
+  height: 24px;
+  background: rgba(139,92,246,0.1);
+  border: 1px solid rgba(139,92,246,0.3);
+  border-radius: 3px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+.task-list li strong { color: var(--text); }
+.deliverable-box {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 16px 18px;
+  margin-top: 16px;
+}
+.deliverable-box .d-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--purple);
+  margin-bottom: 10px;
+}
+.deliverable-box ul { list-style: none; padding: 0; }
+.deliverable-box ul li {
+  font-size: 13px;
+  color: var(--muted2);
+  padding: 4px 0 4px 18px;
+  position: relative;
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+.deliverable-box ul li::before {
+  content: '◆';
+  position: absolute;
+  left: 0;
+  font-size: 8px;
+  color: var(--purple);
+  top: 6px;
+}
+.project-section {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 30px 0;
+}
+.project-header {
+  background: linear-gradient(90deg, rgba(16,185,129,0.1), transparent);
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.project-header h2 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; color: var(--green); }
+.project-body { padding: 24px; }
+.step-flow { display: flex; flex-direction: column; gap: 0; margin: 16px 0; }
+.step-item { display: flex; gap: 16px; padding-bottom: 24px; position: relative; }
+.step-item:last-child { padding-bottom: 0; }
+.step-item::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 32px;
+  bottom: 0;
+  width: 1px;
+  background: var(--border2);
+}
+.step-item:last-child::before { display: none; }
+.step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--green-glow);
+  border: 2px solid var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green);
+  flex-shrink: 0;
+  z-index: 1;
+}
+.step-content { flex: 1; }
+.step-content h4 { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text); margin-bottom: 4px; }
+.step-content p { font-size: 13px; color: var(--muted2); margin: 0; }
+.next-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin-top: 48px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.2s;
+}
+.next-cta:hover { border-color: var(--purple); }
+.next-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+.next-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; }
+.next-arrow { font-size: 24px; color: var(--purple); }
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .content { padding: 24px 16px 80px; }
+  .scenario-grid { grid-template-columns: 1fr; }
+  .progress-bar { left: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 03 · Distributed Systems</span>
+    <div class="course-title">System Design<br>Mastery Course</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Phase 3 Topics</div>
+    <a href="#" class="nav-item active"><span class="nav-icon">🧩</span><span>Microservices</span><span class="nav-num">01</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🗳️</span><span>Distributed Consensus</span><span class="nav-num">02</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">⚡</span><span>Circuit Breaker</span><span class="nav-num">03</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🚦</span><span>Rate Limiting</span><span class="nav-num">04</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🔍</span><span>Service Discovery</span><span class="nav-num">05</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🔄</span><span>Saga Pattern</span><span class="nav-num">06</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px">
+    <div class="nav-section-label">This Lesson</div>
+    <a href="#concept" class="nav-item"><span class="nav-icon">💡</span><span>Concept</span></a>
+    <a href="#monolith" class="nav-item"><span class="nav-icon">🏛️</span><span>Monolith vs Micro</span></a>
+    <a href="#howworks" class="nav-item"><span class="nav-icon">⚙️</span><span>How It Works</span></a>
+    <a href="#patterns" class="nav-item"><span class="nav-icon">🏗️</span><span>Design Patterns</span></a>
+    <a href="#code" class="nav-item"><span class="nav-icon">💻</span><span>Code Examples</span></a>
+    <a href="#realworld" class="nav-item"><span class="nav-icon">🌍</span><span>Real World</span></a>
+    <a href="#interview" class="nav-item"><span class="nav-icon">🎯</span><span>Interview Q&A</span></a>
+    <a href="#mcq" class="nav-item"><span class="nav-icon">✅</span><span>MCQ Test</span></a>
+    <a href="#assignment" class="nav-item"><span class="nav-icon">📝</span><span>Assignment</span></a>
+    <a href="#project" class="nav-item"><span class="nav-icon">🚀</span><span>Project Task</span></a>
+  </div>
+</nav>
+
+<main class="main">
+<div class="content">
+
+  <div class="topic-header" id="concept">
+    <div class="breadcrumb">Phase 3 — Distributed Systems <span>›</span> Topic 01</div>
+    <span class="topic-num">TOPIC 01 / 06</span>
+    <h1 class="topic-title">Microservices<br>Architecture</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ ৬০-৯০ মিনিট</span>
+      <span class="meta-chip level">📊 Junior Level</span>
+      <span class="meta-chip type">🧩 Distributed Systems</span>
+    </div>
+  </div>
+
+  <!-- Why it matters -->
+  <div class="section">
+    <div class="section-label">Why It Matters</div>
+    <h2 class="section-title">Microservices কেন শিখতে হবে?</h2>
+    <p>তুমি একটা বড় e-commerce app বানাচ্ছো। User login, product catalog, payment, order tracking, notification — সব একটা codebase এ। এক জায়গায় bug হলে পুরো system down। Team বড় হলে merge conflict। Deploy করতে পুরো app restart।</p>
+    <p>এই সমস্যার সমাধান হলো <strong>Microservices Architecture</strong>। আজকাল Amazon, Netflix, Uber, Spotify সহ প্রায় সব বড় company এই approach ব্যবহার করে।</p>
+    <div class="info-box concept">
+      <div class="box-label">📌 Definition</div>
+      <strong>Microservices</strong> হলো একটা architectural style যেখানে একটা বড় application কে ছোট ছোট independent services এ ভাগ করা হয়। প্রতিটা service তার নিজের কাজ করে, নিজের database রাখে, এবং network (HTTP/gRPC) এর মাধ্যমে অন্য services এর সাথে communicate করে।
+    </div>
+  </div>
+
+  <!-- Monolith vs Microservices -->
+  <div class="section" id="monolith">
+    <div class="section-label">Monolith vs Microservices</div>
+    <h2 class="section-title">আগে কী ছিল, এখন কী হয়েছে?</h2>
+    <p>দুটো approach এর মূল পার্থক্য বোঝা দরকার — কারণ interview তে এই comparison প্রায়ই আসে।</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">
+        <!-- Monolith side -->
+        <text x="160" y="28" fill="#94a3b8" font-family="JetBrains Mono" font-size="12" text-anchor="middle" font-weight="700">MONOLITH</text>
+        <rect x="60" y="40" width="200" height="220" rx="8" fill="#0c1220" stroke="#1e2d4a" stroke-width="1.5"/>
+        <rect x="75" y="55" width="170" height="30" rx="4" fill="#162035" stroke="#1e2d4a"/>
+        <text x="160" y="75" fill="#93c5fd" font-family="JetBrains Mono" font-size="10" text-anchor="middle">User Service</text>
+        <rect x="75" y="93" width="170" height="30" rx="4" fill="#162035" stroke="#1e2d4a"/>
+        <text x="160" y="113" fill="#93c5fd" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Product Service</text>
+        <rect x="75" y="131" width="170" height="30" rx="4" fill="#162035" stroke="#1e2d4a"/>
+        <text x="160" y="151" fill="#93c5fd" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Order Service</text>
+        <rect x="75" y="169" width="170" height="30" rx="4" fill="#162035" stroke="#1e2d4a"/>
+        <text x="160" y="189" fill="#93c5fd" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Payment Service</text>
+        <rect x="75" y="207" width="170" height="30" rx="4" fill="#162035" stroke="#1e2d4a"/>
+        <text x="160" y="227" fill="#93c5fd" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Notification Service</text>
+        <!-- Single DB -->
+        <rect x="110" y="270" width="100" height="28" rx="4" fill="#1e2d4a" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="160" y="288" fill="#3b82f6" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Single DB</text>
+        <line x1="160" y1="260" x2="160" y2="270" stroke="#3b82f6" stroke-width="1" stroke-dasharray="4"/>
+
+        <!-- Arrow divider -->
+        <text x="350" y="170" fill="#f97316" font-family="JetBrains Mono" font-size="22" text-anchor="middle">→</text>
+
+        <!-- Microservices side -->
+        <text x="540" y="28" fill="#94a3b8" font-family="JetBrains Mono" font-size="12" text-anchor="middle" font-weight="700">MICROSERVICES</text>
+        <!-- Service boxes -->
+        <rect x="430" y="40" width="90" height="50" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="475" y="60" fill="#c4b5fd" font-family="JetBrains Mono" font-size="9" text-anchor="middle">User</text>
+        <text x="475" y="75" fill="#c4b5fd" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Service</text>
+
+        <rect x="540" y="40" width="90" height="50" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="585" y="60" fill="#c4b5fd" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Product</text>
+        <text x="585" y="75" fill="#c4b5fd" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Service</text>
+
+        <rect x="430" y="115" width="90" height="50" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="475" y="135" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Order</text>
+        <text x="475" y="150" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Service</text>
+
+        <rect x="540" y="115" width="90" height="50" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="585" y="135" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Payment</text>
+        <text x="585" y="150" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Service</text>
+
+        <rect x="485" y="190" width="90" height="50" rx="4" fill="#0c1220" stroke="#f97316" stroke-width="1.5"/>
+        <text x="530" y="210" fill="#fdba74" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Notification</text>
+        <text x="530" y="225" fill="#fdba74" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Service</text>
+
+        <!-- Individual DBs -->
+        <rect x="435" y="258" width="40" height="18" rx="3" fill="#1e2d4a" stroke="#8b5cf6" stroke-width="1"/>
+        <text x="455" y="271" fill="#8b5cf6" font-family="JetBrains Mono" font-size="8" text-anchor="middle">DB</text>
+        <rect x="546" y="258" width="40" height="18" rx="3" fill="#1e2d4a" stroke="#8b5cf6" stroke-width="1"/>
+        <text x="566" y="271" fill="#8b5cf6" font-family="JetBrains Mono" font-size="8" text-anchor="middle">DB</text>
+        <rect x="435" y="258" width="40" height="18" rx="3" fill="#1e2d4a" stroke="#8b5cf6" stroke-width="1"/>
+        <rect x="435" y="285" width="40" height="18" rx="3" fill="#1e2d4a" stroke="#10b981" stroke-width="1"/>
+        <text x="455" y="298" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">DB</text>
+        <rect x="546" y="285" width="40" height="18" rx="3" fill="#1e2d4a" stroke="#10b981" stroke-width="1"/>
+        <text x="566" y="298" fill="#10b981" font-family="JetBrains Mono" font-size="8" text-anchor="middle">DB</text>
+
+        <!-- Lines from services to DBs -->
+        <line x1="475" y1="165" x2="455" y2="285" stroke="#10b981" stroke-width="1" stroke-dasharray="3"/>
+        <line x1="585" y1="165" x2="566" y2="285" stroke="#10b981" stroke-width="1" stroke-dasharray="3"/>
+        <line x1="475" y1="90" x2="455" y2="258" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="3"/>
+        <line x1="585" y1="90" x2="566" y2="258" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="3"/>
+      </svg>
+    </div>
+
+    <table class="compare-table">
+      <tr><th>বিষয়</th><th>Monolith</th><th>Microservices</th></tr>
+      <tr><td>Deploy</td><td>পুরো app একসাথে</td><td>প্রতিটা service আলাদা</td></tr>
+      <tr><td>Scale</td><td>পুরো app scale করতে হয়</td><td>শুধু দরকারী service scale করো</td></tr>
+      <tr><td>Team</td><td>একটা team সব কাজ করে</td><td>প্রতিটা service এর আলাদা team</td></tr>
+      <tr><td>Technology</td><td>একটাই language/framework</td><td>প্রতিটা service ভিন্ন tech</td></tr>
+      <tr><td>Failure</td><td>একটা bug সব ভাঙে</td><td>একটা service fail হলে বাকিগুলো চলে</td></tr>
+      <tr><td>Database</td><td>Shared single database</td><td>প্রতিটার নিজের database</td></tr>
+      <tr><td>Complexity</td><td><span class="tag-yes">Simple</span></td><td><span class="tag-no">High (Network, tracing)</span></td></tr>
+      <tr><td>Startup</td><td><span class="tag-yes">Ideal for small teams</span></td><td><span class="tag-no">Overkill for small apps</span></td></tr>
+    </table>
+
+    <div class="info-box warning">
+      <div class="box-label">⚠️ Important</div>
+      Microservices মানে এই না যে সবসময় ভালো। Small startup এ monolith দিয়ে শুরু করা অনেক বেশি sensible। System জটিল হলে, team বড় হলে, তখন microservices এ migrate করো। Amazon নিজেও monolith দিয়ে শুরু করেছিল!
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <div class="section" id="howworks">
+    <div class="section-label">How It Works</div>
+    <h2 class="section-title">Microservices কীভাবে কাজ করে?</h2>
+    <p>একটা real e-commerce order flow দেখি — user order দিলে কী হয়:</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg">
+        <!-- Client -->
+        <rect x="10" y="100" width="80" height="40" rx="4" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="50" y="124" fill="#93c5fd" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Client</text>
+
+        <!-- Arrow to API Gateway -->
+        <line x1="90" y1="120" x2="130" y2="120" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#arr)"/>
+        <defs><marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#3b82f6"/></marker></defs>
+
+        <!-- API Gateway -->
+        <rect x="130" y="90" width="100" height="60" rx="4" fill="#0c1220" stroke="#eab308" stroke-width="2"/>
+        <text x="180" y="115" fill="#fcd34d" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">API</text>
+        <text x="180" y="130" fill="#fcd34d" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">Gateway</text>
+
+        <!-- Arrows to services -->
+        <line x1="230" y1="105" x2="290" y2="65" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <defs><marker id="arr2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#8b5cf6"/></marker></defs>
+        <line x1="230" y1="120" x2="290" y2="120" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <line x1="230" y1="135" x2="290" y2="175" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+        <!-- Order Service -->
+        <rect x="290" y="40" width="110" height="50" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="345" y="60" fill="#c4b5fd" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Order</text>
+        <text x="345" y="75" fill="#c4b5fd" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Service</text>
+
+        <!-- Inventory Service -->
+        <rect x="290" y="95" width="110" height="50" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="345" y="115" fill="#c4b5fd" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Inventory</text>
+        <text x="345" y="130" fill="#c4b5fd" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Service</text>
+
+        <!-- Payment Service -->
+        <rect x="290" y="150" width="110" height="50" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="345" y="170" fill="#c4b5fd" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Payment</text>
+        <text x="345" y="185" fill="#c4b5fd" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Service</text>
+
+        <!-- Message Bus -->
+        <rect x="430" y="90" width="120" height="60" rx="4" fill="#0c1220" stroke="#f97316" stroke-width="2"/>
+        <text x="490" y="115" fill="#fdba74" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Message Bus</text>
+        <text x="490" y="130" fill="#fdba74" font-family="JetBrains Mono" font-size="9" text-anchor="middle">(Kafka/RabbitMQ)</text>
+
+        <!-- Arrows to bus -->
+        <line x1="400" y1="65" x2="430" y2="105" stroke="#f97316" stroke-width="1" stroke-dasharray="4"/>
+        <line x1="400" y1="120" x2="430" y2="120" stroke="#f97316" stroke-width="1" stroke-dasharray="4"/>
+        <line x1="400" y1="175" x2="430" y2="135" stroke="#f97316" stroke-width="1" stroke-dasharray="4"/>
+
+        <!-- Notification -->
+        <rect x="580" y="90" width="110" height="50" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="635" y="110" fill="#6ee7b7" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Notification</text>
+        <text x="635" y="125" fill="#6ee7b7" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Service</text>
+
+        <line x1="550" y1="120" x2="580" y2="115" stroke="#10b981" stroke-width="1.5" marker-end="url(#arr3)"/>
+        <defs><marker id="arr3" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#10b981"/></marker></defs>
+
+        <!-- Flow labels -->
+        <text x="110" y="108" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">1. Request</text>
+        <text x="265" y="85" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">2. Route</text>
+        <text x="420" y="80" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">3. Event</text>
+        <text x="562" y="108" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">4. Notify</text>
+      </svg>
+    </div>
+
+    <h3 class="sub-title">Key Components</h3>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">🚪 API Gateway</div>
+        <p>Single entry point। Client সব request এখানে পাঠায়। Rate limiting, auth, routing সব এখানে handle হয়। (Kong, AWS API Gateway, Nginx)</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">📨 Message Bus</div>
+        <p>Services এর মধ্যে async communication। Direct call না করে event publish করো। (Kafka, RabbitMQ, AWS SQS)</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🔍 Service Registry</div>
+        <p>কোন service কোথায় আছে তার directory। Services নিজেদের register করে। (Consul, Eureka, Kubernetes DNS)</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">📊 Distributed Tracing</div>
+        <p>Request কোন কোন service এ গেছে track করা। একটা request এর পুরো journey দেখা। (Jaeger, Zipkin, Datadog)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Design Patterns -->
+  <div class="section" id="patterns">
+    <div class="section-label">Design Patterns</div>
+    <h2 class="section-title">Microservices Design Patterns</h2>
+
+    <h3 class="sub-title">1. Database per Service Pattern</h3>
+    <p>প্রতিটা service এর নিজের database থাকবে। কোনো service অন্য service এর database সরাসরি access করবে না। এতে loose coupling নিশ্চিত হয়।</p>
+    <div class="info-box tip">
+      <div class="box-label">✅ Why It's Good</div>
+      User service PostgreSQL use করতে পারে, Product service MongoDB use করতে পারে, Cart service Redis use করতে পারে — প্রতিটা service তার কাজের জন্য best database choose করতে পারে।
+    </div>
+
+    <h3 class="sub-title">2. Saga Pattern (Short Overview)</h3>
+    <p>Multiple services এ একটা transaction। Order service → Payment service → Inventory service। কোনো step fail করলে rollback। Topic 6 এ বিস্তারিত।</p>
+
+    <h3 class="sub-title">3. CQRS (Command Query Responsibility Segregation)</h3>
+    <p>Read এবং Write এর জন্য আলাদা model। Write operations যায় Command side এ, Read operations যায় Query side এ। High traffic systems এ খুব useful।</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 620 180" xmlns="http://www.w3.org/2000/svg">
+        <text x="310" y="20" fill="#94a3b8" font-family="JetBrains Mono" font-size="11" text-anchor="middle">CQRS PATTERN</text>
+        <!-- Client -->
+        <rect x="10" y="65" width="80" height="40" rx="4" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="50" y="89" fill="#93c5fd" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Client</text>
+
+        <!-- Command -->
+        <line x1="90" y1="75" x2="140" y2="55" stroke="#f97316" stroke-width="1.5"/>
+        <rect x="140" y="35" width="120" height="40" rx="4" fill="#0c1220" stroke="#f97316" stroke-width="1.5"/>
+        <text x="200" y="58" fill="#fdba74" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Command Handler</text>
+
+        <!-- Query -->
+        <line x1="90" y1="95" x2="140" y2="115" stroke="#8b5cf6" stroke-width="1.5"/>
+        <rect x="140" y="95" width="120" height="40" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="200" y="118" fill="#c4b5fd" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Query Handler</text>
+
+        <!-- Write DB -->
+        <line x1="260" y1="55" x2="330" y2="55" stroke="#f97316" stroke-width="1.5"/>
+        <rect x="330" y="35" width="110" height="40" rx="4" fill="#0c1220" stroke="#f97316" stroke-width="1.5"/>
+        <text x="385" y="58" fill="#fdba74" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Write DB (SQL)</text>
+
+        <!-- Read DB -->
+        <line x1="260" y1="115" x2="330" y2="115" stroke="#8b5cf6" stroke-width="1.5"/>
+        <rect x="330" y="95" width="110" height="40" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="385" y="118" fill="#c4b5fd" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Read DB (Redis)</text>
+
+        <!-- Sync arrow -->
+        <line x1="440" y1="55" x2="490" y2="85" stroke="#10b981" stroke-width="1" stroke-dasharray="4"/>
+        <line x1="440" y1="115" x2="490" y2="95" stroke="#10b981" stroke-width="1" stroke-dasharray="4"/>
+        <rect x="490" y="65" width="110" height="40" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="545" y="85" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Event Bus Sync</text>
+
+        <text x="95" y="55" fill="#f97316" font-family="JetBrains Mono" font-size="8">Write</text>
+        <text x="95" y="110" fill="#8b5cf6" font-family="JetBrains Mono" font-size="8">Read</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Code Examples -->
+  <div class="section" id="code">
+    <div class="section-label">Code Examples</div>
+    <h2 class="section-title">Practical Code — Python & Node.js</h2>
+
+    <h3 class="sub-title">Python: FastAPI দিয়ে Order Microservice</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Python</span>
+        <span class="code-file">order_service/main.py</span>
+      </div>
+      <pre><span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI, HTTPException
+<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel
+<span class="kw">import</span> httpx  <span class="cm"># অন্য service কে call করার জন্য</span>
+<span class="kw">import</span> asyncio
+
+app = <span class="fn">FastAPI</span>(title=<span class="str">"Order Service"</span>)
+
+<span class="cm"># অন্য services এর URL — real এ এটা env variable থেকে আসবে</span>
+PAYMENT_SERVICE_URL = <span class="str">"http://payment-service:8001"</span>
+INVENTORY_SERVICE_URL = <span class="str">"http://inventory-service:8002"</span>
+
+<span class="kw">class</span> <span class="fn">OrderRequest</span>(BaseModel):
+    user_id: <span class="var">int</span>
+    product_id: <span class="var">int</span>
+    quantity: <span class="var">int</span>
+    total_amount: <span class="var">float</span>
+
+<span class="cm"># In-memory DB (real এ PostgreSQL হবে)</span>
+orders_db = {}
+order_counter = <span class="num">1</span>
+
+<span class="fn">@app.post</span>(<span class="str">"/orders"</span>)
+<span class="kw">async def</span> <span class="fn">create_order</span>(order: OrderRequest):
+    <span class="kw">global</span> order_counter
+    <span class="kw">async with</span> httpx.<span class="fn">AsyncClient</span>() <span class="kw">as</span> client:
+        <span class="cm"># Step 1: Inventory check করো</span>
+        inv_response = <span class="kw">await</span> client.<span class="fn">get</span>(
+            <span class="str">f"{INVENTORY_SERVICE_URL}/check/{order.product_id}/{order.quantity}"</span>
+        )
+        <span class="kw">if</span> inv_response.status_code != <span class="num">200</span>:
+            <span class="kw">raise</span> <span class="fn">HTTPException</span>(<span class="num">400</span>, <span class="str">"Insufficient inventory"</span>)
+
+        <span class="cm"># Step 2: Payment process করো</span>
+        pay_response = <span class="kw">await</span> client.<span class="fn">post</span>(
+            <span class="str">f"{PAYMENT_SERVICE_URL}/charge"</span>,
+            json={<span class="str">"user_id"</span>: order.user_id, <span class="str">"amount"</span>: order.total_amount}
+        )
+        <span class="kw">if</span> pay_response.status_code != <span class="num">200</span>:
+            <span class="kw">raise</span> <span class="fn">HTTPException</span>(<span class="num">402</span>, <span class="str">"Payment failed"</span>)
+
+    <span class="cm"># Step 3: Order save করো</span>
+    order_id = order_counter
+    orders_db[order_id] = {<span class="str">"id"</span>: order_id, <span class="str">"status"</span>: <span class="str">"confirmed"</span>, **order.dict()}
+    order_counter += <span class="num">1</span>
+
+    <span class="kw">return</span> {<span class="str">"order_id"</span>: order_id, <span class="str">"status"</span>: <span class="str">"confirmed"</span>}
+
+<span class="fn">@app.get</span>(<span class="str">"/orders/{order_id}"</span>)
+<span class="kw">async def</span> <span class="fn">get_order</span>(order_id: <span class="var">int</span>):
+    order = orders_db.<span class="fn">get</span>(order_id)
+    <span class="kw">if not</span> order:
+        <span class="kw">raise</span> <span class="fn">HTTPException</span>(<span class="num">404</span>, <span class="str">"Order not found"</span>)
+    <span class="kw">return</span> order</pre>
+    </div>
+
+    <h3 class="sub-title">Node.js: Express দিয়ে Payment Microservice</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Node.js</span>
+        <span class="code-file">payment_service/index.js</span>
+      </div>
+      <pre><span class="kw">const</span> express = <span class="fn">require</span>(<span class="str">'express'</span>);
+<span class="kw">const</span> app = <span class="fn">express</span>();
+app.<span class="fn">use</span>(express.<span class="fn">json</span>());
+
+<span class="cm">// Mock payment processor</span>
+<span class="kw">const</span> payments = <span class="kw">new</span> Map();
+
+app.<span class="fn">post</span>(<span class="str">'/charge'</span>, <span class="kw">async</span> (req, res) => {
+    <span class="kw">const</span> { user_id, amount } = req.body;
+
+    <span class="cm">// Simulate payment processing</span>
+    <span class="kw">if</span> (amount <= <span class="num">0</span>) {
+        <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">400</span>).<span class="fn">json</span>({ error: <span class="str">'Invalid amount'</span> });
+    }
+
+    <span class="kw">const</span> payment_id = <span class="str">`pay_${Date.now()}`</span>;
+    payments.<span class="fn">set</span>(payment_id, {
+        user_id,
+        amount,
+        status: <span class="str">'success'</span>,
+        timestamp: <span class="kw">new</span> Date().<span class="fn">toISOString</span>()
+    });
+
+    <span class="cm">// Real এ এখানে Stripe/bKash API call হবে</span>
+    res.<span class="fn">json</span>({
+        payment_id,
+        status: <span class="str">'success'</span>,
+        message: <span class="str">`Payment of ৳${amount} processed`</span>
+    });
+});
+
+app.<span class="fn">get</span>(<span class="str">'/payment/:id'</span>, (req, res) => {
+    <span class="kw">const</span> payment = payments.<span class="fn">get</span>(req.params.id);
+    <span class="kw">if</span> (!payment) <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">404</span>).<span class="fn">json</span>({ error: <span class="str">'Not found'</span> });
+    res.<span class="fn">json</span>(payment);
+});
+
+app.<span class="fn">listen</span>(<span class="num">8001</span>, () => console.<span class="fn">log</span>(<span class="str">'Payment service running on :8001'</span>));</pre>
+    </div>
+
+    <h3 class="sub-title">Docker Compose: Services একসাথে চালানো</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">YAML</span>
+        <span class="code-file">docker-compose.yml</span>
+      </div>
+      <pre><span class="kw">version:</span> <span class="str">'3.8'</span>
+<span class="kw">services:</span>
+  <span class="fn">api-gateway:</span>
+    <span class="var">image:</span> nginx:alpine
+    <span class="var">ports:</span> [<span class="str">"80:80"</span>]
+    <span class="var">volumes:</span> [<span class="str">"./nginx.conf:/etc/nginx/nginx.conf"</span>]
+    <span class="var">depends_on:</span> [order-service, payment-service, inventory-service]
+
+  <span class="fn">order-service:</span>
+    <span class="var">build:</span> ./order_service
+    <span class="var">ports:</span> [<span class="str">"8000:8000"</span>]
+    <span class="var">environment:</span>
+      <span class="str">- DATABASE_URL=postgresql://user:pass@order-db:5432/orders</span>
+    <span class="var">depends_on:</span> [order-db, kafka]
+
+  <span class="fn">payment-service:</span>
+    <span class="var">build:</span> ./payment_service
+    <span class="var">ports:</span> [<span class="str">"8001:8001"</span>]
+
+  <span class="fn">inventory-service:</span>
+    <span class="var">build:</span> ./inventory_service
+    <span class="var">ports:</span> [<span class="str">"8002:8002"</span>]
+
+  <span class="fn">order-db:</span>
+    <span class="var">image:</span> postgres:15
+    <span class="var">environment:</span>
+      <span class="str">POSTGRES_DB:</span> orders
+      <span class="str">POSTGRES_USER:</span> user
+      <span class="str">POSTGRES_PASSWORD:</span> pass
+
+  <span class="fn">kafka:</span>
+    <span class="var">image:</span> confluentinc/cp-kafka:latest
+    <span class="var">environment:</span>
+      <span class="str">KAFKA_ZOOKEEPER_CONNECT:</span> zookeeper:2181</pre>
+    </div>
+  </div>
+
+  <!-- Real World -->
+  <div class="section" id="realworld">
+    <div class="section-label">Real World Use Cases</div>
+    <h2 class="section-title">বাস্তব জীবনে Microservices</h2>
+
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">🎬 Netflix</div>
+        <p>৫০০+ microservices। প্রতিটা Netflix feature আলাদা service। Recommendation, streaming, billing সব আলাদা। প্রতি মাসে ১ billion+ API calls।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🛒 Amazon</div>
+        <p>২-pizza rule: প্রতিটা team এত ছোট হবে যে দুটো pizza তে খাওয়া যাবে। প্রতিটা team তার service নিজেই deploy করে।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🚗 Uber</div>
+        <p>Monolith থেকে migrate করেছে। Rider, Driver, Maps, Payment সব আলাদা service। Peak hour এ শুধু Matching service scale করে।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🎵 Spotify</div>
+        <p>Squads system — প্রতিটা Squad একটা service own করে। Search, Playlist, Social সব আলাদা। ৩০+ countries এ simultaneously deploy।</p>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Tools Comparison</h3>
+    <table class="compare-table">
+      <tr><th>Tool/Platform</th><th>Type</th><th>Best For</th><th>বাংলাদেশে ব্যবহার</th></tr>
+      <tr><td>Kubernetes (K8s)</td><td>Orchestration</td><td>Production microservices</td><td><span class="tag-yes">Growing</span></td></tr>
+      <tr><td>Docker Compose</td><td>Local Dev</td><td>Development ও testing</td><td><span class="tag-yes">Very Common</span></td></tr>
+      <tr><td>AWS ECS/EKS</td><td>Managed</td><td>Cloud deployment</td><td><span class="tag-med">Medium</span></td></tr>
+      <tr><td>Kong / NGINX</td><td>API Gateway</td><td>Request routing</td><td><span class="tag-yes">Common</span></td></tr>
+      <tr><td>Kafka</td><td>Message Queue</td><td>Async communication</td><td><span class="tag-med">Growing</span></td></tr>
+      <tr><td>Jaeger / Zipkin</td><td>Tracing</td><td>Debugging distributed calls</td><td><span class="tag-no">Rare</span></td></tr>
+    </table>
+  </div>
+
+  <!-- Interview Q&A -->
+  <div class="section" id="interview">
+    <div class="section-label">Interview Preparation</div>
+    <h2 class="section-title">Common Interview Questions</h2>
+
+    <div class="info-box concept">
+      <div class="box-label">🎯 Q1: Monolith vs Microservices কখন কোনটা choose করবে?</div>
+      <strong>Answer:</strong> Small team, early startup, simple domain — Monolith দিয়ে শুরু করো। Complex domain, multiple teams, different scaling needs, independent deployments দরকার হলে Microservices। "Don't start with microservices" — Martin Fowler এর বিখ্যাত পরামর্শ।
+    </div>
+
+    <div class="info-box concept">
+      <div class="box-label">🎯 Q2: Microservices এ inter-service communication কীভাবে হয়?</div>
+      <strong>Synchronous:</strong> REST (HTTP), gRPC। Real-time response দরকার হলে।<br>
+      <strong>Asynchronous:</strong> Message Queue (Kafka, RabbitMQ)। Event-driven, decoupled। Payment notification, email পাঠানো এ ধরনের কাজে।
+    </div>
+
+    <div class="info-box concept">
+      <div class="box-label">🎯 Q3: Service কতটা ছোট হওয়া উচিত?</div>
+      <strong>Answer:</strong> Single Responsibility Principle follow করো। একটা service একটা business capability handle করবে। "Microservice" মানে code এর size না — responsibility এর size। User management একটা service, Payment একটা service।
+    </div>
+
+    <div class="info-box concept">
+      <div class="box-label">🎯 Q4: Distributed system এ data consistency কীভাবে manage করো?</div>
+      <strong>Answer:</strong> Eventual consistency। Strong consistency সব সময় possible না distributed এ। Saga pattern, event sourcing, compensating transactions ব্যবহার করো। CAP theorem মনে রাখো।
+    </div>
+  </div>
+
+  <!-- MCQ -->
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🧩</span>
+      <h2>MCQ Test</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">Microservices Architecture এর সবচেয়ে বড় সুবিধা কোনটি?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Code লেখা অনেক সহজ হয়ে যায়</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Database query faster হয়</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Independent deployment এবং scaling করা যায়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Server cost কমে যায়</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Microservices এর core benefit হলো প্রতিটা service independently deploy এবং scale করা যায়। Payment service suddenly slow হলে শুধু সেটাই scale করো, পুরো system না।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">Database per Service pattern কেন ব্যবহার করা হয়?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Database storage কম লাগে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Services এর মধ্যে loose coupling নিশ্চিত করতে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> SQL query faster হয়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Backup নেওয়া সহজ হয়</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Shared database থাকলে services tightly coupled হয়। একটা service এর schema change করলে অন্যটা ভাঙে। Separate DB দিলে প্রতিটা service independent থাকে।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">API Gateway এর primary responsibility কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Single entry point হিসেবে request route করা এবং cross-cutting concerns handle করা</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Database queries optimize করা</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Code compilation করা</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Static files serve করা</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — API Gateway হলো microservices এর front door। Authentication, rate limiting, SSL termination, logging — সব cross-cutting concerns এখানে handle হয়। Client কে জানতে হয় না কোন service কোথায়।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">Microservices এ services এর মধ্যে Asynchronous communication এর জন্য কোনটা ব্যবহার করা হয়?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> REST API direct call</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> gRPC</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> WebSocket</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Message Queue (Kafka/RabbitMQ)</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Async communication এর জন্য Message Queue best। Order placed → event publish → Payment service subscribe করে process করে। Services decoupled থাকে, একটা slow হলে অন্যটা block হয় না।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">Netflix, Amazon এর মতো companies Microservices কেন use করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> কারণ এটা নতুন technology</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Independent team autonomy, fault isolation, এবং massive scale handle করতে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> কারণ monolith কাজ করে না</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Cost কমানোর জন্য</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Netflix এর ৫০০+ teams প্রতিটা আলাদা service own করে এবং independently deploy করে। একটা service fail করলে বাকিগুলো চলে। এই scale এ monolith কাজ করে না।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">CQRS pattern এ Command এবং Query এর পার্থক্য কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Command মানে SQL, Query মানে NoSQL</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Command fast, Query slow</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Command data change করে (Write), Query data পড়ে (Read)</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Command sync, Query async</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — CQRS এ Write operations (Create/Update/Delete) Command side এ যায়, Read operations Query side এ যায়। Read এর জন্য optimized cache/replica DB ব্যবহার করা যায়।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">একটা Startup এ নতুন product launch করছো। Microservices দিয়ে শুরু করবে কি?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> না, Monolith দিয়ে শুরু করো — team ছোট, domain বোঝা যাচ্ছে না এখনো</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> হ্যাঁ, সবসময় Microservices best</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> হ্যাঁ, কারণ Netflix এটা করে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> না, serverless use করো</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Martin Fowler বলেন: "Don't start with microservices." শুরুতে domain ভালো না বুঝলে ভুল boundaries তৈরি হবে। Monolith থেকে শুরু করো, প্রয়োজনে পরে migrate করো।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">Distributed tracing কেন দরকার?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Database optimize করতে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Code compile করতে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Server cost কমাতে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> একটা request কোন কোন service এ গেছে এবং কোথায় slow হয়েছে সেটা দেখতে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Microservices এ একটা request ১০টা service এ যেতে পারে। User complain করলো "slow" — কোন service এ সমস্যা? Jaeger/Zipkin দিয়ে পুরো journey trace করা যায়।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">Service Mesh কী কাজ করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Database connection manage করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Service-to-service communication, load balancing, security, observability manage করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Frontend render করে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Container build করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত:তর: B</strong> — Service Mesh (Istio, Linkerd) প্রতিটা service এর পাশে sidecar proxy রাখে। Service গুলো জানে না কীভাবে communicate হচ্ছে — mesh সব handle করে। mTLS, retries, circuit breaking automatic।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">একটা e-commerce app design করছো। Payment সম্পন্ন হলে Email notification পাঠাতে হবে। কোন approach সবচেয়ে ভালো?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Payment service সরাসরি Email service কে HTTP call করবে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Payment service এ email sending code লিখবো</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Payment service একটা "payment.completed" event publish করবে, Notification service সেটা consume করবে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Client side থেকে দুটো আলাদা API call করবো</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Event-driven approach সবচেয়ে ভালো। Payment service জানে না Notification service আছে কিনা। Event publish করে দাও — যে সে consume করবে। এটাই microservices এর spirit: loose coupling।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT & CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <!-- Assignment -->
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ২-৩ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <p style="margin-bottom:16px; font-size:14px; color:#94a3b8;">নিচের tasks গুলো complete করো।</p>
+    <ul class="task-list">
+      <li><strong>Decomposition Exercise:</strong> একটা food delivery app (যেমন Pathao Food) কে microservices এ decompose করো। কমপক্ষে ৬টা service চিহ্নিত করো এবং প্রতিটার responsibility লেখো।</li>
+      <li><strong>Communication Design:</strong> উপরের services গুলো কীভাবে communicate করবে সেটা design করো। কোনটা sync (REST/gRPC), কোনটা async (Kafka) হবে এবং কেন — সেটা explain করো।</li>
+      <li><strong>Code Reading:</strong> উপরে দেওয়া FastAPI Order service এর code পড়ো। যদি Inventory service down থাকে তাহলে কী হবে? Error handling কীভাবে improve করবে?</li>
+      <li><strong>Diagram:</strong> excalidraw.com বা draw.io তে একটা Microservices architecture diagram আঁকো — API Gateway, কমপক্ষে ৩টা service, Message Bus, এবং databases সহ।</li>
+      <li><strong>Trade-off Analysis:</strong> তোমার পরিচিত বা কাজ করা কোনো project — সেটা Monolith দিয়ে শুরু করা কি ঠিক হবে নাকি Microservices? ৫-৭ লাইনে justify করো।</li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>Food delivery app decomposition (লিখিত)</li>
+        <li>Communication design (sync/async decisions)</li>
+        <li>Improved error handling code snippet</li>
+        <li>Architecture diagram (screenshot বা file)</li>
+        <li>Personal trade-off analysis</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project -->
+  <div class="project-section" id="project">
+    <div class="project-header">
+      <span style="font-size:24px">🚀</span>
+      <h2>Hands-On Project Task</h2>
+    </div>
+    <div class="project-body">
+      <p style="font-size:14px; color:#94a3b8; margin-bottom:20px;">Docker থাকলে এখনই করতে পারো। একটা simple 3-service microservices system বানাবো।</p>
+      <h3 style="font-family:'Fraunces',serif; font-size:18px; margin-bottom:16px; color:#f1f5f9;">Mini E-Commerce Microservices</h3>
+      <p style="font-size:14px; color:#94a3b8; margin-bottom:20px;">৩টা service: User, Product, Order — API Gateway সহ Docker Compose এ চালাও।</p>
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-circle">1</div>
+          <div class="step-content">
+            <h4>Project structure তৈরি করো</h4>
+            <p>user_service/, product_service/, order_service/, nginx/ folders বানাও।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">2</div>
+          <div class="step-content">
+            <h4>প্রতিটা service এ simple FastAPI app বানাও</h4>
+            <p>User service: GET /users, POST /users। Product: GET /products। Order: POST /orders (user ও product validate করে)।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">3</div>
+          <div class="step-content">
+            <h4>Nginx API Gateway configure করো</h4>
+            <p>/api/users → user_service, /api/products → product_service, /api/orders → order_service।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">4</div>
+          <div class="step-content">
+            <h4>docker-compose.yml লেখো এবং চালাও</h4>
+            <p><code>docker-compose up --build</code> দিয়ে সব service একসাথে চালাও।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">5</div>
+          <div class="step-content">
+            <h4>Postman/curl দিয়ে test করো</h4>
+            <p>localhost/api/users, localhost/api/products, localhost/api/orders — তিনটাই কাজ করছে কিনা check করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">6</div>
+          <div class="step-content">
+            <h4>Bonus: একটা service বন্ধ করো</h4>
+            <p>Product service stop করো। Order service কীভাবে handle করে? Graceful error দেখো।</p>
+          </div>
+        </div>
+      </div>
+      <div class="info-box tip" style="margin-top:16px">
+        <div class="box-label">🎯 এটা করলে যা শিখবে</div>
+        Microservices theory না — practically দেখবে কীভাবে services আলাদাভাবে চলে, কীভাবে communicate করে, এবং একটা fail হলে কী হয়। এটাই real-world microservices এর foundation।
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-label">Lesson Summary</div>
+    <h2 class="section-title">আজকে যা শিখলাম</h2>
+    <table class="compare-table">
+      <tr><th>Concept</th><th>এক লাইনে</th></tr>
+      <tr><td>Microservices</td><td>বড় app কে ছোট independent services এ ভাগ করো</td></tr>
+      <tr><td>API Gateway</td><td>Single entry point, routing, auth, rate limiting</td></tr>
+      <tr><td>DB per Service</td><td>প্রতিটা service এর নিজের DB — loose coupling</td></tr>
+      <tr><td>Sync Communication</td><td>REST/gRPC — real-time response দরকার হলে</td></tr>
+      <tr><td>Async Communication</td><td>Kafka/RabbitMQ — decoupled event-driven</td></tr>
+      <tr><td>CQRS</td><td>Read ও Write আলাদা করো — performance boost</td></tr>
+      <tr><td>When to use</td><td>Large teams, complex domain, independent scaling দরকার হলে</td></tr>
+    </table>
+  </div>
+
+  <div class="next-cta">
+    <div>
+      <div class="next-label">Next Topic →</div>
+      <div class="next-title">🗳️ Distributed Consensus (Raft, Zookeeper)</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+
+</div>
+</main>
+
+<script>
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scroll = doc.scrollTop || document.body.scrollTop;
+  const height = doc.scrollHeight - doc.clientHeight;
+  document.getElementById('progressFill').style.width = ((scroll / height) * 100) + '%';
+});
+
+let answered = {};
+document.querySelectorAll('.option').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const block = this.closest('.question-block');
+    const qId = Array.from(document.querySelectorAll('.question-block')).indexOf(block);
+    if (answered[qId]) return;
+    answered[qId] = this.dataset.val;
+    block.querySelectorAll('.option').forEach(o => {
+      o.style.pointerEvents = 'none';
+      if (o.dataset.val === block.dataset.correct) o.classList.add('correct');
+      else if (o.dataset.val === this.dataset.val) o.classList.add('wrong');
+    });
+    block.querySelector('.explanation').classList.add('visible');
+  });
+});
+
+function submitMCQ() {
+  let correct = 0;
+  const blocks = document.querySelectorAll('.question-block');
+  blocks.forEach((block, i) => { if (answered[i] === block.dataset.correct) correct++; });
+  const unanswered = blocks.length - Object.keys(answered).length;
+  if (unanswered > 0) { alert(`এখনও ${unanswered}টা প্রশ্নের উত্তর দাওনি!`); return; }
+  document.getElementById('scoreDisplay').textContent = correct;
+  const banner = document.getElementById('resultBanner');
+  banner.classList.add('visible');
+  if (correct >= 7) { banner.classList.add('pass'); banner.textContent = `🎉 দারুণ! ${correct}/10 সঠিক। পরের topic এ যেতে পারো!`; }
+  else { banner.classList.add('fail'); banner.textContent = `📖 ${correct}/10 সঠিক। Concept গুলো আবার পড়ো এবং retry করো। ৭/১০ পেলেই pass।`; }
+}
+</script>
+</body>
+</html>

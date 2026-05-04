@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 3 · Topic 6 — Saga Pattern & Distributed Transactions</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05080f;--surface:#090e1a;--card:#0c1220;--border:#162035;--border2:#1e2d4a;--accent:#3b82f6;--accent-glow:rgba(59,130,246,0.15);--green:#10b981;--green-glow:rgba(16,185,129,0.12);--orange:#f97316;--red:#ef4444;--yellow:#eab308;--purple:#8b5cf6;--pink:#ec4899;--text:#e2e8f0;--muted:#64748b;--muted2:#94a3b8;}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans Bengali',sans-serif;line-height:1.7;font-size:15px;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.4;}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100;}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo .phase-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--pink);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:4px;}
+.sidebar-logo .course-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;line-height:1.3;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-section-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);padding:0 8px;margin-bottom:6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:4px;font-size:13px;color:var(--muted2);cursor:pointer;transition:all 0.15s;text-decoration:none;}
+.nav-item:hover{background:var(--card);color:var(--text);}
+.nav-item.active{background:rgba(236,72,153,0.1);color:var(--pink);}
+.nav-item .nav-icon{font-size:14px;flex-shrink:0;}
+.nav-item .nav-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto;}
+.progress-bar{position:fixed;top:0;left:240px;right:0;height:2px;background:var(--border);z-index:200;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--pink),var(--purple));width:0%;transition:width 0.1s;}
+.main{margin-left:240px;min-height:100vh;}
+.content{max-width:780px;margin:0 auto;padding:48px 40px 120px;}
+.topic-header{margin-bottom:48px;}
+.breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.breadcrumb span{color:var(--pink);}
+.topic-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--pink);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:block;}
+h1.topic-title{font-family:'Fraunces',serif;font-size:clamp(32px,5vw,48px);font-weight:900;line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,#fff 30%,#fbcfe8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.topic-meta{display:flex;gap:16px;flex-wrap:wrap;}
+.meta-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 12px;border-radius:2px;border:1px solid;}
+.meta-chip.time{border-color:rgba(59,130,246,0.3);color:var(--accent);background:var(--accent-glow);}
+.meta-chip.level{border-color:rgba(16,185,129,0.3);color:var(--green);background:var(--green-glow);}
+.meta-chip.type{border-color:rgba(236,72,153,0.3);color:var(--pink);background:rgba(236,72,153,0.08);}
+.section{margin-bottom:48px;scroll-margin-top:24px;}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:3px;color:var(--pink);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+h2.section-title{font-family:'Fraunces',serif;font-size:24px;font-weight:700;margin-bottom:16px;color:#f1f5f9;}
+h3.sub-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;margin:24px 0 10px;color:#cbd5e1;}
+p{margin-bottom:14px;color:#cbd5e1;}
+.info-box{border-radius:6px;padding:18px 20px;margin:20px 0;border-left:3px solid;font-size:14px;}
+.info-box.concept{background:rgba(59,130,246,0.06);border-color:var(--accent);}
+.info-box.warning{background:rgba(249,115,22,0.06);border-color:var(--orange);}
+.info-box.tip{background:rgba(16,185,129,0.06);border-color:var(--green);}
+.info-box.important{background:rgba(234,179,8,0.06);border-color:var(--yellow);}
+.info-box .box-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:700;}
+.info-box.concept .box-label{color:var(--accent);}
+.info-box.warning .box-label{color:var(--orange);}
+.info-box.tip .box-label{color:var(--green);}
+.info-box.important .box-label{color:var(--yellow);}
+.compare-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;}
+.compare-table th{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1px;padding:12px 16px;text-align:left;background:var(--card);border-bottom:2px solid var(--border2);color:var(--muted2);}
+.compare-table td{padding:11px 16px;border-bottom:1px solid var(--border);color:#94a3b8;vertical-align:top;line-height:1.6;}
+.compare-table tr:hover td{background:rgba(255,255,255,0.02);}
+.compare-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);}
+.tag-yes{color:var(--green);font-weight:600;}.tag-no{color:var(--red);}.tag-med{color:var(--yellow);}
+.diagram{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:30px 20px;margin:24px 0;overflow-x:auto;}
+.diagram svg{max-width:100%;}
+.code-block{background:#030608;border:1px solid var(--border2);border-radius:6px;margin:20px 0;overflow:hidden;}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--border);}
+.code-lang{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--pink);text-transform:uppercase;letter-spacing:1px;}
+.code-file{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);}
+pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.8;color:#e2e8f0;}
+.kw{color:#93c5fd;}.fn{color:#6ee7b7;}.str{color:#fcd34d;}.cm{color:#475569;font-style:italic;}.num{color:#f9a8d4;}.var{color:#e2e8f0;}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0;}
+.scenario-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:18px;}
+.scenario-card .s-title{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--pink);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;}
+.scenario-card p{font-size:13px;color:var(--muted2);margin:0;}
+.flow-steps{display:flex;flex-direction:column;gap:0;margin:16px 0;}
+.flow-step{display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);}
+.flow-step:last-child{border-bottom:none;}
+.step-badge{min-width:28px;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;flex-shrink:0;}
+.step-ok{background:rgba(16,185,129,0.12);border:1px solid var(--green);color:var(--green);}
+.step-fail{background:rgba(239,68,68,0.12);border:1px solid var(--red);color:var(--red);}
+.step-comp{background:rgba(234,179,8,0.12);border:1px solid var(--yellow);color:var(--yellow);}
+.flow-step .step-info h4{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);margin-bottom:3px;}
+.flow-step .step-info p{font-size:12px;color:var(--muted2);margin:0;}
+.mcq-section{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:28px;margin:30px 0;}
+.mcq-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.mcq-icon{font-size:24px;}
+.mcq-header h2{font-family:'Fraunces',serif;font-size:20px;font-weight:700;}
+.mcq-score{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);}
+.mcq-score span{color:var(--pink);font-size:18px;font-weight:700;}
+.question-block{margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--border);}
+.question-block:last-of-type{border-bottom:none;margin-bottom:0;}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.q-text{font-size:15px;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.5;font-family:'Noto Sans Bengali',sans-serif;}
+.options{display:flex;flex-direction:column;gap:8px;}
+.option{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:4px;border:1px solid var(--border);cursor:pointer;transition:all 0.15s;font-size:14px;color:var(--muted2);font-family:'Noto Sans Bengali',sans-serif;}
+.option:hover{border-color:var(--pink);color:var(--text);background:rgba(236,72,153,0.06);}
+.option.correct{border-color:var(--green);background:var(--green-glow);color:#6ee7b7;}
+.option.wrong{border-color:var(--red);background:rgba(239,68,68,0.08);color:#fca5a5;}
+.option-key{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--border2);padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;}
+.explanation{display:none;margin-top:12px;padding:12px 14px;background:rgba(16,185,129,0.06);border-left:2px solid var(--green);border-radius:0 4px 4px 0;font-size:13px;color:#94a3b8;line-height:1.7;font-family:'Noto Sans Bengali',sans-serif;}
+.explanation.visible{display:block;}
+.explanation strong{color:var(--green);}
+.mcq-submit{display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:12px 24px;background:var(--pink);color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;border:none;border-radius:4px;cursor:pointer;letter-spacing:1px;transition:all 0.15s;}
+.mcq-submit:hover{background:#db2777;transform:translateY(-1px);}
+.result-banner{display:none;margin-top:20px;padding:16px 20px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;}
+.result-banner.visible{display:block;}
+.result-banner.pass{background:var(--green-glow);border:1px solid var(--green);color:var(--green);}
+.result-banner.fail{background:rgba(249,115,22,0.08);border:1px solid var(--orange);color:var(--orange);}
+.assignment-section{background:linear-gradient(135deg,rgba(236,72,153,0.04),rgba(139,92,246,0.04));border:1px solid rgba(236,72,153,0.2);border-radius:8px;padding:28px;margin:30px 0;}
+.assignment-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.assignment-icon{font-size:28px;}
+.assignment-header h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700;}
+.assignment-meta{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.a-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 10px;border-radius:2px;}
+.a-chip.time{background:rgba(234,179,8,0.1);color:var(--yellow);border:1px solid rgba(234,179,8,0.2);}
+.a-chip.level{background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.2);}
+.task-list{counter-reset:tasks;list-style:none;margin-bottom:20px;}
+.task-list li{counter-increment:tasks;padding:14px 14px 14px 50px;position:relative;border-bottom:1px solid var(--border);font-size:14px;color:var(--muted2);line-height:1.7;font-family:'Noto Sans Bengali',sans-serif;}
+.task-list li:last-child{border-bottom:none;}
+.task-list li::before{content:counter(tasks);position:absolute;left:14px;top:14px;width:24px;height:24px;background:rgba(236,72,153,0.1);border:1px solid rgba(236,72,153,0.3);border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--pink);display:flex;align-items:center;justify-content:center;font-weight:700;}
+.task-list li strong{color:var(--text);}
+.deliverable-box{background:var(--card);border:1px solid var(--border2);border-radius:6px;padding:16px 18px;margin-top:16px;}
+.deliverable-box .d-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--pink);margin-bottom:10px;}
+.deliverable-box ul{list-style:none;padding:0;}
+.deliverable-box ul li{font-size:13px;color:var(--muted2);padding:4px 0 4px 18px;position:relative;font-family:'Noto Sans Bengali',sans-serif;}
+.deliverable-box ul li::before{content:'◆';position:absolute;left:0;font-size:8px;color:var(--pink);top:6px;}
+.project-section{background:var(--card);border:1px solid var(--border2);border-radius:8px;overflow:hidden;margin:30px 0;}
+.project-header{background:linear-gradient(90deg,rgba(16,185,129,0.1),transparent);padding:18px 24px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:12px;}
+.project-header h2{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--green);}
+.project-body{padding:24px;}
+.step-flow{display:flex;flex-direction:column;gap:0;margin:16px 0;}
+.step-item{display:flex;gap:16px;padding-bottom:24px;position:relative;}
+.step-item:last-child{padding-bottom:0;}
+.step-item::before{content:'';position:absolute;left:15px;top:32px;bottom:0;width:1px;background:var(--border2);}
+.step-item:last-child::before{display:none;}
+.step-circle{width:32px;height:32px;border-radius:50%;background:var(--green-glow);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--green);flex-shrink:0;z-index:1;}
+.step-content{flex:1;}
+.step-content h4{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);margin-bottom:4px;}
+.step-content p{font-size:13px;color:var(--muted2);margin:0;}
+.completion-banner{background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(59,130,246,0.08));border:1px solid rgba(16,185,129,0.3);border-radius:8px;padding:28px;margin-top:48px;text-align:center;}
+.completion-banner h2{font-family:'Fraunces',serif;font-size:28px;font-weight:900;color:#fff;margin-bottom:10px;}
+.completion-banner p{color:var(--muted2);font-size:14px;margin-bottom:20px;}
+.phase-chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px;}
+.phase-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 14px;border-radius:4px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);color:var(--green);}
+@media(max-width:768px){.sidebar{display:none;}.main{margin-left:0;}.content{padding:24px 16px 80px;}.scenario-grid{grid-template-columns:1fr;}.progress-bar{left:0;}}
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 03 · Distributed Systems</span>
+    <div class="course-title">System Design<br>Mastery Course</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Phase 3 Topics</div>
+    <a href="#" class="nav-item"><span class="nav-icon">🧩</span><span>Microservices</span><span class="nav-num">01</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🗳️</span><span>Distributed Consensus</span><span class="nav-num">02</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">⚡</span><span>Circuit Breaker</span><span class="nav-num">03</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🚦</span><span>Rate Limiting</span><span class="nav-num">04</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🔍</span><span>Service Discovery</span><span class="nav-num">05</span></a>
+    <a href="#" class="nav-item active"><span class="nav-icon">🔄</span><span>Saga Pattern</span><span class="nav-num">06</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px">
+    <div class="nav-section-label">This Lesson</div>
+    <a href="#concept" class="nav-item"><span class="nav-icon">💡</span><span>Concept</span></a>
+    <a href="#problem" class="nav-item"><span class="nav-icon">❓</span><span>The Problem</span></a>
+    <a href="#choreography" class="nav-item"><span class="nav-icon">🎭</span><span>Choreography</span></a>
+    <a href="#orchestration" class="nav-item"><span class="nav-icon">🎼</span><span>Orchestration</span></a>
+    <a href="#compensation" class="nav-item"><span class="nav-icon">↩️</span><span>Compensation</span></a>
+    <a href="#code" class="nav-item"><span class="nav-icon">💻</span><span>Code Examples</span></a>
+    <a href="#realworld" class="nav-item"><span class="nav-icon">🌍</span><span>Real World</span></a>
+    <a href="#interview" class="nav-item"><span class="nav-icon">🎯</span><span>Interview Q&A</span></a>
+    <a href="#mcq" class="nav-item"><span class="nav-icon">✅</span><span>MCQ Test</span></a>
+    <a href="#assignment" class="nav-item"><span class="nav-icon">📝</span><span>Assignment</span></a>
+    <a href="#project" class="nav-item"><span class="nav-icon">🚀</span><span>Project Task</span></a>
+  </div>
+</nav>
+<main class="main">
+<div class="content">
+
+  <!-- Header -->
+  <div class="topic-header" id="concept">
+    <div class="breadcrumb">Phase 3 — Distributed Systems <span>›</span> Topic 06</div>
+    <span class="topic-num">TOPIC 06 / 06 — FINAL</span>
+    <h1 class="topic-title">Saga Pattern &<br>Distributed Transactions</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ ৬০-৯০ মিনিট</span>
+      <span class="meta-chip level">📊 Junior Level</span>
+      <span class="meta-chip type">🔄 Transactions</span>
+    </div>
+  </div>
+
+  <!-- Why it matters -->
+  <div class="section">
+    <div class="section-label">Why It Matters</div>
+    <h2 class="section-title">Distributed Transaction কেন কঠিন?</h2>
+    <p>Single database এ transaction সহজ — ACID guarantee আছে। কিন্তু microservices এ Order service, Payment service, Inventory service — তিনটা আলাদা database। একটা order place করতে তিনটাতেই write করতে হবে।</p>
+    <p>Payment succeed করলো, কিন্তু Inventory update করতে গিয়ে crash। এখন payment deducted কিন্তু product deliver হবে না। <strong>Inconsistent state!</strong></p>
+    <div class="info-box warning">
+      <div class="box-label">⚠️ 2-Phase Commit (2PC) — পুরনো সমাধান কেন কাজ করে না</div>
+      2PC একটা coordinator দিয়ে সব services কে lock করে। কিন্তু distributed system এ: coordinator fail করলে সব services locked। High latency। Microservices এ impractical। এজন্যই <strong>Saga Pattern</strong> এর জন্ম।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">📌 Definition</div>
+      <strong>Saga Pattern</strong> হলো একটা sequence of local transactions। প্রতিটা local transaction তার নিজের database update করে এবং একটা event/message publish করে। কোনো step fail করলে পূর্ববর্তী steps এর effects undo করার জন্য <strong>compensating transactions</strong> চালানো হয়।
+    </div>
+  </div>
+
+  <!-- The Problem -->
+  <div class="section" id="problem">
+    <div class="section-label">The Core Problem</div>
+    <h2 class="section-title">Order Placement — ৩টা Service, ১টা Business Operation</h2>
+    <p>একটা e-commerce order flow দেখো। সব ঠিক চললে easy. কিন্তু মাঝপথে fail করলে কী হয়?</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 660 230" xmlns="http://www.w3.org/2000/svg">
+        <text x="330" y="18" fill="#94a3b8" font-family="JetBrains Mono" font-size="11" text-anchor="middle">ORDER SAGA — Happy Path vs Failure</text>
+        <!-- Happy path label -->
+        <text x="165" y="40" fill="#10b981" font-family="JetBrains Mono" font-size="10" text-anchor="middle">✅ HAPPY PATH</text>
+        <!-- Steps happy -->
+        <rect x="10" y="50" width="100" height="40" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="60" y="66" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">1. Order</text>
+        <text x="60" y="80" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Created ✓</text>
+        <line x1="110" y1="70" x2="130" y2="70" stroke="#10b981" stroke-width="1.5" marker-end="url(#h1)"/>
+        <defs><marker id="h1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#10b981"/></marker></defs>
+        <rect x="130" y="50" width="100" height="40" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="180" y="66" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">2. Payment</text>
+        <text x="180" y="80" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Charged ✓</text>
+        <line x1="230" y1="70" x2="250" y2="70" stroke="#10b981" stroke-width="1.5" marker-end="url(#h2)"/>
+        <defs><marker id="h2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#10b981"/></marker></defs>
+        <rect x="250" y="50" width="100" height="40" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="300" y="66" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">3. Inventory</text>
+        <text x="300" y="80" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Reserved ✓</text>
+        <line x1="350" y1="70" x2="370" y2="70" stroke="#10b981" stroke-width="1.5" marker-end="url(#h3)"/>
+        <defs><marker id="h3" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#10b981"/></marker></defs>
+        <rect x="370" y="50" width="100" height="40" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="420" y="66" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">4. Notification</text>
+        <text x="420" y="80" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Sent ✓</text>
+        <rect x="500" y="55" width="150" height="30" rx="4" fill="rgba(16,185,129,0.1)" stroke="var(--green)"/>
+        <text x="575" y="74" fill="#6ee7b7" font-family="JetBrains Mono" font-size="10" text-anchor="middle">🎉 Order Complete!</text>
+
+        <!-- Failure path -->
+        <text x="165" y="130" fill="#ef4444" font-family="JetBrains Mono" font-size="10" text-anchor="middle">❌ FAILURE PATH</text>
+        <rect x="10" y="140" width="100" height="40" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="60" y="156" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">1. Order</text>
+        <text x="60" y="170" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Created ✓</text>
+        <line x1="110" y1="160" x2="130" y2="160" stroke="#10b981" stroke-width="1.5" marker-end="url(#f1)"/>
+        <defs><marker id="f1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#10b981"/></marker></defs>
+        <rect x="130" y="140" width="100" height="40" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="180" y="156" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">2. Payment</text>
+        <text x="180" y="170" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Charged ✓</text>
+        <line x1="230" y1="160" x2="250" y2="160" stroke="#10b981" stroke-width="1.5" marker-end="url(#f2)"/>
+        <defs><marker id="f2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#10b981"/></marker></defs>
+        <rect x="250" y="140" width="100" height="40" rx="4" fill="#0c1220" stroke="#ef4444" stroke-width="2"/>
+        <text x="300" y="156" fill="#fca5a5" font-family="JetBrains Mono" font-size="9" text-anchor="middle">3. Inventory</text>
+        <text x="300" y="170" fill="#ef4444" font-family="JetBrains Mono" font-size="9" text-anchor="middle">FAIL! ❌</text>
+        <!-- Compensations -->
+        <line x1="250" y1="175" x2="230" y2="193" stroke="#eab308" stroke-width="1.5" stroke-dasharray="4" marker-end="url(#c1)"/>
+        <defs><marker id="c1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#eab308"/></marker></defs>
+        <rect x="110" y="193" width="120" height="30" rx="4" fill="rgba(234,179,8,0.08)" stroke="#eab308" stroke-width="1"/>
+        <text x="170" y="212" fill="#fcd34d" font-family="JetBrains Mono" font-size="9" text-anchor="middle">↩️ Refund Payment</text>
+        <line x1="110" y1="208" x2="90" y2="208" stroke="#eab308" stroke-width="1.5" stroke-dasharray="4" marker-end="url(#c2)"/>
+        <defs><marker id="c2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#eab308"/></marker></defs>
+        <rect x="0" y="193" width="90" height="30" rx="4" fill="rgba(234,179,8,0.08)" stroke="#eab308" stroke-width="1"/>
+        <text x="45" y="212" fill="#fcd34d" font-family="JetBrains Mono" font-size="9" text-anchor="middle">↩️ Cancel Order</text>
+        <text x="380" y="160" fill="#ef4444" font-family="JetBrains Mono" font-size="9">→ Compensating</text>
+        <text x="380" y="173" fill="#eab308" font-family="JetBrains Mono" font-size="9">   Transactions!</text>
+      </svg>
+    </div>
+    <div class="info-box tip">
+      <div class="box-label">💡 Key Insight</div>
+      Saga তে <strong>Eventual Consistency</strong> use করা হয়। মানে সব steps complete হওয়ার পর system consistent হবে। Immediate consistency নেই। এটা ACID এর alternative — distributed এ ACID possible না।
+    </div>
+  </div>
+
+  <!-- Choreography -->
+  <div class="section" id="choreography">
+    <div class="section-label">Saga Type 1</div>
+    <h2 class="section-title">Choreography-based Saga</h2>
+    <p>কোনো central coordinator নেই। প্রতিটা service নিজের কাজ করে এবং event publish করে। অন্য services সেই event listen করে নিজের কাজ করে। <strong>Decentralized</strong> approach।</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 660 200" xmlns="http://www.w3.org/2000/svg">
+        <text x="330" y="18" fill="#94a3b8" font-family="JetBrains Mono" font-size="11" text-anchor="middle">CHOREOGRAPHY — Event-Driven, No Central Control</text>
+        <!-- Event Bus -->
+        <rect x="205" y="85" width="250" height="35" rx="4" fill="#0c1220" stroke="#f97316" stroke-width="2"/>
+        <text x="330" y="103" fill="#fdba74" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">Event Bus (Kafka / RabbitMQ)</text>
+        <!-- Order Service -->
+        <rect x="10" y="55" width="110" height="90" rx="4" fill="#0c1220" stroke="#ec4899" stroke-width="1.5"/>
+        <text x="65" y="78" fill="#fbcfe8" font-family="JetBrains Mono" font-size="9" text-anchor="middle" font-weight="700">Order Service</text>
+        <text x="65" y="93" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">1. Create order</text>
+        <text x="65" y="107" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">2. Publish:</text>
+        <text x="65" y="121" fill="#f97316" font-family="JetBrains Mono" font-size="8" text-anchor="middle">OrderPlaced</text>
+        <line x1="120" y1="102" x2="205" y2="102" stroke="#f97316" stroke-width="1.5" marker-end="url(#ev1)"/>
+        <defs><marker id="ev1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#f97316"/></marker></defs>
+
+        <!-- Payment Service -->
+        <rect x="175" y="145" width="110" height="50" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="230" y="164" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle" font-weight="700">Payment Service</text>
+        <text x="230" y="178" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Listens: OrderPlaced</text>
+        <line x1="280" y1="120" x2="254" y2="145" stroke="#10b981" stroke-width="1.5" marker-end="url(#ev2)"/>
+        <defs><marker id="ev2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#10b981"/></marker></defs>
+        <text x="259" y="139" fill="#f97316" font-family="JetBrains Mono" font-size="8">Publish: PaymentDone</text>
+
+        <!-- Inventory Service -->
+        <rect x="375" y="145" width="110" height="50" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="430" y="164" fill="#c4b5fd" font-family="JetBrains Mono" font-size="9" text-anchor="middle" font-weight="700">Inventory Service</text>
+        <text x="430" y="178" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Listens: PaymentDone</text>
+        <line x1="380" y1="120" x2="406" y2="145" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#ev3)"/>
+        <defs><marker id="ev3" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#8b5cf6"/></marker></defs>
+
+        <!-- Notification -->
+        <rect x="540" y="55" width="110" height="90" rx="4" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="595" y="78" fill="#93c5fd" font-family="JetBrains Mono" font-size="9" text-anchor="middle" font-weight="700">Notification Svc</text>
+        <text x="595" y="93" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Listens: multiple</text>
+        <text x="595" y="107" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">events</text>
+        <line x1="455" y1="102" x2="540" y2="102" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#ev4)"/>
+        <defs><marker id="ev4" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#3b82f6"/></marker></defs>
+      </svg>
+    </div>
+
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">✅ Pros</div>
+        <p>Simple — কোনো extra orchestrator নেই। Loose coupling। Services independent। Scale করা সহজ। Event-driven natural fit।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">❌ Cons</div>
+        <p>Complex flow বোঝা কঠিন। Debugging কষ্টকর — event কোথায় গেল? Cyclic dependencies হতে পারে।</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Orchestration -->
+  <div class="section" id="orchestration">
+    <div class="section-label">Saga Type 2</div>
+    <h2 class="section-title">Orchestration-based Saga</h2>
+    <p>একটা central <strong>Saga Orchestrator</strong> পুরো flow control করে। Orchestrator জানে কোন step কখন run করতে হবে এবং কোনো failure তে কোন compensation করতে হবে। <strong>Centralized</strong> approach।</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 660 220" xmlns="http://www.w3.org/2000/svg">
+        <text x="330" y="18" fill="#94a3b8" font-family="JetBrains Mono" font-size="11" text-anchor="middle">ORCHESTRATION — Central Saga Orchestrator</text>
+        <!-- Orchestrator -->
+        <rect x="230" y="30" width="200" height="65" rx="4" fill="#0c1220" stroke="#ec4899" stroke-width="2"/>
+        <text x="330" y="53" fill="#fbcfe8" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">Saga Orchestrator</text>
+        <text x="330" y="68" fill="#64748b" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Knows entire flow + compensations</text>
+        <text x="330" y="82" fill="#64748b" font-family="JetBrains Mono" font-size="9" text-anchor="middle">State machine — tracks progress</text>
+
+        <!-- Order Service -->
+        <rect x="20" y="140" width="110" height="60" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="75" y="163" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Order Service</text>
+        <text x="75" y="177" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Just executes</text>
+        <text x="75" y="191" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">commands</text>
+        <line x1="235" y1="75" x2="75" y2="140" stroke="#ec4899" stroke-width="1.5" marker-end="url(#or1)"/>
+        <defs><marker id="or1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#ec4899"/></marker></defs>
+        <text x="130" y="98" fill="#ec4899" font-family="JetBrains Mono" font-size="8">1. CreateOrder</text>
+
+        <!-- Payment Service -->
+        <rect x="185" y="140" width="110" height="60" rx="4" fill="#0c1220" stroke="#f97316" stroke-width="1.5"/>
+        <text x="240" y="163" fill="#fdba74" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Payment Service</text>
+        <text x="240" y="177" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Just executes</text>
+        <text x="240" y="191" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">commands</text>
+        <line x1="290" y1="95" x2="260" y2="140" stroke="#f97316" stroke-width="1.5" marker-end="url(#or2)"/>
+        <defs><marker id="or2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#f97316"/></marker></defs>
+        <text x="260" y="120" fill="#f97316" font-family="JetBrains Mono" font-size="8">2. ChargePayment</text>
+
+        <!-- Inventory Service -->
+        <rect x="360" y="140" width="110" height="60" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="415" y="163" fill="#c4b5fd" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Inventory Service</text>
+        <text x="415" y="177" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Just executes</text>
+        <text x="415" y="191" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">commands</text>
+        <line x1="370" y1="95" x2="400" y2="140" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#or3)"/>
+        <defs><marker id="or3" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#8b5cf6"/></marker></defs>
+        <text x="400" y="120" fill="#8b5cf6" font-family="JetBrains Mono" font-size="8">3. ReserveInventory</text>
+
+        <!-- Notification Service -->
+        <rect x="530" y="140" width="110" height="60" rx="4" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="585" y="163" fill="#93c5fd" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Notification Svc</text>
+        <text x="585" y="177" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Just executes</text>
+        <text x="585" y="191" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">commands</text>
+        <line x1="425" y1="75" x2="570" y2="140" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#or4)"/>
+        <defs><marker id="or4" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#3b82f6"/></marker></defs>
+        <text x="524" y="98" fill="#3b82f6" font-family="JetBrains Mono" font-size="8">4. SendNotification</text>
+      </svg>
+    </div>
+
+    <table class="compare-table">
+      <tr><th>Aspect</th><th>Choreography</th><th>Orchestration</th></tr>
+      <tr><td>Control</td><td>Decentralized (events)</td><td>Centralized (orchestrator)</td></tr>
+      <tr><td>Coupling</td><td><span class="tag-yes">Loose</span></td><td><span class="tag-med">Moderate</span></td></tr>
+      <tr><td>Visibility</td><td><span class="tag-no">Hard to track</span></td><td><span class="tag-yes">Easy to visualize</span></td></tr>
+      <tr><td>Debugging</td><td><span class="tag-no">Difficult</span></td><td><span class="tag-yes">Centralized logs</span></td></tr>
+      <tr><td>Simple flows</td><td><span class="tag-yes">Better</span></td><td>Overkill</td></tr>
+      <tr><td>Complex flows</td><td>Gets messy</td><td><span class="tag-yes">Better</span></td></tr>
+      <tr><td>Tools</td><td>Kafka, RabbitMQ</td><td>Temporal, AWS Step Functions</td></tr>
+    </table>
+  </div>
+
+  <!-- Compensation -->
+  <div class="section" id="compensation">
+    <div class="section-label">Compensating Transactions</div>
+    <h2 class="section-title">Failure হলে কীভাবে Rollback করবে?</h2>
+    <p>Traditional database rollback Saga তে কাজ করে না। কারণ প্রতিটা step আলাদা service এ committed হয়ে গেছে। তাই প্রতিটা step এর জন্য একটা <strong>compensating transaction</strong> define করতে হয়।</p>
+
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="step-badge step-ok">T1</div>
+        <div class="step-info">
+          <h4>Order Service: Order Create করো</h4>
+          <p>Compensation: <span style="color:var(--yellow)">Order Cancel করো (order status = CANCELLED)</span></p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-badge step-ok">T2</div>
+        <div class="step-info">
+          <h4>Payment Service: Payment Charge করো</h4>
+          <p>Compensation: <span style="color:var(--yellow)">Refund করো (full amount return)</span></p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-badge step-fail">T3</div>
+        <div class="step-info">
+          <h4>Inventory Service: Stock Reserve করতে গিয়ে FAIL! ❌</h4>
+          <p>Stock নেই! এখন backward compensation চলবে…</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-badge step-comp">C2</div>
+        <div class="step-info">
+          <h4>Payment Service: Refund চালাও</h4>
+          <p>Payment reversed। Customer কে money ফেরত। <span style="color:var(--green)">Done ✓</span></p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-badge step-comp">C1</div>
+        <div class="step-info">
+          <h4>Order Service: Order Cancel করো</h4>
+          <p>Order status = CANCELLED। <span style="color:var(--green)">Done ✓</span> System eventually consistent।</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box important">
+      <div class="box-label">⚠️ Idempotency — Critical Requirement</div>
+      Compensating transactions <strong>idempotent</strong> হতে হবে। মানে একই operation বারবার চালালেও same result। Network failure তে retry করলে double refund হওয়া চলবে না। Unique transaction ID ব্যবহার করো।
+    </div>
+  </div>
+
+  <!-- Code -->
+  <div class="section" id="code">
+    <div class="section-label">Code Examples</div>
+    <h2 class="section-title">Practical Code</h2>
+
+    <h3 class="sub-title">Python: Orchestration-based Saga State Machine</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Python</span><span class="code-file">order_saga_orchestrator.py</span></div>
+      <pre><span class="kw">from</span> enum <span class="kw">import</span> Enum
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass, field
+<span class="kw">from</span> typing <span class="kw">import</span> List
+<span class="kw">import</span> uuid
+
+<span class="kw">class</span> <span class="fn">SagaState</span>(Enum):
+    STARTED = <span class="str">"started"</span>
+    ORDER_CREATED = <span class="str">"order_created"</span>
+    PAYMENT_CHARGED = <span class="str">"payment_charged"</span>
+    INVENTORY_RESERVED = <span class="str">"inventory_reserved"</span>
+    COMPLETED = <span class="str">"completed"</span>
+    <span class="cm"># Compensating states</span>
+    COMPENSATING = <span class="str">"compensating"</span>
+    COMPENSATED = <span class="str">"compensated"</span>
+    FAILED = <span class="str">"failed"</span>
+
+<span class="fn">@dataclass</span>
+<span class="kw">class</span> <span class="fn">OrderSaga</span>:
+    saga_id: <span class="var">str</span> = field(default_factory=<span class="kw">lambda</span>: <span class="fn">str</span>(uuid.<span class="fn">uuid4</span>()))
+    state: SagaState = SagaState.STARTED
+    order_id: <span class="var">str</span> = <span class="kw">None</span>
+    payment_id: <span class="var">str</span> = <span class="kw">None</span>
+    inventory_reserved: <span class="var">bool</span> = <span class="kw">False</span>
+    compensations_done: List[<span class="var">str</span>] = field(default_factory=<span class="var">list</span>)
+
+<span class="kw">class</span> <span class="fn">OrderSagaOrchestrator</span>:
+    <span class="str">"""Central orchestrator — entire saga flow এবং compensations manage করে"""</span>
+
+    <span class="kw">def</span> <span class="fn">execute</span>(self, user_id: <span class="var">str</span>, product_id: <span class="var">str</span>, amount: <span class="var">float</span>) -> <span class="var">dict</span>:
+        saga = <span class="fn">OrderSaga</span>()
+        <span class="fn">print</span>(<span class="str">f"\n🚀 Starting Saga: {saga.saga_id}"</span>)
+
+        <span class="cm"># Step 1: Create Order</span>
+        <span class="kw">try</span>:
+            saga.order_id = self.<span class="fn">_create_order</span>(user_id, product_id, amount)
+            saga.state = SagaState.ORDER_CREATED
+            <span class="fn">print</span>(<span class="str">f"✅ T1: Order created: {saga.order_id}"</span>)
+        <span class="kw">except</span> Exception <span class="kw">as</span> e:
+            saga.state = SagaState.FAILED
+            <span class="kw">return</span> {<span class="str">"status"</span>: <span class="str">"failed"</span>, <span class="str">"reason"</span>: <span class="str">f"Order creation failed: {e}"</span>}
+
+        <span class="cm"># Step 2: Charge Payment</span>
+        <span class="kw">try</span>:
+            saga.payment_id = self.<span class="fn">_charge_payment</span>(user_id, amount)
+            saga.state = SagaState.PAYMENT_CHARGED
+            <span class="fn">print</span>(<span class="str">f"✅ T2: Payment charged: {saga.payment_id}"</span>)
+        <span class="kw">except</span> Exception <span class="kw">as</span> e:
+            <span class="fn">print</span>(<span class="str">f"❌ T2 failed: {e} — Compensating T1..."</span>)
+            self.<span class="fn">_compensate_order</span>(saga.order_id)
+            saga.compensations_done.<span class="fn">append</span>(<span class="str">"order_cancelled"</span>)
+            saga.state = SagaState.COMPENSATED
+            <span class="kw">return</span> {<span class="str">"status"</span>: <span class="str">"failed"</span>, <span class="str">"reason"</span>: <span class="str">"Payment failed"</span>, <span class="str">"compensated"</span>: <span class="kw">True</span>}
+
+        <span class="cm"># Step 3: Reserve Inventory</span>
+        <span class="kw">try</span>:
+            self.<span class="fn">_reserve_inventory</span>(product_id)
+            saga.inventory_reserved = <span class="kw">True</span>
+            saga.state = SagaState.INVENTORY_RESERVED
+            <span class="fn">print</span>(<span class="str">f"✅ T3: Inventory reserved for {product_id}"</span>)
+        <span class="kw">except</span> Exception <span class="kw">as</span> e:
+            <span class="fn">print</span>(<span class="str">f"❌ T3 failed: {e} — Compensating T2, T1..."</span>)
+            self.<span class="fn">_refund_payment</span>(saga.payment_id, amount)     <span class="cm"># C2</span>
+            self.<span class="fn">_compensate_order</span>(saga.order_id)             <span class="cm"># C1</span>
+            saga.compensations_done.<span class="fn">extend</span>([<span class="str">"payment_refunded"</span>, <span class="str">"order_cancelled"</span>])
+            saga.state = SagaState.COMPENSATED
+            <span class="kw">return</span> {<span class="str">"status"</span>: <span class="str">"failed"</span>, <span class="str">"reason"</span>: <span class="str">"Out of stock"</span>,
+                    <span class="str">"compensated"</span>: <span class="kw">True</span>, <span class="str">"refunded"</span>: amount}
+
+        saga.state = SagaState.COMPLETED
+        <span class="fn">print</span>(<span class="str">f"🎉 Saga COMPLETED: order={saga.order_id}"</span>)
+        <span class="kw">return</span> {<span class="str">"status"</span>: <span class="str">"success"</span>, <span class="str">"order_id"</span>: saga.order_id}
+
+    <span class="kw">def</span> <span class="fn">_create_order</span>(self, user_id, product_id, amount) -> <span class="var">str</span>:
+        <span class="kw">return</span> <span class="str">f"order_{uuid.uuid4().hex[:8]}"</span>
+
+    <span class="kw">def</span> <span class="fn">_charge_payment</span>(self, user_id, amount) -> <span class="var">str</span>:
+        <span class="kw">if</span> amount > <span class="num">10000</span>: <span class="kw">raise</span> <span class="fn">Exception</span>(<span class="str">"Insufficient funds"</span>)
+        <span class="kw">return</span> <span class="str">f"pay_{uuid.uuid4().hex[:8]}"</span>
+
+    <span class="kw">def</span> <span class="fn">_reserve_inventory</span>(self, product_id):
+        <span class="kw">if</span> product_id == <span class="str">"OUT_OF_STOCK"</span>: <span class="kw">raise</span> <span class="fn">Exception</span>(<span class="str">"No stock!"</span>)
+
+    <span class="kw">def</span> <span class="fn">_compensate_order</span>(self, order_id):
+        <span class="fn">print</span>(<span class="str">f"  ↩️ C1: Order {order_id} cancelled"</span>)
+
+    <span class="kw">def</span> <span class="fn">_refund_payment</span>(self, payment_id, amount):
+        <span class="fn">print</span>(<span class="str">f"  ↩️ C2: Payment {payment_id} refunded ৳{amount}"</span>)
+
+<span class="cm"># Test</span>
+orchestrator = <span class="fn">OrderSagaOrchestrator</span>()
+<span class="fn">print</span>(<span class="str">"=== Happy Path ==="</span>)
+orchestrator.<span class="fn">execute</span>(<span class="str">"user1"</span>, <span class="str">"product1"</span>, <span class="num">500</span>)
+<span class="fn">print</span>(<span class="str">"\n=== Out of Stock ==="</span>)
+orchestrator.<span class="fn">execute</span>(<span class="str">"user2"</span>, <span class="str">"OUT_OF_STOCK"</span>, <span class="num">500</span>)</pre>
+    </div>
+
+    <h3 class="sub-title">Node.js: Choreography with Event Bus</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Node.js</span><span class="code-file">choreography_saga.js</span></div>
+      <pre><span class="kw">const</span> EventEmitter = <span class="fn">require</span>(<span class="str">'events'</span>);
+<span class="kw">const</span> bus = <span class="kw">new</span> <span class="fn">EventEmitter</span>(); <span class="cm">// In production: Kafka/RabbitMQ</span>
+
+<span class="cm">// ===== ORDER SERVICE =====</span>
+bus.<span class="fn">on</span>(<span class="str">'order.start'</span>, ({ orderId, userId, productId, amount }) => {
+    console.<span class="fn">log</span>(<span class="str">`📦 OrderService: Creating order ${orderId}`</span>);
+    <span class="cm">// Save to DB, then publish next event</span>
+    bus.<span class="fn">emit</span>(<span class="str">'order.created'</span>, { orderId, userId, productId, amount });
+});
+
+bus.<span class="fn">on</span>(<span class="str">'order.cancel'</span>, ({ orderId, reason }) => {
+    console.<span class="fn">log</span>(<span class="str">`↩️  OrderService: Cancelling order ${orderId} — ${reason}`</span>);
+});
+
+<span class="cm">// ===== PAYMENT SERVICE =====</span>
+bus.<span class="fn">on</span>(<span class="str">'order.created'</span>, ({ orderId, userId, amount }) => {
+    console.<span class="fn">log</span>(<span class="str">`💳 PaymentService: Charging ৳${amount} for ${orderId}`</span>);
+    <span class="kw">try</span> {
+        <span class="kw">if</span> (amount > <span class="num">10000</span>) <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">'Insufficient funds'</span>);
+        <span class="kw">const</span> paymentId = <span class="str">`pay_${Date.now()}`</span>;
+        bus.<span class="fn">emit</span>(<span class="str">'payment.charged'</span>, { orderId, paymentId, amount });
+    } <span class="kw">catch</span> (err) {
+        <span class="cm">// Compensation: cancel the order</span>
+        bus.<span class="fn">emit</span>(<span class="str">'order.cancel'</span>, { orderId, reason: err.message });
+    }
+});
+
+bus.<span class="fn">on</span>(<span class="str">'payment.refund'</span>, ({ paymentId, amount }) => {
+    console.<span class="fn">log</span>(<span class="str">`↩️  PaymentService: Refunding ৳${amount} for ${paymentId}`</span>);
+});
+
+<span class="cm">// ===== INVENTORY SERVICE =====</span>
+bus.<span class="fn">on</span>(<span class="str">'payment.charged'</span>, ({ orderId, paymentId, amount }) => {
+    console.<span class="fn">log</span>(<span class="str">`📦 InventoryService: Reserving stock for ${orderId}`</span>);
+    <span class="kw">try</span> {
+        <span class="kw">if</span> (orderId.<span class="fn">includes</span>(<span class="str">'nostock'</span>)) <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">'Out of stock'</span>);
+        bus.<span class="fn">emit</span>(<span class="str">'inventory.reserved'</span>, { orderId });
+    } <span class="kw">catch</span> (err) {
+        <span class="cm">// Compensations: refund + cancel order</span>
+        bus.<span class="fn">emit</span>(<span class="str">'payment.refund'</span>, { paymentId, amount });
+        bus.<span class="fn">emit</span>(<span class="str">'order.cancel'</span>, { orderId, reason: err.message });
+    }
+});
+
+bus.<span class="fn">on</span>(<span class="str">'inventory.reserved'</span>, ({ orderId }) => {
+    console.<span class="fn">log</span>(<span class="str">`🎉 SAGA COMPLETE: Order ${orderId} fulfilled!`</span>);
+});
+
+<span class="cm">// Test happy path</span>
+bus.<span class="fn">emit</span>(<span class="str">'order.start'</span>, { orderId: <span class="str">'ord-001'</span>, userId: <span class="str">'u1'</span>, productId: <span class="str">'p1'</span>, amount: <span class="num">500</span> });
+<span class="cm">// Test failure path</span>
+bus.<span class="fn">emit</span>(<span class="str">'order.start'</span>, { orderId: <span class="str">'nostock-002'</span>, userId: <span class="str">'u2'</span>, productId: <span class="str">'p2'</span>, amount: <span class="num">200</span> });</pre>
+    </div>
+  </div>
+
+  <!-- Real World -->
+  <div class="section" id="realworld">
+    <div class="section-label">Real World</div>
+    <h2 class="section-title">Real World Use Cases &amp; Tools</h2>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">🛒 Amazon / Flipkart</div>
+        <p>Order placement saga: order → payment → inventory → shipping → notification। প্রতিটা step আলাদা service। Failure তে automatic compensation।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🚗 Uber</div>
+        <p>Ride request saga: request → driver matching → payment pre-auth → GPS tracking। Cancel করলে compensation — pre-auth release।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">✈️ Booking.com</div>
+        <p>Travel booking: flight + hotel + car rental। একটা fail করলে অন্যগুলো compensate। Complex multi-service saga।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">💳 Fintech Apps</div>
+        <p>Money transfer saga: debit source → credit destination → notify both। Failure তে reverse debit। Idempotency critical।</p>
+      </div>
+    </div>
+
+    <table class="compare-table">
+      <tr><th>Tool</th><th>Type</th><th>Best For</th></tr>
+      <tr><td>AWS Step Functions</td><td>Orchestration</td><td>AWS ecosystem saga orchestration</td></tr>
+      <tr><td>Temporal.io</td><td>Orchestration</td><td>Complex durable workflows, code-first</td></tr>
+      <tr><td>Apache Kafka</td><td>Choreography</td><td>Event-driven saga, high throughput</td></tr>
+      <tr><td>Axon Framework</td><td>Both</td><td>Java/Spring CQRS + Saga</td></tr>
+      <tr><td>Conductor (Netflix)</td><td>Orchestration</td><td>Microservices workflow engine</td></tr>
+    </table>
+  </div>
+
+  <!-- Interview -->
+  <div class="section" id="interview">
+    <div class="section-label">Interview Preparation</div>
+    <h2 class="section-title">Common Interview Questions</h2>
+    <div class="info-box concept">
+      <div class="box-label">🎯 Q1: 2PC এবং Saga এর পার্থক্য কী?</div>
+      <strong>2PC:</strong> Distributed ACID transaction। Coordinator সব services lock করে। Strong consistency কিন্তু blocking, failure prone।<br>
+      <strong>Saga:</strong> Sequence of local transactions + compensations। Eventual consistency। Non-blocking। Microservices এ suitable।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">🎯 Q2: Choreography vs Orchestration কখন কোনটা?</div>
+      <strong>Choreography:</strong> Simple flows, ৩-৪টা steps, loose coupling priority। Event-driven system এ natural।<br>
+      <strong>Orchestration:</strong> Complex flows, many steps, visibility দরকার, compensation logic complex। AWS Step Functions, Temporal।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">🎯 Q3: Saga তে Idempotency কেন critical?</div>
+      Network failure তে messages retry হয়। একই compensation দুইবার execute হতে পারে। Payment refund দুইবার হলে double refund। প্রতিটা operation এ unique ID track করো — already processed হলে skip করো।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">🎯 Q4: Saga এর limitations কী?</div>
+      <strong>1)</strong> No immediate consistency — eventual। <strong>2)</strong> Compensating transactions complex লেখা।<strong>3)</strong> Partial state visible to users (e.g., order created কিন্তু payment pending)। <strong>4)</strong> Debugging difficult in choreography। এগুলো trade-offs।
+    </div>
+  </div>
+
+  <!-- MCQ -->
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🔄</span>
+      <h2>MCQ Test</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">Saga Pattern কেন দরকার হয়?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Database query fast করতে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> UI design করতে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Multiple microservices এ spanning transactions manage করতে — 2PC distributed system এ practical না</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> API rate limit করতে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Single database এ ACID আছে। কিন্তু microservices এ আলাদা databases — distributed transaction দরকার। 2PC blocking, failure prone। Saga: local transactions + compensations = eventual consistency।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">Compensating Transaction কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Saga step fail করলে পূর্ববর্তী steps এর effects undo করার transaction</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Database backup নেওয়া</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> New user create করা</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Cache clear করা</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Payment charge হয়েছে কিন্তু inventory নেই? Compensating transaction: refund করো। Order created কিন্তু payment failed? Cancel order করো। Compensations backward চলে — latest first।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">Choreography-based Saga তে কে flow control করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Central orchestrator</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Database</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> API Gateway</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> কেউ না — services নিজেরাই events publish করে এবং others listen করে react করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Choreography decentralized। Order service event publish করে, Payment service শুনে, আবার event publish করে, Inventory service শুনে — কোনো central coordinator নেই। Loose coupling।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">Orchestration-based Saga এর সুবিধা কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> No single point of failure</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Flow centralized — visibility ভালো, debugging সহজ, complex compensation manage করা যায়</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> সবচেয়ে loose coupling</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> No message queue দরকার</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Orchestration এ Saga Orchestrator পুরো flow জানে। Dashboard এ দেখা যায় কোন step এ আছে। Complex compensations orchestrator manage করে। AWS Step Functions, Temporal এই approach use করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">Saga কোন consistency model follow করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Strong consistency (ACID)</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Linearizability</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Eventual consistency — সব steps complete হলে system consistent হয়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> No consistency</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Saga Eventual Consistency use করে। মাঝপথে intermediate state দেখা যেতে পারে (order created কিন্তু payment pending)। এটা accepted trade-off। All steps complete হলে system consistent।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">Compensating Transaction Idempotent হতে হবে কেন?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Fast হতে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Cache করতে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Security বাড়াতে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Network failure তে retry করলে same compensation দুইবার execute হতে পারে — double refund রোধ করতে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Message retry হলে compensation দুইবার চলতে পারে। Refund দুইবার → double money। Idempotency: unique transaction ID check করো — already refunded? Skip। এটাই Saga এর critical requirement।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">2PC (Two-Phase Commit) distributed system এ কেন problematic?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Coordinator fail করলে সব services indefinitely locked থাকে — availability নষ্ট হয়</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> 2PC শুধু SQL database এ কাজ করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> 2PC শুধু monolith এ কাজ করে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> 2PC কোনো consistency দেয় না</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — 2PC: Phase 1 = coordinator সব participants কে prepare বলে (lock)। Phase 2 = commit/rollback। Coordinator crash করলে participants locked — কেউ আগাতে পারে না। Microservices এ high latency, blocking — impractical।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">Temporal.io কী কাজ করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Database migration tool</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Durable workflow orchestration — Saga orchestration code হিসেবে লেখা যায়, automatic state persistence</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Load balancer</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Rate limiter</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Temporal durable workflow engine। Saga টা regular code হিসেবে লেখো — Temporal automatically state persist করে। Crash হলেও resume করে যেখানে ছিল। Uber, Netflix, Hashicorp use করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">একটা ride-sharing app এ user ride cancel করলে কোন compensation হবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> শুধু notification পাঠানো</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Driver কে নতুন ride দেওয়া</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Pre-authorized payment release করা + driver কে notify করা + matching undo করা</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> User account block করা</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Ride saga: match driver → pre-auth payment → start ride। Cancel compensation: release payment pre-auth (C1), notify driver free (C2), matching undo (C3)। Backward compensation in order।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">Complex order management system (১০+ steps) এর জন্য কোনটা better?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Choreography — সবসময় better</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> 2PC — strong consistency দরকার</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> No saga — monolith use করো</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Orchestration — complex flow, visibility, compensation management সহজ। Temporal বা AWS Step Functions use করো</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — ১০+ steps, complex compensation logic — Orchestration best। Choreography তে event spaghetti হয়ে যাবে কে কোথায় listen করছে বোঝা মুশকিল। Orchestration এ central orchestrator পুরো flow জানে।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT &amp; CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <!-- Assignment -->
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ৩-৪ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <ul class="task-list">
+      <li><strong>Saga Design:</strong> একটা travel booking app design করো (flight + hotel + car)। প্রতিটা booking step এর জন্য transaction এবং compensating transaction লেখো। কোন approach নেবে — Choreography নাকি Orchestration? কেন?</li>
+      <li><strong>Failure Scenarios:</strong> তোমার travel booking saga তে ৩টা failure scenario নিয়ে কাজ করো। প্রতিটায় কোন compensations চলবে এবং কোন order এ — সেটা step-by-step লেখো।</li>
+      <li><strong>Code Analysis:</strong> দেওয়া Python Orchestrator code পড়ো। যদি _refund_payment() নিজেই fail করে তাহলে কী হবে? এই problem টা কীভাবে handle করবে?</li>
+      <li><strong>Idempotency Implementation:</strong> দেওয়া Node.js choreography code তে payment refund handler টা idempotent করো — same paymentId তে দুইবার call হলে দ্বিতীয়বার skip করবে।</li>
+      <li><strong>Tool Comparison:</strong> AWS Step Functions এবং Temporal.io — দুটোর documentation পড়ো। কোনটা কোন use case এ better? ৫-৭ লাইনে comparison লেখো।</li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>Travel booking Saga design document</li>
+        <li>Failure scenarios + compensation flows</li>
+        <li>Analysis of nested failure handling</li>
+        <li>Idempotent payment refund implementation</li>
+        <li>AWS Step Functions vs Temporal comparison</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project -->
+  <div class="project-section" id="project">
+    <div class="project-header">
+      <span style="font-size:24px">🚀</span>
+      <h2>Hands-On Project Task</h2>
+    </div>
+    <div class="project-body">
+      <h3 style="font-family:'Fraunces',serif;font-size:18px;margin-bottom:16px;color:#f1f5f9;">Complete Order Saga — Python FastAPI</h3>
+      <p style="font-size:14px;color:#94a3b8;margin-bottom:20px;">৩টা FastAPI service এবং একটা Orchestrator দিয়ে complete Saga implement করো।</p>
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-circle">1</div>
+          <div class="step-content">
+            <h4>৩টা Mock Service বানাও</h4>
+            <p>Order Service (:8000), Payment Service (:8001), Inventory Service (:8002) — প্রতিটায় success/fail endpoints।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">2</div>
+          <div class="step-content">
+            <h4>Saga Orchestrator লেখো</h4>
+            <p>Python class যেটা HTTP calls করে steps execute করে এবং failure তে compensations চালায়।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">3</div>
+          <div class="step-content">
+            <h4>State Tracking যোগ করো</h4>
+            <p>Saga state (STARTED → STEP1 → STEP2 → COMPLETED / COMPENSATED) SQLite বা in-memory dict এ track করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">4</div>
+          <div class="step-content">
+            <h4>Happy Path Test করো</h4>
+            <p>সব services সফলভাবে কাজ করলে COMPLETED state দেখো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">5</div>
+          <div class="step-content">
+            <h4>Failure Test করো</h4>
+            <p>Inventory service fail করাও। Automatic compensation দেখো — payment refund, order cancel।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">6</div>
+          <div class="step-content">
+            <h4>Bonus: Idempotency</h4>
+            <p>Same saga_id দুইবার submit করো — দ্বিতীয়বার same result return করে কিনা দেখো।</p>
+          </div>
+        </div>
+      </div>
+      <div class="info-box tip" style="margin-top:16px">
+        <div class="box-label">🎯 এটা করলে যা শিখবে</div>
+        Saga theory নয় — practically দেখবে distributed transaction কীভাবে works করে, compensation কীভাবে চলে, এবং partial failure কীভাবে handle হয়। এটাই senior engineer level system design।
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-label">Lesson Summary</div>
+    <h2 class="section-title">আজকে যা শিখলাম</h2>
+    <table class="compare-table">
+      <tr><th>Concept</th><th>এক লাইনে</th></tr>
+      <tr><td>Saga Pattern</td><td>Local transactions + compensations = distributed transaction</td></tr>
+      <tr><td>Compensating TX</td><td>Failed step এর আগের steps undo করে</td></tr>
+      <tr><td>Choreography</td><td>Events দিয়ে decentralized flow — loose coupling</td></tr>
+      <tr><td>Orchestration</td><td>Central orchestrator — visibility ভালো, complex flow</td></tr>
+      <tr><td>Eventual Consistency</td><td>ACID না — সব steps complete হলে consistent</td></tr>
+      <tr><td>Idempotency</td><td>Same operation দুইবার — same result, no double effect</td></tr>
+      <tr><td>Temporal / Step Fn</td><td>Production saga orchestration tools</td></tr>
+    </table>
+  </div>
+
+  <!-- Phase Completion Banner -->
+  <div class="completion-banner">
+    <h2>🎉 Phase 3 সম্পন্ন!</h2>
+    <p>Distributed Systems এর সব ৬টা Topic শেষ করেছো। এটা একটা বড় অর্জন!</p>
+    <div class="phase-chips">
+      <span class="phase-chip">✅ Microservices</span>
+      <span class="phase-chip">✅ Distributed Consensus</span>
+      <span class="phase-chip">✅ Circuit Breaker</span>
+      <span class="phase-chip">✅ Rate Limiting</span>
+      <span class="phase-chip">✅ Service Discovery</span>
+      <span class="phase-chip">✅ Saga Pattern</span>
+    </div>
+    <p style="margin-top:16px;font-size:13px;color:var(--muted2);">পরবর্তী Phase এ যাও এবং System Design এর আরো গভীরে ডুব দাও!</p>
+  </div>
+
+</div>
+</main>
+<script>
+window.addEventListener('scroll',()=>{const d=document.documentElement;const s=d.scrollTop||document.body.scrollTop;const h=d.scrollHeight-d.clientHeight;document.getElementById('progressFill').style.width=((s/h)*100)+'%';});
+let answered={};
+document.querySelectorAll('.option').forEach(opt=>{opt.addEventListener('click',function(){const block=this.closest('.question-block');const qId=Array.from(document.querySelectorAll('.question-block')).indexOf(block);if(answered[qId])return;answered[qId]=this.dataset.val;block.querySelectorAll('.option').forEach(o=>{o.style.pointerEvents='none';if(o.dataset.val===block.dataset.correct)o.classList.add('correct');else if(o.dataset.val===this.dataset.val)o.classList.add('wrong');});block.querySelector('.explanation').classList.add('visible');});});
+function submitMCQ(){let correct=0;const blocks=document.querySelectorAll('.question-block');blocks.forEach((b,i)=>{if(answered[i]===b.dataset.correct)correct++;});const un=blocks.length-Object.keys(answered).length;if(un>0){alert(`এখনও ${un}টা প্রশ্নের উত্তর দাওনি!`);return;}document.getElementById('scoreDisplay').textContent=correct;const banner=document.getElementById('resultBanner');banner.classList.add('visible');if(correct>=7){banner.classList.add('pass');banner.textContent=`🎉 অসাধারণ! ${correct}/10 সঠিক। Phase 3 Complete! 🏆`;}else{banner.classList.add('fail');banner.textContent=`📖 ${correct}/10 সঠিক। আরেকবার পড়ো। ৭/১০ পেলেই pass।`;}}
+</script>
+</body>
+</html>

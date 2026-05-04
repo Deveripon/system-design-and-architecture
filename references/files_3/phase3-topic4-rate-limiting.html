@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 3 · Topic 4 — Rate Limiting & Throttling</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05080f;--surface:#090e1a;--card:#0c1220;--border:#162035;--border2:#1e2d4a;--accent:#3b82f6;--accent-glow:rgba(59,130,246,0.15);--green:#10b981;--green-glow:rgba(16,185,129,0.12);--orange:#f97316;--red:#ef4444;--yellow:#eab308;--purple:#8b5cf6;--teal:#14b8a6;--text:#e2e8f0;--muted:#64748b;--muted2:#94a3b8;}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans Bengali',sans-serif;line-height:1.7;font-size:15px;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.4;}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100;}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.sidebar-logo .phase-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--teal);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:4px;}
+.sidebar-logo .course-title{font-family:'Fraunces',serif;font-size:16px;font-weight:700;line-height:1.3;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-section-label{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);padding:0 8px;margin-bottom:6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:4px;font-size:13px;color:var(--muted2);cursor:pointer;transition:all 0.15s;text-decoration:none;}
+.nav-item:hover{background:var(--card);color:var(--text);}
+.nav-item.active{background:rgba(20,184,166,0.1);color:var(--teal);}
+.nav-item .nav-icon{font-size:14px;flex-shrink:0;}
+.nav-item .nav-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto;}
+.progress-bar{position:fixed;top:0;left:240px;right:0;height:2px;background:var(--border);z-index:200;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--accent));width:0%;transition:width 0.1s;}
+.main{margin-left:240px;min-height:100vh;}
+.content{max-width:780px;margin:0 auto;padding:48px 40px 120px;}
+.topic-header{margin-bottom:48px;}
+.breadcrumb{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.breadcrumb span{color:var(--teal);}
+.topic-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--teal);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:block;}
+h1.topic-title{font-family:'Fraunces',serif;font-size:clamp(32px,5vw,48px);font-weight:900;line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,#fff 30%,#99f6e4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.topic-meta{display:flex;gap:16px;flex-wrap:wrap;}
+.meta-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 12px;border-radius:2px;border:1px solid;}
+.meta-chip.time{border-color:rgba(59,130,246,0.3);color:var(--accent);background:var(--accent-glow);}
+.meta-chip.level{border-color:rgba(16,185,129,0.3);color:var(--green);background:var(--green-glow);}
+.meta-chip.type{border-color:rgba(20,184,166,0.3);color:var(--teal);background:rgba(20,184,166,0.08);}
+.section{margin-bottom:48px;scroll-margin-top:24px;}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:3px;color:var(--teal);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+h2.section-title{font-family:'Fraunces',serif;font-size:24px;font-weight:700;margin-bottom:16px;color:#f1f5f9;}
+h3.sub-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;margin:24px 0 10px;color:#cbd5e1;}
+p{margin-bottom:14px;color:#cbd5e1;}
+.info-box{border-radius:6px;padding:18px 20px;margin:20px 0;border-left:3px solid;font-size:14px;}
+.info-box.concept{background:rgba(59,130,246,0.06);border-color:var(--accent);}
+.info-box.warning{background:rgba(249,115,22,0.06);border-color:var(--orange);}
+.info-box.tip{background:rgba(16,185,129,0.06);border-color:var(--green);}
+.info-box.important{background:rgba(234,179,8,0.06);border-color:var(--yellow);}
+.info-box .box-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:700;}
+.info-box.concept .box-label{color:var(--accent);}
+.info-box.warning .box-label{color:var(--orange);}
+.info-box.tip .box-label{color:var(--green);}
+.info-box.important .box-label{color:var(--yellow);}
+.compare-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;}
+.compare-table th{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1px;padding:12px 16px;text-align:left;background:var(--card);border-bottom:2px solid var(--border2);color:var(--muted2);}
+.compare-table td{padding:11px 16px;border-bottom:1px solid var(--border);color:#94a3b8;vertical-align:top;line-height:1.6;}
+.compare-table tr:hover td{background:rgba(255,255,255,0.02);}
+.compare-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);}
+.tag-yes{color:var(--green);font-weight:600;}.tag-no{color:var(--red);}.tag-med{color:var(--yellow);}
+.diagram{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:30px 20px;margin:24px 0;overflow-x:auto;}
+.diagram svg{max-width:100%;}
+.code-block{background:#030608;border:1px solid var(--border2);border-radius:6px;margin:20px 0;overflow:hidden;}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--border);}
+.code-lang{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--teal);text-transform:uppercase;letter-spacing:1px;}
+.code-file{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);}
+pre{padding:20px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.8;color:#e2e8f0;}
+.kw{color:#93c5fd;}.fn{color:#6ee7b7;}.str{color:#fcd34d;}.cm{color:#475569;font-style:italic;}.num{color:#f9a8d4;}.var{color:#e2e8f0;}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0;}
+.scenario-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:18px;}
+.scenario-card .s-title{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;}
+.scenario-card p{font-size:13px;color:var(--muted2);margin:0;}
+.algo-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0;}
+.algo-card{background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:20px;}
+.algo-card .algo-name{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--teal);margin-bottom:8px;text-transform:uppercase;}
+.algo-card .algo-desc{font-size:13px;color:var(--muted2);margin-bottom:10px;line-height:1.6;}
+.algo-card .algo-pros{font-size:12px;color:var(--green);margin-bottom:4px;}
+.algo-card .algo-cons{font-size:12px;color:var(--red);}
+.mcq-section{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:28px;margin:30px 0;}
+.mcq-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.mcq-icon{font-size:24px;}
+.mcq-header h2{font-family:'Fraunces',serif;font-size:20px;font-weight:700;}
+.mcq-score{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);}
+.mcq-score span{color:var(--teal);font-size:18px;font-weight:700;}
+.question-block{margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--border);}
+.question-block:last-of-type{border-bottom:none;margin-bottom:0;}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.q-text{font-size:15px;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.5;font-family:'Noto Sans Bengali',sans-serif;}
+.options{display:flex;flex-direction:column;gap:8px;}
+.option{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:4px;border:1px solid var(--border);cursor:pointer;transition:all 0.15s;font-size:14px;color:var(--muted2);font-family:'Noto Sans Bengali',sans-serif;}
+.option:hover{border-color:var(--teal);color:var(--text);background:rgba(20,184,166,0.06);}
+.option.correct{border-color:var(--green);background:var(--green-glow);color:#6ee7b7;}
+.option.wrong{border-color:var(--red);background:rgba(239,68,68,0.08);color:#fca5a5;}
+.option-key{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--border2);padding:2px 7px;border-radius:2px;flex-shrink:0;margin-top:1px;}
+.explanation{display:none;margin-top:12px;padding:12px 14px;background:rgba(16,185,129,0.06);border-left:2px solid var(--green);border-radius:0 4px 4px 0;font-size:13px;color:#94a3b8;line-height:1.7;font-family:'Noto Sans Bengali',sans-serif;}
+.explanation.visible{display:block;}
+.explanation strong{color:var(--green);}
+.mcq-submit{display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:12px 24px;background:var(--teal);color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;border:none;border-radius:4px;cursor:pointer;letter-spacing:1px;transition:all 0.15s;}
+.mcq-submit:hover{background:#0d9488;transform:translateY(-1px);}
+.result-banner{display:none;margin-top:20px;padding:16px 20px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;}
+.result-banner.visible{display:block;}
+.result-banner.pass{background:var(--green-glow);border:1px solid var(--green);color:var(--green);}
+.result-banner.fail{background:rgba(249,115,22,0.08);border:1px solid var(--orange);color:var(--orange);}
+.assignment-section{background:linear-gradient(135deg,rgba(20,184,166,0.04),rgba(59,130,246,0.04));border:1px solid rgba(20,184,166,0.2);border-radius:8px;padding:28px;margin:30px 0;}
+.assignment-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.assignment-icon{font-size:28px;}
+.assignment-header h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700;}
+.assignment-meta{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.a-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 10px;border-radius:2px;}
+.a-chip.time{background:rgba(234,179,8,0.1);color:var(--yellow);border:1px solid rgba(234,179,8,0.2);}
+.a-chip.level{background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.2);}
+.task-list{counter-reset:tasks;list-style:none;margin-bottom:20px;}
+.task-list li{counter-increment:tasks;padding:14px 14px 14px 50px;position:relative;border-bottom:1px solid var(--border);font-size:14px;color:var(--muted2);line-height:1.7;font-family:'Noto Sans Bengali',sans-serif;}
+.task-list li:last-child{border-bottom:none;}
+.task-list li::before{content:counter(tasks);position:absolute;left:14px;top:14px;width:24px;height:24px;background:rgba(20,184,166,0.1);border:1px solid rgba(20,184,166,0.3);border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--teal);display:flex;align-items:center;justify-content:center;font-weight:700;}
+.task-list li strong{color:var(--text);}
+.deliverable-box{background:var(--card);border:1px solid var(--border2);border-radius:6px;padding:16px 18px;margin-top:16px;}
+.deliverable-box .d-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--teal);margin-bottom:10px;}
+.deliverable-box ul{list-style:none;padding:0;}
+.deliverable-box ul li{font-size:13px;color:var(--muted2);padding:4px 0 4px 18px;position:relative;font-family:'Noto Sans Bengali',sans-serif;}
+.deliverable-box ul li::before{content:'◆';position:absolute;left:0;font-size:8px;color:var(--teal);top:6px;}
+.project-section{background:var(--card);border:1px solid var(--border2);border-radius:8px;overflow:hidden;margin:30px 0;}
+.project-header{background:linear-gradient(90deg,rgba(16,185,129,0.1),transparent);padding:18px 24px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:12px;}
+.project-header h2{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--green);}
+.project-body{padding:24px;}
+.step-flow{display:flex;flex-direction:column;gap:0;margin:16px 0;}
+.step-item{display:flex;gap:16px;padding-bottom:24px;position:relative;}
+.step-item:last-child{padding-bottom:0;}
+.step-item::before{content:'';position:absolute;left:15px;top:32px;bottom:0;width:1px;background:var(--border2);}
+.step-item:last-child::before{display:none;}
+.step-circle{width:32px;height:32px;border-radius:50%;background:var(--green-glow);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--green);flex-shrink:0;z-index:1;}
+.step-content{flex:1;}
+.step-content h4{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);margin-bottom:4px;}
+.step-content p{font-size:13px;color:var(--muted2);margin:0;}
+.next-cta{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:20px 24px;margin-top:48px;text-decoration:none;color:var(--text);transition:border-color 0.2s;}
+.next-cta:hover{border-color:var(--teal);}
+.next-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;}
+.next-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;}
+.next-arrow{font-size:24px;color:var(--teal);}
+@media(max-width:768px){.sidebar{display:none;}.main{margin-left:0;}.content{padding:24px 16px 80px;}.scenario-grid,.algo-grid{grid-template-columns:1fr;}.progress-bar{left:0;}}
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 03 · Distributed Systems</span>
+    <div class="course-title">System Design<br>Mastery Course</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Phase 3 Topics</div>
+    <a href="#" class="nav-item"><span class="nav-icon">🧩</span><span>Microservices</span><span class="nav-num">01</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🗳️</span><span>Distributed Consensus</span><span class="nav-num">02</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">⚡</span><span>Circuit Breaker</span><span class="nav-num">03</span></a>
+    <a href="#" class="nav-item active"><span class="nav-icon">🚦</span><span>Rate Limiting</span><span class="nav-num">04</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🔍</span><span>Service Discovery</span><span class="nav-num">05</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🔄</span><span>Saga Pattern</span><span class="nav-num">06</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px">
+    <div class="nav-section-label">This Lesson</div>
+    <a href="#concept" class="nav-item"><span class="nav-icon">💡</span><span>Concept</span></a>
+    <a href="#algorithms" class="nav-item"><span class="nav-icon">⚙️</span><span>4 Algorithms</span></a>
+    <a href="#distributed" class="nav-item"><span class="nav-icon">🌐</span><span>Distributed RL</span></a>
+    <a href="#code" class="nav-item"><span class="nav-icon">💻</span><span>Code Examples</span></a>
+    <a href="#realworld" class="nav-item"><span class="nav-icon">🌍</span><span>Real World</span></a>
+    <a href="#interview" class="nav-item"><span class="nav-icon">🎯</span><span>Interview Q&A</span></a>
+    <a href="#mcq" class="nav-item"><span class="nav-icon">✅</span><span>MCQ Test</span></a>
+    <a href="#assignment" class="nav-item"><span class="nav-icon">📝</span><span>Assignment</span></a>
+    <a href="#project" class="nav-item"><span class="nav-icon">🚀</span><span>Project Task</span></a>
+  </div>
+</nav>
+<main class="main">
+<div class="content">
+
+  <div class="topic-header" id="concept">
+    <div class="breadcrumb">Phase 3 — Distributed Systems <span>›</span> Topic 04</div>
+    <span class="topic-num">TOPIC 04 / 06</span>
+    <h1 class="topic-title">Rate Limiting<br>&amp; Throttling</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ ৬০-৯০ মিনিট</span>
+      <span class="meta-chip level">📊 Junior Level</span>
+      <span class="meta-chip type">🚦 Traffic Control</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Why It Matters</div>
+    <h2 class="section-title">Rate Limiting কেন শিখতে হবে?</h2>
+    <p>তোমার API তে একজন user প্রতি second এ ১০,০০০ request পাঠাচ্ছে। হয় DDoS attack, নাহয় তার buggy code এ infinite loop। Server overload — অন্য সব users blocked।</p>
+    <p><strong>Rate Limiting</strong> হলো সমাধান — একটা user বা client কতটা request করতে পারবে সেটা restrict করো। এটা ছাড়া কোনো production API চালানো উচিত না।</p>
+    <div class="info-box concept">
+      <div class="box-label">📌 Rate Limiting vs Throttling</div>
+      <strong>Rate Limiting:</strong> নির্দিষ্ট time window তে max request count। Limit exceed → reject।<br>
+      <strong>Throttling:</strong> Request reject না করে slow করো বা queue করো — more graceful।
+    </div>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">🛡️ Security</div>
+        <p>Brute force attacks রোধ। Login এ ৫ বার fail → block। DDoS mitigation করো।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">💰 Business</div>
+        <p>Free tier: ১০০ req/day। Paid: ১০,০০০ req/day। API monetization এর basis।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">⚖️ Fairness</div>
+        <p>একজন user সব resources নিতে পারবে না। সব users fair share পাবে।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🔧 Stability</div>
+        <p>System overload prevent। Buggy client থেকে server protect। SLA maintain।</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="algorithms">
+    <div class="section-label">Algorithms</div>
+    <h2 class="section-title">৪টা Rate Limiting Algorithm</h2>
+    <div class="algo-grid">
+      <div class="algo-card">
+        <div class="algo-name">🪣 Token Bucket</div>
+        <div class="algo-desc">একটা bucket এ tokens। প্রতি request এ ১টা token consume। Constant rate এ refill। Bucket full হলে tokens overflow হয়।</div>
+        <div class="algo-pros">✅ Burst traffic handle করতে পারে</div>
+        <div class="algo-cons">❌ Implementation কিছুটা complex</div>
+      </div>
+      <div class="algo-card">
+        <div class="algo-name">🚰 Leaky Bucket</div>
+        <div class="algo-desc">Queue এর মতো। Requests constant rate এ "leak" হয়। Queue full হলে reject। Output সবসময় smooth।</div>
+        <div class="algo-pros">✅ Consistent output rate</div>
+        <div class="algo-cons">❌ Burst requests drop হতে পারে</div>
+      </div>
+      <div class="algo-card">
+        <div class="algo-name">🔢 Fixed Window</div>
+        <div class="algo-desc">Fixed time window (১ min) এ count। Window শেষে reset। সবচেয়ে simple algorithm।</div>
+        <div class="algo-pros">✅ সহজ implement করা</div>
+        <div class="algo-cons">❌ Window boundary তে ২x spike possible</div>
+      </div>
+      <div class="algo-card">
+        <div class="algo-name">🪟 Sliding Window</div>
+        <div class="algo-desc">প্রতিটা request এর timestamp রাখো। Window এর বাইরেরগুলো drop। যেকোনো moment এ last N minutes check।</div>
+        <div class="algo-pros">✅ Most accurate, no boundary issue</div>
+        <div class="algo-cons">❌ High memory — প্রতি request store</div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Token Bucket — সবচেয়ে Popular</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 660 180" xmlns="http://www.w3.org/2000/svg">
+        <text x="330" y="18" fill="#94a3b8" font-family="JetBrains Mono" font-size="11" text-anchor="middle">TOKEN BUCKET — How It Works</text>
+        <rect x="10" y="35" width="120" height="50" rx="4" fill="#0c1220" stroke="#14b8a6" stroke-width="1.5"/>
+        <text x="70" y="57" fill="#99f6e4" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">Token Refill</text>
+        <text x="70" y="72" fill="#64748b" font-family="JetBrains Mono" font-size="9" text-anchor="middle">10 tokens/sec</text>
+        <line x1="130" y1="60" x2="165" y2="60" stroke="#14b8a6" stroke-width="1.5" marker-end="url(#t1)"/>
+        <defs><marker id="t1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#14b8a6"/></marker></defs>
+        <rect x="165" y="25" width="150" height="120" rx="6" fill="#0c1220" stroke="#eab308" stroke-width="2"/>
+        <text x="240" y="48" fill="#fcd34d" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">🪣 Bucket</text>
+        <text x="240" y="62" fill="#64748b" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Max capacity: 20</text>
+        <circle cx="200" cy="85" r="9" fill="#14b8a6" opacity="0.9"/><text x="200" y="89" fill="#fff" font-family="JetBrains Mono" font-size="7" text-anchor="middle">T</text>
+        <circle cx="222" cy="85" r="9" fill="#14b8a6" opacity="0.9"/><text x="222" y="89" fill="#fff" font-family="JetBrains Mono" font-size="7" text-anchor="middle">T</text>
+        <circle cx="244" cy="85" r="9" fill="#14b8a6" opacity="0.9"/><text x="244" y="89" fill="#fff" font-family="JetBrains Mono" font-size="7" text-anchor="middle">T</text>
+        <circle cx="266" cy="85" r="9" fill="#14b8a6" opacity="0.4"/><text x="266" y="89" fill="#fff" font-family="JetBrains Mono" font-size="7" text-anchor="middle">T</text>
+        <circle cx="288" cy="85" r="9" fill="#14b8a6" opacity="0.4"/><text x="288" y="89" fill="#fff" font-family="JetBrains Mono" font-size="7" text-anchor="middle">T</text>
+        <text x="240" y="125" fill="#fcd34d" font-family="JetBrains Mono" font-size="9" text-anchor="middle">5/20 tokens left</text>
+        <line x1="315" y1="60" x2="350" y2="60" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#t2)"/>
+        <defs><marker id="t2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#3b82f6"/></marker></defs>
+        <rect x="350" y="35" width="140" height="50" rx="4" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="420" y="57" fill="#93c5fd" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Request arrives</text>
+        <text x="420" y="72" fill="#64748b" font-family="JetBrains Mono" font-size="9" text-anchor="middle">User sends API call</text>
+        <line x1="420" y1="85" x2="420" y2="110" stroke="#eab308" stroke-width="1" stroke-dasharray="3"/>
+        <rect x="350" y="110" width="140" height="35" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="420" y="127" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Token available? ✅</text>
+        <text x="420" y="140" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">Consume 1 → Allow 200</text>
+        <rect x="520" y="110" width="130" height="35" rx="4" fill="#0c1220" stroke="#ef4444" stroke-width="1.5"/>
+        <text x="585" y="127" fill="#fca5a5" font-family="JetBrains Mono" font-size="9" text-anchor="middle">No token? ❌</text>
+        <text x="585" y="140" fill="#64748b" font-family="JetBrains Mono" font-size="8" text-anchor="middle">429 Too Many Requests</text>
+        <line x1="490" y1="127" x2="520" y2="127" stroke="#ef4444" stroke-width="1" stroke-dasharray="3"/>
+      </svg>
+    </div>
+
+    <div class="info-box warning">
+      <div class="box-label">⚠️ Fixed Window Boundary Problem</div>
+      Limit: ১০ req/minute। User 12:00:59 তে ১০টা পাঠালো, তারপর 12:01:01 তে আরো ১০টা। মাত্র ২ seconds এ ২০ requests! Fixed Window এটা allow করে কারণ দুটো আলাদা window। Sliding Window এটা prevent করে।
+    </div>
+  </div>
+
+  <div class="section" id="distributed">
+    <div class="section-label">Distributed Rate Limiting</div>
+    <h2 class="section-title">Multiple Servers এ কীভাবে করবে?</h2>
+    <p>Single server এ in-memory counter সহজ। কিন্তু ১০টা API server থাকলে? প্রতিটার আলাদা counter থাকলে user ১০x request করতে পারবে। সমাধান: <strong>Shared Redis counter।</strong></p>
+    <div class="diagram">
+      <svg viewBox="0 0 660 185" xmlns="http://www.w3.org/2000/svg">
+        <text x="330" y="18" fill="#94a3b8" font-family="JetBrains Mono" font-size="11" text-anchor="middle">DISTRIBUTED RATE LIMITING — Redis as Shared Counter</text>
+        <rect x="5" y="75" width="75" height="40" rx="4" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="42" y="99" fill="#93c5fd" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Client</text>
+        <line x1="80" y1="95" x2="105" y2="95" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#d1)"/>
+        <defs><marker id="d1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#3b82f6"/></marker></defs>
+        <rect x="105" y="65" width="90" height="60" rx="4" fill="#0c1220" stroke="#eab308" stroke-width="1.5"/>
+        <text x="150" y="90" fill="#fcd34d" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Load</text>
+        <text x="150" y="105" fill="#fcd34d" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Balancer</text>
+        <line x1="195" y1="80" x2="225" y2="55" stroke="#eab308" stroke-width="1"/>
+        <line x1="195" y1="95" x2="225" y2="95" stroke="#eab308" stroke-width="1"/>
+        <line x1="195" y1="110" x2="225" y2="140" stroke="#eab308" stroke-width="1"/>
+        <rect x="225" y="35" width="95" height="40" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="272" y="59" fill="#c4b5fd" font-family="JetBrains Mono" font-size="9" text-anchor="middle">API Server 1</text>
+        <rect x="225" y="75" width="95" height="40" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="272" y="99" fill="#c4b5fd" font-family="JetBrains Mono" font-size="9" text-anchor="middle">API Server 2</text>
+        <rect x="225" y="115" width="95" height="40" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="272" y="139" fill="#c4b5fd" font-family="JetBrains Mono" font-size="9" text-anchor="middle">API Server 3</text>
+        <line x1="320" y1="55" x2="375" y2="85" stroke="#ef4444" stroke-width="1" stroke-dasharray="4"/>
+        <line x1="320" y1="95" x2="375" y2="95" stroke="#ef4444" stroke-width="1" stroke-dasharray="4"/>
+        <line x1="320" y1="135" x2="375" y2="105" stroke="#ef4444" stroke-width="1" stroke-dasharray="4"/>
+        <text x="346" y="68" fill="#ef4444" font-family="JetBrains Mono" font-size="8">INCR</text>
+        <rect x="375" y="65" width="150" height="60" rx="4" fill="#0c1220" stroke="#ef4444" stroke-width="2"/>
+        <text x="450" y="88" fill="#fca5a5" font-family="JetBrains Mono" font-size="10" text-anchor="middle" font-weight="700">Redis</text>
+        <text x="450" y="103" fill="#64748b" font-family="JetBrains Mono" font-size="9" text-anchor="middle">rate:user123 → 47</text>
+        <text x="450" y="118" fill="#64748b" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Limit: 100/min</text>
+        <rect x="545" y="65" width="110" height="60" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="600" y="88" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9" text-anchor="middle" font-weight="700">✅ Shared!</text>
+        <text x="600" y="103" fill="#64748b" font-family="JetBrains Mono" font-size="9" text-anchor="middle">All servers see</text>
+        <text x="600" y="118" fill="#64748b" font-family="JetBrains Mono" font-size="9" text-anchor="middle">same counter</text>
+        <line x1="525" y1="95" x2="545" y2="95" stroke="#10b981" stroke-width="1.5" marker-end="url(#d2)"/>
+        <defs><marker id="d2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#10b981"/></marker></defs>
+      </svg>
+    </div>
+    <div class="info-box tip">
+      <div class="box-label">💡 Redis INCR + EXPIRE — Atomic Operation</div>
+      <code>INCR rate_limit:user123:202401011430</code> — atomic, sub-millisecond।<br>
+      প্রথমবার INCR করলে key নেই → value 1 তৈরি হয়। তারপর EXPIRE দিয়ে TTL set করো। Race condition নেই কারণ INCR atomic।
+    </div>
+  </div>
+
+  <div class="section" id="code">
+    <div class="section-label">Code Examples</div>
+    <h2 class="section-title">Practical Code</h2>
+
+    <h3 class="sub-title">Python: Token Bucket + FastAPI Middleware</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Python</span><span class="code-file">rate_limiter.py</span></div>
+      <pre><span class="kw">import</span> time, threading
+<span class="kw">from</span> collections <span class="kw">import</span> defaultdict
+<span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI, Request, HTTPException
+
+<span class="kw">class</span> <span class="fn">TokenBucket</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, rate: <span class="var">float</span>, capacity: <span class="var">int</span>):
+        self.rate = rate           <span class="cm"># tokens/second</span>
+        self.capacity = capacity   <span class="cm"># max tokens (burst size)</span>
+        self.tokens = capacity     <span class="cm"># start full</span>
+        self.last_refill = time.<span class="fn">monotonic</span>()
+        self.lock = threading.<span class="fn">Lock</span>()
+
+    <span class="kw">def</span> <span class="fn">consume</span>(self) -> <span class="var">bool</span>:
+        <span class="kw">with</span> self.lock:
+            now = time.<span class="fn">monotonic</span>()
+            <span class="cm"># Add new tokens based on elapsed time</span>
+            elapsed = now - self.last_refill
+            self.tokens = <span class="fn">min</span>(self.capacity, self.tokens + elapsed * self.rate)
+            self.last_refill = now
+
+            <span class="kw">if</span> self.tokens >= <span class="num">1</span>:
+                self.tokens -= <span class="num">1</span>
+                <span class="kw">return</span> <span class="kw">True</span>   <span class="cm"># allowed</span>
+            <span class="kw">return</span> <span class="kw">False</span>        <span class="cm"># rate limited</span>
+
+app = <span class="fn">FastAPI</span>()
+
+<span class="cm"># প্রতি user/API-key এর জন্য আলাদা bucket</span>
+<span class="cm"># Free: 5/sec, Paid: 50/sec</span>
+TIERS = {
+    <span class="str">"free"</span>: {<span class="str">"rate"</span>: <span class="num">5</span>, <span class="str">"capacity"</span>: <span class="num">10</span>},
+    <span class="str">"paid"</span>: {<span class="str">"rate"</span>: <span class="num">50</span>, <span class="str">"capacity"</span>: <span class="num">100</span>},
+}
+buckets = {}
+
+<span class="fn">@app.middleware</span>(<span class="str">"http"</span>)
+<span class="kw">async def</span> <span class="fn">rate_limit</span>(request: Request, call_next):
+    api_key = request.headers.<span class="fn">get</span>(<span class="str">"X-API-Key"</span>, <span class="str">"anonymous"</span>)
+    tier = <span class="str">"paid"</span> <span class="kw">if</span> api_key.<span class="fn">startswith</span>(<span class="str">"paid_"</span>) <span class="kw">else</span> <span class="str">"free"</span>
+
+    <span class="kw">if</span> api_key <span class="kw">not in</span> buckets:
+        cfg = TIERS[tier]
+        buckets[api_key] = <span class="fn">TokenBucket</span>(cfg[<span class="str">"rate"</span>], cfg[<span class="str">"capacity"</span>])
+
+    bucket = buckets[api_key]
+    <span class="kw">if not</span> bucket.<span class="fn">consume</span>():
+        <span class="kw">raise</span> <span class="fn">HTTPException</span>(
+            status_code=<span class="num">429</span>,
+            detail={<span class="str">"error"</span>: <span class="str">"Too Many Requests"</span>, <span class="str">"tier"</span>: tier},
+            headers={<span class="str">"Retry-After"</span>: <span class="str">"1"</span>,
+                     <span class="str">"X-RateLimit-Limit"</span>: <span class="fn">str</span>(TIERS[tier][<span class="str">"rate"</span>]),
+                     <span class="str">"X-RateLimit-Remaining"</span>: <span class="str">"0"</span>}
+        )
+
+    response = <span class="kw">await</span> <span class="fn">call_next</span>(request)
+    response.headers[<span class="str">"X-RateLimit-Remaining"</span>] = <span class="fn">str</span>(<span class="var">int</span>(bucket.tokens))
+    <span class="kw">return</span> response
+
+<span class="fn">@app.get</span>(<span class="str">"/api/data"</span>)
+<span class="kw">async def</span> <span class="fn">get_data</span>():
+    <span class="kw">return</span> {<span class="str">"data"</span>: <span class="str">"success"</span>}</pre>
+    </div>
+
+    <h3 class="sub-title">Node.js: Redis Sliding Window Rate Limiter</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Node.js</span><span class="code-file">redis_rate_limiter.js</span></div>
+      <pre><span class="kw">const</span> Redis = <span class="fn">require</span>(<span class="str">'ioredis'</span>);
+<span class="kw">const</span> redis = <span class="kw">new</span> <span class="fn">Redis</span>();
+
+<span class="kw">async function</span> <span class="fn">isRateLimited</span>(userId, limit = <span class="num">100</span>, windowMs = <span class="num">60000</span>) {
+    <span class="kw">const</span> now = Date.<span class="fn">now</span>();
+    <span class="kw">const</span> windowStart = now - windowMs;
+    <span class="kw">const</span> key = <span class="str">`rl:${userId}`</span>;
+
+    <span class="cm">// Atomic pipeline — all 4 ops run together</span>
+    <span class="kw">const</span> [[, count]] = <span class="kw">await</span> redis
+        .<span class="fn">pipeline</span>()
+        .<span class="fn">zremrangebyscore</span>(key, <span class="num">0</span>, windowStart)   <span class="cm">// remove old</span>
+        .<span class="fn">zadd</span>(key, now, <span class="str">`${now}`</span>)               <span class="cm">// add current</span>
+        .<span class="fn">zcard</span>(key)                               <span class="cm">// get count</span>
+        .<span class="fn">pexpire</span>(key, windowMs)                   <span class="cm">// set TTL</span>
+        .<span class="fn">exec</span>()
+        .<span class="fn">then</span>(r => r.<span class="fn">slice</span>(<span class="num">2</span>, <span class="num">3</span>));
+
+    <span class="kw">return</span> { limited: count > limit, remaining: Math.<span class="fn">max</span>(<span class="num">0</span>, limit - count) };
+}
+
+<span class="cm">// Express middleware</span>
+<span class="kw">const</span> rateLimit = (limit, windowMs) => <span class="kw">async</span> (req, res, next) => {
+    <span class="kw">const</span> key = req.headers[<span class="str">'x-user-id'</span>] || req.ip;
+    <span class="kw">const</span> { limited, remaining } = <span class="kw">await</span> <span class="fn">isRateLimited</span>(key, limit, windowMs);
+
+    res.<span class="fn">set</span>(<span class="str">'X-RateLimit-Limit'</span>, limit);
+    res.<span class="fn">set</span>(<span class="str">'X-RateLimit-Remaining'</span>, remaining);
+
+    <span class="kw">if</span> (limited) <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">429</span>).<span class="fn">json</span>({
+        error: <span class="str">'Too Many Requests'</span>,
+        retry_after: Math.<span class="fn">ceil</span>(windowMs / <span class="num">1000</span>)
+    });
+    <span class="fn">next</span>();
+};
+
+<span class="cm">// Different limits for different endpoints</span>
+app.<span class="fn">use</span>(<span class="str">'/api/login'</span>, <span class="fn">rateLimit</span>(<span class="num">5</span>, <span class="num">300000</span>));   <span class="cm">// 5 per 5 min</span>
+app.<span class="fn">use</span>(<span class="str">'/api/search'</span>, <span class="fn">rateLimit</span>(<span class="num">30</span>, <span class="num">60000</span>));  <span class="cm">// 30 per min</span>
+app.<span class="fn">use</span>(<span class="str">'/api/'</span>, <span class="fn">rateLimit</span>(<span class="num">100</span>, <span class="num">60000</span>));       <span class="cm">// 100 per min</span></pre>
+    </div>
+  </div>
+
+  <div class="section" id="realworld">
+    <div class="section-label">Real World</div>
+    <h2 class="section-title">Real World Rate Limits</h2>
+    <table class="compare-table">
+      <tr><th>API / Service</th><th>Limit</th><th>Algorithm</th><th>429 Response</th></tr>
+      <tr><td>GitHub API</td><td>৬০ req/hr (unauth), ৫০০০ (auth)</td><td>Fixed Window</td><td>403 + X-RateLimit headers</td></tr>
+      <tr><td>Twitter API v2</td><td>১৫ req/15 min (basic)</td><td>Sliding Window</td><td>429 + Retry-After</td></tr>
+      <tr><td>Stripe</td><td>১০০ req/sec</td><td>Token Bucket</td><td>429 + retry suggestion</td></tr>
+      <tr><td>OpenAI</td><td>RPM + TPM (tier based)</td><td>Token Bucket</td><td>429 + error.type</td></tr>
+      <tr><td>AWS API Gateway</td><td>১০,০০০ req/sec default</td><td>Token Bucket</td><td>429 ThrottlingException</td></tr>
+      <tr><td>Cloudflare WAF</td><td>Custom rules</td><td>Token Bucket</td><td>Block / Challenge / Log</td></tr>
+    </table>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">📋 Standard Headers</div>
+        <p><code>X-RateLimit-Limit: 100</code><br><code>X-RateLimit-Remaining: 47</code><br><code>X-RateLimit-Reset: 1706000000</code><br><code>Retry-After: 30</code></p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🔧 Production Tools</div>
+        <p><strong>nginx:</strong> limit_req_zone module<br><strong>Kong:</strong> Rate Limiting plugin<br><strong>AWS WAF:</strong> Rate-based rules<br><strong>Traefik:</strong> RateLimit middleware</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="interview">
+    <div class="section-label">Interview Preparation</div>
+    <h2 class="section-title">Common Interview Questions</h2>
+    <div class="info-box concept">
+      <div class="box-label">🎯 Q1: "Design a Rate Limiter" — কীভাবে approach করবে?</div>
+      <strong>1)</strong> Requirements clarify: per user? per IP? per API key? <strong>2)</strong> Single server নাকি distributed? <strong>3)</strong> Algorithm: Token Bucket (versatile)। <strong>4)</strong> Storage: Redis (atomic INCR) <strong>5)</strong> Response: 429 + Retry-After + X-RateLimit headers। <strong>6)</strong> Edge cases: distributed clocks, Redis failure।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">🎯 Q2: Fixed Window এর boundary problem কী? কীভাবে solve করবে?</div>
+      Window শেষে ও শুরুতে burst possible। User ২ seconds এ ২x limit use করতে পারে। Solution: Sliding Window Log (exact timestamps) অথবা Sliding Window Counter (approximate but fast)।
+    </div>
+    <div class="info-box concept">
+      <div class="box-label">🎯 Q3: Rate Limiting কোথায় implement করা উচিত?</div>
+      <strong>Best:</strong> API Gateway বা Load Balancer এ — upstream এ। Backend services পর্যন্ত excess traffic পৌঁছায় না। <strong>Also:</strong> Per-service level এ different limits। <strong>Avoid:</strong> Client side (bypass করা যায়)।
+    </div>
+  </div>
+
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🚦</span>
+      <h2>MCQ Test</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">Token Bucket এ "burst" allow করার মানে কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Server crash করা</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Idle time এ জমা হওয়া tokens একসাথে use করে temporarily high rate এ request করা</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Unlimited requests করা</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Database overflow করা</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Token Bucket এর beauty: user কিছুক্ষণ request না করলে tokens জমে যায়। পরে একসাথে সেই tokens use করে burst করতে পারে। Rate: 10/sec, Capacity: 20 → user 2 seconds idle থাকলে 20 tokens, একসাথে 20 requests করতে পারবে।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">Distributed rate limiting এ Redis কেন ব্যবহার করা হয়?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Redis সস্তা বলে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Redis SQL support করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Redis শুধু caching এর জন্য</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Atomic INCR দিয়ে race condition ছাড়া shared counter maintain করা যায়</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Multiple API servers এ আলাদা in-memory counter থাকলে user ১০x request করতে পারে। Redis centralized shared counter দেয়। INCR atomic — race condition নেই। Sub-millisecond latency।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">Rate limit exceed হলে কোন HTTP status code দেওয়া standard?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> 429 Too Many Requests</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> 403 Forbidden</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> 503 Service Unavailable</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> 400 Bad Request</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — 429 Too Many Requests হলো RFC 6585 standard। সাথে Retry-After header দাও। 403 মানে permission denied, 503 মানে service down — দুটোই ভুল context।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">Fixed Window এর boundary problem কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Memory বেশি লাগে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Redis দরকার হয়</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Window শেষে ও শুরুতে ২x burst possible — ২ seconds এ limit দ্বিগুণ use করা যায়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Implementation কঠিন</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Limit 10/min। 12:00:59 তে ১০টা + 12:01:01 তে ১০টা = 2 seconds এ ২০ requests। দুটো আলাদা window তাই allowed। Sliding Window এটা prevent করে — যেকোনো ১ minute window তে maximum ১০।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">Login endpoint এ কোন rate limit strategy best?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> কোনো limit দরকার নেই</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Per IP + Per user account: ৫ attempts/5 minutes — brute force prevent করতে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> ১০০০ req/min allow করো</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> শুধু IP based limit</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Login এ strict limit দরকার। Per IP এবং Per account — দুটোই। কেউ VPN change করলেও per-account limit কাজ করবে। Failed attempts এ exponential backoff apply করো।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">Leaky Bucket এবং Token Bucket এর পার্থক্য কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Leaky Bucket faster</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Token Bucket শুধু single server এ কাজ করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Leaky Bucket বেশি popular</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Token Bucket burst allow করে, Leaky Bucket constant outflow enforce করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Token Bucket burst possible। Leaky Bucket: queue থেকে constant rate এ leak — output always smooth। API তে Token Bucket prefer কারণ legitimate users দের occasional burst allow করা ভালো experience দেয়।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">Retry-After header কী কাজ করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Client কে জানায় কত seconds পরে retry করলে rate limit reset হবে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Server restart করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Database cache clear করে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> New server spawn করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Retry-After: 30 মানে ৩০ seconds পরে retry করো। Good clients এটা respect করে thundering herd prevent হয়। GitHub, Stripe, Twitter সবাই এটা use করে। Best practice: সবসময় 429 এর সাথে দাও।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">Rate Limiting কোন layer এ implement করা best?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Database layer</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Frontend JavaScript</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> API Gateway বা Load Balancer — সব traffic এর entry point এ</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Mobile app</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — API Gateway তে করলে excess traffic backend পর্যন্ত পৌঁছায় না। Centralized policy। প্রতিটা service এ duplicate code নেই। Kong, AWS API Gateway, Nginx — সবই এটা support করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">Sliding Window Log এর সবচেয়ে বড় disadvantage কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Inaccurate</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> High memory usage — প্রতিটা request এর timestamp store করতে হয়</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Burst allow করে না</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Redis support নেই</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Sliding Window Log সবচেয়ে accurate কিন্তু প্রতিটা request এর timestamp store করতে হয়। ১ million users এ huge memory। Solution: Sliding Window Counter — approximate কিন্তু memory efficient।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">তোমার API তে Free (১০০/day) ও Paid (১০,০০০/day) tier আছে। কীভাবে implement করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> সবাইকে same limit</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> IP based শুধু</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> প্রতিটা request এ database check করো</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> API Key দিয়ে tier identify, Redis এ tier-specific counter, JWT/DB থেকে tier lookup</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — API Key → tier lookup (JWT claim বা DB) → Redis counter: rate_limit:{api_key}:{date} → tier অনুযায়ী limit apply। এটাই production API monetization এর standard approach। Stripe, OpenAI, GitHub সবাই এটা করে।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT &amp; CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ২-৩ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <ul class="task-list">
+      <li><strong>Algorithm Comparison Table:</strong> Token Bucket, Leaky Bucket, Fixed Window, Sliding Window — ৪টার জন্য Memory usage, Burst support, Accuracy, Complexity, Best use case তুলনামূলক table বানাও।</li>
+      <li><strong>API Design:</strong> একটা Weather API design করো। Free: ১০০ req/day, Basic ($9): ১০,০০০ req/day, Premium ($99): unlimited। Rate limit headers ও error response format design করো।</li>
+      <li><strong>Code Challenge:</strong> দেওয়া TokenBucket class এ <code>get_wait_time()</code> method যোগ করো যেটা পরবর্তী request করতে কত seconds অপেক্ষা করতে হবে সেটা return করে।</li>
+      <li><strong>Real API Exploration:</strong> GitHub Personal Access Token নিয়ে curl করো। X-RateLimit headers observe করো। Unauthenticated (৬০/hr) vs Authenticated (৫০০০/hr) compare করো।</li>
+      <li><strong>Nginx Config:</strong> /api/login endpoint এ 5 req/5min rate limit দাও — <code>limit_req_zone</code> এবং <code>limit_req</code> directive ব্যবহার করে।</li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>Algorithm comparison table</li>
+        <li>Weather API rate limit design document</li>
+        <li>TokenBucket class with get_wait_time()</li>
+        <li>GitHub API headers screenshot + analysis</li>
+        <li>Nginx rate limiting config file</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="project-section" id="project">
+    <div class="project-header">
+      <span style="font-size:24px">🚀</span>
+      <h2>Hands-On Project Task</h2>
+    </div>
+    <div class="project-body">
+      <h3 style="font-family:'Fraunces',serif;font-size:18px;margin-bottom:16px;color:#f1f5f9;">Tiered Rate-Limited API Server</h3>
+      <p style="font-size:14px;color:#94a3b8;margin-bottom:20px;">Python FastAPI + Redis দিয়ে tiered rate limiting সহ একটা পূর্ণ API বানাও।</p>
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-circle">1</div>
+          <div class="step-content">
+            <h4>Redis চালাও</h4>
+            <p><code>docker run -d -p 6379:6379 redis:alpine</code></p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">2</div>
+          <div class="step-content">
+            <h4>FastAPI + Redis rate limiter লেখো</h4>
+            <p>Sliding Window algorithm দিয়ে Redis based rate limiter implement করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">3</div>
+          <div class="step-content">
+            <h4>Tiered limits যোগ করো</h4>
+            <p>X-API-Key header দিয়ে tier determine। Free: ১০/min, Paid: ১০০/min, Admin: unlimited।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">4</div>
+          <div class="step-content">
+            <h4>Proper headers add করো</h4>
+            <p>X-RateLimit-Limit, Remaining, Reset, এবং Retry-After সব responses এ।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">5</div>
+          <div class="step-content">
+            <h4>Rapid fire test করো</h4>
+            <p>Python loop দিয়ে ৫০টা requests পাঠাও। কোনটায় 429 আসে note করো।</p>
+          </div>
+        </div>
+      </div>
+      <div class="info-box tip" style="margin-top:16px">
+        <div class="box-label">🎯 এটা করলে যা শিখবে</div>
+        Token Bucket burst behavior practically দেখবে। Redis atomic counter কীভাবে race condition prevent করে বুঝবে। Production API এর rate limiting headers নিজে লিখবে।
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Lesson Summary</div>
+    <h2 class="section-title">আজকে যা শিখলাম</h2>
+    <table class="compare-table">
+      <tr><th>Concept</th><th>এক লাইনে</th></tr>
+      <tr><td>Rate Limiting</td><td>Time window এ max request — reject exceed করলে</td></tr>
+      <tr><td>Token Bucket</td><td>Burst allow — API তে সবচেয়ে popular</td></tr>
+      <tr><td>Leaky Bucket</td><td>Constant output — smooth traffic</td></tr>
+      <tr><td>Fixed Window</td><td>Simple কিন্তু boundary spike problem</td></tr>
+      <tr><td>Sliding Window</td><td>Accurate কিন্তু memory intensive</td></tr>
+      <tr><td>Redis INCR</td><td>Distributed shared counter — atomic</td></tr>
+      <tr><td>429 + Retry-After</td><td>Standard rate limit response</td></tr>
+    </table>
+  </div>
+
+  <div class="next-cta">
+    <div>
+      <div class="next-label">Next Topic →</div>
+      <div class="next-title">🔍 Service Discovery &amp; Service Mesh</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+
+</div>
+</main>
+<script>
+window.addEventListener('scroll',()=>{const d=document.documentElement;const s=d.scrollTop||document.body.scrollTop;const h=d.scrollHeight-d.clientHeight;document.getElementById('progressFill').style.width=((s/h)*100)+'%';});
+let answered={};
+document.querySelectorAll('.option').forEach(opt=>{opt.addEventListener('click',function(){const block=this.closest('.question-block');const qId=Array.from(document.querySelectorAll('.question-block')).indexOf(block);if(answered[qId])return;answered[qId]=this.dataset.val;block.querySelectorAll('.option').forEach(o=>{o.style.pointerEvents='none';if(o.dataset.val===block.dataset.correct)o.classList.add('correct');else if(o.dataset.val===this.dataset.val)o.classList.add('wrong');});block.querySelector('.explanation').classList.add('visible');});});
+function submitMCQ(){let correct=0;const blocks=document.querySelectorAll('.question-block');blocks.forEach((b,i)=>{if(answered[i]===b.dataset.correct)correct++;});const un=blocks.length-Object.keys(answered).length;if(un>0){alert(`এখনও ${un}টা প্রশ্নের উত্তর দাওনি!`);return;}document.getElementById('scoreDisplay').textContent=correct;const banner=document.getElementById('resultBanner');banner.classList.add('visible');if(correct>=7){banner.classList.add('pass');banner.textContent=`🎉 দারুণ! ${correct}/10 সঠিক। পরের topic এ যাও!`;}else{banner.classList.add('fail');banner.textContent=`📖 ${correct}/10 সঠিক। আবার পড়ো। ৭/১০ পেলেই pass।`;}}
+</script>
+</body>
+</html>

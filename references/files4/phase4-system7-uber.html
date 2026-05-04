@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 4 · System 7 — Uber / Ride Sharing</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05080f; --surface: #090e1a; --card: #0c1220; --border: #162035; --border2: #1e2d4a;
+  --accent: #06b6d4; --accent-glow: rgba(6,182,212,0.15);
+  --green: #10b981; --green-glow: rgba(16,185,129,0.12);
+  --orange: #f97316; --red: #ef4444; --yellow: #eab308; --purple: #8b5cf6;
+  --text: #e2e8f0; --muted: #64748b; --muted2: #94a3b8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Sans Bengali', sans-serif; line-height: 1.7; font-size: 15px; }
+body::after { content:''; position:fixed; inset:0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events:none; z-index:999; opacity:0.4; }
+.sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: var(--surface); border-right: 1px solid var(--border); padding: 24px 0; overflow-y: auto; z-index: 100; }
+.sidebar-logo { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.sidebar-logo .phase-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; display: block; margin-bottom: 4px; }
+.sidebar-logo .course-title { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; line-height: 1.3; }
+.nav-section { padding: 0 12px; margin-bottom: 8px; }
+.nav-section-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); padding: 0 8px; margin-bottom: 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 4px; font-size: 13px; color: var(--muted2); cursor: pointer; transition: all 0.15s; text-decoration: none; }
+.nav-item:hover { background: var(--card); color: var(--text); }
+.nav-item.active { background: rgba(6,182,212,0.1); color: var(--accent); }
+.nav-item .nav-icon { font-size: 14px; flex-shrink:0; }
+.nav-item .nav-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); margin-left: auto; }
+.progress-bar { position: fixed; top: 0; left: 240px; right: 0; height: 2px; background: var(--border); z-index: 200; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--green)); width: 0%; transition: width 0.1s; }
+.main { margin-left: 240px; min-height: 100vh; }
+.content { max-width: 780px; margin: 0 auto; padding: 48px 40px 120px; }
+.topic-header { margin-bottom: 48px; }
+.breadcrumb { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.breadcrumb span { color: var(--accent); }
+.topic-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; display: block; }
+h1.topic-title { font-family: 'Fraunces', serif; font-size: clamp(32px, 5vw, 48px); font-weight: 900; line-height: 1.1; margin-bottom: 16px; background: linear-gradient(135deg, #fff 30%, #67e8f9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.topic-meta { display: flex; gap: 16px; flex-wrap: wrap; }
+.meta-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 12px; border-radius: 2px; border: 1px solid; }
+.meta-chip.time { border-color: rgba(6,182,212,0.3); color: var(--accent); background: var(--accent-glow); }
+.meta-chip.level { border-color: rgba(16,185,129,0.3); color: var(--green); background: var(--green-glow); }
+.meta-chip.type { border-color: rgba(249,115,22,0.3); color: var(--orange); background: rgba(249,115,22,0.08); }
+.section { margin-bottom: 48px; scroll-margin-top: 24px; }
+.section-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+h2.section-title { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 700; margin-bottom: 16px; color: #f1f5f9; }
+h3.sub-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; margin: 24px 0 10px; color: #cbd5e1; }
+p { margin-bottom: 14px; color: #cbd5e1; }
+.info-box { border-radius: 6px; padding: 18px 20px; margin: 20px 0; border-left: 3px solid; font-size: 14px; }
+.info-box.concept { background: rgba(6,182,212,0.06); border-color: var(--accent); }
+.info-box.warning { background: rgba(249,115,22,0.06); border-color: var(--orange); }
+.info-box.tip { background: rgba(16,185,129,0.06); border-color: var(--green); }
+.info-box.important { background: rgba(234,179,8,0.06); border-color: var(--yellow); }
+.info-box .box-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; font-weight: 700; }
+.info-box.concept .box-label { color: var(--accent); }
+.info-box.warning .box-label { color: var(--orange); }
+.info-box.tip .box-label { color: var(--green); }
+.info-box.important .box-label { color: var(--yellow); }
+.compare-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+.compare-table th { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; padding: 12px 16px; text-align: left; background: var(--card); border-bottom: 2px solid var(--border2); color: var(--muted2); }
+.compare-table td { padding: 11px 16px; border-bottom: 1px solid var(--border); color: #94a3b8; vertical-align: top; line-height: 1.6; }
+.compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+.compare-table td:first-child { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text); }
+.tag-yes { color: var(--green); font-weight: 600; }
+.tag-no { color: var(--red); }
+.tag-med { color: var(--yellow); }
+.diagram { background: var(--card); border: 1px solid var(--border2); border-radius: 8px; padding: 30px 20px; margin: 24px 0; text-align: center; overflow-x: auto; }
+.diagram svg { max-width: 100%; }
+.code-block { background: #030608; border: 1px solid var(--border2); border-radius: 6px; margin: 20px 0; overflow: hidden; }
+.code-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--card); border-bottom: 1px solid var(--border); }
+.code-lang { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+.code-file { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+pre { padding: 20px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.8; color: #e2e8f0; }
+.kw { color: #93c5fd; } .fn { color: #6ee7b7; } .str { color: #fcd34d; } .cm { color: #475569; font-style: italic; } .num { color: #f9a8d4; } .var { color: #e2e8f0; }
+.req-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.req-card { background: var(--card); border: 1px solid var(--border2); border-radius: 6px; padding: 20px; }
+.req-card .r-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
+.req-card.functional .r-title { color: var(--accent); }
+.req-card.nonfunc .r-title { color: var(--green); }
+.req-card ul { list-style: none; padding: 0; }
+.req-card ul li { font-size: 13px; color: var(--muted2); padding: 5px 0 5px 18px; position: relative; border-bottom: 1px solid var(--border); font-family: 'Noto Sans Bengali', sans-serif; }
+.req-card ul li:last-child { border-bottom: none; }
+.req-card ul li::before { content: '→'; position: absolute; left: 0; color: var(--muted); font-size: 12px; }
+.estimation-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0; }
+.est-card { background: var(--card); border: 1px solid var(--border2); border-radius: 6px; padding: 16px; text-align: center; }
+.est-num { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 700; color: var(--accent); display: block; margin-bottom: 4px; }
+.est-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+.tech-stack { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+.tech-tag { font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 6px 14px; border-radius: 3px; border: 1px solid; }
+.tech-tag.db { border-color: rgba(6,182,212,0.3); color: var(--accent); background: var(--accent-glow); }
+.tech-tag.cache { border-color: rgba(234,179,8,0.3); color: var(--yellow); background: rgba(234,179,8,0.06); }
+.tech-tag.lang { border-color: rgba(16,185,129,0.3); color: var(--green); background: var(--green-glow); }
+.tech-tag.infra { border-color: rgba(139,92,246,0.3); color: var(--purple); background: rgba(139,92,246,0.08); }
+.tech-tag.queue { border-color: rgba(249,115,22,0.3); color: var(--orange); background: rgba(249,115,22,0.08); }
+.tradeoff-row { display: flex; gap: 12px; margin: 10px 0; align-items: flex-start; }
+.tradeoff-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 10px; border-radius: 2px; flex-shrink: 0; }
+.tradeoff-label.pro { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.tradeoff-label.con { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+.tradeoff-text { font-size: 13px; color: var(--muted2); line-height: 1.6; font-family: 'Noto Sans Bengali', sans-serif; }
+.mcq-section { background: var(--surface); border: 1px solid var(--border2); border-radius: 8px; padding: 28px; margin: 30px 0; }
+.mcq-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.mcq-icon { font-size: 24px; }
+.mcq-header h2 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; }
+.mcq-score { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--muted); }
+.mcq-score span { color: var(--accent); font-size: 18px; font-weight: 700; }
+.question-block { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+.question-block:last-of-type { border-bottom: none; margin-bottom: 0; }
+.q-num { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.q-text { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.5; font-family: 'Noto Sans Bengali', sans-serif; }
+.options { display: flex; flex-direction: column; gap: 8px; }
+.option { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-radius: 4px; border: 1px solid var(--border); cursor: pointer; transition: all 0.15s; font-size: 14px; color: var(--muted2); font-family: 'Noto Sans Bengali', sans-serif; }
+.option:hover { border-color: var(--accent); color: var(--text); background: var(--accent-glow); }
+.option.correct { border-color: var(--green); background: var(--green-glow); color: #6ee7b7; }
+.option.wrong { border-color: var(--red); background: rgba(239,68,68,0.08); color: #fca5a5; }
+.option-key { font-family: 'JetBrains Mono', monospace; font-size: 11px; background: var(--border2); padding: 2px 7px; border-radius: 2px; flex-shrink: 0; margin-top: 1px; }
+.explanation { display: none; margin-top: 12px; padding: 12px 14px; background: rgba(16,185,129,0.06); border-left: 2px solid var(--green); border-radius: 0 4px 4px 0; font-size: 13px; color: #94a3b8; line-height: 1.7; font-family: 'Noto Sans Bengali', sans-serif; }
+.explanation.visible { display: block; }
+.explanation strong { color: var(--green); }
+.mcq-submit { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; padding: 12px 24px; background: var(--accent); color: #000; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; letter-spacing: 1px; transition: all 0.15s; }
+.mcq-submit:hover { background: #0891b2; color: #fff; transform: translateY(-1px); }
+.result-banner { display: none; margin-top: 20px; padding: 16px 20px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; }
+.result-banner.visible { display: block; }
+.result-banner.pass { background: var(--green-glow); border: 1px solid var(--green); color: var(--green); }
+.result-banner.fail { background: rgba(249,115,22,0.08); border: 1px solid var(--orange); color: var(--orange); }
+.assignment-section { background: linear-gradient(135deg, rgba(6,182,212,0.04), rgba(16,185,129,0.04)); border: 1px solid rgba(6,182,212,0.2); border-radius: 8px; padding: 28px; margin: 30px 0; }
+.assignment-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.assignment-icon { font-size: 28px; }
+.assignment-header h2 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; }
+.assignment-meta { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.a-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 3px 10px; border-radius: 2px; }
+.a-chip.time { background: rgba(234,179,8,0.1); color: var(--yellow); border: 1px solid rgba(234,179,8,0.2); }
+.a-chip.level { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.task-list { counter-reset: tasks; list-style: none; margin-bottom: 20px; }
+.task-list li { counter-increment: tasks; padding: 14px 14px 14px 50px; position: relative; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--muted2); line-height: 1.7; font-family: 'Noto Sans Bengali', sans-serif; }
+.task-list li:last-child { border-bottom: none; }
+.task-list li::before { content: counter(tasks); position: absolute; left: 14px; top: 14px; width: 24px; height: 24px; background: var(--accent-glow); border: 1px solid rgba(6,182,212,0.3); border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.task-list li strong { color: var(--text); }
+.deliverable-box { background: var(--card); border: 1px solid var(--border2); border-radius: 6px; padding: 16px 18px; margin-top: 16px; }
+.deliverable-box .d-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 10px; }
+.deliverable-box ul { list-style: none; padding: 0; }
+.deliverable-box ul li { font-size: 13px; color: var(--muted2); padding: 4px 0 4px 18px; position: relative; font-family: 'Noto Sans Bengali', sans-serif; }
+.deliverable-box ul li::before { content: '◆'; position: absolute; left: 0; font-size: 8px; color: var(--accent); top: 6px; }
+/* Phase complete banner */
+.phase-complete { background: linear-gradient(135deg, rgba(6,182,212,0.1), rgba(16,185,129,0.1)); border: 2px solid var(--accent); border-radius: 12px; padding: 32px; margin-top: 48px; text-align: center; }
+.phase-complete .pc-icon { font-size: 48px; margin-bottom: 12px; display: block; }
+.phase-complete h2 { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 900; margin-bottom: 8px; background: linear-gradient(135deg, var(--accent), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.phase-complete p { color: var(--muted2); font-size: 14px; margin-bottom: 20px; }
+.systems-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; }
+.sys-chip { background: var(--card); border: 1px solid var(--border2); border-radius: 4px; padding: 10px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--green); }
+.sys-chip .s-icon { font-size: 18px; display: block; margin-bottom: 4px; }
+@media (max-width: 768px) { .sidebar { display: none; } .main { margin-left: 0; } .content { padding: 24px 16px 80px; } .req-grid, .estimation-grid, .systems-grid { grid-template-columns: 1fr; } .progress-bar { left: 0; } }
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 04 · Real World Systems</span>
+    <div class="course-title">System Design<br>Mastery Course</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Phase 4 Systems</div>
+    <a href="#" class="nav-item"><span class="nav-icon">🔗</span><span>URL Shortener</span><span class="nav-num">01</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🐦</span><span>Twitter/X</span><span class="nav-num">02</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">📺</span><span>YouTube</span><span class="nav-num">03</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">💬</span><span>WhatsApp</span><span class="nav-num">04</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🛒</span><span>Amazon</span><span class="nav-num">05</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🔍</span><span>Search</span><span class="nav-num">06</span></a>
+    <a href="#" class="nav-item active"><span class="nav-icon">🚗</span><span>Uber</span><span class="nav-num">07</span></a>
+  </div>
+  <div class="nav-section" style="margin-top:16px">
+    <div class="nav-section-label">This Lesson</div>
+    <a href="#why" class="nav-item"><span class="nav-icon">💡</span><span>Why Uber?</span></a>
+    <a href="#requirements" class="nav-item"><span class="nav-icon">📋</span><span>Requirements</span></a>
+    <a href="#estimation" class="nav-item"><span class="nav-icon">🔢</span><span>Estimation</span></a>
+    <a href="#architecture" class="nav-item"><span class="nav-icon">🏗️</span><span>Architecture</span></a>
+    <a href="#geospatial" class="nav-item"><span class="nav-icon">🗺️</span><span>Geospatial</span></a>
+    <a href="#matching" class="nav-item"><span class="nav-icon">🔗</span><span>Matching</span></a>
+    <a href="#database" class="nav-item"><span class="nav-icon">🗄️</span><span>Database</span></a>
+    <a href="#scaling" class="nav-item"><span class="nav-icon">📈</span><span>Scaling</span></a>
+    <a href="#mcq" class="nav-item"><span class="nav-icon">✅</span><span>MCQ Test</span></a>
+    <a href="#assignment" class="nav-item"><span class="nav-icon">📝</span><span>Assignment</span></a>
+  </div>
+</nav>
+
+<main class="main">
+<div class="content">
+
+  <div class="topic-header" id="why">
+    <div class="breadcrumb">Phase 4 — Real World Systems <span>›</span> System 07</div>
+    <span class="topic-num">FINAL SYSTEM 07 / 07</span>
+    <h1 class="topic-title">Uber /<br>Ride Sharing</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ ৯০-১২০ মিনিট</span>
+      <span class="meta-chip level">📊 Junior Level</span>
+      <span class="meta-chip type">🗺️ Geospatial Systems</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Why This System</div>
+    <h2 class="section-title">Uber কেন Unique?</h2>
+    <p>Uber-এ সবচেয়ে কঠিন সমস্যা হলো <strong>real-time geospatial matching</strong> — কোটি কোটি moving drivers-এর location track করো এবং milliseconds-এ কাছের driver-কে rider-এর সাথে match করো। এটা regular database problem না — এটা <strong>location-aware computing</strong>।</p>
+    <div class="info-box concept">
+      <div class="box-label">📌 Core Challenge</div>
+      <strong>Geospatial Problem:</strong> Driver location প্রতি 4 sec update হয়। Rider request করলে 5km radius-এর মধ্যে available drivers খুঁজতে হবে। Standard SQL database-এ lat/lng দিয়ে এই query করা impractical। Special data structure দরকার — <strong>Geohash</strong> বা <strong>QuadTree</strong>।
+    </div>
+  </div>
+
+  <div class="section" id="requirements">
+    <div class="section-label">Requirements</div>
+    <h2 class="section-title">Features কী কী?</h2>
+    <div class="req-grid">
+      <div class="req-card functional">
+        <div class="r-title">✅ Functional Requirements</div>
+        <ul>
+          <li>Rider: ride request করা</li>
+          <li>Driver: nearby riders দেখা</li>
+          <li>Real-time location tracking</li>
+          <li>Driver-Rider matching</li>
+          <li>Fare calculation</li>
+          <li>Surge pricing</li>
+          <li>Trip history</li>
+          <li>Payment processing</li>
+        </ul>
+      </div>
+      <div class="req-card nonfunc">
+        <div class="r-title">⚡ Non-Functional Requirements</div>
+        <ul>
+          <li>10M+ daily active users</li>
+          <li>Location update every 4 sec</li>
+          <li>Match within 1 minute</li>
+          <li>1km precision</li>
+          <li>Low latency (< 200ms match)</li>
+          <li>99.99% availability</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="estimation">
+    <div class="section-label">Back-of-Envelope Estimation</div>
+    <h2 class="section-title">Uber-এর Numbers</h2>
+    <div class="estimation-grid">
+      <div class="est-card"><span class="est-num">5M</span><span class="est-label">Active Drivers</span></div>
+      <div class="est-card"><span class="est-num">10M</span><span class="est-label">Daily Active Users</span></div>
+      <div class="est-card"><span class="est-num">1.25M</span><span class="est-label">Loc updates/sec</span></div>
+      <div class="est-card"><span class="est-num">~14M</span><span class="est-label">Trips/day</span></div>
+      <div class="est-card"><span class="est-num">63</span><span class="est-label">Countries</span></div>
+      <div class="est-card"><span class="est-num">4 sec</span><span class="est-label">Driver location interval</span></div>
+    </div>
+    <div class="info-box important">
+      <div class="box-label">🔢 Location Update Load</div>
+      5M active drivers × 1 update/4sec = 1.25 million location updates/second। এটা massive write throughput। Standard relational DB handle করতে পারবে না। Specialized time-series storage দরকার।
+    </div>
+  </div>
+
+  <div class="section" id="architecture">
+    <div class="section-label">High Level Architecture</div>
+    <h2 class="section-title">Uber Architecture</h2>
+
+    <div class="diagram">
+      <svg width="680" height="330" viewBox="0 0 680 330">
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#64748b"/></marker>
+          <marker id="arrC" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#06b6d4"/></marker>
+          <marker id="arrG" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#10b981"/></marker>
+        </defs>
+
+        <!-- Driver -->
+        <rect x="10" y="30" width="80" height="50" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="50" y="52" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">DRIVER</text>
+        <text x="50" y="65" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">GPS update</text>
+        <text x="50" y="76" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="7">every 4s</text>
+
+        <path d="M 90 55 L 145 55" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrG)"/>
+
+        <!-- Location Service -->
+        <rect x="145" y="30" width="110" height="50" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="200" y="52" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">LOCATION</text>
+        <text x="200" y="65" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">SERVICE</text>
+        <text x="200" y="76" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Update driver pos</text>
+
+        <path d="M 255 55 L 310 55" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+
+        <!-- Geospatial Index -->
+        <rect x="310" y="20" width="120" height="70" rx="4" fill="#0c1220" stroke="#06b6d4" stroke-width="2"/>
+        <text x="370" y="44" text-anchor="middle" fill="#06b6d4" font-family="JetBrains Mono" font-size="9">GEOSPATIAL</text>
+        <text x="370" y="57" text-anchor="middle" fill="#06b6d4" font-family="JetBrains Mono" font-size="9">INDEX</text>
+        <text x="370" y="70" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Geohash / QuadTree</text>
+        <text x="370" y="82" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="7">Redis GEO</text>
+
+        <!-- Rider -->
+        <rect x="10" y="160" width="80" height="50" rx="4" fill="#0c1220" stroke="#06b6d4" stroke-width="1.5"/>
+        <text x="50" y="182" text-anchor="middle" fill="#06b6d4" font-family="JetBrains Mono" font-size="9">RIDER</text>
+        <text x="50" y="195" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Requests ride</text>
+        <text x="50" y="206" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="7">location: A</text>
+
+        <path d="M 90 185 L 145 185" stroke="#06b6d4" stroke-width="1.5" marker-end="url(#arrC)"/>
+
+        <!-- Trip Service -->
+        <rect x="145" y="160" width="110" height="50" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="200" y="182" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="9">TRIP</text>
+        <text x="200" y="195" text-anchor="middle" fill="#8b5cf6" font-family="JetBrains Mono" font-size="9">SERVICE</text>
+        <text x="200" y="206" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Manage trips</text>
+
+        <path d="M 255 185 L 310 100" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <text x="290" y="145" fill="#475569" font-family="JetBrains Mono" font-size="8">find nearby</text>
+
+        <!-- Matching Service -->
+        <rect x="470" y="85" width="120" height="60" rx="4" fill="#0c1220" stroke="#f97316" stroke-width="1.5"/>
+        <text x="530" y="108" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="9">MATCHING</text>
+        <text x="530" y="121" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="9">SERVICE</text>
+        <text x="530" y="135" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Score + select</text>
+
+        <path d="M 430 55 L 470 110" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <path d="M 255 195 L 470 130" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+
+        <!-- Surge Pricing -->
+        <rect x="470" y="170" width="120" height="50" rx="4" fill="#0c1220" stroke="#eab308" stroke-width="1.2"/>
+        <text x="530" y="192" text-anchor="middle" fill="#eab308" font-family="JetBrains Mono" font-size="9">SURGE PRICING</text>
+        <text x="530" y="207" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Supply/Demand</text>
+
+        <!-- Notification / WebSocket -->
+        <rect x="470" y="240" width="120" height="50" rx="4" fill="#0c1220" stroke="#25d366" stroke-width="1.2"/>
+        <text x="530" y="262" text-anchor="middle" fill="#25d366" font-family="JetBrains Mono" font-size="9">NOTIFICATION</text>
+        <text x="530" y="275" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">WebSocket push</text>
+
+        <!-- Payment -->
+        <rect x="145" y="250" width="110" height="50" rx="4" fill="#0c1220" stroke="#ef4444" stroke-width="1.2"/>
+        <text x="200" y="272" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="9">PAYMENT</text>
+        <text x="200" y="285" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Stripe / Braintree</text>
+
+        <!-- Arrows -->
+        <path d="M 530 145 L 530 170" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <path d="M 530 220 L 530 240" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+        <path d="M 200 210 L 200 250" stroke="#64748b" stroke-width="1.2" marker-end="url(#arr)"/>
+
+        <!-- Labels -->
+        <text x="10" y="320" fill="#475569" font-family="JetBrains Mono" font-size="8">Trip complete → Payment service charges rider, pays driver</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="section" id="geospatial">
+    <div class="section-label">Geospatial Indexing</div>
+    <h2 class="section-title">Geohash — Location Encode করার উপায়</h2>
+    <p>পৃথিবীর যেকোনো location-কে একটা string-এ encode করা যায় — এটাই <strong>Geohash</strong>। Geohash-এর length precision নির্ধারণ করে।</p>
+
+    <table class="compare-table">
+      <tr><th>Geohash Length</th><th>Cell Size (approx)</th><th>Use Case</th></tr>
+      <tr><td>1 character</td><td>5000 × 5000 km</td><td>Country level</td></tr>
+      <tr><td>4 characters</td><td>40 × 20 km</td><td>City level</td></tr>
+      <tr><td>6 characters</td><td>1.2 × 0.6 km</td><td>Neighborhood (Uber uses ~6)</td></tr>
+      <tr><td>8 characters</td><td>38 × 19 meters</td><td>Street level</td></tr>
+      <tr><td>12 characters</td><td>~3.7 cm</td><td>Exact location</td></tr>
+    </table>
+
+    <div class="info-box concept">
+      <div class="box-label">📌 Geohash Magic</div>
+      Dhaka-র একটা location: <strong>hsgtn4</strong>। কাছের locations-এর geohash প্রায় same prefix হয়। "hsgtn" prefix-এর সব drivers = Dhaka-র ওই neighborhood-এ। Database-এ string prefix query করলেই nearby drivers পাওয়া যায়।
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Python</span>
+        <span class="code-file">geospatial_service.py — Redis GEO</span>
+      </div>
+      <pre><span class="kw">import</span> redis
+
+r = redis.<span class="fn">Redis</span>()
+
+<span class="cm"># Driver location update (প্রতি 4 sec)</span>
+<span class="kw">def</span> <span class="fn">update_driver_location</span>(driver_id: <span class="var">str</span>, lat: <span class="var">float</span>, lng: <span class="var">float</span>):
+    <span class="cm"># Redis GEO: GEOADD key longitude latitude member</span>
+    r.<span class="fn">geoadd</span>(<span class="str">"drivers:active"</span>, {driver_id: (lng, lat)})
+    <span class="cm"># Driver status update</span>
+    r.<span class="fn">hset</span>(<span class="str">f"driver:{driver_id}"</span>, mapping={
+        <span class="str">"lat"</span>: lat, <span class="str">"lng"</span>: lng,
+        <span class="str">"status"</span>: <span class="str">"available"</span>,
+        <span class="str">"updated_at"</span>: <span class="fn">now</span>()
+    })
+
+<span class="cm"># Rider request — nearby drivers খুঁজো</span>
+<span class="kw">def</span> <span class="fn">find_nearby_drivers</span>(rider_lat: <span class="var">float</span>, rider_lng: <span class="var">float</span>, radius_km: <span class="var">float</span> = <span class="num">5</span>):
+    <span class="cm"># Redis GEORADIUS: center থেকে radius-এর মধ্যে সব drivers</span>
+    nearby = r.<span class="fn">georadius</span>(
+        <span class="str">"drivers:active"</span>,
+        rider_lng, rider_lat,
+        radius_km,
+        unit=<span class="str">'km'</span>,
+        withcoord=<span class="kw">True</span>,
+        withdist=<span class="kw">True</span>,
+        sort=<span class="str">'ASC'</span>,  <span class="cm"># Closest first</span>
+        count=<span class="num">10</span>     <span class="cm"># Top 10 closest</span>
+    )
+    <span class="kw">return</span> [
+        {<span class="str">"driver_id"</span>: d[<span class="num">0</span>], <span class="str">"distance_km"</span>: d[<span class="num">1</span>], <span class="str">"location"</span>: d[<span class="num">2</span>]}
+        <span class="kw">for</span> d <span class="kw">in</span> nearby
+    ]
+
+<span class="cm"># Example output:</span>
+<span class="cm"># [{"driver_id": "D123", "distance_km": 0.8, "location": (90.4, 23.8)},</span>
+<span class="cm">#  {"driver_id": "D456", "distance_km": 1.2, ...}]</span></pre>
+    </div>
+
+    <h3 class="sub-title">🗺️ QuadTree — Alternative Approach</h3>
+    <div class="info-box tip">
+      <div class="box-label">💡 QuadTree vs Geohash</div>
+      <strong>QuadTree:</strong> Map-কে 4 quadrants-এ ভাগ করো, প্রতিটাকে আবার 4 ভাগ। Dense area = deeper split। Driver খুঁজতে tree traverse করো।<br><br>
+      <strong>Geohash:</strong> Location string-এ encode করো। Prefix = neighborhood। Simpler implementation।<br><br>
+      Uber internally custom Geohash-based system (H3) use করে।
+    </div>
+  </div>
+
+  <div class="section" id="matching">
+    <div class="section-label">Driver Matching</div>
+    <h2 class="section-title">Driver কীভাবে Select করা হয়?</h2>
+    <p>শুধু কাছের driver খুঁজলেই হবে না — সেরা driver বেছে নিতে হবে। Uber matching algorithm multiple factors consider করে।</p>
+
+    <table class="compare-table">
+      <tr><th>Factor</th><th>Weight</th><th>কেন?</th></tr>
+      <tr><td>Distance to rider</td><td>Most important</td><td>Faster pickup</td></tr>
+      <tr><td>Driver rating</td><td>High</td><td>Quality assurance</td></tr>
+      <tr><td>Car type match</td><td>Critical</td><td>UberX vs UberXL</td></tr>
+      <tr><td>Driver acceptance rate</td><td>Medium</td><td>Reliable drivers first</td></tr>
+      <tr><td>ETA accuracy</td><td>Medium</td><td>Historical performance</td></tr>
+    </table>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Python</span>
+        <span class="code-file">matching_service.py</span>
+      </div>
+      <pre><span class="kw">def</span> <span class="fn">match_driver</span>(rider_request, nearby_drivers):
+    <span class="kw">def</span> <span class="fn">score_driver</span>(driver):
+        <span class="cm"># Multi-factor scoring</span>
+        distance_score = <span class="num">1.0</span> / (driver[<span class="str">"distance_km"</span>] + <span class="num">0.1</span>)
+        rating_score = driver[<span class="str">"rating"</span>] / <span class="num">5.0</span>
+        acceptance_score = driver[<span class="str">"acceptance_rate"</span>] / <span class="num">100.0</span>
+        
+        <span class="cm"># Weighted final score</span>
+        <span class="kw">return</span> (
+            distance_score   * <span class="num">0.5</span> +  <span class="cm"># 50% weight — distance most important</span>
+            rating_score     * <span class="num">0.3</span> +  <span class="cm"># 30% weight</span>
+            acceptance_score * <span class="num">0.2</span>    <span class="cm"># 20% weight</span>
+        )
+
+    <span class="cm"># Car type filter করো আগে</span>
+    compatible = [
+        d <span class="kw">for</span> d <span class="kw">in</span> nearby_drivers
+        <span class="kw">if</span> d[<span class="str">"car_type"</span>] == rider_request[<span class="str">"ride_type"</span>]
+    ]
+    
+    <span class="kw">if not</span> compatible:
+        <span class="kw">raise</span> <span class="fn">NoDriverAvailable</span>()
+    
+    <span class="cm"># Best score = best match</span>
+    best_driver = max(compatible, key=score_driver)
+    
+    <span class="cm"># Driver-কে request push করো (WebSocket)</span>
+    websocket.<span class="fn">push</span>(best_driver[<span class="str">"driver_id"</span>], {
+        <span class="str">"type"</span>: <span class="str">"RIDE_REQUEST"</span>,
+        <span class="str">"rider"</span>: rider_request,
+        <span class="str">"expires_in"</span>: <span class="num">15</span>  <span class="cm"># 15 seconds to accept</span>
+    })
+    <span class="kw">return</span> best_driver</pre>
+    </div>
+
+    <h3 class="sub-title">💰 Surge Pricing — Supply/Demand Balance</h3>
+    <div class="info-box warning">
+      <div class="box-label">⚠️ Surge Pricing Formula</div>
+      Surge multiplier = f(demand / supply)। একটা geohash cell-এ open_requests / available_drivers। Ratio বেশি = high surge। Dhaka rush hour-এ 2x-3x surge হতে পারে। Price বাড়লে: (ক) More drivers come → supply বাড়ে, (খ) Some riders wait → demand কমে। Equilibrium achieve হয়।
+    </div>
+  </div>
+
+  <div class="section" id="database">
+    <div class="section-label">Database Choice</div>
+    <h2 class="section-title">কোন Data কোথায়?</h2>
+    <table class="compare-table">
+      <tr><th>Data</th><th>Database</th><th>Why?</th></tr>
+      <tr><td>Driver real-time location</td><td>Redis GEO</td><td>In-memory, GEO commands, fast update</td></tr>
+      <tr><td>Trip data (active)</td><td>Redis / Cassandra</td><td>Hot data, fast access</td></tr>
+      <tr><td>Trip history</td><td>Cassandra</td><td>Time-series, append-only, massive scale</td></tr>
+      <tr><td>User/Driver profiles</td><td>PostgreSQL</td><td>Structured, ACID</td></tr>
+      <tr><td>Payments</td><td>PostgreSQL</td><td>Financial, ACID</td></tr>
+      <tr><td>Maps/Routes</td><td>Google Maps API</td><td>External service</td></tr>
+      <tr><td>Analytics/ML</td><td>Hadoop + Spark</td><td>Batch processing, model training</td></tr>
+    </table>
+  </div>
+
+  <div class="section" id="scaling">
+    <div class="section-label">Scaling Decisions</div>
+    <h2 class="section-title">Scale করার উপায়</h2>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label pro">Strategy</span>
+      <div class="tradeoff-text"><strong>City-based Sharding:</strong> Uber globally 63 countries-এ। প্রতিটা city আলাদাভাবে shard করো। Dhaka-র requests Dhaka shard-এ যায়, London-এর London-এ। Cross-city matching needed না।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label pro">Strategy</span>
+      <div class="tradeoff-text"><strong>Redis GEO for Location:</strong> 5M drivers × 1 update/4sec = 1.25M writes/sec। Redis in-memory, millisecond writes, GEO commands built-in। Perfect fit।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label pro">Strategy</span>
+      <div class="tradeoff-text"><strong>WebSocket for Real-time:</strong> Driver app-এ persistent WebSocket connection। Ride request, matching notification, trip updates — সব push। Polling impractical।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label con">Trade-off</span>
+      <div class="tradeoff-text"><strong>ETA Accuracy:</strong> Real-time traffic data + historical patterns। Google Maps API expensive at scale। Uber নিজেই map data build করেছে (Uber Movement)।</div>
+    </div>
+    <div class="tradeoff-row">
+      <span class="tradeoff-label con">Trade-off</span>
+      <div class="tradeoff-text"><strong>Driver Ghosting:</strong> Driver accept করে তারপর না গেলে? Timeout + automatic reassign। Penalty system। Acceptance rate track করো matching algorithm-এ।</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Tech Stack</div>
+    <h2 class="section-title">Uber-এর Technologies</h2>
+    <h3 class="sub-title">Core Services</h3>
+    <div class="tech-stack">
+      <span class="tech-tag lang">Go (Location/Matching)</span>
+      <span class="tech-tag lang">Python (ML/Surge)</span>
+      <span class="tech-tag lang">Node.js (API)</span>
+      <span class="tech-tag infra">Kubernetes</span>
+    </div>
+    <h3 class="sub-title">Geospatial & Data</h3>
+    <div class="tech-stack">
+      <span class="tech-tag cache">Redis GEO (Driver locations)</span>
+      <span class="tech-tag db">Cassandra (Trip history)</span>
+      <span class="tech-tag db">PostgreSQL (Users/Payments)</span>
+      <span class="tech-tag db">H3 Hexagonal Grid (Custom Geohash)</span>
+    </div>
+    <h3 class="sub-title">Real-time & Analytics</h3>
+    <div class="tech-stack">
+      <span class="tech-tag infra">WebSocket (Driver-Rider)</span>
+      <span class="tech-tag queue">Apache Kafka</span>
+      <span class="tech-tag infra">Apache Flink (Stream processing)</span>
+      <span class="tech-tag infra">Hadoop + Spark (ML training)</span>
+    </div>
+  </div>
+
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🎯</span>
+      <h2>MCQ Test — Uber / Ride Sharing</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">Driver location update কোথায় store করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> MySQL</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Cassandra</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Redis GEO (in-memory)</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> S3</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Redis GEO in-memory, millisecond writes, built-in geospatial commands (GEOADD, GEORADIUS)। 1.25M updates/sec হ্যান্ডেল করতে পারে। MySQL/Cassandra disk-based — এই throughput handle করবে না।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">Geohash কী কাজ করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> GPS signal encrypt করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> lat/lng কে একটা string-এ encode করে, nearby locations-এ similar prefix থাকে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Maps download করে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Driver identity verify করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Geohash = location string। "hsgtn4" = Dhaka-র একটা cell। String prefix = proximity। "hsgtn" prefix match = same neighborhood। Database string prefix query করলে nearby locations পাওয়া যায়। Brilliant encoding।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">Surge pricing কীভাবে calculate করবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> একটা area-তে demand/supply ratio — বেশি হলে বেশি surge</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Random multiplier</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Time of day based (fixed)</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Weather condition</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — Surge = f(open requests / available drivers) in a geohash cell। Ratio বাড়লে surge বাড়ে। Higher price → more drivers come (supply ↑), some riders wait (demand ↓) → natural equilibrium। Real-time streaming analytics দিয়ে calculate হয়।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">Uber globally scale করতে কোন sharding strategy best?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> User ID দিয়ে shard</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Alphabetically shard</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Random shard</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> City/Region দিয়ে shard</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — Ride sharing = local problem। Dhaka-র rider Dhaka-র driver ছাড়া অন্য city-র driver চাই না। City-based sharding natural। Cross-city data join needed না। Dhaka cluster, Chittagong cluster — independently scale করা যায়।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">Driver app-এ real-time ride request notification কোন protocol?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> HTTP polling প্রতি second</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> WebSocket (persistent bidirectional)</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> SMS</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Email</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — Driver app persistent WebSocket connection রাখে। Server যেকোনো সময় push করতে পারে — new ride request, updates। 15 second timeout-এ server decision নিতে পারে। Polling impractical (1.25M drivers × 1 req/sec = 1.25M polls/sec unnecessary load)।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">Trip history (completed rides) কোন database-এ রাখবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Redis</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> MySQL</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Cassandra</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Elasticsearch</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Trip history = time-series, append-only। Driver_id দিয়ে partition, trip_time দিয়ে cluster। 14M trips/day = massive write volume। Cassandra horizontally scale করে, time-range queries efficient। MySQL single node-এ এই write handle করবে না।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">Redis GEORADIUS command কী করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> একটা center point থেকে নির্দিষ্ট radius-এর মধ্যে সব locations return করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Two points-এর মধ্যে route calculate করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Location encrypt করে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Map render করে</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: A</strong> — GEORADIUS key longitude latitude radius unit। Redis internally geohash use করে locations store করে। Radius query milliseconds-এ। Distance, coordinates সহ return করতে পারে। Uber-এর find_nearby_drivers exactly এটা use করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">Geohash precision level 6 (6 characters) কতটুকু area?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> 1 cm × 1 cm</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> 40 km × 20 km</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> 38 m × 19 m</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> ~1.2 km × 0.6 km (Neighborhood level)</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: D</strong> — 6-character geohash ≈ 1.2km × 0.6km। Uber neighborhood/zone level-এর জন্য perfect। এই size-এ একটা cell-এ multiple drivers থাকবে। Too small = too many cells। Too large = too many irrelevant drivers। 6 characters = sweet spot।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">Driver accept না করলে (timeout) কী হবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Rider-কে error দাও</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> 15 sec timeout → automatically next best driver-কে try</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Same driver-কে infinite retry</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Rider-কে refund দাও</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: B</strong> — 15 second window। Accept না করলে → mark as "skipped" → next driver in the ranking। Multiple drivers serially try করো। Driver acceptance rate track করো — low acceptance = lower priority in future matching। Rider experience uninterrupted রাখো।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">Uber-এর H3 hexagonal grid standard Geohash থেকে কোন সুবিধা দেয়?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> More colorful</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Faster encoding</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Equal area hexagons — edge distortion কম, neighbor distance uniform</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Works without GPS</div>
+      </div>
+      <div class="explanation"><strong>সঠিক উত্তর: C</strong> — Standard Geohash rectangular cells — polar region-এ distortion বেশি। H3 hexagonal: প্রতিটা cell equal area। Hexagon-এর সব 6 neighbors সমান distance। Surge pricing, driver distribution analysis-এ uniform analysis possible। Geohash-এর corner distortion problem নেই।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT & CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Final Assignment — Phase 4 Capstone</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ৪-৫ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <ul class="task-list">
+      <li><strong>Architecture Diagram:</strong> Uber-এর complete system diagram আঁকো। Driver location update flow (Driver → Location Service → Redis GEO), Rider request flow (Rider → Trip Service → Geospatial Index → Matching Service → Driver WebSocket), Payment flow আলাদা দেখাও।</li>
+      <li><strong>Geohash Hands-on:</strong> Online Geohash tool (geohash.org) use করে: (ক) তোমার বাসার location-এর 6-character geohash বের করো, (খ) 1 km দূরের একটা location-এর geohash কতটুকু same? (গ) Precision 4 vs 6 vs 8 — area size compare করো।</li>
+      <li><strong>Matching Algorithm:</strong> নিচের 3 জন driver-এর মধ্যে কাকে select করবে? Rider location থেকে: Driver A: 0.5km, rating 4.2, acceptance 90%; Driver B: 1.2km, rating 4.8, acceptance 95%; Driver C: 0.8km, rating 4.5, acceptance 70%। আমার scoring formula দিয়ে calculate করো।</li>
+      <li><strong>Surge Pricing Calculation:</strong> একটা geohash cell-এ: 15 open requests, 3 available drivers। Surge multiplier কত হবে? উপায়: ratio = 15/3 = 5। Surge formula design করো (min surge 1.0x, max 4.0x)।</li>
+      <li><strong>Phase 4 System Comparison:</strong> সব 7টা system-এর জন্য একটা comparison table বানাও। Columns: System Name, Core Challenge, Key Database, Key Algorithm/Pattern, Unique Insight।</li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>Uber architecture diagram</li>
+        <li>Geohash hands-on results</li>
+        <li>Driver scoring calculation</li>
+        <li>Surge pricing formula + example</li>
+        <li>Phase 4 all-systems comparison table</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">System Summary</div>
+    <h2 class="section-title">Uber — Key Takeaways</h2>
+    <table class="compare-table">
+      <tr><th>Challenge</th><th>Solution</th><th>Technology</th></tr>
+      <tr><td>Real-time location</td><td>In-memory geo store</td><td>Redis GEO</td></tr>
+      <tr><td>Nearby driver search</td><td>Geohash prefix + radius</td><td>Redis GEORADIUS</td></tr>
+      <tr><td>Driver matching</td><td>Multi-factor scoring</td><td>Go service</td></tr>
+      <tr><td>Surge pricing</td><td>Supply/demand ratio</td><td>Flink stream processing</td></tr>
+      <tr><td>Driver notifications</td><td>Persistent connection</td><td>WebSocket</td></tr>
+      <tr><td>Trip history</td><td>Time-series storage</td><td>Cassandra</td></tr>
+    </table>
+  </div>
+
+  <!-- Phase Complete Banner -->
+  <div class="phase-complete">
+    <span class="pc-icon">🎉</span>
+    <h2>Phase 4 Complete!</h2>
+    <p>৭টি real-world system design শেখা হয়ে গেছে। এখন তুমি বড় system-এর আর্কিটেকচার বুঝতে পারো।</p>
+    <div class="systems-grid">
+      <div class="sys-chip"><span class="s-icon">🔗</span>URL Shortener<br>Base62 + Redis</div>
+      <div class="sys-chip"><span class="s-icon">🐦</span>Twitter<br>Fanout + Timeline</div>
+      <div class="sys-chip"><span class="s-icon">📺</span>YouTube<br>HLS + CDN</div>
+      <div class="sys-chip"><span class="s-icon">💬</span>WhatsApp<br>WebSocket + Kafka</div>
+      <div class="sys-chip"><span class="s-icon">🛒</span>Amazon<br>SAGA + Locking</div>
+      <div class="sys-chip"><span class="s-icon">🔍</span>Search<br>Inverted Index + Trie</div>
+      <div class="sys-chip"><span class="s-icon">🚗</span>Uber<br>Geohash + Redis GEO</div>
+    </div>
+    <p style="margin-top:16px; color: var(--accent);">🚀 System Design Mastery Course — Phase 4 সম্পূর্ণ!</p>
+  </div>
+
+</div>
+</main>
+<script>
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scroll = doc.scrollTop || document.body.scrollTop;
+  const height = doc.scrollHeight - doc.clientHeight;
+  document.getElementById('progressFill').style.width = (scroll / height * 100) + '%';
+});
+let answered = {};
+document.querySelectorAll('.option').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const block = this.closest('.question-block');
+    const qId = Array.from(document.querySelectorAll('.question-block')).indexOf(block);
+    if (answered[qId]) return;
+    answered[qId] = this.dataset.val;
+    block.querySelectorAll('.option').forEach(o => {
+      o.style.pointerEvents = 'none';
+      if (o.dataset.val === block.dataset.correct) o.classList.add('correct');
+      else if (o.dataset.val === this.dataset.val && this.dataset.val !== block.dataset.correct) o.classList.add('wrong');
+    });
+    block.querySelector('.explanation').classList.add('visible');
+    const correct = Array.from(document.querySelectorAll('.question-block')).filter((b,i) => answered[i] === b.dataset.correct).length;
+    document.getElementById('scoreDisplay').textContent = correct;
+  });
+});
+function submitMCQ() {
+  const blocks = document.querySelectorAll('.question-block');
+  const unanswered = blocks.length - Object.keys(answered).length;
+  if (unanswered > 0) { alert(`এখনও ${unanswered}টা প্রশ্নের উত্তর দাওনি!`); return; }
+  let correct = Array.from(blocks).filter((b,i) => answered[i] === b.dataset.correct).length;
+  const banner = document.getElementById('resultBanner');
+  banner.classList.add('visible');
+  if (correct >= 7) { banner.classList.add('pass'); banner.textContent = `🎉 অভিনন্দন! ${correct}/10 সঠিক। Phase 4 সম্পূর্ণ!`; }
+  else { banner.classList.add('fail'); banner.textContent = `📖 ${correct}/10 সঠিক। আরেকবার পড়ো। ৭/১০ পেলেই pass।`; }
+}
+</script>
+</body>
+</html>
