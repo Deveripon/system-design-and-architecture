@@ -5,12 +5,10 @@ import { TopicHeader } from "@/components/course/topic-header";
 import { InfoBox } from "@/components/course/info-box";
 import Link from "next/link";
 import { ArrowLeft, Rocket } from "lucide-react";
-import { ScalabilityContent } from "@/components/course/topics/scalability-content";
 import { TopicNavigation } from "@/components/course/topic-navigation";
-
-const TOPIC_COMPONENTS: Record<string, React.ComponentType> = {
-  scalability: ScalabilityContent,
-};
+import { BorderCross } from "@/components/course/border-cross";
+import { contentMap } from "@/content";
+import { DynamicTopicContent } from "@/components/course/dynamic-topic-content";
 
 export default async function TopicPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: topicId } = await params;
@@ -30,7 +28,7 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
   const prevTopic = currentIdx > 0 ? { id: allTopics[currentIdx - 1].id, title: allTopics[currentIdx - 1].title } : null;
   const nextTopic = currentIdx < allTopics.length - 1 ? { id: allTopics[currentIdx + 1].id, title: allTopics[currentIdx + 1].title } : null;
 
-  const Content = TOPIC_COMPONENTS[topicId];
+  const contentData = contentMap[topicId];
 
   return (
     <div className="space-y-12 animate-in fade-in duration-500">
@@ -38,16 +36,16 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
         phase={phase?.title || "Course Topic"}
         topicNum="--"
         title={topic.title}
-        time="৩০-৪৫ মিনিট"
-        level="Intermediate"
-        type="Theory & Practice"
+        time={topic.time || "৩০-৪৫ মিনিট"}
+        level={topic.level || "Intermediate"}
+        type={topic.type || "Theory & Practice"}
       />
 
-      {Content ? (
-        <Content />
+      {contentData ? (
+        <DynamicTopicContent data={contentData} />
       ) : (
-        <>
-          <section className="min-h-[400px] flex flex-col items-center justify-center text-center p-12 rounded-none border border-dashed border-border bg-muted/20">
+        <BorderCross>
+          <section className="min-h-[400px] flex flex-col items-center justify-center text-center p-12 rounded-none border border-border bg-muted/20">
             <div className="w-20 h-20 border border-primary flex items-center justify-center mb-6 bg-primary/5">
               <Rocket className="w-10 h-10 text-primary" />
             </div>
@@ -86,7 +84,7 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
               </div>
             </InfoBox>
           </div>
-        </>
+        </BorderCross>
       )}
 
       <TopicNavigation prev={prevTopic} next={nextTopic} />

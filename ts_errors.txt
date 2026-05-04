@@ -1,0 +1,19 @@
+components/course/assessment-sections.tsx(12,10): error TS2305: Module '"../../types/content"' has no exported member 'TopicAssessment'.
+components/course/dynamic-topic-content.tsx(81,29): error TS2322: Type 'ReactNode[]' is not assignable to type 'string[]'.
+  Type 'ReactNode' is not assignable to type 'string'.
+    Type 'undefined' is not assignable to type 'string'.
+components/course/dynamic-topic-content.tsx(119,35): error TS2322: Type 'ReactNode[]' is not assignable to type 'string[]'.
+  Type 'ReactNode' is not assignable to type 'string'.
+    Type 'undefined' is not assignable to type 'string'.
+content/scalability.tsx(471,21): error TS2322: Type 'string' is not assignable to type '{ key: string; text: string; isCorrect: boolean; explanation: string; }'.
+content/scalability.tsx(472,21): error TS2322: Type 'string' is not assignable to type '{ key: string; text: string; isCorrect: boolean; explanation: string; }'.
+content/scalability.tsx(473,21): error TS2322: Type 'string' is not assignable to type '{ key: string; text: string; isCorrect: boolean; explanation: string; }'.
+content/scalability.tsx(474,21): error TS2322: Type 'string' is not assignable to type '{ key: string; text: string; isCorrect: boolean; explanation: string; }'.
+content/scalability.tsx(484,21): error TS2322: Type 'string' is not assignable to type '{ key: string; text: string; isCorrect: boolean; explanation: string; }'.
+content/scalability.tsx(485,21): error TS2322: Type 'string' is not assignable to type '{ key: string; text: string; isCorrect: boolean; explanation: string; }'.
+content/scalability.tsx(486,21): error TS2322: Type 'string' is not assignable to type '{ key: string; text: string; isCorrect: boolean; explanation: string; }'.
+content/scalability.tsx(487,21): error TS2322: Type 'string' is not assignable to type '{ key: string; text: string; isCorrect: boolean; explanation: string; }'.
+content/scalability.tsx(496,21): error TS2322: Type 'string' is not assignable to type '{ key: string; text: string; isCorrect: boolean; explanation: string; }'.
+content/scalability.tsx(497,21): error TS2322: Type 'string' is not assignable to type '{ key: string; text: string; isCorrect: boolean; explanation: string; }'.
+content/scalability.tsx(498,21): error TS2322: Type 'string' is not assignable to type '{ key: string; text: string; isCorrect: boolean; explanation: string; }'.
+content/scalability.tsx(499,21): error TS2322: Type 'string' is not assignable to type '{ key: string; text: string; isCorrect: boolean; explanation: string; }'.

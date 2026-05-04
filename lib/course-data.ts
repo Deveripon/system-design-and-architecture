@@ -36,6 +36,9 @@ export const courseData = [
                 title: 'Scalability Fundamentals',
                 icon: Zap,
                 tag: 'CORE',
+                time: '৩০-৪৫ মিনিট',
+                level: 'Intermediate',
+                type: 'Theory & Practice',
                 summary:
                     'Vertical vs Horizontal Scaling, এর পার্থক্য, কখন কোনটা ব্যবহার করবে।',
                 details:
@@ -56,6 +59,9 @@ export const courseData = [
                 title: 'Networking Basics for Engineers',
                 icon: Network,
                 tag: 'CORE',
+                time: '৪৫-৬০ মিনিট',
+                level: 'Beginner',
+                type: 'Foundations',
                 summary:
                     'TCP/IP, DNS, HTTP/HTTPS, WebSocket — সিস্টেম ডিজাইনের জন্য যা জানা মাস্ট।',
                 details:
@@ -72,6 +78,9 @@ export const courseData = [
                 title: 'Database Fundamentals',
                 icon: Database,
                 tag: 'CORE',
+                time: '৬০-৯০ মিনিট',
+                level: 'Intermediate',
+                type: 'Theory & Labs',
                 summary:
                     'SQL vs NoSQL, ACID properties, indexes, transactions — সবকিছু ক্লিয়ার করো।',
                 details:
@@ -88,6 +97,9 @@ export const courseData = [
                 title: 'CAP Theorem & Consistency',
                 icon: Box,
                 tag: 'THEORY',
+                time: '৩০-৪৫ মিনিট',
+                level: 'Advanced',
+                type: 'Architectural Theory',
                 summary:
                     'Consistency, Availability, Partition Tolerance — distributed system এর মূল ত্রিভুজ।',
                 details:
@@ -110,6 +122,9 @@ export const courseData = [
                 title: 'Caching Strategy',
                 icon: Cpu,
                 tag: 'HIGH IMPACT',
+                time: '৪৫-৬০ মিনিট',
+                level: 'Intermediate',
+                type: 'Performance Optimization',
                 summary:
                     'Cache এর সঠিক ব্যবহারে system ১০-১০০x ফাস্ট হয়। এটা না জানলে চলবে না।',
                 details:
@@ -126,6 +141,9 @@ export const courseData = [
                 title: 'Load Balancing',
                 icon: Scale,
                 tag: 'HIGH IMPACT',
+                time: '৩০-৪৫ মিনিট',
+                level: 'Intermediate',
+                type: 'Traffic Management',
                 summary:
                     'Traffic কীভাবে distribute করবে — algorithms, health checks, sticky sessions।',
                 details:
@@ -142,6 +160,9 @@ export const courseData = [
                 title: 'Message Queues & Event Streaming',
                 icon: Mail,
                 tag: 'MUST KNOW',
+                time: '৬০-৯০ মিনিট',
+                level: 'Intermediate',
+                type: 'Async Systems',
                 summary:
                     'Async communication, decoupling services — modern distributed system এর মেরুদণ্ড।',
                 details:
@@ -158,6 +179,9 @@ export const courseData = [
                 title: 'API Design & Gateway',
                 icon: Globe,
                 tag: 'MUST KNOW',
+                time: '৪৫-৬০ মিনিট',
+                level: 'Intermediate',
+                type: 'System Integration',
                 summary:
                     'REST vs GraphQL vs gRPC, API versioning, rate limiting, API Gateway pattern।',
                 details:
@@ -174,6 +198,9 @@ export const courseData = [
                 title: 'Database Sharding & Replication',
                 icon: Server,
                 tag: 'ADVANCED',
+                time: '৬০-৯০ মিনিট',
+                level: 'Advanced',
+                type: 'Database Scaling',
                 summary:
                     'Large-scale database management — horizontal partitioning এবং data redundancy।',
                 details:
@@ -189,6 +216,9 @@ export const courseData = [
                 title: 'CDN & Object Storage',
                 icon: Cloud,
                 tag: 'PRACTICAL',
+                time: '৩০-৪৫ মিনিট',
+                level: 'Beginner',
+                type: 'Static Assets',
                 summary:
                     'Static assets, images, videos globally fast serve করার জন্য। S3, CloudFront মাস্ট।',
                 details:
@@ -212,6 +242,9 @@ export const courseData = [
                 title: 'Microservices Architecture',
                 icon: Puzzle,
                 tag: 'ARCHITECTURE',
+                time: '৬০-৯০ মিনিট',
+                level: 'Intermediate',
+                type: 'Architecture Strategy',
                 summary:
                     'Monolith থেকে Microservices এ যাওয়ার পথ, trade-offs, service mesh।',
                 details:
@@ -228,6 +261,9 @@ export const courseData = [
                 title: 'Distributed Consensus & Coordination',
                 icon: Lock,
                 tag: 'DEEP',
+                time: '৯০-১২০ মিনিট',
+                level: 'Advanced',
+                type: 'Deep Theory',
                 summary:
                     'Raft, Paxos, leader election — distributed system এ agreement কীভাবে হয়।',
                 details:
@@ -244,6 +280,9 @@ export const courseData = [
                 title: 'Circuit Breaker & Resilience',
                 icon: RefreshCw,
                 tag: 'RELIABILITY',
+                time: '৪৫-৬০ মিনিট',
+                level: 'Intermediate',
+                type: 'System Reliability',
                 summary:
                     'Cascading failures থামানো — Circuit Breaker, Retry, Timeout patterns।',
                 details:
@@ -260,6 +299,9 @@ export const courseData = [
                 title: 'Rate Limiting & Throttling',
                 icon: Waves,
                 tag: 'SECURITY',
+                time: '৩০-৪৫ মিনিট',
+                level: 'Intermediate',
+                type: 'Resource Protection',
                 summary:
                     'DDoS protection, fair usage — Token Bucket, Sliding Window algorithms।',
                 details:
@@ -283,6 +325,9 @@ export const courseData = [
                 title: 'Design Twitter/X',
                 icon: Share2,
                 tag: 'INTERVIEW FAV',
+                time: '৯০-১২০ মিনিট',
+                level: 'Advanced',
+                type: 'System Design Case',
                 summary:
                     '১০০M+ user, tweets, timeline, notifications — popular interview question।',
                 details:
@@ -299,6 +344,9 @@ export const courseData = [
                 title: 'Design YouTube/Netflix',
                 icon: Play,
                 tag: 'INTERVIEW FAV',
+                time: '৯০-১২০ মিনিট',
+                level: 'Advanced',
+                type: 'System Design Case',
                 summary:
                     'Video upload, encoding, streaming, CDN — media system এর জটিলতা।',
                 details:
@@ -315,6 +363,9 @@ export const courseData = [
                 title: 'Design URL Shortener (TinyURL)',
                 icon: Link,
                 tag: 'BEGINNER',
+                time: '৪৫-৬০ মিনিট',
+                level: 'Beginner',
+                type: 'System Design Case',
                 summary:
                     'Simple কিন্তু tricky — hash collision, redirect latency, analytics।',
                 details:
@@ -330,6 +381,9 @@ export const courseData = [
                 title: 'Design WhatsApp/Chat System',
                 icon: MessageSquare,
                 tag: 'INTERVIEW FAV',
+                time: '৬০-৯০ মিনিট',
+                level: 'Intermediate',
+                type: 'System Design Case',
                 summary:
                     'Real-time messaging, message storage, group chat, delivery receipts।',
                 details:
@@ -346,6 +400,9 @@ export const courseData = [
                 title: 'Design Amazon/E-commerce',
                 icon: ShoppingCart,
                 tag: 'COMPLEX',
+                time: '৯০-১২০ মিনিট',
+                level: 'Advanced',
+                type: 'System Design Case',
                 summary:
                     'Product catalog, inventory, orders, payment — পুরো e-commerce।',
                 details:
@@ -361,6 +418,9 @@ export const courseData = [
                 title: 'Design Search Engine (Typeahead)',
                 icon: Search,
                 tag: 'DATA INTENSIVE',
+                time: '৬০-৯০ মিনিট',
+                level: 'Advanced',
+                type: 'System Design Case',
                 summary:
                     'Auto-complete, search ranking, indexing — Google Search এর পেছনে।',
                 details:
@@ -384,6 +444,9 @@ export const courseData = [
                 title: 'Security in System Design',
                 icon: ShieldAlert,
                 tag: 'CRITICAL',
+                time: '৬০-৯০ মিনিট',
+                level: 'Advanced',
+                type: 'System Security',
                 summary:
                     'Authentication, Authorization, Encryption, OWASP — secure system design।',
                 details:
@@ -400,6 +463,9 @@ export const courseData = [
                 title: 'Observability: Logging, Metrics, Tracing',
                 icon: BarChart3,
                 tag: 'PRODUCTION',
+                time: '৬০-৯০ মিনিট',
+                level: 'Advanced',
+                type: 'Ops & Monitoring',
                 summary:
                     'Distributed system এ কী হচ্ছে বোঝার জন্য — 3 pillars of observability।',
                 details:
@@ -416,6 +482,9 @@ export const courseData = [
                 title: 'Cloud Architecture & IaC (AWS, Terraform, Serverless)',
                 icon: CloudUpload,
                 tag: 'MODERN',
+                time: '৯০-১২০ মিনিট',
+                level: 'Advanced',
+                type: 'Cloud Engineering',
                 summary:
                     'AWS/GCP/Azure, serverless, Infrastructure as Code — modern deployment।',
                 details:
@@ -432,6 +501,9 @@ export const courseData = [
                 title: 'CQRS & Event Sourcing',
                 icon: Repeat,
                 tag: 'ADVANCED',
+                time: '৯০-১২০ মিনিট',
+                level: 'Expert',
+                type: 'Enterprise Patterns',
                 summary:
                     'CQRS, Event Sourcing — enterprise pattern for complex domains।',
                 details:
@@ -447,6 +519,9 @@ export const courseData = [
                 title: 'Deployment Patterns (Blue-Green, Canary, Rolling)',
                 icon: RefreshCw,
                 tag: 'DEVOPS',
+                time: '৪৫-৬০ মিনিট',
+                level: 'Intermediate',
+                type: 'DevOps Strategy',
                 summary:
                     'Zero-downtime deployment strategies and managing release risks।',
                 details:
@@ -463,6 +538,9 @@ export const courseData = [
                 title: 'Advanced Data Structures (Bloom Filter, HyperLogLog, Count-Min Sketch)',
                 icon: Database,
                 tag: 'EXPERT',
+                time: '৯০-১২০ মিনিট',
+                level: 'Expert',
+                type: 'Algorithms at Scale',
                 summary:
                     'Probabilistic data structures for massive scale and low memory footprint।',
                 details:

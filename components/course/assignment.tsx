@@ -5,8 +5,8 @@ interface AssignmentProps {
   title: string;
   time: string;
   difficulty: string;
-  tasks: string[];
-  deliverables: string[];
+  tasks: React.ReactNode[];
+  deliverables: React.ReactNode[];
 }
 
 export function Assignment({ title, time, difficulty, tasks = [], deliverables = [] }: AssignmentProps) {
@@ -37,7 +37,7 @@ export function Assignment({ title, time, difficulty, tasks = [], deliverables =
             {tasks.map((task, idx) => (
               <li key={idx} className="flex gap-6 group">
                 <span className="text-xl font-black text-muted-foreground/30 group-hover:text-primary transition-colors leading-none">0{idx + 1}</span>
-                <p className="text-base text-muted-foreground leading-relaxed font-medium" dangerouslySetInnerHTML={{ __html: task }} />
+                <p className="text-base text-muted-foreground leading-relaxed font-medium">{task}</p>
               </li>
             ))}
           </ul>

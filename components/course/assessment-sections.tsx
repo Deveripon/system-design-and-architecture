@@ -1,0 +1,157 @@
+'use client';
+
+import { TopicData } from '../../types/content';
+import { ChevronDown } from 'lucide-react';
+import React from 'react';
+import { Assignment } from './assignment';
+import { BorderCross } from './border-cross';
+import { CodeBlock } from './code-block';
+import { InfoBox } from './info-box';
+import { MCQ } from './mcq';
+import { StepFlow } from './step-flow';
+import { SubHeader } from './sub-header';
+
+export const KnowledgeCheckSection = React.memo(
+    ({
+        questions,
+        index,
+    }: {
+        questions: NonNullable<TopicData['knowledgeCheck']>['questions'];
+        index: string;
+    }) => {
+        const [isExpanded, setIsExpanded] = React.useState(false);
+
+        return (
+            <BorderCross className='p-10'>
+                <section id='mcq' className='scroll-mt-20'>
+                    <div
+                        className='flex items-center justify-between cursor-pointer group'
+                        onClick={() => setIsExpanded(!isExpanded)}>
+                        <SubHeader index={index} title='Knowledge Check' />
+                        <button className='flex items-center gap-2 px-4 py-2 border border-border bg-muted/5 group-hover:bg-muted/20 group-hover:border-primary/50 transition-all font-mono text-[10px] uppercase tracking-widest text-muted-foreground'>
+                            {isExpanded ? 'Hide Quiz' : 'Take Quiz'}
+                            <ChevronDown
+                                className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+                            />
+                        </button>
+                    </div>
+
+                    {isExpanded && (
+                        <div className=' animate-in fade-in slide-in-from-top-4 duration-300'>
+                            <MCQ questions={questions} />
+                        </div>
+                    )}
+                </section>
+            </BorderCross>
+        );
+    }
+);
+
+export const AssignmentSection = React.memo(
+    ({ data, index }: { data: NonNullable<TopicData['assignment']>; index: string }) => {
+        const [isExpanded, setIsExpanded] = React.useState(false);
+
+        return (
+            <BorderCross className='p-10'>
+                <section id='assignment' className='scroll-mt-20'>
+                    <div
+                        className='flex items-center justify-between cursor-pointer group'
+                        onClick={() => setIsExpanded(!isExpanded)}>
+                        <SubHeader index={index} title='Assignment & Homework' />
+                        <button className='flex items-center gap-2 px-4 py-2 border border-border bg-muted/5 group-hover:bg-muted/20 group-hover:border-primary/50 transition-all font-mono text-[10px] uppercase tracking-widest text-muted-foreground'>
+                            {isExpanded ? 'Hide Details' : 'View Details'}
+                            <ChevronDown
+                                className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+                            />
+                        </button>
+                    </div>
+
+                    {isExpanded && (
+                        <div className='mt-12 animate-in fade-in slide-in-from-top-4 duration-300'>
+                            <Assignment
+                                title={data.title}
+                                time={data.time}
+                                difficulty={data.difficulty}
+                                tasks={data.tasks}
+                                deliverables={data.deliverables}
+                            />
+                        </div>
+                    )}
+                </section>
+            </BorderCross>
+        );
+    }
+);
+
+export const PracticalLabSection = React.memo(
+    ({ data, index }: { data: NonNullable<TopicData['practicalLab']>; index: string }) => {
+        const [isExpanded, setIsExpanded] = React.useState(false);
+
+        return (
+            <BorderCross className='p-10'>
+                <section id='project' className='scroll-mt-20'>
+                    <div
+                        className='flex items-center justify-between cursor-pointer group'
+                        onClick={() => setIsExpanded(!isExpanded)}>
+                        <SubHeader index={index} title='Practical Lab' />
+                        <button className='flex items-center gap-2 px-4 py-2 border border-border bg-muted/5 group-hover:bg-muted/20 group-hover:border-primary/50 transition-all font-mono text-[10px] uppercase tracking-widest text-muted-foreground'>
+                            {isExpanded ? 'Hide Lab' : 'Start Lab'}
+                            <ChevronDown
+                                className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+                            />
+                        </button>
+                    </div>
+
+                    {isExpanded && (
+                        <div className='mt-12 animate-in fade-in slide-in-from-top-4 duration-300'>
+                            <div className='border border-border bg-card overflow-hidden'>
+                                <div className='p-10 border-b border-border bg-emerald-500/10 flex items-center gap-4'>
+                                    <span className='text-3xl'>🚀</span>
+                                    <h2 className='text-2xl font-black uppercase tracking-tighter text-emerald-500 leading-none'>
+                                        {data.title}
+                                    </h2>
+                                </div>
+                                <div className='p-10'>
+                                    <p className='text-muted-foreground mb-8 text-sm font-mono uppercase tracking-widest'>
+                                        {data.subtitle}
+                                    </p>
+
+                                    <StepFlow steps={data.steps} />
+
+                                    {data.codeBlock && (
+                                        <div className='mt-8'>
+                                            <CodeBlock
+                                                language={
+                                                    data.codeBlock.language
+                                                }
+                                                filename={
+                                                    data.codeBlock.filename
+                                                }
+                                                code={data.codeBlock.code}
+                                            />
+                                        </div>
+                                    )}
+
+                                    {data.tip && (
+                                        <div className='mt-8'>
+                                            <InfoBox
+                                                variant='tip'
+                                                title='Pro Tip'>
+                                                {data.tip}
+                                            </InfoBox>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </section>
+            </BorderCross>
+        );
+    }
+);
+
+KnowledgeCheckSection.displayName = 'KnowledgeCheckSection';
+AssignmentSection.displayName = 'AssignmentSection';
+PracticalLabSection.displayName = 'PracticalLabSection';
+

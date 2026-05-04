@@ -2,7 +2,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 
 interface CompareTableProps {
-  headers: string[];
+  headers: React.ReactNode[];
   rows: (string | React.ReactNode)[][];
 }
 

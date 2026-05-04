@@ -1,8 +1,9 @@
+import React, { ReactNode } from "react";
 import { SubHeader } from "./sub-header";
 
 interface Step {
-  title: string;
-  description: string;
+  title: ReactNode;
+  description: ReactNode;
 }
 
 interface StepFlowProps {
