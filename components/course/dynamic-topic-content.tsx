@@ -1,6 +1,6 @@
 'use client';
 
-import { ContentBlock, TopicData } from '../../types/content';
+import { ContentBlock, TopicData, CONTENT_TYPES } from '../../types/content';
 import {
     AssignmentSection,
     KnowledgeCheckSection,
@@ -126,15 +126,53 @@ export function DynamicTopicContent({ data }: { data: TopicData }) {
                     data={data.practicalLab}
                 />
             )}
+
+            {data.phaseComplete && (
+                <BorderCross className='p-10'>
+                    <div className='flex flex-col items-center text-center py-12'>
+                        <div className='text-6xl mb-8'>🎉</div>
+                        <h2 className='text-5xl font-heading mb-6 tracking-tight'>
+                            {data.phaseComplete.title}
+                        </h2>
+                        <p className='text-xl text-muted-foreground leading-relaxed max-w-2xl mb-12'>
+                            {data.phaseComplete.description}
+                        </p>
+
+                        <div className='flex flex-wrap justify-center gap-4 mb-16'>
+                            {data.phaseComplete.topics.map(topic => (
+                                <div
+                                    key={topic.id}
+                                    className='px-6 py-3 border border-emerald-500/30 bg-emerald-500/5 text-emerald-400 font-mono text-xs uppercase tracking-widest flex items-center gap-3'
+                                >
+                                    <span className='text-emerald-500 font-bold'>
+                                        ✓
+                                    </span>
+                                    {topic.title}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className='w-full max-w-3xl p-10 border border-primary/20 bg-primary/5 relative overflow-hidden group'>
+                            <div className='absolute top-0 left-0 w-full h-1 bg-primary/20' />
+                            <h4 className='font-mono text-xs font-bold uppercase tracking-[0.3em] text-primary mb-6'>
+                                {data.phaseComplete.nextPhase.title}
+                            </h4>
+                            <p className='text-muted-foreground leading-relaxed font-sans text-lg'>
+                                {data.phaseComplete.nextPhase.topics.join(' · ')}
+                            </p>
+                        </div>
+                    </div>
+                </BorderCross>
+            )}
         </div>
     );
 }
 
 function BlockRenderer({ block }: { block: ContentBlock }) {
     switch (block.type) {
-        case 'html':
+        case CONTENT_TYPES.HTML:
             return <div className='mb-8'>{block.content}</div>;
-        case 'info-box':
+        case CONTENT_TYPES.INFO_BOX:
             return (
                 <div className='mb-8'>
                     <InfoBox variant={block.variant} title={block.title}>
@@ -142,13 +180,13 @@ function BlockRenderer({ block }: { block: ContentBlock }) {
                     </InfoBox>
                 </div>
             );
-        case 'compare-table':
+        case CONTENT_TYPES.COMPARE_TABLE:
             return (
                 <div className='mb-8'>
                     <CompareTable headers={block.headers} rows={block.rows} />
                 </div>
             );
-        case 'code-block':
+        case CONTENT_TYPES.CODE_BLOCK:
             return (
                 <div className='mb-8'>
                     <CodeBlock
@@ -158,13 +196,13 @@ function BlockRenderer({ block }: { block: ContentBlock }) {
                     />
                 </div>
             );
-        case 'step-flow':
+        case CONTENT_TYPES.STEP_FLOW:
             return (
                 <div className='mb-8'>
                     <StepFlow steps={block.steps} />
                 </div>
             );
-        case 'custom':
+        case CONTENT_TYPES.CUSTOM:
             return <div className='mb-8'>{block.component}</div>;
         default:
             return null;

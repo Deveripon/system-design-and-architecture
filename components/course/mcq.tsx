@@ -10,7 +10,7 @@ interface Option {
   key: string;
   text: string;
   isCorrect: boolean;
-  explanation: string;
+  explanation?: string;
 }
 
 interface Question {

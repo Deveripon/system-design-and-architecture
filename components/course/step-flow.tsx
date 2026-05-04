@@ -14,7 +14,7 @@ export function StepFlow({ steps = [] }: StepFlowProps) {
   return (
     <div className="my-16 border-t border-l border-border grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
       {steps.map((step, idx) => (
-        <div key={idx} className="p-10 border-r border-b border-border bg-card hover:bg-white/[0.02] transition-colors group">
+        <div key={idx} className="p-10 border-r border-b border-border bg-card hover:bg-white/2 transition-colors group">
           <div className="flex flex-col gap-8">
             <SubHeader index={`STEP 0${idx + 1}`} title="System Task" />
             <div className="space-y-4">

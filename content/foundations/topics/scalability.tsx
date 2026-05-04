@@ -2,8 +2,12 @@
 import {
     HorizontalScalingDiagram,
     VerticalScalingDiagram,
-} from '../components/course/topics/scalability/diagrams';
-import { TopicData } from '../types/content';
+} from '../../../components/course/topics/scalability/diagrams';
+import {
+    CONTENT_TYPES,
+    INFO_BOX_VARIANTS,
+    TopicData,
+} from '../../../types/content';
 
 export const scalabilityContent: TopicData = {
     id: 'scalability',
@@ -16,7 +20,7 @@ export const scalabilityContent: TopicData = {
             ),
             blocks: [
                 {
-                    type: 'html',
+                    type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
@@ -37,8 +41,8 @@ export const scalabilityContent: TopicData = {
                     ),
                 },
                 {
-                    type: 'info-box',
-                    variant: 'concept',
+                    type: CONTENT_TYPES.INFO_BOX,
+                    variant: INFO_BOX_VARIANTS.CONCEPT,
                     title: 'DEFINITION',
                     content: (
                         <p>
@@ -59,7 +63,7 @@ export const scalabilityContent: TopicData = {
             ),
             blocks: [
                 {
-                    type: 'html',
+                    type: CONTENT_TYPES.HTML,
                     content: (
                         <p className='text-muted-foreground leading-relaxed mb-10 text-lg'>
                             Vertical scaling মানে তোমার existing server কে আরো
@@ -68,11 +72,11 @@ export const scalabilityContent: TopicData = {
                     ),
                 },
                 {
-                    type: 'custom',
+                    type: CONTENT_TYPES.CUSTOM,
                     component: <VerticalScalingDiagram />,
                 },
                 {
-                    type: 'html',
+                    type: CONTENT_TYPES.HTML,
                     content: (
                         <>
                             <h3 className='text-xs font-mono font-bold uppercase tracking-[0.3em] text-blue-400 mb-10 mt-20'>
@@ -112,8 +116,8 @@ export const scalabilityContent: TopicData = {
                     ),
                 },
                 {
-                    type: 'info-box',
-                    variant: 'warning',
+                    type: CONTENT_TYPES.INFO_BOX,
+                    variant: INFO_BOX_VARIANTS.WARNING,
                     title: 'VERTICAL SCALING এর সীমাবদ্ধতা',
                     content: (
                         <p className='text-lg leading-relaxed'>
@@ -136,7 +140,7 @@ export const scalabilityContent: TopicData = {
             ),
             blocks: [
                 {
-                    type: 'html',
+                    type: CONTENT_TYPES.HTML,
                     content: (
                         <p className='text-muted-foreground leading-relaxed mb-10 text-lg'>
                             Horizontal scaling মানে একটা বড় মেশিনের বদলে
@@ -146,12 +150,12 @@ export const scalabilityContent: TopicData = {
                     ),
                 },
                 {
-                    type: 'custom',
+                    type: CONTENT_TYPES.CUSTOM,
                     component: <HorizontalScalingDiagram />,
                 },
                 {
-                    type: 'info-box',
-                    variant: 'tip',
+                    type: CONTENT_TYPES.INFO_BOX,
+                    variant: INFO_BOX_VARIANTS.TIP,
                     title: 'Key Insight',
                     content: (
                         <>
@@ -163,7 +167,7 @@ export const scalabilityContent: TopicData = {
                     ),
                 },
                 {
-                    type: 'html',
+                    type: CONTENT_TYPES.HTML,
                     content: (
                         <>
                             <h3 className='text-xl font-bold mt-16 mb-6'>
@@ -179,7 +183,7 @@ export const scalabilityContent: TopicData = {
                     ),
                 },
                 {
-                    type: 'compare-table',
+                    type: CONTENT_TYPES.COMPARE_TABLE,
                     headers: ['বিষয়', 'Stateless ✅', 'Stateful ❌'],
                     rows: [
                         [
@@ -213,7 +217,7 @@ export const scalabilityContent: TopicData = {
                     ],
                 },
                 {
-                    type: 'code-block',
+                    type: CONTENT_TYPES.CODE_BLOCK,
                     language: 'javascript',
                     filename: 'stateless-auth.js',
                     code: `// ❌ STATEFUL — এটা করো না (horizontal scaling এ সমস্যা)
@@ -249,7 +253,7 @@ app.post('/login', async (req, res) => {
             ),
             blocks: [
                 {
-                    type: 'compare-table',
+                    type: CONTENT_TYPES.COMPARE_TABLE,
                     headers: [
                         'বিষয়',
                         'Vertical Scaling',
@@ -306,8 +310,8 @@ app.post('/login', async (req, res) => {
                     ],
                 },
                 {
-                    type: 'info-box',
-                    variant: 'important',
+                    type: CONTENT_TYPES.INFO_BOX,
+                    variant: INFO_BOX_VARIANTS.IMPORTANT,
                     title: 'Interview এ এটা বলো',
                     content: (
                         <>
@@ -331,7 +335,7 @@ app.post('/login', async (req, res) => {
             ),
             blocks: [
                 {
-                    type: 'html',
+                    type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-12'>
                             <div className='space-y-4'>
@@ -363,8 +367,8 @@ app.post('/login', async (req, res) => {
                     ),
                 },
                 {
-                    type: 'info-box',
-                    variant: 'tip',
+                    type: CONTENT_TYPES.INFO_BOX,
+                    variant: INFO_BOX_VARIANTS.TIP,
                     title: 'এটাই মূল শিক্ষা',
                     content: (
                         <>
@@ -376,7 +380,7 @@ app.post('/login', async (req, res) => {
                     ),
                 },
                 {
-                    type: 'html',
+                    type: CONTENT_TYPES.HTML,
                     content: (
                         <>
                             <h3 className='text-xl font-bold mt-16 mb-6'>
@@ -392,7 +396,7 @@ app.post('/login', async (req, res) => {
                     ),
                 },
                 {
-                    type: 'code-block',
+                    type: CONTENT_TYPES.CODE_BLOCK,
                     language: 'nginx',
                     filename: 'nginx.conf',
                     code: `# Simple Nginx Load Balancer config
@@ -428,7 +432,7 @@ server {
             ),
             blocks: [
                 {
-                    type: 'html',
+                    type: CONTENT_TYPES.HTML,
                     content: (
                         <>
                             <h3 className='text-xl font-bold mb-6'>
@@ -442,7 +446,7 @@ server {
                     ),
                 },
                 {
-                    type: 'compare-table',
+                    type: CONTENT_TYPES.COMPARE_TABLE,
                     headers: ['Approach', 'কীভাবে কাজ করে', 'কখন ব্যবহার করো'],
                     rows: [
                         [
@@ -463,7 +467,7 @@ server {
                     ],
                 },
                 {
-                    type: 'html',
+                    type: CONTENT_TYPES.HTML,
                     content: (
                         <h3 className='text-xl font-bold mt-16 mb-6'>
                             2. The Bottleneck Rule
@@ -471,8 +475,8 @@ server {
                     ),
                 },
                 {
-                    type: 'info-box',
-                    variant: 'concept',
+                    type: CONTENT_TYPES.INFO_BOX,
+                    variant: INFO_BOX_VARIANTS.CONCEPT,
                     title: '📌 Core Principle',
                     content: (
                         <>
@@ -484,7 +488,7 @@ server {
                     ),
                 },
                 {
-                    type: 'html',
+                    type: CONTENT_TYPES.HTML,
                     content: (
                         <>
                             <h3 className='text-xl font-bold mt-16 mb-6'>
@@ -500,7 +504,7 @@ server {
                     ),
                 },
                 {
-                    type: 'code-block',
+                    type: CONTENT_TYPES.CODE_BLOCK,
                     language: 'bash',
                     filename: 'auto-scaling.sh',
                     code: `# AWS Auto Scaling Group তৈরি করা

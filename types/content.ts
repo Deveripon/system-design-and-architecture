@@ -1,21 +1,46 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ReactNode } from 'react';
 
+export const CONTENT_TYPES = {
+    HTML: 'html',
+    INFO_BOX: 'info-box',
+    COMPARE_TABLE: 'compare-table',
+    CODE_BLOCK: 'code-block',
+    STEP_FLOW: 'step-flow',
+    CUSTOM: 'custom',
+} as const;
+
+export const INFO_BOX_VARIANTS = {
+    CONCEPT: 'concept',
+    WARNING: 'warning',
+    TIP: 'tip',
+    IMPORTANT: 'important',
+} as const;
+
 export type ContentBlock =
-    | { type: 'html'; content: ReactNode }
+    | { type: typeof CONTENT_TYPES.HTML; content: ReactNode }
     | {
-          type: 'info-box';
-          variant: 'concept' | 'warning' | 'tip' | 'important';
+          type: typeof CONTENT_TYPES.INFO_BOX;
+          variant: (typeof INFO_BOX_VARIANTS)[keyof typeof INFO_BOX_VARIANTS];
           title: string;
           content: ReactNode;
       }
-    | { type: 'compare-table'; headers: ReactNode[]; rows: ReactNode[][] }
-    | { type: 'code-block'; language: string; filename?: string; code: string }
     | {
-          type: 'step-flow';
+          type: typeof CONTENT_TYPES.COMPARE_TABLE;
+          headers: ReactNode[];
+          rows: ReactNode[][];
+      }
+    | {
+          type: typeof CONTENT_TYPES.CODE_BLOCK;
+          language: string;
+          filename?: string;
+          code: string;
+      }
+    | {
+          type: typeof CONTENT_TYPES.STEP_FLOW;
           steps: { title: ReactNode; description: ReactNode }[];
       }
-    | { type: 'custom'; component: ReactNode };
+    | { type: typeof CONTENT_TYPES.CUSTOM; component: ReactNode };
 
 export interface TopicSection {
     id: string;
@@ -45,7 +70,7 @@ export interface TopicData {
                 key: string;
                 text: string;
                 isCorrect: boolean;
-                explanation: string;
+                explanation?: string;
             }[];
         }[];
     };
@@ -62,5 +87,14 @@ export interface TopicData {
         steps: { title: ReactNode; description: ReactNode }[];
         codeBlock?: { language: string; filename: string; code: string };
         tip?: ReactNode;
+    };
+    phaseComplete?: {
+        title: string;
+        description: string;
+        topics: { title: string; id: string }[];
+        nextPhase: {
+            title: string;
+            topics: string[];
+        };
     };
 }
