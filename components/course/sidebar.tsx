@@ -4,16 +4,26 @@ import { courseData } from '@/lib/course-data';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { ModeToggle } from '../mode-toggle';
 
 export function Sidebar() {
     const pathname = usePathname();
 
     return (
-        <aside className='fixed left-0 top-0 bottom-0 w-84 bg-muted border-r border-border py-6 overflow-y-auto sidebar-scroll z-40 hidden md:block' style={{ scrollbarWidth: 'thin', scrollbarColor: 'var(--border) transparent' }}>
+        <aside
+            className='fixed left-0 top-0 bottom-0 w-84 bg-muted border-r border-border py-6 overflow-y-auto sidebar-scroll z-40 hidden md:block'
+            style={{
+                scrollbarWidth: 'thin',
+                scrollbarColor: 'var(--border) transparent',
+            }}>
             <div className='px-6 pb-6 mb-6 border-b border-border'>
-                <span className='font-mono text-[10px] text-primary tracking-[0.2em] uppercase block mb-1'>
-                    System Design
-                </span>
+                <div className='flex justify-between'>
+                    {' '}
+                    <span className='font-mono text-[10px] text-primary tracking-[0.2em] uppercase block mb-1'>
+                        System Design
+                    </span>
+                    <ModeToggle />
+                </div>
                 <h1 className='font-heading text-lg font-bold leading-tight'>
                     Mastery Course
                 </h1>
@@ -63,4 +73,5 @@ export function Sidebar() {
         </aside>
     );
 }
+
 

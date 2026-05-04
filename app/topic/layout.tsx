@@ -1,3 +1,4 @@
+import { MobileNav } from '@/components/course/mobile-nav';
 import { Sidebar } from '@/components/course/sidebar';
 
 export default function TopicLayout({
@@ -7,12 +8,15 @@ export default function TopicLayout({
 }) {
     return (
         <div className='min-h-screen flex overflow-hidden'>
-            {/* Sidebar */}
+            {/* Desktop sidebar — hidden on mobile */}
             <Sidebar />
 
+            {/* Mobile top bar + drawer */}
+            <MobileNav />
+
             {/* Main Content */}
-            <main className='flex-1 md:ml-84 bg-background'>
-                <div className='max-w-5xl px-6 py-12 md:px-12 md:py-20 lg:px-20'>
+            <main className='flex-1 md:ml-84 bg-background pt-14 md:pt-0'>
+                <div className='max-w-5xl px-4 py-8 md:px-12 md:py-20 lg:px-20'>
                     {children}
                 </div>
             </main>

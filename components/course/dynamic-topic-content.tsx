@@ -18,13 +18,13 @@ export function DynamicTopicContent({ data }: { data: TopicData }) {
         <div className='space-y-16'>
             {/* Introduction section */}
             {data.introduction && (
-                <BorderCross className='p-10 border-b-0'>
+                <BorderCross className='p-4 md:p-10 border-b-0'>
                     <div className='mb-12'>
                         <span className='px-3 py-1 bg-accent/10 text-accent font-mono text-[10px] uppercase tracking-widest border border-accent/20'>
                             {data.introduction.badge}
                         </span>
                     </div>
-                    <h1 className='text-5xl md:text-6xl font-black uppercase tracking-tighter mb-8 leading-none'>
+                    <h1 className='text-3xl md:text-5xl md:text-6xl font-black uppercase tracking-tighter mb-6 md:mb-8 leading-none'>
                         {data.introduction.title}
                     </h1>
                     <p className='text-xl text-muted-foreground leading-relaxed max-w-3xl mb-12'>
@@ -48,7 +48,7 @@ export function DynamicTopicContent({ data }: { data: TopicData }) {
 
             {/* Dynamic Sections */}
             {data.sections.map(section => (
-                <BorderCross key={section.id} className='p-10'>
+                <BorderCross key={section.id} className='p-4 md:p-10'>
                     <section id={section.id} className='scroll-mt-20'>
                         <SubHeader
                             index={section.subHeader.index}
@@ -68,7 +68,7 @@ export function DynamicTopicContent({ data }: { data: TopicData }) {
 
             {/* Summary */}
             {data.summary && (
-                <BorderCross className='p-10'>
+                <BorderCross className='p-4 md:p-10'>
                     <section id='summary' className='scroll-mt-20'>
                         <SubHeader
                             index={(data.sections.length + 1)
@@ -77,8 +77,8 @@ export function DynamicTopicContent({ data }: { data: TopicData }) {
                             title='Lesson Summary'
                             className='mb-8'
                         />
-                        <h2 className='text-4xl font-black uppercase tracking-tighter mb-8 leading-none'>
-                            SUMMERY — আজকে যা শিখলাম
+                        <h2 className='text-2xl md:text-4xl font-black uppercase tracking-tighter mb-6 md:mb-8 leading-none'>
+                            SUMMARY — আজকে যা শিখলাম
                         </h2>
                         <CompareTable
                             headers={data.summary.headers}
@@ -128,21 +128,21 @@ export function DynamicTopicContent({ data }: { data: TopicData }) {
             )}
 
             {data.phaseComplete && (
-                <BorderCross className='p-10'>
-                    <div className='flex flex-col items-center text-center py-12'>
-                        <div className='text-6xl mb-8'>🎉</div>
-                        <h2 className='text-5xl font-heading mb-6 tracking-tight'>
+                <BorderCross className='p-4 md:p-10'>
+                    <div className='flex flex-col items-center text-center py-8 md:py-12'>
+                        <div className='text-5xl md:text-6xl mb-6 md:mb-8'>🎉</div>
+                        <h2 className='text-3xl md:text-5xl font-heading mb-4 md:mb-6 tracking-tight'>
                             {data.phaseComplete.title}
                         </h2>
-                        <p className='text-xl text-muted-foreground leading-relaxed max-w-2xl mb-12'>
+                        <p className='text-base md:text-xl text-muted-foreground leading-relaxed max-w-2xl mb-8 md:mb-12'>
                             {data.phaseComplete.description}
                         </p>
 
-                        <div className='flex flex-wrap justify-center gap-4 mb-16'>
+                        <div className='flex flex-wrap justify-center gap-3 mb-10 md:mb-16'>
                             {data.phaseComplete.topics.map(topic => (
                                 <div
                                     key={topic.id}
-                                    className='px-6 py-3 border border-emerald-500/30 bg-emerald-500/5 text-emerald-400 font-mono text-xs uppercase tracking-widest flex items-center gap-3'
+                                    className='px-4 md:px-6 py-2 md:py-3 border border-emerald-500/30 bg-emerald-500/5 text-emerald-400 font-mono text-[10px] md:text-xs uppercase tracking-widest flex items-center gap-2 md:gap-3'
                                 >
                                     <span className='text-emerald-500 font-bold'>
                                         ✓
@@ -152,9 +152,9 @@ export function DynamicTopicContent({ data }: { data: TopicData }) {
                             ))}
                         </div>
 
-                        <div className='w-full max-w-3xl p-10 border border-primary/20 bg-primary/5 relative overflow-hidden group'>
+                        <div className='w-full max-w-3xl p-6 md:p-10 border border-primary/20 bg-primary/5 relative overflow-hidden group'>
                             <div className='absolute top-0 left-0 w-full h-1 bg-primary/20' />
-                            <h4 className='font-mono text-xs font-bold uppercase tracking-[0.3em] text-primary mb-6'>
+                            <h4 className='font-mono text-xs font-bold uppercase tracking-[0.3em] text-primary mb-4 md:mb-6'>
                                 {data.phaseComplete.nextPhase.title}
                             </h4>
                             <p className='text-muted-foreground leading-relaxed font-sans text-lg'>

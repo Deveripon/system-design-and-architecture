@@ -19,15 +19,15 @@ export function TopicHeader({
   type
 }: TopicHeaderProps) {
   return (
-    <BorderCross className="py-12 px-10 mb-16 bg-muted/5">
-      <div className="flex flex-col gap-6">
+    <BorderCross className="py-8 px-4 md:py-12 md:px-10 mb-10 md:mb-16 bg-muted/5">
+      <div className="flex flex-col gap-4 md:gap-6">
         <SubHeader index={topicNum} title={phase} />
         
-        <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none">
+        <h1 className="text-3xl sm:text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none">
           {title}
         </h1>
 
-        <div className="flex flex-wrap gap-px bg-border border border-border mt-4 w-fit">
+        <div className="flex flex-wrap gap-px bg-border border border-border mt-2 md:mt-4 w-fit">
           <Badge label="Duration" value={time} />
           <Badge label="Level" value={level} />
           <Badge label="Focus" value={type} />

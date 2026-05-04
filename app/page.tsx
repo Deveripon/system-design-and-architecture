@@ -3,7 +3,6 @@ import { Roadmap } from '@/components/course/roadmap';
 import { SubHeader } from '@/components/course/sub-header';
 import { ExploreButton } from '@/components/explore-button';
 import { ModeToggle } from '@/components/mode-toggle';
-import Link from 'next/link';
 
 export default function Home() {
     return (
@@ -17,21 +16,21 @@ export default function Home() {
                 }}
             />
 
-            <main className='max-w-6xl mx-auto px-6 pt-24 pb-10 relative z-10'>
+            <main className='max-w-6xl mx-auto px-4 md:px-6 pt-16 md:pt-24 pb-10 relative z-10'>
                 {/* Cool Hero Section with Stars */}
-                <BorderCross className='bg-primary/5 dark:bg-black/60 py-32 overflow-hidden'>
+                <BorderCross className='bg-primary/5 dark:bg-black/60 py-16 md:py-32 overflow-hidden'>
                     <div className='absolute inset-0 animate-stars' />
                     <div className='absolute inset-0 animate-stars-slow' />
                     <div className='absolute inset-0 bg-linear-to-t from-background via-transparent to-transparent' />
 
-                    <div className='relative max-w-4xl mx-auto text-center px-6'>
+                    <div className='relative max-w-4xl mx-auto text-center px-4 md:px-6'>
                         <SubHeader
                             index='001'
                             title='System Design Mastery'
                             className='justify-center mb-10'
                         />
 
-                        <h1 className='text-6xl md:text-8xl font-black uppercase tracking-tighter mb-10 leading-[0.85] text-foreground dark:text-white'>
+                        <h1 className='text-4xl sm:text-6xl md:text-8xl font-black uppercase tracking-tighter mb-8 md:mb-10 leading-[0.85] text-foreground dark:text-white'>
                             Master the <br />
                             <span className='text-primary italic'>
                                 Architecture
@@ -52,14 +51,14 @@ export default function Home() {
                 </BorderCross>
 
                 {/* Curriculum Section */}
-                <section id='roadmap' className='mb-40 mt-40'>
-                    <div className='mb-16 px-5'>
+                <section id='roadmap' className='mb-24 md:mb-40 mt-24 md:mt-40'>
+                    <div className='mb-10 md:mb-16 px-2 md:px-5'>
                         <SubHeader
                             index='002'
                             title='Full Curriculum'
                             className='mb-4'
                         />
-                        <h2 className='text-4xl font-black uppercase tracking-tighter'>
+                        <h2 className='text-2xl md:text-4xl font-black uppercase tracking-tighter'>
                             The Learning Path
                         </h2>
                     </div>
@@ -69,14 +68,14 @@ export default function Home() {
                 </section>
 
                 {/* Interview Section */}
-                <section className='mb-40'>
-                    <div className='mb-16 px-5'>
+                <section className='mb-24 md:mb-40'>
+                    <div className='mb-10 md:mb-16 px-2 md:px-5'>
                         <SubHeader
                             index='003'
                             title='Interview Framework'
                             className='mb-4'
                         />
-                        <h2 className='text-4xl font-black uppercase tracking-tighter'>
+                        <h2 className='text-2xl md:text-4xl font-black uppercase tracking-tighter'>
                             How to Crack Any Interview
                         </h2>
                     </div>
@@ -98,7 +97,7 @@ export default function Home() {
                             ].map((tip, idx) => (
                                 <div
                                     key={tip.title}
-                                    className='p-12 border-r border-b border-border bg-muted/5 hover:bg-primary/5 dark:hover:bg-white/2 transition-colors last:border-r-0 md:even:border-r-border'>
+                                    className='p-6 md:p-12 border-r border-b border-border bg-muted/5 hover:bg-primary/5 dark:hover:bg-white/2 transition-colors last:border-r-0 md:even:border-r-border'>
                                     <span className='font-mono text-[10px] text-muted-foreground/40 mb-6 block font-black'>
                                         0{idx + 1}
                                     </span>

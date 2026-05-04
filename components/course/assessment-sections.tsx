@@ -22,13 +22,13 @@ export const KnowledgeCheckSection = React.memo(
         const [isExpanded, setIsExpanded] = React.useState(false);
 
         return (
-            <BorderCross className='p-10'>
+            <BorderCross className='p-4 md:p-10'>
                 <section id='mcq' className='scroll-mt-20'>
                     <div
-                        className='flex items-center justify-between cursor-pointer group'
+                        className='flex flex-wrap items-center justify-between gap-3 cursor-pointer group'
                         onClick={() => setIsExpanded(!isExpanded)}>
                         <SubHeader index={index} title='Knowledge Check' />
-                        <button className='flex items-center gap-2 px-4 py-2 border border-border bg-muted/5 group-hover:bg-muted/20 group-hover:border-primary/50 transition-all font-mono text-[10px] uppercase tracking-widest text-muted-foreground'>
+                        <button className='flex items-center gap-2 px-4 py-2 border border-border bg-muted/5 group-hover:bg-muted/20 group-hover:border-primary/50 transition-all font-mono text-[10px] uppercase tracking-widest text-muted-foreground whitespace-nowrap'>
                             {isExpanded ? 'Hide Quiz' : 'Take Quiz'}
                             <ChevronDown
                                 className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
@@ -37,7 +37,7 @@ export const KnowledgeCheckSection = React.memo(
                     </div>
 
                     {isExpanded && (
-                        <div className=' animate-in fade-in slide-in-from-top-4 duration-300'>
+                        <div className='animate-in fade-in slide-in-from-top-4 duration-300'>
                             <MCQ questions={questions} />
                         </div>
                     )}
@@ -52,13 +52,13 @@ export const AssignmentSection = React.memo(
         const [isExpanded, setIsExpanded] = React.useState(false);
 
         return (
-            <BorderCross className='p-10'>
+            <BorderCross className='p-4 md:p-10'>
                 <section id='assignment' className='scroll-mt-20'>
                     <div
-                        className='flex items-center justify-between cursor-pointer group'
+                        className='flex flex-wrap items-center justify-between gap-3 cursor-pointer group'
                         onClick={() => setIsExpanded(!isExpanded)}>
                         <SubHeader index={index} title='Assignment & Homework' />
-                        <button className='flex items-center gap-2 px-4 py-2 border border-border bg-muted/5 group-hover:bg-muted/20 group-hover:border-primary/50 transition-all font-mono text-[10px] uppercase tracking-widest text-muted-foreground'>
+                        <button className='flex items-center gap-2 px-4 py-2 border border-border bg-muted/5 group-hover:bg-muted/20 group-hover:border-primary/50 transition-all font-mono text-[10px] uppercase tracking-widest text-muted-foreground whitespace-nowrap'>
                             {isExpanded ? 'Hide Details' : 'View Details'}
                             <ChevronDown
                                 className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
@@ -88,13 +88,13 @@ export const PracticalLabSection = React.memo(
         const [isExpanded, setIsExpanded] = React.useState(false);
 
         return (
-            <BorderCross className='p-10'>
+            <BorderCross className='p-4 md:p-10'>
                 <section id='project' className='scroll-mt-20'>
                     <div
-                        className='flex items-center justify-between cursor-pointer group'
+                        className='flex flex-wrap items-center justify-between gap-3 cursor-pointer group'
                         onClick={() => setIsExpanded(!isExpanded)}>
                         <SubHeader index={index} title='Practical Lab' />
-                        <button className='flex items-center gap-2 px-4 py-2 border border-border bg-muted/5 group-hover:bg-muted/20 group-hover:border-primary/50 transition-all font-mono text-[10px] uppercase tracking-widest text-muted-foreground'>
+                        <button className='flex items-center gap-2 px-4 py-2 border border-border bg-muted/5 group-hover:bg-muted/20 group-hover:border-primary/50 transition-all font-mono text-[10px] uppercase tracking-widest text-muted-foreground whitespace-nowrap'>
                             {isExpanded ? 'Hide Lab' : 'Start Lab'}
                             <ChevronDown
                                 className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
@@ -105,13 +105,13 @@ export const PracticalLabSection = React.memo(
                     {isExpanded && (
                         <div className='mt-12 animate-in fade-in slide-in-from-top-4 duration-300'>
                             <div className='border border-border bg-card overflow-hidden'>
-                                <div className='p-10 border-b border-border bg-emerald-500/10 flex items-center gap-4'>
+                                <div className='p-6 md:p-10 border-b border-border bg-emerald-500/10 flex items-center gap-4'>
                                     <span className='text-3xl'>🚀</span>
-                                    <h2 className='text-2xl font-black uppercase tracking-tighter text-emerald-500 leading-none'>
+                                    <h2 className='text-xl md:text-2xl font-black uppercase tracking-tighter text-emerald-500 leading-none'>
                                         {data.title}
                                     </h2>
                                 </div>
-                                <div className='p-10'>
+                                <div className='p-6 md:p-10'>
                                     <p className='text-muted-foreground mb-8 text-sm font-mono uppercase tracking-widest'>
                                         {data.subtitle}
                                     </p>
@@ -121,12 +121,8 @@ export const PracticalLabSection = React.memo(
                                     {data.codeBlock && (
                                         <div className='mt-8'>
                                             <CodeBlock
-                                                language={
-                                                    data.codeBlock.language
-                                                }
-                                                filename={
-                                                    data.codeBlock.filename
-                                                }
+                                                language={data.codeBlock.language}
+                                                filename={data.codeBlock.filename}
                                                 code={data.codeBlock.code}
                                             />
                                         </div>
@@ -134,9 +130,7 @@ export const PracticalLabSection = React.memo(
 
                                     {data.tip && (
                                         <div className='mt-8'>
-                                            <InfoBox
-                                                variant='tip'
-                                                title='Pro Tip'>
+                                            <InfoBox variant='tip' title='Pro Tip'>
                                                 {data.tip}
                                             </InfoBox>
                                         </div>
@@ -154,4 +148,3 @@ export const PracticalLabSection = React.memo(
 KnowledgeCheckSection.displayName = 'KnowledgeCheckSection';
 AssignmentSection.displayName = 'AssignmentSection';
 PracticalLabSection.displayName = 'PracticalLabSection';
-
