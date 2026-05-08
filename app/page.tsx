@@ -18,11 +18,21 @@ export const metadata: Metadata = {
             'A free, battle-tested system design curriculum. 29 deep-dive topics covering scalability, cloud, microservices, and real-world system design case studies.',
         url: '/',
         type: 'website',
+        images: [
+            {
+                url: '/og-default.png',
+                width: 1200,
+                height: 630,
+                alt: 'System Design Mastery',
+            },
+        ],
     },
     twitter: {
+        card: 'summary_large_image',
         title: 'System Design Mastery — Master the Architecture of Scale',
         description:
             'A free, battle-tested system design curriculum. 29 deep-dive topics covering scalability, cloud, microservices, and real-world system design case studies.',
+        images: ['/og-default.png'],
     },
 };
 
