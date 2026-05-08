@@ -1,4 +1,5 @@
 import React from "react";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { courseData } from "@/lib/course-data";
 import { TopicHeader } from "@/components/course/topic-header";
@@ -9,6 +10,43 @@ import { TopicNavigation } from "@/components/course/topic-navigation";
 import { BorderCross } from "@/components/course/border-cross";
 import { contentMap } from "@/content";
 import { DynamicTopicContent } from "@/components/course/dynamic-topic-content";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id: topicId } = await params;
+  const phase = courseData.find(p => p.topics.some(t => t.id === topicId));
+  const topic = phase?.topics.find(t => t.id === topicId);
+
+  if (!topic) return {};
+
+  const title = topic.title;
+  const description = topic.summary
+    ? `${topic.summary} — Part of "${phase?.title}" in System Design Mastery.`
+    : `Deep dive into ${topic.title}. Part of the System Design Mastery curriculum.`;
+  const url = `/topic/${topicId}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title: `${title} | System Design Mastery`,
+      description,
+      url,
+      type: 'article',
+      section: phase?.title,
+      tags: [topic.tag, topic.level, topic.type].filter(Boolean) as string[],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${title} | System Design Mastery`,
+      description,
+    },
+  };
+}
 
 export default async function TopicPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: topicId } = await params;

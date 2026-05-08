@@ -1,8 +1,30 @@
+import type { Metadata } from 'next';
 import { BorderCross } from '@/components/course/border-cross';
 import { Roadmap } from '@/components/course/roadmap';
 import { SubHeader } from '@/components/course/sub-header';
 import { ExploreButton } from '@/components/explore-button';
 import { ModeToggle } from '@/components/mode-toggle';
+
+export const metadata: Metadata = {
+    title: 'System Design Mastery — Master the Architecture of Scale',
+    description:
+        'A free, battle-tested system design curriculum in Bengali. Learn scalability, distributed systems, cloud architecture, microservices, and crack any system design interview. 29 in-depth topics.',
+    alternates: {
+        canonical: '/',
+    },
+    openGraph: {
+        title: 'System Design Mastery — Master the Architecture of Scale',
+        description:
+            'A free, battle-tested system design curriculum. 29 deep-dive topics covering scalability, cloud, microservices, and real-world system design case studies.',
+        url: '/',
+        type: 'website',
+    },
+    twitter: {
+        title: 'System Design Mastery — Master the Architecture of Scale',
+        description:
+            'A free, battle-tested system design curriculum. 29 deep-dive topics covering scalability, cloud, microservices, and real-world system design case studies.',
+    },
+};
 
 export default function Home() {
     return (

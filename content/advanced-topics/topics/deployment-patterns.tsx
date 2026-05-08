@@ -68,8 +68,7 @@ export const deploymentPatternsContent: TopicData = {
                                     </div>
                                 </div>
                                 <p className='text-xs text-red-400 font-mono mt-3'>
-                                    ↑ এই মাঝখানের সময়টা = DOWNTIME = users দেখে
-                                    "Service Unavailable"
+                                    ↑ এই মাঝখানের সময়টা = DOWNTIME = users দেখে &quot;Service Unavailable&quot;
                                 </p>
                             </div>
                         </div>
@@ -1398,8 +1397,15 @@ async function handleCheckout(userId: string, cart: Cart) {
             ],
         },
     ],
-    summary:
-        'Blue-Green instant rollback দেয়, Canary gradual risk mitigation দেয়, Rolling update কম cost এ কাজ করে, আর Feature Flags সবকিছুকে flexible করে — production deployment এ confidence এর জন্য এই patterns অপরিহার্য।',
+    summary: {
+        headers: ['Pattern', 'Key Benefit', 'Main Trade-off', 'Best For'],
+        rows: [
+            ['Blue-Green', 'Instant rollback', '2× infrastructure cost', 'Zero-downtime critical releases'],
+            ['Canary', 'Gradual risk mitigation', 'Complex monitoring needed', 'Risky feature rollouts'],
+            ['Rolling Update', 'কম cost — no extra infra', 'Slower rollback, version mix', 'Resource-constrained environments'],
+            ['Feature Flags', 'Runtime flexibility', 'Code complexity বাড়ে', 'Dark launches & A/B testing'],
+        ],
+    },
     knowledgeCheck: {
         questions: [
             {
