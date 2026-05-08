@@ -152,15 +152,17 @@ export function DynamicTopicContent({ data }: { data: TopicData }) {
                             ))}
                         </div>
 
-                        <div className='w-full max-w-3xl p-6 md:p-10 border border-primary/20 bg-primary/5 relative overflow-hidden group'>
-                            <div className='absolute top-0 left-0 w-full h-1 bg-primary/20' />
-                            <h4 className='font-mono text-xs font-bold uppercase tracking-[0.3em] text-primary mb-4 md:mb-6'>
-                                {data.phaseComplete.nextPhase.title}
-                            </h4>
-                            <p className='text-muted-foreground leading-relaxed font-sans text-lg'>
-                                {data.phaseComplete.nextPhase.topics.join(' · ')}
-                            </p>
-                        </div>
+                        {data.phaseComplete.nextPhase && (
+                            <div className='w-full max-w-3xl p-6 md:p-10 border border-primary/20 bg-primary/5 relative overflow-hidden group'>
+                                <div className='absolute top-0 left-0 w-full h-1 bg-primary/20' />
+                                <h4 className='font-mono text-xs font-bold uppercase tracking-[0.3em] text-primary mb-4 md:mb-6'>
+                                    {data.phaseComplete.nextPhase.title}
+                                </h4>
+                                <p className='text-muted-foreground leading-relaxed font-sans text-lg'>
+                                    {data.phaseComplete.nextPhase.topics.join(' · ')}
+                                </p>
+                            </div>
+                        )}
                     </div>
                 </BorderCross>
             )}

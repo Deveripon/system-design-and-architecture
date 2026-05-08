@@ -22,6 +22,12 @@ import { whatsappContent } from './real-world-systems/topics/whatsapp';
 import { amazonContent } from './real-world-systems/topics/amazon';
 import { searchEngineContent } from './real-world-systems/topics/search-engine';
 import { uberContent } from './real-world-systems/topics/uber';
+import { securityContent } from './advanced-topics/topics/security';
+import { observabilityContent } from './advanced-topics/topics/observability';
+import { cloudArchContent } from './advanced-topics/topics/cloud-arch';
+import { advancedDsContent } from './advanced-topics/topics/advanced-ds';
+import { cqrsEventSourcingContent } from './advanced-topics/topics/cqrs-event-sourcing';
+import { deploymentPatternsContent } from './advanced-topics/topics/deployment-patterns';
 
 export const contentMap: Record<string, TopicData> = {
     scalability: scalabilityContent,
@@ -47,4 +53,14 @@ export const contentMap: Record<string, TopicData> = {
     amazon: amazonContent,
     'search-engine': searchEngineContent,
     uber: uberContent,
+    security: securityContent,
+    observability: observabilityContent,
+    'cloud-arch': cloudArchContent,
+    'cqrs-event-sourcing': cqrsEventSourcingContent,
+    'deployment-patterns': deploymentPatternsContent,
+    'advanced-ds': advancedDsContent,
 };
+
+
+
+

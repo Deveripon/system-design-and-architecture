@@ -75,7 +75,7 @@ export const PartitionSimulationDiagram = () => (
             <rect x="286" y="80" width="200" height="55" rx="4" fill="rgba(59,130,246,0.07)" stroke="#3b82f6" strokeWidth="1" />
             <text x="386" y="98" textAnchor="middle" fill="#3b82f6" className="font-mono text-[9px] font-bold">CP CHOICE</text>
             <text x="386" y="112" textAnchor="middle" fill="currentColor" className="text-muted-foreground text-[9px]">Node B reads → Error দেয়</text>
-            <text x="386" y="126" textAnchor="middle" fill="currentColor" className="text-muted-foreground text-[9px]">"Service unavailable"</text>
+            <text x="386" y="126" textAnchor="middle" fill="currentColor" className="text-muted-foreground text-[9px]">&quot;Service unavailable&quot;</text>
             
             {/* AP choice */}
             <rect x="286" y="150" width="200" height="55" rx="4" fill="rgba(16,185,129,0.07)" stroke="#10b981" strokeWidth="1" />
