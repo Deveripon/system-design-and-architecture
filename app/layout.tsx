@@ -20,9 +20,13 @@ const notoSansBengali = Noto_Sans_Bengali({
   variable: "--font-sans",
 });
 
-const siteUrl =
+let siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL ||
     'https://learn-system-design-bn.vercel.app/';
+
+if (!siteUrl.startsWith('http')) {
+    siteUrl = `https://${siteUrl}`;
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

@@ -213,3 +213,12 @@ export default async function Image({
         { ...size }
     );
 }
+
+export async function generateStaticParams() {
+    const paths = courseData.flatMap(phase =>
+        phase.topics.map(topic => ({
+            id: topic.id,
+        }))
+    );
+    return paths;
+}
