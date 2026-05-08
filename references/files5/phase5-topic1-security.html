@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 5 · Topic 1 — Security (JWT, OAuth2, mTLS, Zero Trust)</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05080f;
+  --surface: #090e1a;
+  --card: #0c1220;
+  --border: #162035;
+  --border2: #1e2d4a;
+  --accent: #3b82f6;
+  --accent-glow: rgba(59,130,246,0.15);
+  --green: #10b981;
+  --green-glow: rgba(16,185,129,0.12);
+  --orange: #f97316;
+  --red: #ef4444;
+  --yellow: #eab308;
+  --purple: #8b5cf6;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --muted2: #94a3b8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans Bengali', sans-serif;
+  line-height: 1.7;
+  font-size: 15px;
+}
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:999;
+  opacity:0.4;
+}
+.sidebar {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: 240px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 24px 0;
+  overflow-y: auto;
+  z-index: 100;
+}
+.sidebar-logo {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.sidebar-logo .phase-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 4px;
+}
+.sidebar-logo .course-title {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.nav-section { padding: 0 12px; margin-bottom: 8px; }
+.nav-section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--muted);
+  padding: 0 8px;
+  margin-bottom: 6px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--muted2);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+.nav-item:hover { background: var(--card); color: var(--text); }
+.nav-item.active { background: var(--accent-glow); color: var(--accent); }
+.nav-item .nav-icon { font-size: 14px; flex-shrink:0; }
+.nav-item .nav-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  margin-left: auto;
+}
+.progress-bar {
+  position: fixed;
+  top: 0; left: 240px; right: 0;
+  height: 2px;
+  background: var(--border);
+  z-index: 200;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--green));
+  width: 0%;
+  transition: width 0.1s;
+}
+.main { margin-left: 240px; min-height: 100vh; }
+.content { max-width: 780px; margin: 0 auto; padding: 48px 40px 120px; }
+.topic-header { margin-bottom: 48px; }
+.breadcrumb {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.breadcrumb span { color: var(--accent); }
+.topic-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: block;
+}
+h1.topic-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #fff 30%, #93c5fd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.topic-meta { display: flex; gap: 16px; flex-wrap: wrap; }
+.meta-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 2px;
+  border: 1px solid;
+}
+.meta-chip.time { border-color: rgba(59,130,246,0.3); color: var(--accent); background: var(--accent-glow); }
+.meta-chip.level { border-color: rgba(16,185,129,0.3); color: var(--green); background: var(--green-glow); }
+.meta-chip.type { border-color: rgba(139,92,246,0.3); color: var(--purple); background: rgba(139,92,246,0.08); }
+.section { margin-bottom: 48px; scroll-margin-top: 24px; }
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--accent);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+h2.section-title {
+  font-family: 'Fraunces', serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #f1f5f9;
+}
+h3.sub-title {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 24px 0 10px;
+  color: #cbd5e1;
+}
+p { margin-bottom: 14px; color: #cbd5e1; }
+.info-box {
+  border-radius: 6px;
+  padding: 18px 20px;
+  margin: 20px 0;
+  border-left: 3px solid;
+  font-size: 14px;
+}
+.info-box.concept { background: rgba(59,130,246,0.06); border-color: var(--accent); }
+.info-box.warning { background: rgba(249,115,22,0.06); border-color: var(--orange); }
+.info-box.tip { background: rgba(16,185,129,0.06); border-color: var(--green); }
+.info-box.important { background: rgba(234,179,8,0.06); border-color: var(--yellow); }
+.info-box .box-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+.info-box.concept .box-label { color: var(--accent); }
+.info-box.warning .box-label { color: var(--orange); }
+.info-box.tip .box-label { color: var(--green); }
+.info-box.important .box-label { color: var(--yellow); }
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 13px;
+}
+.compare-table th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 12px 16px;
+  text-align: left;
+  background: var(--card);
+  border-bottom: 2px solid var(--border2);
+  color: var(--muted2);
+}
+.compare-table td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  color: #94a3b8;
+  vertical-align: top;
+  line-height: 1.6;
+}
+.compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+.compare-table td:first-child {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+}
+.tag-yes { color: var(--green); font-weight: 600; }
+.tag-no { color: var(--red); }
+.tag-med { color: var(--yellow); }
+.diagram {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 30px 20px;
+  margin: 24px 0;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  overflow-x: auto;
+}
+.diagram svg { max-width: 100%; }
+.code-block {
+  background: #030608;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  margin: 20px 0;
+  overflow: hidden;
+}
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+.code-lang {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.code-file {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+pre {
+  padding: 20px;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #e2e8f0;
+}
+.kw { color: #93c5fd; }
+.fn { color: #6ee7b7; }
+.str { color: #fcd34d; }
+.cm { color: #475569; font-style: italic; }
+.num { color: #f9a8d4; }
+.var { color: #e2e8f0; }
+.scenario-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 20px 0;
+}
+.scenario-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 18px;
+}
+.scenario-card .s-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--accent);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.scenario-card p { font-size: 13px; color: var(--muted2); margin: 0; }
+.mcq-section {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 28px;
+  margin: 30px 0;
+}
+.mcq-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.mcq-icon { font-size: 24px; }
+.mcq-header h2 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; }
+.mcq-score {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--muted);
+}
+.mcq-score span { color: var(--accent); font-size: 18px; font-weight: 700; }
+.question-block {
+  margin-bottom: 28px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+.question-block:last-of-type { border-bottom: none; margin-bottom: 0; }
+.q-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.q-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 14px;
+  line-height: 1.5;
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+.options { display: flex; flex-direction: column; gap: 8px; }
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 14px;
+  color: var(--muted2);
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+.option:hover { border-color: var(--accent); color: var(--text); background: var(--accent-glow); }
+.option.correct { border-color: var(--green); background: var(--green-glow); color: #6ee7b7; }
+.option.wrong { border-color: var(--red); background: rgba(239,68,68,0.08); color: #fca5a5; }
+.option-key {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  background: var(--border2);
+  padding: 2px 7px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.explanation {
+  display: none;
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: rgba(16,185,129,0.06);
+  border-left: 2px solid var(--green);
+  border-radius: 0 4px 4px 0;
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.7;
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+.explanation.visible { display: block; }
+.explanation strong { color: var(--green); }
+.mcq-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: var(--accent);
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.15s;
+}
+.mcq-submit:hover { background: #2563eb; transform: translateY(-1px); }
+.result-banner {
+  display: none;
+  margin-top: 20px;
+  padding: 16px 20px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+}
+.result-banner.visible { display: block; }
+.result-banner.pass { background: var(--green-glow); border: 1px solid var(--green); color: var(--green); }
+.result-banner.fail { background: rgba(249,115,22,0.08); border: 1px solid var(--orange); color: var(--orange); }
+.assignment-section {
+  background: linear-gradient(135deg, rgba(59,130,246,0.04), rgba(139,92,246,0.04));
+  border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 8px;
+  padding: 28px;
+  margin: 30px 0;
+}
+.assignment-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.assignment-icon { font-size: 28px; }
+.assignment-header h2 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; }
+.assignment-meta { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.a-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 2px;
+}
+.a-chip.time { background: rgba(234,179,8,0.1); color: var(--yellow); border: 1px solid rgba(234,179,8,0.2); }
+.a-chip.level { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+.task-list { counter-reset: tasks; list-style: none; }
+.task-list li {
+  counter-increment: tasks;
+  display: flex;
+  gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--muted2);
+  line-height: 1.7;
+}
+.task-list li::before {
+  content: counter(tasks, decimal-leading-zero);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  background: var(--accent-glow);
+  border: 1px solid rgba(59,130,246,0.3);
+  padding: 4px 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  height: fit-content;
+  margin-top: 2px;
+}
+.task-list li strong { color: var(--text); }
+.task-list li:last-child { border-bottom: none; }
+.deliverable-box {
+  background: rgba(16,185,129,0.04);
+  border: 1px solid rgba(16,185,129,0.15);
+  border-radius: 6px;
+  padding: 16px 20px;
+  margin-top: 20px;
+}
+.deliverable-box .d-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--green);
+  margin-bottom: 10px;
+}
+.deliverable-box ul { list-style: none; }
+.deliverable-box ul li {
+  font-size: 13px;
+  color: var(--muted2);
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.deliverable-box ul li::before { content: '→'; color: var(--green); font-family: 'JetBrains Mono', monospace; }
+.project-section {
+  background: linear-gradient(135deg, rgba(16,185,129,0.03), rgba(59,130,246,0.03));
+  border: 1px solid rgba(16,185,129,0.2);
+  border-radius: 8px;
+  padding: 28px;
+  margin: 30px 0;
+}
+.project-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+.project-header h2 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; }
+.step-flow { display: flex; flex-direction: column; gap: 0; }
+.step-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px 0;
+  position: relative;
+}
+.step-item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 52px;
+  bottom: 0;
+  width: 1px;
+  background: var(--border2);
+}
+.step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-glow);
+  border: 1px solid rgba(59,130,246,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  flex-shrink: 0;
+  z-index: 1;
+}
+.step-content h4 {
+  font-family: 'Fraunces', serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.step-content p { font-size: 13px; color: var(--muted2); margin: 0; }
+.step-content code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  background: var(--card);
+  padding: 1px 5px;
+  border-radius: 2px;
+  color: var(--accent);
+}
+.next-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin-top: 48px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.next-cta:hover { border-color: var(--accent); background: rgba(59,130,246,0.04); }
+.next-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.next-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; }
+.next-arrow {
+  font-size: 24px;
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+}
+/* Flow diagram boxes */
+.flow-box {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 4px;
+}
+.flow-box.blue { background: var(--accent-glow); border: 1px solid rgba(59,130,246,0.4); color: #93c5fd; }
+.flow-box.green { background: var(--green-glow); border: 1px solid rgba(16,185,129,0.4); color: #6ee7b7; }
+.flow-box.purple { background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.4); color: #c4b5fd; }
+.flow-box.orange { background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.4); color: #fdba74; }
+.flow-box.yellow { background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.4); color: #fde047; }
+.flow-arrow { font-size: 18px; color: var(--muted); vertical-align: middle; margin: 0 4px; }
+.token-anatomy {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+}
+.token-part {
+  display: inline;
+  padding: 2px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.token-part.header { background: rgba(239,68,68,0.2); color: #fca5a5; }
+.token-part.payload { background: rgba(234,179,8,0.2); color: #fde047; }
+.token-part.signature { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+.token-legend { display: flex; gap: 16px; margin-top: 12px; font-size: 11px; }
+.legend-item { display: flex; align-items: center; gap: 6px; color: var(--muted2); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 5 · Advanced</span>
+    <div class="course-title">System Design Mastery</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">এই Topic এ</div>
+    <a class="nav-item active" href="#intro"><span class="nav-icon">🔐</span> Overview</a>
+    <a class="nav-item" href="#jwt"><span class="nav-icon">🎟️</span> JWT</a>
+    <a class="nav-item" href="#oauth2"><span class="nav-icon">🔑</span> OAuth2</a>
+    <a class="nav-item" href="#mtls"><span class="nav-icon">🛡️</span> mTLS</a>
+    <a class="nav-item" href="#zerotrust"><span class="nav-icon">🏰</span> Zero Trust</a>
+    <a class="nav-item" href="#code"><span class="nav-icon">💻</span> Code Examples</a>
+    <a class="nav-item" href="#realworld"><span class="nav-icon">🌍</span> Real World</a>
+    <a class="nav-item" href="#mcq"><span class="nav-icon">📝</span> MCQ Quiz</a>
+    <a class="nav-item" href="#assignment"><span class="nav-icon">📋</span> Assignment</a>
+    <a class="nav-item" href="#project"><span class="nav-icon">🚀</span> Project</a>
+  </div>
+
+  <div class="nav-section" style="margin-top:16px">
+    <div class="nav-section-label">Phase 5 Topics</div>
+    <a class="nav-item active" href="#"><span class="nav-icon">🔐</span> Security <span class="nav-num">01</span></a>
+    <a class="nav-item" href="#"><span class="nav-icon">📊</span> Observability <span class="nav-num">02</span></a>
+    <a class="nav-item" href="#"><span class="nav-icon">☁️</span> Cloud & IaC <span class="nav-num">03</span></a>
+    <a class="nav-item" href="#"><span class="nav-icon">⚡</span> CQRS & Events <span class="nav-num">04</span></a>
+    <a class="nav-item" href="#"><span class="nav-icon">🚢</span> Deployment <span class="nav-num">05</span></a>
+    <a class="nav-item" href="#"><span class="nav-icon">🧮</span> Data Structures <span class="nav-num">06</span></a>
+  </div>
+</nav>
+
+<main class="main">
+<div class="content">
+
+  <!-- Header -->
+  <div class="topic-header" id="intro">
+    <div class="breadcrumb">
+      System Design Mastery <span>›</span> Phase 5: Advanced <span>›</span> Topic 1
+    </div>
+    <span class="topic-num">PHASE 5 · TOPIC 01 · ADVANCED LEVEL</span>
+    <h1 class="topic-title">Security:<br>JWT, OAuth2, mTLS & Zero Trust</h1>
+    <div class="topic-meta">
+      <span class="meta-chip time">⏱ ৪-৫ ঘণ্টা</span>
+      <span class="meta-chip level">🎯 Advanced</span>
+      <span class="meta-chip type">🔐 Security Architecture</span>
+    </div>
+  </div>
+
+  <!-- Why Security Matters -->
+  <div class="section">
+    <div class="section-label">Why It Matters</div>
+    <h2 class="section-title">Security কেন এত গুরুত্বপূর্ণ?</h2>
+    <p>Software engineer হিসেবে তুমি feature build করতে পারো, database design করতে পারো — কিন্তু যদি system secure না হয়, সব কিছুই বৃথা। ২০২৩ সালে বিশ্বের সবচেয়ে বড় data breach গুলোর ৮০% এর কারণ ছিল authentication বা authorization এর weakness।</p>
+
+    <div class="info-box concept">
+      <div class="box-label">🎯 Core Concept</div>
+      Security এর তিনটা মূল প্রশ্ন: <strong>Authentication</strong> — "তুমি কে?" | <strong>Authorization</strong> — "তুমি কী করতে পারো?" | <strong>Trust</strong> — "আমি তোমাকে কতটুকু বিশ্বাস করবো?"
+    </div>
+
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">🏦 Banking App</div>
+        <p>User login করে, token পায়, সেই token দিয়ে তার account access করে। অন্য কেউ সেই token পেলে সব টাকা নিয়ে যেতে পারে।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🏥 Healthcare System</div>
+        <p>Doctor patient record দেখতে পারবে, কিন্তু billing department সব record দেখতে পারবে না। Role-based access critical।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🛒 E-commerce</div>
+        <p>"Google দিয়ে login করো" — OAuth2 দিয়ে Google তোমার identity verify করে, password তোমার কাছেই থাকে।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🔗 Microservices</div>
+        <p>Service A যখন Service B কে call করে, B কীভাবে জানবে যে এটা A নাকি কোনো attacker? এখানে mTLS লাগে।</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- JWT Section -->
+  <div class="section" id="jwt">
+    <div class="section-label">Section 01</div>
+    <h2 class="section-title">JWT — JSON Web Token</h2>
+
+    <p>JWT হলো একটা <strong>self-contained token</strong> যেটা নিজেই সব information বহন করে। Server কে database query করতে হয় না user কে চিনতে — token এর ভেতরেই সব আছে।</p>
+
+    <h3 class="sub-title">JWT এর ৩টা অংশ</h3>
+
+    <div class="token-anatomy">
+      <div style="word-break:break-all; line-height:2; margin-bottom:12px;">
+        <span class="token-part header">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9</span>.<span class="token-part payload">eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNTE2MjM5MDIyfQ</span>.<span class="token-part signature">SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c</span>
+      </div>
+      <div class="token-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#fca5a5"></div> Header (Algorithm)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#fde047"></div> Payload (Claims/Data)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#6ee7b7"></div> Signature (Verification)</div>
+      </div>
+    </div>
+
+    <div class="info-box concept">
+      <div class="box-label">💡 কীভাবে কাজ করে</div>
+      Header + Payload = Base64 encoded। Signature = HMAC(Header.Payload, secret_key)। Server শুধু signature verify করে — কোনো database lookup নেই! এটাই JWT এর power।
+    </div>
+
+    <h3 class="sub-title">JWT Flow Diagram</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 680 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:680px">
+        <!-- Client -->
+        <rect x="20" y="100" width="100" height="60" rx="6" fill="#0c1220" stroke="#1e2d4a" stroke-width="1.5"/>
+        <text x="70" y="125" text-anchor="middle" fill="#93c5fd" font-family="JetBrains Mono" font-size="11" font-weight="700">CLIENT</text>
+        <text x="70" y="142" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">Browser/App</text>
+
+        <!-- Auth Server -->
+        <rect x="200" y="60" width="120" height="60" rx="6" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="260" y="85" text-anchor="middle" fill="#c4b5fd" font-family="JetBrains Mono" font-size="11" font-weight="700">AUTH SERVER</text>
+        <text x="260" y="102" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">Validates credentials</text>
+
+        <!-- Resource Server -->
+        <rect x="430" y="100" width="120" height="60" rx="6" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="490" y="125" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="11" font-weight="700">RESOURCE</text>
+        <text x="490" y="142" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">API Server</text>
+
+        <!-- JWT Token visual -->
+        <rect x="250" y="190" width="130" height="40" rx="4" fill="rgba(234,179,8,0.08)" stroke="rgba(234,179,8,0.3)" stroke-width="1"/>
+        <text x="315" y="206" text-anchor="middle" fill="#fde047" font-family="JetBrains Mono" font-size="9" font-weight="700">JWT TOKEN</text>
+        <text x="315" y="220" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">header.payload.signature</text>
+
+        <!-- Step 1: Login -->
+        <line x1="120" y1="118" x2="200" y2="92" stroke="#64748b" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="155" y="98" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="9">① login</text>
+
+        <!-- Step 2: Token -->
+        <line x1="200" y1="108" x2="120" y2="130" stroke="#8b5cf6" stroke-width="1.5"/>
+        <polygon points="120,130 128,124 126,132" fill="#8b5cf6"/>
+        <text x="155" y="128" text-anchor="middle" fill="#c4b5fd" font-family="JetBrains Mono" font-size="9">② JWT</text>
+
+        <!-- Arrow to JWT box -->
+        <line x1="195" y1="145" x2="250" y2="195" stroke="#fde047" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
+
+        <!-- Step 3: API Call with JWT -->
+        <line x1="120" y1="138" x2="430" y2="128" stroke="#64748b" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="275" y="150" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="9">③ API call + JWT</text>
+
+        <!-- Step 4: Verify signature (internal) -->
+        <rect x="440" y="175" width="110" height="32" rx="3" fill="rgba(16,185,129,0.06)" stroke="rgba(16,185,129,0.2)" stroke-width="1"/>
+        <text x="495" y="187" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="8">④ Verify signature</text>
+        <text x="495" y="199" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="8">No DB needed!</text>
+
+        <!-- Step 5: Response -->
+        <line x1="430" y1="145" x2="120" y2="148" stroke="#10b981" stroke-width="1.5"/>
+        <polygon points="120,148 130,142 130,154" fill="#10b981"/>
+        <text x="275" y="168" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9">⑤ Protected data</text>
+      </svg>
+    </div>
+
+    <h3 class="sub-title">JWT এর ভালো ও খারাপ দিক</h3>
+    <table class="compare-table">
+      <tr><th>বিষয়</th><th>JWT</th><th>Session Token (DB-based)</th></tr>
+      <tr><td>Stateless</td><td class="tag-yes">✓ হ্যাঁ</td><td class="tag-no">✗ না (DB দরকার)</td></tr>
+      <tr><td>Scalability</td><td class="tag-yes">✓ সহজে scale হয়</td><td class="tag-med">⚠ Sticky session বা shared DB দরকার</td></tr>
+      <tr><td>Token Revoke</td><td class="tag-no">✗ কঠিন (expire হওয়া পর্যন্ত valid)</td><td class="tag-yes">✓ সহজে — DB থেকে delete করো</td></tr>
+      <tr><td>Payload Size</td><td class="tag-no">✗ বড় হলে header বড় হয়</td><td class="tag-yes">✓ শুধু session ID পাঠায়</td></tr>
+      <tr><td>Microservices</td><td class="tag-yes">✓ Perfect</td><td class="tag-no">✗ প্রতিটা service DB চাই</td></tr>
+    </table>
+
+    <div class="info-box warning">
+      <div class="box-label">⚠️ Common JWT Mistakes</div>
+      ১) <strong>Algorithm: "none"</strong> — কোনো signature verify না করা। ২) <strong>Secret key weak</strong> — "secret123" দিয়ে sign করা। ৩) <strong>Expiry নেই</strong> — token কখনো expire হয় না। ৪) <strong>Sensitive data payload এ</strong> — JWT encoded, encrypted না!
+    </div>
+  </div>
+
+  <!-- OAuth2 Section -->
+  <div class="section" id="oauth2">
+    <div class="section-label">Section 02</div>
+    <h2 class="section-title">OAuth2 — Authorization Framework</h2>
+
+    <p>OAuth2 হলো একটা <strong>authorization framework</strong> যেটা third-party application কে user এর resources access করার permission দেয় — user এর password share না করে।</p>
+    <p>তুমি যখন "Login with Google" ক্লিক করো — এটাই OAuth2। তোমার Google password কিন্তু ওই app পায় না। Google শুধু confirm করে "হ্যাঁ এই লোক আমার কাছে registered"।</p>
+
+    <h3 class="sub-title">OAuth2 এর ৪টা Role</h3>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">👤 Resource Owner</div>
+        <p>তুমি — যে user। তোমার data কার কাছে যাবে সেটা তুমি approve করো।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">📱 Client App</div>
+        <p>Third-party app (যেমন Spotify) যে তোমার Google profile দেখতে চায়।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🔐 Authorization Server</div>
+        <p>Google, Facebook — যে আসলে token issue করে।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">📦 Resource Server</div>
+        <p>Google এর API — যেখানে তোমার actual data আছে।</p>
+      </div>
+    </div>
+
+    <h3 class="sub-title">Authorization Code Flow (সবচেয়ে secure)</h3>
+    <div class="diagram">
+      <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px">
+        <!-- Actors -->
+        <rect x="20" y="20" width="80" height="40" rx="4" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="60" y="35" text-anchor="middle" fill="#93c5fd" font-family="JetBrains Mono" font-size="10" font-weight="700">USER</text>
+        <text x="60" y="50" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Browser</text>
+
+        <rect x="200" y="20" width="100" height="40" rx="4" fill="#0c1220" stroke="#f97316" stroke-width="1.5"/>
+        <text x="250" y="35" text-anchor="middle" fill="#fdba74" font-family="JetBrains Mono" font-size="10" font-weight="700">CLIENT APP</text>
+        <text x="250" y="50" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Your App</text>
+
+        <rect x="380" y="20" width="120" height="40" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="440" y="35" text-anchor="middle" fill="#c4b5fd" font-family="JetBrains Mono" font-size="10" font-weight="700">AUTH SERVER</text>
+        <text x="440" y="50" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Google/GitHub</text>
+
+        <rect x="570" y="20" width="100" height="40" rx="4" fill="#0c1220" stroke="#10b981" stroke-width="1.5"/>
+        <text x="620" y="35" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="10" font-weight="700">RESOURCE</text>
+        <text x="620" y="50" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">API Server</text>
+
+        <!-- Vertical lines -->
+        <line x1="60" y1="60" x2="60" y2="300" stroke="#1e2d4a" stroke-dasharray="3,3"/>
+        <line x1="250" y1="60" x2="250" y2="300" stroke="#1e2d4a" stroke-dasharray="3,3"/>
+        <line x1="440" y1="60" x2="440" y2="300" stroke="#1e2d4a" stroke-dasharray="3,3"/>
+        <line x1="620" y1="60" x2="620" y2="300" stroke="#1e2d4a" stroke-dasharray="3,3"/>
+
+        <!-- Step 1 -->
+        <line x1="60" y1="90" x2="250" y2="90" stroke="#f97316" stroke-width="1.5"/>
+        <polygon points="250,90 240,85 240,95" fill="#f97316"/>
+        <text x="155" y="85" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">① Login with Google</text>
+
+        <!-- Step 2 -->
+        <line x1="250" y1="115" x2="440" y2="115" stroke="#8b5cf6" stroke-width="1.5"/>
+        <polygon points="440,115 430,110 430,120" fill="#8b5cf6"/>
+        <text x="345" y="110" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">② Redirect to auth page</text>
+
+        <!-- Step 3 -->
+        <line x1="440" y1="140" x2="60" y2="140" stroke="#8b5cf6" stroke-width="1.5"/>
+        <polygon points="60,140 70,135 70,145" fill="#8b5cf6"/>
+        <text x="250" y="135" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">③ Show consent screen</text>
+
+        <!-- Step 4 -->
+        <line x1="60" y1="165" x2="440" y2="165" stroke="#fde047" stroke-width="1.5"/>
+        <polygon points="440,165 430,160 430,170" fill="#fde047"/>
+        <text x="250" y="160" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">④ User approves</text>
+
+        <!-- Step 5 -->
+        <line x1="440" y1="190" x2="250" y2="190" stroke="#fde047" stroke-width="1.5"/>
+        <polygon points="250,190 260,185 260,195" fill="#fde047"/>
+        <text x="345" y="185" text-anchor="middle" fill="#fde047" font-family="JetBrains Mono" font-size="9" font-weight="700">⑤ Authorization CODE</text>
+
+        <!-- Step 6 -->
+        <line x1="250" y1="215" x2="440" y2="215" stroke="#6ee7b7" stroke-width="1.5"/>
+        <polygon points="440,215 430,210 430,220" fill="#6ee7b7"/>
+        <text x="345" y="210" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">⑥ Code + Secret → Access Token</text>
+
+        <!-- Step 7 -->
+        <line x1="250" y1="245" x2="620" y2="245" stroke="#10b981" stroke-width="1.5"/>
+        <polygon points="620,245 610,240 610,250" fill="#10b981"/>
+        <text x="435" y="240" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">⑦ API Call with Access Token</text>
+
+        <!-- Step 8 -->
+        <line x1="620" y1="270" x2="250" y2="270" stroke="#10b981" stroke-width="1.5"/>
+        <polygon points="250,270 260,265 260,275" fill="#10b981"/>
+        <text x="435" y="285" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9">⑧ Protected Resource Data</text>
+      </svg>
+    </div>
+
+    <div class="info-box tip">
+      <div class="box-label">🔑 কেন Authorization Code?</div>
+      Code টা browser এ যায়, কিন্তু actual access token browser এ আসে না — server-to-server exchange হয়। তাই browser history, logs এ token expose হয় না। এটাই <strong>Authorization Code Flow</strong> এর security advantage।
+    </div>
+
+    <h3 class="sub-title">OAuth2 Scopes — Permission Control</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">OAuth2 Scope</span><span class="code-file">scope examples</span></div>
+      <pre><span class="cm">// GitHub OAuth2 Scopes</span>
+scope = <span class="str">"user:email"</span>          <span class="cm">// শুধু email পড়তে পারবে</span>
+scope = <span class="str">"repo:read"</span>           <span class="cm">// public repos দেখতে পারবে</span>
+scope = <span class="str">"repo:write"</span>          <span class="cm">// code push করতে পারবে</span>
+scope = <span class="str">"admin:org"</span>           <span class="cm">// org manage করতে পারবে</span>
+
+<span class="cm">// Google OAuth2 Scopes</span>
+scope = <span class="str">"https://www.googleapis.com/auth/gmail.readonly"</span>
+scope = <span class="str">"https://www.googleapis.com/auth/calendar"</span>
+
+<span class="cm">// Principle of Least Privilege!</span>
+<span class="cm">// শুধু যতটুকু দরকার, ততটুকুই চাও।</span></pre>
+    </div>
+  </div>
+
+  <!-- mTLS Section -->
+  <div class="section" id="mtls">
+    <div class="section-label">Section 03</div>
+    <h2 class="section-title">mTLS — Mutual TLS</h2>
+
+    <p>Normal HTTPS (TLS) এ শুধু server নিজেকে prove করে certificate দিয়ে। Client verify করে "হ্যাঁ এটা সত্যিই google.com"। কিন্তু server জানে না client কে।</p>
+    <p><strong>mTLS (Mutual TLS)</strong> এ দুই দিকই certificate দেয়। Server ও client — দুজনেই নিজেদের identity prove করে। এটা microservices communication এর জন্য perfect।</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 680 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:680px">
+        <!-- TLS vs mTLS -->
+        <!-- TLS Side -->
+        <text x="160" y="25" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="12" font-weight="700">Regular TLS</text>
+
+        <rect x="20" y="45" width="100" height="50" rx="5" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="70" y="65" text-anchor="middle" fill="#93c5fd" font-family="JetBrains Mono" font-size="11">CLIENT</text>
+        <text x="70" y="80" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">No cert</text>
+
+        <rect x="210" y="45" width="100" height="50" rx="5" fill="#0c1220" stroke="#10b981"/>
+        <text x="260" y="65" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="11">SERVER</text>
+        <text x="260" y="80" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="9">Has cert ✓</text>
+
+        <line x1="120" y1="70" x2="210" y2="70" stroke="#10b981" stroke-width="2"/>
+        <polygon points="210,70 200,65 200,75" fill="#10b981"/>
+        <text x="165" y="62" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9">cert →</text>
+        <text x="165" y="90" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Server proves identity only</text>
+
+        <!-- Divider -->
+        <line x1="340" y1="20" x2="340" y2="220" stroke="#1e2d4a" stroke-width="1" stroke-dasharray="4,3"/>
+
+        <!-- mTLS Side -->
+        <text x="520" y="25" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="12" font-weight="700">mTLS (Mutual)</text>
+
+        <rect x="370" y="45" width="110" height="60" rx="5" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="425" y="65" text-anchor="middle" fill="#93c5fd" font-family="JetBrains Mono" font-size="11">SERVICE A</text>
+        <text x="425" y="80" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9">Has cert ✓</text>
+        <text x="425" y="95" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Client cert</text>
+
+        <rect x="560" y="45" width="110" height="60" rx="5" fill="#0c1220" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="615" y="65" text-anchor="middle" fill="#93c5fd" font-family="JetBrains Mono" font-size="11">SERVICE B</text>
+        <text x="615" y="80" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9">Has cert ✓</text>
+        <text x="615" y="95" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Server cert</text>
+
+        <!-- Bidirectional -->
+        <line x1="480" y1="68" x2="560" y2="68" stroke="#8b5cf6" stroke-width="2"/>
+        <polygon points="560,68 550,63 550,73" fill="#8b5cf6"/>
+        <text x="520" y="62" text-anchor="middle" fill="#c4b5fd" font-family="JetBrains Mono" font-size="8">B cert →</text>
+
+        <line x1="560" y1="82" x2="480" y2="82" stroke="#8b5cf6" stroke-width="2"/>
+        <polygon points="480,82 490,77 490,87" fill="#8b5cf6"/>
+        <text x="520" y="96" text-anchor="middle" fill="#c4b5fd" font-family="JetBrains Mono" font-size="8">← A cert</text>
+
+        <!-- Labels -->
+        <text x="520" y="130" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9">Both sides verified!</text>
+
+        <!-- mTLS Use cases -->
+        <rect x="360" y="150" width="320" height="65" rx="5" fill="rgba(16,185,129,0.05)" stroke="rgba(16,185,129,0.2)"/>
+        <text x="520" y="168" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="10" font-weight="700">Where mTLS is used:</text>
+        <text x="370" y="185" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">• Kubernetes pod-to-pod (Istio service mesh)</text>
+        <text x="370" y="200" fill="#94a3b8" font-family="JetBrains Mono" font-size="9">• Banking internal APIs  • gRPC microservices</text>
+      </svg>
+    </div>
+
+    <div class="info-box concept">
+      <div class="box-label">🔑 Certificate Hierarchy</div>
+      <strong>CA (Certificate Authority)</strong> — সবার উপরে, সব cert sign করে।<br>
+      <strong>Intermediate CA</strong> — Team বা department level।<br>
+      <strong>Leaf Certificate</strong> — Individual service এর cert।<br><br>
+      Service Mesh যেমন <strong>Istio</strong> বা <strong>Linkerd</strong> automatically প্রতিটা pod এর জন্য cert issue ও rotate করে।
+    </div>
+  </div>
+
+  <!-- Zero Trust -->
+  <div class="section" id="zerotrust">
+    <div class="section-label">Section 04</div>
+    <h2 class="section-title">Zero Trust Architecture</h2>
+
+    <p>Traditional security: <strong>"Trust but verify"</strong> — corporate network এর ভেতরে থাকলে বিশ্বাস করো।</p>
+    <p>Zero Trust: <strong>"Never trust, always verify"</strong> — network এর ভেতরে থাকলেও বিশ্বাস করো না। প্রতিটা request আলাদাভাবে authenticate ও authorize করো।</p>
+
+    <div class="info-box warning">
+      <div class="box-label">💀 কেন Traditional Perimeter Security ফেল করে?</div>
+      VPN দিয়ে once inside হলে সব trust। কিন্তু একজন employee এর laptop hack হলে? সে তো already "trusted network" এ। তখন attacker পুরো internal network এ ঘুরে বেড়াতে পারে। এটাই <strong>lateral movement attack।</strong>
+    </div>
+
+    <h3 class="sub-title">Zero Trust এর ৫টা Principle</h3>
+
+    <div class="scenario-grid" style="grid-template-columns: 1fr;">
+      <div class="scenario-card" style="border-left: 3px solid var(--accent);">
+        <div class="s-title">1️⃣ Verify Explicitly</div>
+        <p>সবসময় authenticate ও authorize করো। User identity, device health, location, service — সব check করো। একবার logged in মানেই trusted না।</p>
+      </div>
+      <div class="scenario-card" style="border-left: 3px solid var(--green);">
+        <div class="s-title">2️⃣ Least Privilege Access</div>
+        <p>ঠিক যতটুকু permission দরকার, ততটুকুই দাও। Admin থাকলেই সব পাবে না — task-specific access দাও। JIT (Just-in-Time) access এর মাধ্যমে।</p>
+      </div>
+      <div class="scenario-card" style="border-left: 3px solid var(--orange);">
+        <div class="s-title">3️⃣ Assume Breach</div>
+        <p>ধরে নাও যে breach হয়েছে বা হবে। Blast radius minimize করো। Micro-segmentation করো — একটা service compromise হলে বাকিরা safe থাকে।</p>
+      </div>
+      <div class="scenario-card" style="border-left: 3px solid var(--purple);">
+        <div class="s-title">4️⃣ Continuous Monitoring</div>
+        <p>সব activity log করো। Anomaly detect করো। User সকালে Bangladesh থেকে login করে, তারপর ৫ মিনিটে Russia থেকে? Block করো।</p>
+      </div>
+      <div class="scenario-card" style="border-left: 3px solid var(--yellow);">
+        <div class="s-title">5️⃣ Device Trust</div>
+        <p>শুধু User identity না — device ও trusted কিনা check করো। Unpatched OS? Personal phone? Unknown device? Conditional access apply করো।</p>
+      </div>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:680px">
+        <text x="340" y="20" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="11">Zero Trust Request Flow</text>
+
+        <!-- User Request -->
+        <rect x="20" y="50" width="80" height="45" rx="4" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="60" y="70" text-anchor="middle" fill="#93c5fd" font-family="JetBrains Mono" font-size="10">USER</text>
+        <text x="60" y="84" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">Any location</text>
+
+        <!-- Policy Engine -->
+        <rect x="150" y="40" width="110" height="65" rx="4" fill="#0c1220" stroke="#8b5cf6" stroke-width="2"/>
+        <text x="205" y="63" text-anchor="middle" fill="#c4b5fd" font-family="JetBrains Mono" font-size="10" font-weight="700">POLICY</text>
+        <text x="205" y="77" text-anchor="middle" fill="#c4b5fd" font-family="JetBrains Mono" font-size="10" font-weight="700">ENGINE</text>
+        <text x="205" y="96" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">PEP + PDP</text>
+
+        <!-- Checks -->
+        <rect x="320" y="30" width="100" height="30" rx="3" fill="rgba(59,130,246,0.08)" stroke="rgba(59,130,246,0.3)"/>
+        <text x="370" y="50" text-anchor="middle" fill="#93c5fd" font-family="JetBrains Mono" font-size="9">Identity Check</text>
+
+        <rect x="320" y="70" width="100" height="30" rx="3" fill="rgba(16,185,129,0.08)" stroke="rgba(16,185,129,0.3)"/>
+        <text x="370" y="90" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="9">Device Health</text>
+
+        <rect x="320" y="110" width="100" height="30" rx="3" fill="rgba(234,179,8,0.08)" stroke="rgba(234,179,8,0.3)"/>
+        <text x="370" y="130" text-anchor="middle" fill="#fde047" font-family="JetBrains Mono" font-size="9">Context/Risk</text>
+
+        <!-- Arrows to checks -->
+        <line x1="260" y1="65" x2="320" y2="45" stroke="#8b5cf6" stroke-width="1"/>
+        <line x1="260" y1="72" x2="320" y2="85" stroke="#8b5cf6" stroke-width="1"/>
+        <line x1="260" y1="80" x2="320" y2="125" stroke="#8b5cf6" stroke-width="1"/>
+
+        <!-- Decision -->
+        <rect x="460" y="55" width="80" height="40" rx="4" fill="rgba(16,185,129,0.1)" stroke="var(--green)"/>
+        <text x="500" y="72" text-anchor="middle" fill="#6ee7b7" font-family="JetBrains Mono" font-size="10" font-weight="700">ALLOW</text>
+        <text x="500" y="86" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">+ Audit log</text>
+
+        <rect x="460" y="115" width="80" height="40" rx="4" fill="rgba(239,68,68,0.1)" stroke="var(--red)"/>
+        <text x="500" y="132" text-anchor="middle" fill="#fca5a5" font-family="JetBrains Mono" font-size="10" font-weight="700">DENY</text>
+        <text x="500" y="146" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">+ Alert</text>
+
+        <line x1="420" y1="75" x2="460" y2="75" stroke="#10b981" stroke-width="1.5"/>
+        <line x1="420" y1="125" x2="460" y2="135" stroke="#ef4444" stroke-width="1.5"/>
+
+        <!-- Resource -->
+        <rect x="580" y="55" width="80" height="40" rx="4" fill="#0c1220" stroke="#1e2d4a"/>
+        <text x="620" y="72" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="10">RESOURCE</text>
+        <text x="620" y="86" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">API/Data/App</text>
+
+        <line x1="540" y1="75" x2="580" y2="75" stroke="#10b981" stroke-width="1.5"/>
+        <polygon points="580,75 570,70 570,80" fill="#10b981"/>
+
+        <!-- User to Policy -->
+        <line x1="100" y1="72" x2="150" y2="72" stroke="#64748b" stroke-width="1.5"/>
+        <polygon points="150,72 140,67 140,77" fill="#64748b"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Code Examples -->
+  <div class="section" id="code">
+    <div class="section-label">Code Examples</div>
+    <h2 class="section-title">Hands-On Implementation</h2>
+
+    <h3 class="sub-title">JWT — Node.js Implementation</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-file">jwt-auth.js</span></div>
+      <pre><span class="kw">const</span> jwt = <span class="fn">require</span>(<span class="str">'jsonwebtoken'</span>);
+
+<span class="cm">// ১. Token তৈরি করো (Login এর সময়)</span>
+<span class="kw">function</span> <span class="fn">generateToken</span>(user) {
+  <span class="kw">const</span> payload = {
+    sub: user.id,          <span class="cm">// Subject (user ID)</span>
+    email: user.email,
+    role: user.role,
+    iat: Math.<span class="fn">floor</span>(Date.<span class="fn">now</span>() / <span class="num">1000</span>),   <span class="cm">// Issued At</span>
+    exp: Math.<span class="fn">floor</span>(Date.<span class="fn">now</span>() / <span class="num">1000</span>) + (<span class="num">60</span> * <span class="num">60</span>), <span class="cm">// 1 hour expiry</span>
+  };
+
+  <span class="kw">return</span> jwt.<span class="fn">sign</span>(payload, process.env.JWT_SECRET, {
+    algorithm: <span class="str">'HS256'</span>
+  });
+}
+
+<span class="cm">// ২. Token verify করো (প্রতিটা protected route এ)</span>
+<span class="kw">function</span> <span class="fn">verifyToken</span>(token) {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> decoded = jwt.<span class="fn">verify</span>(token, process.env.JWT_SECRET);
+    <span class="kw">return</span> { valid: <span class="kw">true</span>, payload: decoded };
+  } <span class="kw">catch</span> (err) {
+    <span class="kw">return</span> { valid: <span class="kw">false</span>, error: err.message };
+  }
+}
+
+<span class="cm">// ৩. Express Middleware</span>
+<span class="kw">function</span> <span class="fn">authMiddleware</span>(req, res, next) {
+  <span class="kw">const</span> authHeader = req.headers[<span class="str">'authorization'</span>];
+  <span class="kw">const</span> token = authHeader?.startsWith(<span class="str">'Bearer '</span>)
+    ? authHeader.<span class="fn">slice</span>(<span class="num">7</span>) : <span class="kw">null</span>;
+
+  <span class="kw">if</span> (!token) {
+    <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">json</span>({ error: <span class="str">'No token provided'</span> });
+  }
+
+  <span class="kw">const</span> result = <span class="fn">verifyToken</span>(token);
+  <span class="kw">if</span> (!result.valid) {
+    <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">json</span>({ error: <span class="str">'Invalid token'</span> });
+  }
+
+  req.user = result.payload;  <span class="cm">// Next middleware এ user পাওয়া যাবে</span>
+  <span class="fn">next</span>();
+}
+
+<span class="cm">// ৪. Role-based Authorization</span>
+<span class="kw">function</span> <span class="fn">requireRole</span>(role) {
+  <span class="kw">return</span> (req, res, next) => {
+    <span class="kw">if</span> (req.user?.role !== role) {
+      <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">403</span>).<span class="fn">json</span>({ error: <span class="str">'Insufficient permissions'</span> });
+    }
+    <span class="fn">next</span>();
+  };
+}
+
+<span class="cm">// Usage:</span>
+app.<span class="fn">get</span>(<span class="str">'/admin/users'</span>, authMiddleware, <span class="fn">requireRole</span>(<span class="str">'admin'</span>), handler);</pre>
+    </div>
+
+    <h3 class="sub-title">OAuth2 — Google Login (Express)</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-file">oauth2-google.js</span></div>
+      <pre><span class="kw">const</span> { OAuth2Client } = <span class="fn">require</span>(<span class="str">'google-auth-library'</span>);
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">OAuth2Client</span>(process.env.GOOGLE_CLIENT_ID);
+
+<span class="cm">// ১. Frontend থেকে Google token আসে, সেটা verify করো</span>
+app.<span class="fn">post</span>(<span class="str">'/auth/google'</span>, <span class="kw">async</span> (req, res) => {
+  <span class="kw">const</span> { idToken } = req.body;
+
+  <span class="kw">try</span> {
+    <span class="cm">// Google এর কাছে token verify করো</span>
+    <span class="kw">const</span> ticket = <span class="kw">await</span> client.<span class="fn">verifyIdToken</span>({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    <span class="kw">const</span> { email, name, picture, sub: googleId } = ticket.<span class="fn">getPayload</span>();
+
+    <span class="cm">// User কে DB তে খোঁজো বা নতুন create করো</span>
+    <span class="kw">let</span> user = <span class="kw">await</span> User.<span class="fn">findOne</span>({ email });
+    <span class="kw">if</span> (!user) {
+      user = <span class="kw">await</span> User.<span class="fn">create</span>({ email, name, picture, googleId });
+    }
+
+    <span class="cm">// আমাদের নিজস্ব JWT issue করো</span>
+    <span class="kw">const</span> token = <span class="fn">generateToken</span>(user);
+    res.<span class="fn">json</span>({ token, user: { email, name, picture } });
+
+  } <span class="kw">catch</span> (err) {
+    res.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">json</span>({ error: <span class="str">'Invalid Google token'</span> });
+  }
+});</pre>
+    </div>
+
+    <h3 class="sub-title">mTLS — Python গ্রপিসি উদাহরণ</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Python</span><span class="code-file">mtls_server.py</span></div>
+      <pre><span class="kw">import</span> ssl
+<span class="kw">import</span> grpc
+
+<span class="cm"># mTLS সহ gRPC server</span>
+<span class="kw">def</span> <span class="fn">create_mtls_server</span>():
+    <span class="cm"># Server এর নিজের certificate</span>
+    server_cert = <span class="fn">open</span>(<span class="str">'server.crt'</span>, <span class="str">'rb'</span>).<span class="fn">read</span>()
+    server_key  = <span class="fn">open</span>(<span class="str">'server.key'</span>, <span class="str">'rb'</span>).<span class="fn">read</span>()
+
+    <span class="cm"># CA certificate (client cert এর issuer)</span>
+    ca_cert = <span class="fn">open</span>(<span class="str">'ca.crt'</span>, <span class="str">'rb'</span>).<span class="fn">read</span>()
+
+    <span class="cm"># Credentials তৈরি — client cert REQUIRED</span>
+    credentials = grpc.<span class="fn">ssl_server_credentials</span>(
+        [(server_key, server_cert)],
+        root_certificates=ca_cert,
+        require_client_auth=<span class="kw">True</span>,  <span class="cm"># মূল পার্ট!</span>
+    )
+
+    server = grpc.<span class="fn">server</span>(...)
+    server.<span class="fn">add_secure_port</span>(<span class="str">'[::]:50051'</span>, credentials)
+    <span class="kw">return</span> server
+
+<span class="cm"># Client side</span>
+<span class="kw">def</span> <span class="fn">create_mtls_channel</span>():
+    client_cert = <span class="fn">open</span>(<span class="str">'client.crt'</span>, <span class="str">'rb'</span>).<span class="fn">read</span>()
+    client_key  = <span class="fn">open</span>(<span class="str">'client.key'</span>, <span class="str">'rb'</span>).<span class="fn">read</span>()
+    ca_cert     = <span class="fn">open</span>(<span class="str">'ca.crt'</span>, <span class="str">'rb'</span>).<span class="fn">read</span>()
+
+    credentials = grpc.<span class="fn">ssl_channel_credentials</span>(
+        root_certificates=ca_cert,
+        private_key=client_key,
+        certificate_chain=client_cert,
+    )
+    <span class="kw">return</span> grpc.<span class="fn">secure_channel</span>(<span class="str">'service-b:50051'</span>, credentials)</pre>
+    </div>
+  </div>
+
+  <!-- Real World -->
+  <div class="section" id="realworld">
+    <div class="section-label">Real World</div>
+    <h2 class="section-title">Real World Use Cases & Tools</h2>
+
+    <table class="compare-table">
+      <tr><th>Company/System</th><th>কী use করে</th><th>কেন</th></tr>
+      <tr><td>Google</td><td>OAuth2 + BeyondCorp (Zero Trust)</td><td>Internal employees এর জন্য VPN ছাড়াই secure access। পুরো Google এর corporate network Zero Trust।</td></tr>
+      <tr><td>Netflix</td><td>JWT + Zuul API Gateway</td><td>Stateless authentication, microservices এর মধ্যে token passing।</td></tr>
+      <tr><td>Uber</td><td>mTLS (via Istio)</td><td>Service mesh এ প্রতিটা service-to-service call automatically encrypted ও authenticated।</td></tr>
+      <tr><td>GitHub</td><td>OAuth2 + Fine-grained PAT</td><td>Third-party apps কে repo-level permission দেয়, full access না।</td></tr>
+      <tr><td>AWS</td><td>STS + IAM + mTLS</td><td>Temporary credentials, role assumption — least privilege principle।</td></tr>
+      <tr><td>Kubernetes</td><td>mTLS (cert-manager)</td><td>Pod-to-pod communication automatic mTLS via service mesh।</td></tr>
+    </table>
+
+    <h3 class="sub-title">Tools Ecosystem</h3>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="s-title">🔐 Auth Providers</div>
+        <p><strong>Auth0</strong> — managed auth service, OAuth2+JWT ready। <strong>Keycloak</strong> — open source, self-hosted। <strong>Okta</strong> — enterprise grade।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🛡️ Service Mesh</div>
+        <p><strong>Istio</strong> — Kubernetes এ mTLS automatic। <strong>Linkerd</strong> — lightweight alternative। <strong>Consul Connect</strong> — HashiCorp এর solution।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🔑 Secret Management</div>
+        <p><strong>HashiCorp Vault</strong> — certificates, secrets, dynamic credentials। <strong>AWS Secrets Manager</strong> — cloud-native। <strong>cert-manager</strong> — K8s cert automation।</p>
+      </div>
+      <div class="scenario-card">
+        <div class="s-title">🏰 Zero Trust Platforms</div>
+        <p><strong>Google BeyondCorp</strong> — original Zero Trust। <strong>Cloudflare Zero Trust</strong> — affordable। <strong>Zscaler</strong> — enterprise।</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MCQ Section -->
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span class="mcq-icon">🧠</span>
+      <h2>Knowledge Check — MCQ</h2>
+      <div class="mcq-score">Score: <span id="scoreDisplay">0</span>/10</div>
+    </div>
+
+    <!-- Q1 -->
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 01 / 10</div>
+      <div class="q-text">JWT এর Payload অংশে কী থাকে এবং এটা কি secure?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Encrypted data — কেউ পড়তে পারবে না</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Base64 encoded claims — decode করলে সবাই পড়তে পারবে, কিন্তু modify করলে signature invalid হয়</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Hashed data — one-way, কেউ পড়তে পারবে না</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Plain text — কোনো encoding নেই</div>
+      </div>
+      <div class="explanation">
+        <strong>সঠিক উত্তর: B</strong> — JWT এর payload শুধু Base64URL encoded, encrypted না। যে কেউ decode করে পড়তে পারবে। তাই password, credit card নম্বর payload এ রাখা উচিত না। কিন্তু signature থাকায় modify করলে verification fail করবে। Confidentiality চাইলে JWE (JSON Web Encryption) ব্যবহার করতে হবে।
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 02 / 10</div>
+      <div class="q-text">OAuth2 এ "Authorization Code Flow" এ Code টা কোথায় যায় এবং কেন এটা সবচেয়ে secure?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> সরাসরি browser এ access token আসে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Code browser এ যায়, browser থেকে সরাসরি API call করে token নেয়</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Code browser এ যায়, কিন্তু actual token exchange server-to-server হয় (client secret সহ) — browser কখনো token দেখে না</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Code database এ store হয়, user পরে retrieve করে</div>
+      </div>
+      <div class="explanation">
+        <strong>সঠিক উত্তর: C</strong> — Authorization Code browser এ redirect query param হিসেবে আসে। কিন্তু backend server সেই code + client_secret দিয়ে auth server থেকে access token নেয়। Client secret browser এ কখনো expose হয় না। Token ও browser history তে থাকে না। এটাই security advantage।
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 03 / 10</div>
+      <div class="q-text">mTLS এবং regular TLS এর মূল পার্থক্য কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> mTLS আরো strong encryption algorithm ব্যবহার করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> mTLS শুধু HTTP/2 তে কাজ করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> mTLS এ certificate লাগে না, username/password লাগে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Regular TLS এ শুধু server certificate verify হয়, mTLS এ client ও server উভয়ই certificate দিয়ে নিজেকে verify করে</div>
+      </div>
+      <div class="explanation">
+        <strong>সঠিক উত্তর: D</strong> — TLS = Server proves its identity to client। mTLS = Server AND Client দুজনেই certificate দিয়ে identity prove করে। Microservices এ এটা critical কারণ Service A নিশ্চিত করতে চায় যে সে Service B এর সাথেই কথা বলছে, কোনো attacker এর সাথে না।
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 04 / 10</div>
+      <div class="q-text">Zero Trust Architecture এর core principle কোনটি?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Corporate network এর ভেতরে সবাই trusted</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> "Never trust, always verify" — network location নির্বিশেষে প্রতিটা request verify করো</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> শুধু external traffic check করো</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> VPN ব্যবহার করলেই Zero Trust হয়</div>
+      </div>
+      <div class="explanation">
+        <strong>সঠিক উত্তর: B</strong> — Zero Trust মানে কাউকেই default trust করো না। Corporate network এর ভেতরে থাকলেও না। প্রতিটা request এর জন্য: identity verify করো, device health check করো, context assess করো, তারপর minimum necessary access দাও।
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 05 / 10</div>
+      <div class="q-text">JWT token compromise হলে সবচেয়ে বড় সমস্যা কী?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Token expire হওয়ার আগ পর্যন্ত revoke করা কঠিন — stateless হওয়ার কারণে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Token decrypt করা সহজ</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Token modify করা সহজ</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Token server এ store হয় তাই DB breach হলে যায়</div>
+      </div>
+      <div class="explanation">
+        <strong>সঠিক উত্তর: A</strong> — JWT stateless, তাই server কোনো state রাখে না। Token revoke করতে হলে হয় (১) short expiry রাখো, বা (২) blacklist DB maintain করো (তখন আর fully stateless না), বা (৩) token rotation strategy ব্যবহার করো।
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 06 / 10</div>
+      <div class="q-text">OAuth2 এ "scope" কী কাজে লাগে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Token এর size নির্ধারণ করে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Token এর expiry time নির্ধারণ করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Access এর granularity নির্ধারণ করে — ঠিক কোন কোন resource এ access দেওয়া হবে</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> User এর password complexity নির্ধারণ করে</div>
+      </div>
+      <div class="explanation">
+        <strong>সঠিক উত্তর: C</strong> — Scope হলো permission এর granular specification। "repo:read" মানে শুধু read, write না। "user:email" মানে শুধু email, full profile না। Principle of Least Privilege implement করার tool হলো scope।
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="question-block" data-correct="d">
+      <div class="q-num">Question 07 / 10</div>
+      <div class="q-text">Kubernetes এ Istio service mesh কীভাবে mTLS implement করে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Developer manually প্রতিটা pod এর জন্য certificate লেখে</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> শুধু ingress traffic encrypt করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Database connection encrypt করে শুধু</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> প্রতিটা pod এ sidecar proxy (Envoy) inject করে, যে automatically cert manage ও mTLS handle করে — application code change ছাড়া</div>
+      </div>
+      <div class="explanation">
+        <strong>সঠিক উত্তর: D</strong> — Istio এর সবচেয়ে powerful feature। প্রতিটা pod এর পাশে Envoy proxy sidecar থাকে। App code কে কিছু জানতে হয় না। Certificate Istio CA automatically issue করে ও rotate করে। Service-to-service communication automatically mTLS হয়ে যায়।
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="question-block" data-correct="b">
+      <div class="q-num">Question 08 / 10</div>
+      <div class="q-text">JWT এ algorithm: "none" কেন dangerous?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Token size অনেক বড় হয়</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Signature verify করা হয় না, attacker যেকোনো payload দিয়ে valid token তৈরি করতে পারে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Performance অনেক slow হয়</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> Token expire হয় না</div>
+      </div>
+      <div class="explanation">
+        <strong>সঠিক উত্তর: B</strong> — Algorithm "none" মানে কোনো signature নেই। Attacker payload এ role: "admin" দিয়ে token তৈরি করতে পারে, এবং server সেটা valid মনে করবে। এটা একটা বিখ্যাত JWT vulnerability। Library গুলো explicitly এটা reject করে কিন্তু misconfiguration এ bypass সম্ভব।
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="question-block" data-correct="a">
+      <div class="q-num">Question 09 / 10</div>
+      <div class="q-text">Zero Trust এ "Lateral Movement" attack কী এবং এটা কীভাবে prevent করা হয়?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> Network এর এক part compromise হলে attacker অন্য parts এ যায় — Micro-segmentation দিয়ে prevent করা হয়</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Attacker horizontally scale করে</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Database এ side-channel attack</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> DNS spoofing attack</div>
+      </div>
+      <div class="explanation">
+        <strong>সঠিক উত্তর: A</strong> — Lateral movement: একটা server compromise করার পর attacker সেখান থেকে internal network এ ঘুরে বেড়ায় এবং sensitive systems এ access করে। Zero Trust micro-segmentation দিয়ে prevent করে — প্রতিটা service এর blast radius limit করা হয়।
+      </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="question-block" data-correct="c">
+      <div class="q-num">Question 10 / 10</div>
+      <div class="q-text">তুমি একটা fintech startup এর backend design করছো যেখানে microservices আছে। Service-to-service communication secure করতে কোন approach নেবে?</div>
+      <div class="options">
+        <div class="option" data-val="a"><span class="option-key">A</span> প্রতিটা service এ username/password authentication রাখো</div>
+        <div class="option" data-val="b"><span class="option-key">B</span> Services গুলো same network এ থাকায় কিছু করতে হবে না</div>
+        <div class="option" data-val="c"><span class="option-key">C</span> Service mesh (Istio/Linkerd) দিয়ে mTLS enable করো — automatic cert rotation ও zero-trust by default</div>
+        <div class="option" data-val="d"><span class="option-key">D</span> শুধু API gateway level এ JWT verify করলেই হবে</div>
+      </div>
+      <div class="explanation">
+        <strong>সঠিক উত্তর: C</strong> — Fintech এ service-to-service security critical। Service mesh + mTLS = automatic identity, encryption, ও zero trust সব একসাথে। API gateway JWT শুধু external traffic handle করে। Internal service communication আলাদাভাবে secure করতে হবে। Same network এ থাকা কোনো protection না।
+      </div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT & CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <!-- Assignment -->
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ৩-৪ ঘণ্টা</span>
+      <span class="a-chip level">🎯 Advanced Level</span>
+    </div>
+    <p style="margin-bottom:16px; font-size:14px; color:#94a3b8;">নিচের tasks গুলো complete করো।</p>
+    <ul class="task-list">
+      <li>
+        <strong>JWT Decode Lab:</strong> jwt.io তে যাও এবং নিচের token টা paste করো: <code>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMTIzIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzAwMDAwMDAwfQ.invalid</code> — Header ও Payload decode করো এবং বলো: (ক) user এর role কী? (খ) token কি expire হয়েছে? (গ) এই token কি valid? কেন?
+      </li>
+      <li>
+        <strong>OAuth2 Flow Diagram:</strong> "Login with GitHub" কীভাবে কাজ করে সেটার step-by-step flow excalidraw.com বা draw.io তে diagram করো। ৮টা step দেখাও। Label করো কোনটা browser করে, কোনটা server করে।
+      </li>
+      <li>
+        <strong>Threat Modeling:</strong> একটা e-commerce app এর জন্য security threat model বানাও। কমপক্ষে ৫টা potential attack vector identify করো এবং প্রতিটার জন্য mitigation strategy লেখো। Example: "JWT secret weak" → "Rotate regularly, use 256-bit random key"।
+      </li>
+      <li>
+        <strong>Code Review:</strong> নিচের কোডে security bug খোঁজো এবং fix করো: <code>const token = jwt.verify(req.headers.token, 'secret', {algorithms: ['none', 'HS256']})</code> — কতটা bug আছে? কীভাবে fix করবে?
+      </li>
+      <li>
+        <strong>Zero Trust Design:</strong> তোমার কাজের জায়গা বা পরিচিত কোনো company এর জন্য Zero Trust migration plan লেখো। বর্তমান architecture কেমন? কোথায় trust assumptions আছে? Zero Trust করতে কোন steps নেবে?
+      </li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>JWT decode analysis (written)</li>
+        <li>OAuth2 flow diagram (screenshot)</li>
+        <li>Threat model document</li>
+        <li>Fixed code + explanation</li>
+        <li>Zero Trust migration plan</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project -->
+  <div class="project-section" id="project">
+    <div class="project-header">
+      <span style="font-size:24px">🚀</span>
+      <h2>Hands-On Project Task</h2>
+    </div>
+    <div class="project-body">
+      <p style="font-size:14px; color:#94a3b8; margin-bottom:20px;">Node.js দিয়ে একটা secure REST API বানাও যেখানে JWT auth + Role-based access থাকবে।</p>
+
+      <h3 style="font-family:'Fraunces',serif; font-size:18px; margin-bottom:16px; color:#f1f5f9;">🔐 Secure Todo API</h3>
+
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-circle">1</div>
+          <div class="step-content">
+            <h4>Project Setup</h4>
+            <p><code>npm init -y</code> করো। Install: <code>express jsonwebtoken bcryptjs</code>। Basic Express server চালু করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">2</div>
+          <div class="step-content">
+            <h4>User Registration & Login</h4>
+            <p><code>POST /auth/register</code> — password bcrypt দিয়ে hash করো। <code>POST /auth/login</code> — credentials verify করে JWT return করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">3</div>
+          <div class="step-content">
+            <h4>JWT Middleware</h4>
+            <p>Authorization header থেকে token extract করো। Verify করো। req.user এ decoded payload রাখো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">4</div>
+          <div class="step-content">
+            <h4>Role-based Routes</h4>
+            <p><code>GET /todos</code> — authenticated user এর todos। <code>GET /admin/users</code> — শুধু admin role পাবে। অন্যরা 403 পাবে।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">5</div>
+          <div class="step-content">
+            <h4>Test with Postman</h4>
+            <p>Register করো → Login করো → Token নাও → Protected route call করো। Invalid token দিয়ে test করো। Admin route non-admin দিয়ে test করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">6</div>
+          <div class="step-content">
+            <h4>Bonus: Refresh Token</h4>
+            <p>Access token (15min) + Refresh token (7 days) implement করো। Refresh token rotate করো প্রতিবার use এ।</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box tip" style="margin-top:16px">
+        <div class="box-label">🎯 এটা করলে যা শিখবে</div>
+        Real production app এর মতো auth system। JWT এর সব parts practically বুঝবে। Role-based access control কীভাবে কাজ করে দেখবে। Security vulnerabilities কীভাবে fix করতে হয় জানবে।
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-label">Lesson Summary</div>
+    <h2 class="section-title">আজকে যা শিখলাম</h2>
+    <table class="compare-table">
+      <tr><th>Concept</th><th>এক লাইনে</th></tr>
+      <tr><td>JWT</td><td>Self-contained, stateless token — server DB lookup ছাড়াই verify করতে পারে</td></tr>
+      <tr><td>OAuth2</td><td>Third-party authorization framework — password share না করে resource access</td></tr>
+      <tr><td>mTLS</td><td>Mutual authentication — দুই দিকই certificate দিয়ে identity prove করে</td></tr>
+      <tr><td>Zero Trust</td><td>Never trust, always verify — network location নির্বিশেষে সব verify</td></tr>
+      <tr><td>Least Privilege</td><td>ঠিক যতটুকু দরকার, ততটুকুই access দাও</td></tr>
+      <tr><td>Service Mesh</td><td>mTLS, observability, traffic management — infrastructure level এ</td></tr>
+    </table>
+  </div>
+
+  <!-- Next CTA -->
+  <div class="next-cta">
+    <div>
+      <div class="next-label">Next Topic →</div>
+      <div class="next-title">📊 Observability: Prometheus, Grafana, Jaeger, ELK</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+
+</div>
+</main>
+
+<script>
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scroll = doc.scrollTop || document.body.scrollTop;
+  const height = doc.scrollHeight - doc.clientHeight;
+  const progress = (scroll / height) * 100;
+  document.getElementById('progressFill').style.width = progress + '%';
+});
+
+let answered = {};
+document.querySelectorAll('.option').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const block = this.closest('.question-block');
+    const qId = Array.from(document.querySelectorAll('.question-block')).indexOf(block);
+    if (answered[qId]) return;
+    answered[qId] = this.dataset.val;
+    block.querySelectorAll('.option').forEach(o => {
+      o.style.pointerEvents = 'none';
+      if (o.dataset.val === block.dataset.correct) o.classList.add('correct');
+      else if (o.dataset.val === this.dataset.val && this.dataset.val !== block.dataset.correct) o.classList.add('wrong');
+    });
+    block.querySelector('.explanation').classList.add('visible');
+  });
+});
+
+function submitMCQ() {
+  let correct = 0;
+  const blocks = document.querySelectorAll('.question-block');
+  blocks.forEach((block, i) => { if (answered[i] === block.dataset.correct) correct++; });
+  const unanswered = blocks.length - Object.keys(answered).length;
+  if (unanswered > 0) { alert(`এখনও ${unanswered}টা প্রশ্নের উত্তর দাওনি!`); return; }
+  document.getElementById('scoreDisplay').textContent = correct;
+  const banner = document.getElementById('resultBanner');
+  banner.classList.add('visible');
+  if (correct >= 7) {
+    banner.classList.add('pass');
+    banner.textContent = `🎉 দারুণ! ${correct}/10 সঠিক। পরের topic এ যেতে পারো!`;
+  } else {
+    banner.classList.add('fail');
+    banner.textContent = `📖 ${correct}/10 সঠিক। Concept গুলো আবার পড়ো এবং retry করো। ৭/১০ পেলেই pass।`;
+  }
+}
+
+document.querySelectorAll('.nav-item[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const id = link.getAttribute('href').slice(1);
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>

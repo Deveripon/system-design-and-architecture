@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 5 · Topic 6 — Advanced Data Structures</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05080f; --surface: #090e1a; --card: #0c1220; --border: #162035; --border2: #1e2d4a;
+  --accent: #06b6d4; --accent-glow: rgba(6,182,212,0.15);
+  --green: #10b981; --green-glow: rgba(16,185,129,0.12);
+  --orange: #f97316; --red: #ef4444; --yellow: #eab308; --purple: #8b5cf6;
+  --text: #e2e8f0; --muted: #64748b; --muted2: #94a3b8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Sans Bengali', sans-serif; line-height: 1.7; font-size: 15px; }
+body::after { content:''; position:fixed; inset:0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events:none; z-index:999; opacity:0.4; }
+.sidebar { position:fixed; left:0; top:0; bottom:0; width:240px; background:var(--surface); border-right:1px solid var(--border); padding:24px 0; overflow-y:auto; z-index:100; }
+.sidebar-logo { padding:0 20px 20px; border-bottom:1px solid var(--border); margin-bottom:16px; }
+.sidebar-logo .phase-tag { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent); letter-spacing:2px; text-transform:uppercase; display:block; margin-bottom:4px; }
+.sidebar-logo .course-title { font-family:'Fraunces',serif; font-size:14px; color:var(--text); font-weight:700; }
+.nav-section-label { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); padding:8px 20px 4px; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:9px 20px; color:var(--muted2); text-decoration:none; font-size:13px; transition:all 0.2s; border-left:2px solid transparent; }
+.nav-item:hover { color:var(--text); background:rgba(255,255,255,0.03); border-left-color:var(--border2); }
+.nav-item.active { color:var(--accent); background:var(--accent-glow); border-left-color:var(--accent); }
+.nav-item .icon { font-size:14px; width:18px; text-align:center; }
+.progress-bar { position:fixed; top:0; left:240px; right:0; height:2px; background:var(--border); z-index:200; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),#67e8f9); width:0%; transition:width 0.1s; }
+main { margin-left:240px; min-height:100vh; }
+.content { max-width:860px; margin:0 auto; padding:60px 48px 80px; }
+.topic-hero { margin-bottom:48px; padding-bottom:32px; border-bottom:1px solid var(--border); }
+.hero-meta { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+.hero-phase { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent); letter-spacing:2px; text-transform:uppercase; }
+.hero-sep { color:var(--border2); }
+.hero-topic-num { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:1px; }
+.hero-title { font-family:'Fraunces',serif; font-size:42px; font-weight:900; line-height:1.15; margin-bottom:16px; background:linear-gradient(135deg,#f1f5f9,var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.hero-subtitle { font-size:15px; color:var(--muted2); max-width:600px; margin-bottom:24px; }
+.hero-tags { display:flex; flex-wrap:wrap; gap:8px; }
+.tag { font-family:'JetBrains Mono',monospace; font-size:11px; padding:4px 10px; border-radius:4px; border:1px solid var(--border2); color:var(--muted2); background:var(--card); }
+.tag.accent { border-color:var(--accent); color:var(--accent); background:var(--accent-glow); }
+.section { margin-bottom:48px; }
+.section-label { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--accent); margin-bottom:8px; }
+.section-title { font-family:'Fraunces',serif; font-size:28px; font-weight:700; margin-bottom:20px; color:#f1f5f9; }
+.section p { color:var(--muted2); margin-bottom:16px; font-size:14px; line-height:1.8; }
+.section p strong { color:var(--text); }
+.card-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:20px; transition:border-color 0.2s; }
+.card:hover { border-color:var(--border2); }
+.card-icon { font-size:24px; margin-bottom:10px; }
+.card-title { font-family:'Fraunces',serif; font-size:16px; font-weight:700; color:var(--text); margin-bottom:8px; }
+.card p { font-size:13px; color:var(--muted2); margin:0; }
+.code-block { background:#060b14; border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:24px; }
+.code-header { display:flex; align-items:center; justify-content:space-between; padding:10px 16px; background:var(--surface); border-bottom:1px solid var(--border); }
+.code-lang { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent); letter-spacing:1px; text-transform:uppercase; }
+.code-file { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); }
+.code-block pre { padding:20px; font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.7; overflow-x:auto; color:#a8b4c8; }
+.kw{color:#7dd3fc;} .str{color:#86efac;} .fn{color:#fbbf24;} .cm{color:#475569;font-style:italic;} .var{color:#c4b5fd;} .num{color:#f9a8d4;}
+.info-box { border-radius:10px; padding:16px 20px; margin-bottom:20px; font-size:14px; line-height:1.7; border-left:3px solid; }
+.info-box .box-label { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; font-weight:700; }
+.info-box.tip { background:rgba(16,185,129,0.08); border-color:var(--green); color:#a7f3d0; }
+.info-box.tip .box-label { color:var(--green); }
+.info-box.warning { background:rgba(234,179,8,0.08); border-color:var(--yellow); color:#fef08a; }
+.info-box.warning .box-label { color:var(--yellow); }
+.info-box.danger { background:rgba(239,68,68,0.08); border-color:var(--red); color:#fca5a5; }
+.info-box.danger .box-label { color:var(--red); }
+.info-box.cyan { background:rgba(6,182,212,0.08); border-color:var(--accent); color:#a5f3fc; }
+.info-box.cyan .box-label { color:var(--accent); }
+.compare-table { width:100%; border-collapse:collapse; margin-bottom:24px; font-size:13px; }
+.compare-table th { background:var(--surface); padding:10px 14px; text-align:left; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--accent); border:1px solid var(--border); }
+.compare-table td { padding:10px 14px; border:1px solid var(--border); color:var(--muted2); vertical-align:top; }
+.compare-table tr:hover td { background:rgba(255,255,255,0.02); }
+.diagram-box { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:24px; margin-bottom:24px; text-align:center; }
+.diagram-title { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:20px; }
+.mcq-section { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:32px; margin-bottom:32px; }
+.mcq-header { display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+.mcq-header h2 { font-family:'Fraunces',serif; font-size:22px; color:#f1f5f9; }
+.mcq-meta { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); margin-bottom:28px; display:flex; gap:16px; }
+.question-block { margin-bottom:28px; padding-bottom:28px; border-bottom:1px solid var(--border); }
+.question-block:last-of-type { border-bottom:none; }
+.question-text { font-size:14px; color:var(--text); margin-bottom:12px; line-height:1.7; }
+.question-num { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent); margin-bottom:6px; }
+.options { display:flex; flex-direction:column; gap:8px; }
+.option { padding:10px 14px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--muted2); font-size:13px; cursor:pointer; transition:all 0.2s; text-align:left; }
+.option:hover { border-color:var(--accent); color:var(--text); background:var(--accent-glow); }
+.option.correct { border-color:var(--green); background:rgba(16,185,129,0.12); color:#a7f3d0; }
+.option.wrong { border-color:var(--red); background:rgba(239,68,68,0.1); color:#fca5a5; }
+.explanation { margin-top:12px; padding:12px 14px; background:rgba(6,182,212,0.06); border-left:2px solid var(--accent); border-radius:6px; font-size:13px; color:var(--muted2); display:none; }
+.explanation.visible { display:block; }
+.score-display { text-align:center; padding:16px; font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--muted); margin-top:16px; }
+.score-display span { font-size:28px; color:var(--accent); font-weight:700; }
+.mcq-submit { width:100%; padding:14px; background:var(--accent-glow); border:1px solid var(--accent); border-radius:8px; color:var(--accent); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:2px; text-transform:uppercase; cursor:pointer; transition:all 0.2s; margin-top:8px; }
+.mcq-submit:hover { background:var(--accent); color:#000; }
+.result-banner { margin-top:16px; padding:16px; border-radius:8px; font-size:14px; text-align:center; font-weight:600; display:none; }
+.result-banner.visible { display:block; }
+.result-banner.pass { background:rgba(16,185,129,0.15); border:1px solid var(--green); color:#a7f3d0; }
+.result-banner.fail { background:rgba(239,68,68,0.1); border:1px solid var(--red); color:#fca5a5; }
+.assignment-section { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:32px; margin-bottom:32px; }
+.assignment-header { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+.assignment-icon { font-size:24px; }
+.assignment-header h2 { font-family:'Fraunces',serif; font-size:22px; color:#f1f5f9; }
+.assignment-meta { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+.a-chip { font-family:'JetBrains Mono',monospace; font-size:11px; padding:4px 10px; border-radius:4px; border:1px solid var(--border2); color:var(--muted2); }
+.task-list { list-style:none; counter-reset:task-counter; display:flex; flex-direction:column; gap:16px; margin-bottom:24px; }
+.task-list li { counter-increment:task-counter; padding:14px 16px 14px 52px; background:var(--surface); border:1px solid var(--border); border-radius:8px; font-size:14px; color:var(--muted2); position:relative; line-height:1.7; }
+.task-list li::before { content:counter(task-counter); position:absolute; left:14px; top:14px; width:24px; height:24px; background:var(--accent-glow); border:1px solid var(--accent); border-radius:50%; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent); font-weight:700; line-height:24px; text-align:center; }
+.task-list li strong { color:var(--text); }
+.deliverable-box { background:rgba(6,182,212,0.06); border:1px dashed rgba(6,182,212,0.3); border-radius:8px; padding:16px 20px; }
+.d-label { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--accent); margin-bottom:10px; }
+.deliverable-box ul { list-style:none; display:flex; flex-direction:column; gap:6px; }
+.deliverable-box li { font-size:13px; color:#a5f3fc; padding-left:16px; position:relative; }
+.deliverable-box li::before { content:'✓'; position:absolute; left:0; color:var(--accent); }
+.project-section { background:linear-gradient(135deg,rgba(6,182,212,0.05),rgba(103,232,249,0.03)); border:1px solid rgba(6,182,212,0.2); border-radius:12px; overflow:hidden; margin-bottom:32px; }
+.project-header { display:flex; align-items:center; gap:12px; padding:20px 28px; background:rgba(6,182,212,0.08); border-bottom:1px solid rgba(6,182,212,0.15); }
+.project-header h2 { font-family:'Fraunces',serif; font-size:20px; color:#f1f5f9; }
+.project-body { padding:24px 28px; }
+.step-flow { display:flex; flex-direction:column; gap:0; }
+.step-item { display:flex; gap:16px; padding:16px 0; border-left:2px solid var(--border2); margin-left:14px; padding-left:24px; position:relative; }
+.step-item:last-child { border-left-color:transparent; }
+.step-circle { position:absolute; left:-13px; top:16px; width:26px; height:26px; background:var(--card); border:2px solid var(--accent); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent); font-weight:700; flex-shrink:0; line-height:1; }
+.step-content h4 { font-family:'Fraunces',serif; font-size:15px; color:var(--text); margin-bottom:4px; }
+.step-content p { font-size:13px; color:var(--muted2); margin:0; }
+.step-content code { background:var(--surface); border:1px solid var(--border); padding:2px 6px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent); }
+.next-cta { display:flex; align-items:center; justify-content:space-between; padding:24px 28px; background:var(--card); border:1px solid var(--border); border-radius:12px; margin-top:48px; cursor:pointer; transition:border-color 0.2s; }
+.next-cta:hover { border-color:var(--accent); }
+.next-label { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--accent); margin-bottom:4px; }
+.next-title { font-family:'Fraunces',serif; font-size:18px; color:var(--text); }
+.next-arrow { font-size:24px; color:var(--accent); }
+/* Bit array visualization */
+.bit-array { display:flex; gap:3px; margin:16px 0; flex-wrap:wrap; }
+.bit-cell { width:32px; height:32px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; border:1px solid var(--border2); color:var(--muted); background:var(--surface); }
+.bit-cell.set { background:rgba(6,182,212,0.15); border-color:var(--accent); color:var(--accent); }
+.bit-cell.hashed { background:rgba(139,92,246,0.15); border-color:var(--purple); color:var(--purple); }
+.stat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px; }
+.stat-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:20px; text-align:center; }
+.stat-num { font-family:'JetBrains Mono',monospace; font-size:28px; font-weight:700; color:var(--accent); display:block; margin-bottom:4px; }
+.stat-label { font-size:12px; color:var(--muted2); }
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 5 · Advanced</span>
+    <div class="course-title">System Design Mastery</div>
+  </div>
+  <div class="nav-section-label">Topics</div>
+  <a href="#intro" class="nav-item"><span class="icon">🤔</span> কেন এগুলো দরকার?</a>
+  <a href="#bloom" class="nav-item"><span class="icon">🌸</span> Bloom Filter</a>
+  <a href="#hyperloglog" class="nav-item"><span class="icon">📊</span> HyperLogLog</a>
+  <a href="#countmin" class="nav-item"><span class="icon">🎯</span> Count-Min Sketch</a>
+  <a href="#comparison" class="nav-item"><span class="icon">⚖️</span> Comparison</a>
+  <a href="#realworld" class="nav-item"><span class="icon">🌍</span> Real World</a>
+  <a href="#mcq" class="nav-item"><span class="icon">🧠</span> MCQ Quiz</a>
+  <a href="#assignment" class="nav-item"><span class="icon">📝</span> Assignment</a>
+  <a href="#project" class="nav-item"><span class="icon">🚀</span> Project</a>
+</nav>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<main>
+<div class="content">
+
+  <div class="topic-hero">
+    <div class="hero-meta">
+      <span class="hero-phase">Phase 5</span>
+      <span class="hero-sep">·</span>
+      <span class="hero-topic-num">Topic 06 / 06</span>
+    </div>
+    <h1 class="hero-title">Advanced<br>Data Structures</h1>
+    <p class="hero-subtitle">Bloom Filter, HyperLogLog, Count-Min Sketch — এই probabilistic data structures গুলো massive scale এ memory ও speed এর এক অসাধারণ trade-off করে। Big Tech এর backbone।</p>
+    <div class="hero-tags">
+      <span class="tag accent">Bloom Filter</span>
+      <span class="tag">HyperLogLog</span>
+      <span class="tag">Count-Min Sketch</span>
+      <span class="tag">Probabilistic</span>
+      <span class="tag">False Positive</span>
+      <span class="tag">Cardinality</span>
+    </div>
+  </div>
+
+  <!-- Section 1: Why -->
+  <div class="section" id="intro">
+    <div class="section-label">The Problem Space</div>
+    <h2 class="section-title">কেন এই "Weird" Data Structures দরকার?</h2>
+    <p>ধরো তোমাকে বলা হলো: <strong>১ বিলিয়ন URL এর মধ্যে এই URL টা আগে দেখা হয়েছে কিনা বলো — ১ millisecond এ।</strong> Traditional HashSet দিয়ে করতে গেলে ১ বিলিয়ন strings store করতে হবে — সেটা ৫০+ GB RAM। অসম্ভব।</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">💾</div>
+        <div class="card-title">Memory Problem</div>
+        <p>১ বিলিয়ন user এর unique count রাখতে HashSet এ ৩০+ GB RAM লাগে। কিন্তু HyperLogLog দিয়ে ১২ KB তে করা যায় — ৯৯% accurate।</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <div class="card-title">Speed Problem</div>
+        <p>Database lookup করে "এই username কি taken?" — প্রতিটা signup এ। কিন্তু Bloom Filter দিয়ে ১ nanosecond এ বলা যায়, DB hit এড়ানো যায়।</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📈</div>
+        <div class="card-title">Scale Problem</div>
+        <p>Twitter এর trending topics বের করতে প্রতিটা tweet এর word count রাখা impossible। Count-Min Sketch দিয়ে approximate count — ৯৯.৯% accurate, ১/১০০০ memory তে।</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎯</div>
+        <div class="card-title">Trade-off</div>
+        <p>এই structures exact answer দেয় না — <strong>approximate answer</strong> দেয়। কিন্তু সেই approximate answer ৯৯%+ accurate, আর memory ও speed এ বিশাল লাভ।</p>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <span class="stat-num">1B</span>
+        <div class="stat-label">URLs — HashSet তে ৫০ GB RAM</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num">1 MB</span>
+        <div class="stat-label">Bloom Filter এ ১% false positive rate</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num">50,000×</span>
+        <div class="stat-label">Memory সাশ্রয় — same accuracy</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Bloom Filter -->
+  <div class="section" id="bloom">
+    <div class="section-label">Structure 1</div>
+    <h2 class="section-title">Bloom Filter — "আছে কিনা" দ্রুত বলো</h2>
+    <p>Bloom Filter একটা probabilistic data structure যেটা বলতে পারে: <strong>"এই element টা definitely নেই"</strong> অথবা <strong>"এই element টা probably আছে।"</strong> কখনো মিথ্যা বলে "নেই" (false negative নেই), কিন্তু মাঝে মাঝে ভুলে বলে "আছে" (false positive হতে পারে)।</p>
+
+    <div class="info-box cyan">
+      <div class="box-label">🧠 Core Concept</div>
+      Bloom Filter হলো একটা <strong>bit array</strong> (শুধু 0 আর 1) এবং কয়েকটা <strong>hash function</strong>। Element add করতে hash করো, সেই positions গুলো 1 করো। Check করতে আবার hash করো, সব positions 1 হলে "probably exists", কোনোটা 0 হলে "definitely not exists"।
+    </div>
+
+    <div class="diagram-box">
+      <div class="diagram-title">Bloom Filter — Bit Array ও Hash Functions</div>
+      <svg viewBox="0 0 700 310" width="100%" style="max-width:700px">
+        <!-- Title -->
+        <text x="350" y="22" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="JetBrains Mono">Step 1: "google.com" কে 3টা hash function দিয়ে hash করো</text>
+
+        <!-- Input -->
+        <rect x="20" y="35" width="120" height="36" rx="6" fill="rgba(6,182,212,0.1)" stroke="rgba(6,182,212,0.4)"/>
+        <text x="80" y="58" text-anchor="middle" fill="#06b6d4" font-size="12" font-family="JetBrains Mono">"google.com"</text>
+
+        <!-- Hash functions -->
+        <line x1="140" y1="50" x2="195" y2="38" stroke="#8b5cf6" stroke-width="1.2"/>
+        <line x1="140" y1="53" x2="195" y2="53" stroke="#10b981" stroke-width="1.2"/>
+        <line x1="140" y1="56" x2="195" y2="68" stroke="#f97316" stroke-width="1.2"/>
+
+        <rect x="198" y="26" width="90" height="22" rx="4" fill="rgba(139,92,246,0.08)" stroke="rgba(139,92,246,0.3)"/>
+        <text x="243" y="41" text-anchor="middle" fill="#c4b5fd" font-size="10" font-family="JetBrains Mono">h1 → pos 2</text>
+        <rect x="198" y="42" width="90" height="22" rx="4" fill="rgba(16,185,129,0.08)" stroke="rgba(16,185,129,0.3)"/>
+        <text x="243" y="57" text-anchor="middle" fill="#a7f3d0" font-size="10" font-family="JetBrains Mono">h2 → pos 5</text>
+        <rect x="198" y="58" width="90" height="22" rx="4" fill="rgba(249,115,22,0.08)" stroke="rgba(249,115,22,0.3)"/>
+        <text x="243" y="73" text-anchor="middle" fill="#fdba74" font-size="10" font-family="JetBrains Mono">h3 → pos 9</text>
+
+        <!-- Bit array -->
+        <text x="20" y="115" fill="#64748b" font-size="11" font-family="JetBrains Mono">Bit Array (16 bits):</text>
+        <!-- Cells 0-15 -->
+        <g transform="translate(20,122)">
+          <!-- indexes -->
+          <text x="8" y="12" fill="#475569" font-size="9" font-family="JetBrains Mono">0</text>
+          <text x="46" y="12" fill="#475569" font-size="9" font-family="JetBrains Mono">1</text>
+          <text x="80" y="12" fill="#8b5cf6" font-size="9" font-family="JetBrains Mono" font-weight="700">2</text>
+          <text x="118" y="12" fill="#475569" font-size="9" font-family="JetBrains Mono">3</text>
+          <text x="155" y="12" fill="#475569" font-size="9" font-family="JetBrains Mono">4</text>
+          <text x="190" y="12" fill="#10b981" font-size="9" font-family="JetBrains Mono" font-weight="700">5</text>
+          <text x="228" y="12" fill="#475569" font-size="9" font-family="JetBrains Mono">6</text>
+          <text x="264" y="12" fill="#475569" font-size="9" font-family="JetBrains Mono">7</text>
+          <text x="302" y="12" fill="#475569" font-size="9" font-family="JetBrains Mono">8</text>
+          <text x="336" y="12" fill="#f97316" font-size="9" font-family="JetBrains Mono" font-weight="700">9</text>
+          <text x="374" y="12" fill="#475569" font-size="9" font-family="JetBrains Mono">10</text>
+          <text x="410" y="12" fill="#475569" font-size="9" font-family="JetBrains Mono">11</text>
+          <text x="448" y="12" fill="#475569" font-size="9" font-family="JetBrains Mono">12</text>
+          <text x="484" y="12" fill="#475569" font-size="9" font-family="JetBrains Mono">13</text>
+          <text x="522" y="12" fill="#475569" font-size="9" font-family="JetBrains Mono">14</text>
+          <text x="558" y="12" fill="#475569" font-size="9" font-family="JetBrains Mono">15</text>
+          <!-- 0 -->
+          <rect x="0" y="16" width="30" height="30" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="15" y="36" text-anchor="middle" fill="#475569" font-size="13" font-family="JetBrains Mono">0</text>
+          <!-- 1 -->
+          <rect x="36" y="16" width="30" height="30" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="51" y="36" text-anchor="middle" fill="#475569" font-size="13" font-family="JetBrains Mono">0</text>
+          <!-- 2 - SET by h1 -->
+          <rect x="72" y="16" width="30" height="30" rx="4" fill="rgba(139,92,246,0.2)" stroke="#8b5cf6"/>
+          <text x="87" y="36" text-anchor="middle" fill="#c4b5fd" font-size="13" font-family="JetBrains Mono" font-weight="700">1</text>
+          <!-- 3 -->
+          <rect x="108" y="16" width="30" height="30" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="123" y="36" text-anchor="middle" fill="#475569" font-size="13" font-family="JetBrains Mono">0</text>
+          <!-- 4 -->
+          <rect x="144" y="16" width="30" height="30" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="159" y="36" text-anchor="middle" fill="#475569" font-size="13" font-family="JetBrains Mono">0</text>
+          <!-- 5 - SET by h2 -->
+          <rect x="180" y="16" width="30" height="30" rx="4" fill="rgba(16,185,129,0.2)" stroke="#10b981"/>
+          <text x="195" y="36" text-anchor="middle" fill="#a7f3d0" font-size="13" font-family="JetBrains Mono" font-weight="700">1</text>
+          <!-- 6 -->
+          <rect x="216" y="16" width="30" height="30" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="231" y="36" text-anchor="middle" fill="#475569" font-size="13" font-family="JetBrains Mono">0</text>
+          <!-- 7 -->
+          <rect x="252" y="16" width="30" height="30" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="267" y="36" text-anchor="middle" fill="#475569" font-size="13" font-family="JetBrains Mono">0</text>
+          <!-- 8 -->
+          <rect x="288" y="16" width="30" height="30" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="303" y="36" text-anchor="middle" fill="#475569" font-size="13" font-family="JetBrains Mono">0</text>
+          <!-- 9 - SET by h3 -->
+          <rect x="324" y="16" width="30" height="30" rx="4" fill="rgba(249,115,22,0.2)" stroke="#f97316"/>
+          <text x="339" y="36" text-anchor="middle" fill="#fdba74" font-size="13" font-family="JetBrains Mono" font-weight="700">1</text>
+          <!-- 10-15 -->
+          <rect x="360" y="16" width="30" height="30" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="375" y="36" text-anchor="middle" fill="#475569" font-size="13" font-family="JetBrains Mono">0</text>
+          <rect x="396" y="16" width="30" height="30" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="411" y="36" text-anchor="middle" fill="#475569" font-size="13" font-family="JetBrains Mono">0</text>
+          <rect x="432" y="16" width="30" height="30" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="447" y="36" text-anchor="middle" fill="#475569" font-size="13" font-family="JetBrains Mono">0</text>
+          <rect x="468" y="16" width="30" height="30" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="483" y="36" text-anchor="middle" fill="#475569" font-size="13" font-family="JetBrains Mono">0</text>
+          <rect x="504" y="16" width="30" height="30" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="519" y="36" text-anchor="middle" fill="#475569" font-size="13" font-family="JetBrains Mono">0</text>
+          <rect x="540" y="16" width="30" height="30" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="555" y="36" text-anchor="middle" fill="#475569" font-size="13" font-family="JetBrains Mono">0</text>
+        </g>
+
+        <!-- Step 2: Check -->
+        <line x1="20" y1="200" x2="680" y2="200" stroke="#1e2d4a" stroke-dasharray="5,4"/>
+        <text x="20" y="218" fill="#94a3b8" font-size="11" font-family="JetBrains Mono">Step 2: "amazon.com" আছে কিনা check করো</text>
+        <text x="20" y="238" fill="#64748b" font-size="11">h1("amazon.com") → pos 2 ✓ (1)</text>
+        <text x="20" y="256" fill="#64748b" font-size="11">h2("amazon.com") → pos 7 ✓ (1, কাকতালীয়ভাবে!)</text>
+        <text x="20" y="274" fill="#ef4444" font-size="11">h3("amazon.com") → pos 12 ✗ (0) ← "amazon.com" DEFINITELY NOT in set!</text>
+        <text x="20" y="295" fill="#10b981" font-size="11">সব 1 হলে → "PROBABLY EXISTS" (false positive সম্ভব)</text>
+      </svg>
+    </div>
+
+    <div class="info-box warning">
+      <div class="box-label">⚠️ False Positive মানে কী?</div>
+      Bloom Filter কখনো <strong>false negative</strong> দেয় না — "নেই" বললে সত্যিই নেই। কিন্তু "আছে" বললে সত্যিই আছে নাও হতে পারে (false positive)। এটা acceptable কারণ false positive rate control করা যায় — bit array বড় করলে কমে।
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">javascript</span>
+        <span class="code-file">bloom-filter.js — From Scratch Implementation</span>
+      </div>
+      <pre><span class="kw">class</span> <span class="fn">BloomFilter</span> {
+  <span class="kw">constructor</span>(size = <span class="num">1000</span>, hashCount = <span class="num">3</span>) {
+    <span class="var">this</span>.size = size;
+    <span class="var">this</span>.hashCount = hashCount;
+    <span class="var">this</span>.bitArray = <span class="kw">new</span> <span class="fn">Uint8Array</span>(size); <span class="cm">// সব 0 দিয়ে শুরু</span>
+  }
+
+  <span class="cm">// Simple hash function — real impl এ MurmurHash3 use করো</span>
+  <span class="fn">_hash</span>(item, seed) {
+    <span class="kw">let</span> hash = seed;
+    <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i &lt; item.length; i++) {
+      hash = (hash * <span class="num">31</span> + item.<span class="fn">charCodeAt</span>(i)) % <span class="var">this</span>.size;
+    }
+    <span class="kw">return</span> Math.<span class="fn">abs</span>(hash);
+  }
+
+  <span class="cm">// Item add করো — k টা position 1 করো</span>
+  <span class="fn">add</span>(item) {
+    <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i &lt; <span class="var">this</span>.hashCount; i++) {
+      <span class="kw">const</span> pos = <span class="var">this</span>.<span class="fn">_hash</span>(item, i * <span class="num">7919</span>); <span class="cm">// different seed per hash</span>
+      <span class="var">this</span>.bitArray[pos] = <span class="num">1</span>;
+    }
+  }
+
+  <span class="cm">// Check করো — সব positions 1? Probably exists. কোনো 0? Definitely not!</span>
+  <span class="fn">mightContain</span>(item) {
+    <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i &lt; <span class="var">this</span>.hashCount; i++) {
+      <span class="kw">const</span> pos = <span class="var">this</span>.<span class="fn">_hash</span>(item, i * <span class="num">7919</span>);
+      <span class="kw">if</span> (<span class="var">this</span>.bitArray[pos] === <span class="num">0</span>) <span class="kw">return false</span>; <span class="cm">// DEFINITELY NOT here</span>
+    }
+    <span class="kw">return true</span>; <span class="cm">// PROBABLY here (might be false positive)</span>
+  }
+}
+
+<span class="cm">// Real world use: username check</span>
+<span class="kw">const</span> takenUsernames = <span class="kw">new</span> <span class="fn">BloomFilter</span>(<span class="num">100000</span>, <span class="num">5</span>);
+[<span class="str">'alice'</span>, <span class="str">'bob'</span>, <span class="str">'charlie'</span>, <span class="str">'david'</span>].<span class="fn">forEach</span>(u => takenUsernames.<span class="fn">add</span>(u));
+
+<span class="cm">// Signup এ check — DB hit এড়ানো যায়</span>
+<span class="kw">async function</span> <span class="fn">checkUsername</span>(username) {
+  <span class="kw">if</span> (!takenUsernames.<span class="fn">mightContain</span>(username)) {
+    <span class="cm">// DEFINITELY available — DB hit লাগবে না!</span>
+    <span class="kw">return</span> { available: <span class="kw">true</span>, source: <span class="str">'bloom-filter'</span> };
+  }
+  <span class="cm">// Probably taken — DB confirm করো</span>
+  <span class="kw">const</span> exists = <span class="kw">await</span> db.<span class="fn">query</span>(<span class="str">'SELECT 1 FROM users WHERE username=?'</span>, [username]);
+  <span class="kw">return</span> { available: !exists, source: <span class="str">'database'</span> };
+}
+
+<span class="var">console</span>.<span class="fn">log</span>(takenUsernames.<span class="fn">mightContain</span>(<span class="str">'alice'</span>));   <span class="cm">// true ✓</span>
+<span class="var">console</span>.<span class="fn">log</span>(takenUsernames.<span class="fn">mightContain</span>(<span class="str">'eve'</span>));     <span class="cm">// false (definitely not)</span></pre>
+    </div>
+
+    <table class="compare-table">
+      <tr><th>Company</th><th>Bloom Filter কীসে Use করে</th></tr>
+      <tr><td><strong>Google Chrome</strong></td><td>Malicious URL check — ২ বিলিয়ন URL local Bloom Filter এ, server hit এড়ানো</td></tr>
+      <tr><td><strong>Apache Cassandra</strong></td><td>SSTable এ key আছে কিনা check — disk read এড়ানো</td></tr>
+      <tr><td><strong>Medium</strong></td><td>User কোন article আগে পড়েছে — recommendation থেকে বাদ দেওয়া</td></tr>
+      <tr><td><strong>Bitcoin</strong></td><td>SPV wallets এ transaction filtering</td></tr>
+    </table>
+  </div>
+
+  <!-- Section 3: HyperLogLog -->
+  <div class="section" id="hyperloglog">
+    <div class="section-label">Structure 2</div>
+    <h2 class="section-title">HyperLogLog — Unique Count Estimate করো</h2>
+    <p>HyperLogLog একটা algorithm যেটা <strong>distinct elements এর count (cardinality) estimate করে</strong> — মাত্র কয়েক KB memory তে, ৯৯%+ accuracy সহ। "আজকে কতজন unique user এলো?" — HashSet এ billions of user IDs রাখতে হয়, কিন্তু HyperLogLog এ মাত্র ১২ KB।</p>
+
+    <div class="info-box cyan">
+      <div class="box-label">🧮 Core Idea — Leading Zeros Magic</div>
+      Random binary string এ leading zeros এর সংখ্যা দিয়ে কতটা strings দেখা হয়েছে estimate করা যায়। যদি তুমি "000001..." দেখেছ (৫টা leading zero), তাহলে সম্ভবত ২^৫ = ৩২টা unique value দেখা হয়েছে। HyperLogLog এই idea কে ৭০+ years এর math দিয়ে refine করে ০.৮১% standard error তে নামিয়ে এনেছে।
+    </div>
+
+    <div class="diagram-box">
+      <div class="diagram-title">HyperLogLog — Leading Zeros থেকে Cardinality Estimate</div>
+      <svg viewBox="0 0 700 280" width="100%" style="max-width:700px">
+        <!-- Hash outputs -->
+        <text x="20" y="25" fill="#94a3b8" font-size="11" font-family="JetBrains Mono">Different user IDs hash করো → binary তে দেখো leading zeros:</text>
+
+        <rect x="20" y="35" width="660" height="170" rx="8" fill="var(--surface)" stroke="var(--border)"/>
+
+        <!-- Row 1 -->
+        <text x="36" y="58" fill="#64748b" font-size="11" font-family="JetBrains Mono">hash("user-001") =</text>
+        <text x="180" y="58" fill="#06b6d4" font-size="11" font-family="JetBrains Mono">1</text>
+        <text x="189" y="58" fill="#475569" font-size="11" font-family="JetBrains Mono">01001101...</text>
+        <text x="580" y="58" fill="#64748b" font-size="11" font-family="JetBrains Mono">0 leading zeros → 2^0=1</text>
+
+        <!-- Row 2 -->
+        <text x="36" y="80" fill="#64748b" font-size="11" font-family="JetBrains Mono">hash("user-002") =</text>
+        <text x="180" y="80" fill="#ef4444" font-size="11" font-family="JetBrains Mono">00</text>
+        <text x="198" y="80" fill="#475569" font-size="11" font-family="JetBrains Mono">1101001...</text>
+        <text x="580" y="80" fill="#64748b" font-size="11" font-family="JetBrains Mono">2 leading zeros → 2^2=4</text>
+
+        <!-- Row 3 -->
+        <text x="36" y="102" fill="#64748b" font-size="11" font-family="JetBrains Mono">hash("user-003") =</text>
+        <text x="180" y="102" fill="#ef4444" font-size="11" font-family="JetBrains Mono">0000</text>
+        <text x="216" y="102" fill="#475569" font-size="11" font-family="JetBrains Mono">10110...</text>
+        <text x="580" y="102" fill="#eab308" font-size="11" font-family="JetBrains Mono">4 leading zeros → 2^4=16</text>
+
+        <!-- Row 4 -->
+        <text x="36" y="124" fill="#64748b" font-size="11" font-family="JetBrains Mono">hash("user-004") =</text>
+        <text x="180" y="124" fill="#ef4444" font-size="11" font-family="JetBrains Mono">000000</text>
+        <text x="225" y="124" fill="#475569" font-size="11" font-family="JetBrains Mono">11...</text>
+        <text x="580" y="124" fill="#10b981" font-size="11" font-family="JetBrains Mono">6 leading zeros → 2^6=64</text>
+
+        <!-- Max -->
+        <line x1="36" y1="140" x2="664" y2="140" stroke="var(--border)" stroke-dasharray="4,3"/>
+        <text x="36" y="158" fill="#94a3b8" font-size="11" font-family="JetBrains Mono">Maximum leading zeros seen = 6</text>
+        <text x="36" y="178" fill="#10b981" font-size="12" font-family="JetBrains Mono" font-weight="700">Estimated cardinality ≈ 2^6 = 64 unique elements</text>
+        <text x="36" y="196" fill="#64748b" font-size="10" font-family="JetBrains Mono">(HyperLogLog uses 16+ registers + harmonic mean for accuracy)</text>
+
+        <!-- Memory comparison -->
+        <text x="20" y="228" fill="#94a3b8" font-size="11" font-family="JetBrains Mono">Memory Comparison — 1 Billion unique users:</text>
+        <rect x="20" y="238" width="200" height="34" rx="6" fill="rgba(239,68,68,0.08)" stroke="rgba(239,68,68,0.2)"/>
+        <text x="120" y="252" text-anchor="middle" fill="#ef4444" font-size="10" font-family="JetBrains Mono">HashSet</text>
+        <text x="120" y="266" text-anchor="middle" fill="#fca5a5" font-size="10">~32 GB RAM</text>
+        <text x="240" y="258" fill="#475569" font-size="16">vs</text>
+        <rect x="270" y="238" width="200" height="34" rx="6" fill="rgba(6,182,212,0.08)" stroke="rgba(6,182,212,0.3)"/>
+        <text x="370" y="252" text-anchor="middle" fill="#06b6d4" font-size="10" font-family="JetBrains Mono">HyperLogLog</text>
+        <text x="370" y="266" text-anchor="middle" fill="#a5f3fc" font-size="10">~12 KB, 0.81% error</text>
+      </svg>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">javascript</span>
+        <span class="code-file">hyperloglog-demo.js — Redis PFADD / PFCOUNT</span>
+      </div>
+      <pre><span class="cm">// Production এ Redis এর HyperLogLog use করো</span>
+<span class="cm">// Redis commands: PFADD (add), PFCOUNT (estimate count)</span>
+
+<span class="kw">const</span> redis = <span class="fn">require</span>(<span class="str">'redis'</span>);
+<span class="kw">const</span> client = redis.<span class="fn">createClient</span>();
+
+<span class="cm">// Daily unique visitors track করো</span>
+<span class="kw">async function</span> <span class="fn">trackVisitor</span>(userId) {
+  <span class="kw">const</span> today = <span class="kw">new</span> <span class="fn">Date</span>().<span class="fn">toISOString</span>().<span class="fn">split</span>(<span class="str">'T'</span>)[<span class="num">0</span>]; <span class="cm">// "2024-01-15"</span>
+  <span class="kw">const</span> key = `dau:${today}`;
+
+  <span class="cm">// PFADD: userId কে HyperLogLog এ add করো</span>
+  <span class="cm">// একই userId বারবার add হলেও count একবারই বাড়বে</span>
+  <span class="kw">await</span> client.<span class="fn">pfAdd</span>(key, userId);
+
+  <span class="cm">// Key expire করো — ৩০ দিন পর delete হবে</span>
+  <span class="kw">await</span> client.<span class="fn">expire</span>(key, <span class="num">30</span> * <span class="num">24</span> * <span class="num">3600</span>);
+}
+
+<span class="cm">// Daily Active Users count পাও</span>
+<span class="kw">async function</span> <span class="fn">getDailyActiveUsers</span>(date) {
+  <span class="kw">const</span> key = `dau:${date}`;
+  <span class="cm">// PFCOUNT: approximate unique count return করে</span>
+  <span class="kw">const</span> count = <span class="kw">await</span> client.<span class="fn">pfCount</span>(key);
+  <span class="kw">return</span> count; <span class="cm">// ~0.81% error rate</span>
+}
+
+<span class="cm">// Weekly Unique Users — multiple HLL merge করা যায়!</span>
+<span class="kw">async function</span> <span class="fn">getWeeklyActiveUsers</span>() {
+  <span class="kw">const</span> keys = [<span class="num">0</span>,<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>].<span class="fn">map</span>(d => {
+    <span class="kw">const</span> date = <span class="kw">new</span> <span class="fn">Date</span>(<span class="fn">Date</span>.<span class="fn">now</span>() - d * <span class="num">86400000</span>);
+    <span class="kw">return</span> `dau:${date.<span class="fn">toISOString</span>().<span class="fn">split</span>(<span class="str">'T'</span>)[<span class="num">0</span>]}`;
+  });
+  <span class="cm">// PFCOUNT multiple keys — automatically merges, deduplicates!</span>
+  <span class="kw">return</span> client.<span class="fn">pfCount</span>(...keys);
+}
+
+<span class="cm">// Usage simulation</span>
+<span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i &lt; <span class="num">1000000</span>; i++) {
+  <span class="kw">await</span> <span class="fn">trackVisitor</span>(`user-${i}`);
+}
+<span class="var">console</span>.<span class="fn">log</span>(<span class="kw">await</span> <span class="fn">getDailyActiveUsers</span>(<span class="str">'2024-01-15'</span>)); <span class="cm">// ~1000000 (±0.81%)</span></pre>
+    </div>
+  </div>
+
+  <!-- Section 4: Count-Min Sketch -->
+  <div class="section" id="countmin">
+    <div class="section-label">Structure 3</div>
+    <h2 class="section-title">Count-Min Sketch — Frequency Estimate করো</h2>
+    <p>Count-Min Sketch একটা probabilistic data structure যেটা <strong>element এর approximate frequency count</strong> রাখে। "এই word টা কতবার দেখা গেছে?" — এই প্রশ্নের উত্তর দেয় massive scale এ, tiny memory তে।</p>
+
+    <div class="info-box cyan">
+      <div class="box-label">🎯 Core Concept — 2D Counter Array</div>
+      Count-Min Sketch হলো একটা <strong>2D array of counters</strong> (rows = hash functions, columns = counter buckets)। Element add করতে প্রতিটা row এর hash position এ ১ যোগ করো। Count বের করতে সব rows এর minimum নাও — এটাই approximate count।
+    </div>
+
+    <div class="diagram-box">
+      <div class="diagram-title">Count-Min Sketch — 3 Rows × 8 Columns</div>
+      <svg viewBox="0 0 700 300" width="100%" style="max-width:700px">
+        <text x="20" y="22" fill="#94a3b8" font-size="11" font-family="JetBrains Mono">"apple" কে 3টা hash function দিয়ে hash করো → প্রতিটা row তে ঐ column increment:</text>
+
+        <!-- Row labels -->
+        <text x="20" y="60" fill="#8b5cf6" font-size="11" font-family="JetBrains Mono">h1 →</text>
+        <text x="20" y="110" fill="#10b981" font-size="11" font-family="JetBrains Mono">h2 →</text>
+        <text x="20" y="160" fill="#f97316" font-size="11" font-family="JetBrains Mono">h3 →</text>
+
+        <!-- Column headers -->
+        <g transform="translate(70,0)">
+          <text x="20" y="35" text-anchor="middle" fill="#475569" font-size="10" font-family="JetBrains Mono">0</text>
+          <text x="95" y="35" text-anchor="middle" fill="#8b5cf6" font-size="10" font-family="JetBrains Mono" font-weight="700">1</text>
+          <text x="170" y="35" text-anchor="middle" fill="#475569" font-size="10" font-family="JetBrains Mono">2</text>
+          <text x="245" y="35" text-anchor="middle" fill="#475569" font-size="10" font-family="JetBrains Mono">3</text>
+          <text x="320" y="35" text-anchor="middle" fill="#10b981" font-size="10" font-family="JetBrains Mono" font-weight="700">4</text>
+          <text x="395" y="35" text-anchor="middle" fill="#475569" font-size="10" font-family="JetBrains Mono">5</text>
+          <text x="470" y="35" text-anchor="middle" fill="#f97316" font-size="10" font-family="JetBrains Mono" font-weight="700">6</text>
+          <text x="545" y="35" text-anchor="middle" fill="#475569" font-size="10" font-family="JetBrains Mono">7</text>
+
+          <!-- Row 1 (h1) -->
+          <rect x="0" y="40" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="37" y="63" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">0</text>
+          <rect x="75" y="40" width="75" height="36" rx="4" fill="rgba(139,92,246,0.2)" stroke="#8b5cf6"/>
+          <text x="112" y="63" text-anchor="middle" fill="#c4b5fd" font-size="16" font-family="JetBrains Mono" font-weight="700">3</text>
+          <rect x="150" y="40" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="187" y="63" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">1</text>
+          <rect x="225" y="40" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="262" y="63" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">0</text>
+          <rect x="300" y="40" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="337" y="63" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">2</text>
+          <rect x="375" y="40" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="412" y="63" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">0</text>
+          <rect x="450" y="40" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="487" y="63" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">1</text>
+          <rect x="525" y="40" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="562" y="63" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">0</text>
+
+          <!-- Row 2 (h2) -->
+          <rect x="0" y="84" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="37" y="107" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">0</text>
+          <rect x="75" y="84" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="112" y="107" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">1</text>
+          <rect x="150" y="84" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="187" y="107" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">0</text>
+          <rect x="225" y="84" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="262" y="107" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">2</text>
+          <rect x="300" y="84" width="75" height="36" rx="4" fill="rgba(16,185,129,0.2)" stroke="#10b981"/>
+          <text x="337" y="107" text-anchor="middle" fill="#a7f3d0" font-size="16" font-family="JetBrains Mono" font-weight="700">3</text>
+          <rect x="375" y="84" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="412" y="107" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">0</text>
+          <rect x="450" y="84" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="487" y="107" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">0</text>
+          <rect x="525" y="84" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="562" y="107" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">1</text>
+
+          <!-- Row 3 (h3) -->
+          <rect x="0" y="128" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="37" y="151" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">2</text>
+          <rect x="75" y="128" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="112" y="151" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">0</text>
+          <rect x="150" y="128" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="187" y="151" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">1</text>
+          <rect x="225" y="128" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="262" y="151" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">0</text>
+          <rect x="300" y="128" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="337" y="151" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">1</text>
+          <rect x="375" y="128" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="412" y="151" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">0</text>
+          <rect x="450" y="128" width="75" height="36" rx="4" fill="rgba(249,115,22,0.2)" stroke="#f97316"/>
+          <text x="487" y="151" text-anchor="middle" fill="#fdba74" font-size="16" font-family="JetBrains Mono" font-weight="700">3</text>
+          <rect x="525" y="128" width="75" height="36" rx="4" fill="#090e1a" stroke="#1e2d4a"/>
+          <text x="562" y="151" text-anchor="middle" fill="#475569" font-size="16" font-family="JetBrains Mono">0</text>
+        </g>
+
+        <!-- Result -->
+        <text x="20" y="225" fill="#94a3b8" font-size="11" font-family="JetBrains Mono">"apple" এর count: min(row1[col1], row2[col4], row3[col6]) = min(3, 3, 3) = 3 ✓</text>
+        <text x="20" y="245" fill="#64748b" font-size="11">Counters overcounted হতে পারে (hash collision), কিন্তু minimum নিলে closest estimate পাই।</text>
+        <text x="20" y="265" fill="#10b981" font-size="11" font-family="JetBrains Mono">Guarantee: count ≥ actual count (কখনো undercount হয় না)</text>
+      </svg>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">javascript</span>
+        <span class="code-file">count-min-sketch.js — Trending Topics</span>
+      </div>
+      <pre><span class="kw">class</span> <span class="fn">CountMinSketch</span> {
+  <span class="kw">constructor</span>(width = <span class="num">1000</span>, depth = <span class="num">5</span>) {
+    <span class="var">this</span>.width = width;  <span class="cm">// columns</span>
+    <span class="var">this</span>.depth = depth;  <span class="cm">// rows (= hash functions)</span>
+    <span class="cm">// 2D array of counters</span>
+    <span class="var">this</span>.table = <span class="fn">Array</span>.<span class="fn">from</span>({ length: depth }, () => <span class="kw">new</span> <span class="fn">Int32Array</span>(width));
+    <span class="var">this</span>.seeds = [<span class="num">7919</span>, <span class="num">7907</span>, <span class="num">7901</span>, <span class="num">7883</span>, <span class="num">7879</span>]; <span class="cm">// prime seeds</span>
+  }
+
+  <span class="fn">_hash</span>(item, seed) {
+    <span class="kw">let</span> h = seed;
+    <span class="kw">for</span> (<span class="kw">let</span> c <span class="kw">of</span> item) h = (h * <span class="num">31</span> + c.<span class="fn">charCodeAt</span>(<span class="num">0</span>)) % <span class="var">this</span>.width;
+    <span class="kw">return</span> Math.<span class="fn">abs</span>(h);
+  }
+
+  <span class="cm">// Event add করো — প্রতিটা row এর hash position increment</span>
+  <span class="fn">add</span>(item, count = <span class="num">1</span>) {
+    <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i &lt; <span class="var">this</span>.depth; i++) {
+      <span class="kw">const</span> col = <span class="var">this</span>.<span class="fn">_hash</span>(item, <span class="var">this</span>.seeds[i]);
+      <span class="var">this</span>.table[i][col] += count;
+    }
+  }
+
+  <span class="cm">// Approximate frequency বের করো — minimum নাও</span>
+  <span class="fn">estimate</span>(item) {
+    <span class="kw">let</span> min = <span class="var">Infinity</span>;
+    <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i &lt; <span class="var">this</span>.depth; i++) {
+      <span class="kw">const</span> col = <span class="var">this</span>.<span class="fn">_hash</span>(item, <span class="var">this</span>.seeds[i]);
+      min = Math.<span class="fn">min</span>(min, <span class="var">this</span>.table[i][col]);
+    }
+    <span class="kw">return</span> min; <span class="cm">// approximate count (never underestimates)</span>
+  }
+}
+
+<span class="cm">// Twitter-style trending topics</span>
+<span class="kw">const</span> trendSketch = <span class="kw">new</span> <span class="fn">CountMinSketch</span>(<span class="num">10000</span>, <span class="num">5</span>);
+
+<span class="cm">// প্রতিটা tweet process করো</span>
+<span class="kw">function</span> <span class="fn">processTweet</span>(tweet) {
+  <span class="kw">const</span> words = tweet.toLowerCase().<span class="fn">split</span>(/\s+/);
+  <span class="kw">for</span> (<span class="kw">const</span> word <span class="kw">of</span> words) {
+    trendSketch.<span class="fn">add</span>(word);
+  }
+}
+
+<span class="cm">// লক্ষ লক্ষ tweets process করো</span>
+tweets.<span class="fn">forEach</span>(processTweet);
+
+<span class="cm">// Trending check করো</span>
+<span class="var">console</span>.<span class="fn">log</span>(trendSketch.<span class="fn">estimate</span>(<span class="str">'cricket'</span>));   <span class="cm">// 450000 mentions</span>
+<span class="var">console</span>.<span class="fn">log</span>(trendSketch.<span class="fn">estimate</span>(<span class="str">'election'</span>));  <span class="cm">// 280000 mentions</span>
+<span class="var">console</span>.<span class="fn">log</span>(trendSketch.<span class="fn">estimate</span>(<span class="str">'rain'</span>));       <span class="cm">// 15000 mentions</span>
+<span class="cm">// মাত্র ~50 KB RAM এ সব — exact HashMap এ দরকার হতো GB</span></pre>
+    </div>
+  </div>
+
+  <!-- Section 5: Comparison -->
+  <div class="section" id="comparison">
+    <div class="section-label">Decision Guide</div>
+    <h2 class="section-title">তিনটার তুলনা — কোনটা কখন?</h2>
+
+    <table class="compare-table">
+      <tr><th>Structure</th><th>প্রশ্নের ধরন</th><th>Error Type</th><th>Memory</th><th>Use Case</th></tr>
+      <tr>
+        <td><strong>Bloom Filter</strong></td>
+        <td>"এটা কি আগে দেখা হয়েছে?"</td>
+        <td>False Positive (আছে বলে না থাকলে)</td>
+        <td>~1 MB per 10M items</td>
+        <td>Cache miss prevention, URL deduplication, spam filter</td>
+      </tr>
+      <tr>
+        <td><strong>HyperLogLog</strong></td>
+        <td>"কতটা unique item আছে?"</td>
+        <td>±0.81% cardinality error</td>
+        <td>12 KB fixed!</td>
+        <td>DAU/MAU count, unique IP, distinct search queries</td>
+      </tr>
+      <tr>
+        <td><strong>Count-Min Sketch</strong></td>
+        <td>"এটা কতবার দেখা গেছে?"</td>
+        <td>Overcounting (কখনো undercount না)</td>
+        <td>Depth × Width × 4 bytes</td>
+        <td>Trending topics, rate limiting, heavy hitter detection</td>
+      </tr>
+    </table>
+
+    <div class="info-box tip">
+      <div class="box-label">💡 Quick Decision</div>
+      "আছে কি না?" → Bloom Filter | "কতটা unique?" → HyperLogLog | "কতবার হয়েছে?" → Count-Min Sketch
+    </div>
+  </div>
+
+  <!-- Section 6: Real World -->
+  <div class="section" id="realworld">
+    <div class="section-label">Industry Examples</div>
+    <h2 class="section-title">Real World — কে কীভাবে ব্যবহার করে</h2>
+
+    <table class="compare-table">
+      <tr><th>Company</th><th>Structure</th><th>কী করে</th></tr>
+      <tr><td><strong>Redis</strong></td><td>HyperLogLog</td><td>Built-in PFADD/PFCOUNT commands — যেকোনো app এ সহজে DAU count</td></tr>
+      <tr><td><strong>Google BigQuery</strong></td><td>HyperLogLog++</td><td>SQL এ APPROX_COUNT_DISTINCT() — trillion rows এ seconds এ unique count</td></tr>
+      <tr><td><strong>Apache Kafka</strong></td><td>Count-Min Sketch</td><td>Topic এর message frequency estimate করে throttling তে</td></tr>
+      <tr><td><strong>Akamai CDN</strong></td><td>Bloom Filter</td><td>Web cache এ — object আছে কিনা disk hit এড়িয়ে check</td></tr>
+      <tr><td><strong>LinkedIn</strong></td><td>Bloom Filter</td><td>"You might know" feature — already connected? Bloom Filter check করে</td></tr>
+      <tr><td><strong>Cloudflare</strong></td><td>Count-Min Sketch</td><td>DDoS attack detection — কোন IP থেকে অস্বাভাবিক বেশি request আসছে</td></tr>
+    </table>
+  </div>
+
+  <!-- MCQ -->
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span style="font-size:24px">🧠</span>
+      <h2>MCQ Quiz</h2>
+    </div>
+    <div class="mcq-meta">
+      <span>📊 10টা প্রশ্ন</span>
+      <span>⏱ ~12 মিনিট</span>
+      <span>✅ Pass: 7/10</span>
+    </div>
+    <div class="score-display">Score: <span id="scoreDisplay">0</span> / 10</div>
+
+    <div class="question-block" data-correct="b">
+      <div class="question-num">Q1 / 10</div>
+      <div class="question-text">Bloom Filter "False Negative" দেয় না মানে কী?</div>
+      <div class="options">
+        <div class="option" data-val="a">কখনো ভুল answer দেয় না</div>
+        <div class="option" data-val="b">"নেই" বললে সত্যিই নেই — Bloom Filter কখনো থাকা জিনিস "নেই" বলে না</div>
+        <div class="option" data-val="c">Memory কখনো ভরে না</div>
+        <div class="option" data-val="d">Hash collision হয় না</div>
+      </div>
+      <div class="explanation">✅ Bloom Filter এর guarantee: "NOT IN SET" মানে definitively absent। কিন্তু "IN SET" মানে probably present (false positive সম্ভব)। এই asymmetry টাই Bloom Filter কে useful করে — "definitely not" কে trust করা যায়।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="question-num">Q2 / 10</div>
+      <div class="question-text">HyperLogLog কোন প্রশ্নের উত্তর দেয়?</div>
+      <div class="options">
+        <div class="option" data-val="a">এই element টা কতবার দেখা গেছে?</div>
+        <div class="option" data-val="b">এই element টা set এ আছে কিনা?</div>
+        <div class="option" data-val="c">মোট কতটা unique (distinct) element দেখা গেছে?</div>
+        <div class="option" data-val="d">দুটো set এর intersection কতটা?</div>
+      </div>
+      <div class="explanation">✅ HyperLogLog হলো cardinality estimation এর জন্য। "১ বিলিয়ন requests এ কতটা unique IP ছিল?" — এই ধরনের প্রশ্নের জন্য। Redis এর PFCOUNT এটাই করে — ১২ KB memory তে ০.৮১% error সহ।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="question-num">Q3 / 10</div>
+      <div class="question-text">Count-Min Sketch এ "minimum" নেওয়া হয় কেন?</div>
+      <div class="options">
+        <div class="option" data-val="a">Hash collision এ counters overcounted হয়, minimum নিলে সবচেয়ে accurate estimate পাওয়া যায়</div>
+        <div class="option" data-val="b">Maximum নিলে memory বেশি লাগে</div>
+        <div class="option" data-val="c">Average নেওয়া mathematically সম্ভব না</div>
+        <div class="option" data-val="d">Minimum সবসময় exact count দেয়</div>
+      </div>
+      <div class="explanation">✅ Hash collision হলে দুটো ভিন্ন element একই bucket এ পড়ে — counter overcounted হয়। কিন্তু সব rows এর মধ্যে collision সবগুলোতে একসাথে হওয়ার সম্ভাবনা কম, তাই minimum টা সবচেয়ে কাছের estimate।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="question-num">Q4 / 10</div>
+      <div class="question-text">Google Chrome Bloom Filter কীসের জন্য ব্যবহার করে?</div>
+      <div class="options">
+        <div class="option" data-val="a">Browser history store করতে</div>
+        <div class="option" data-val="b">JavaScript code compile করতে</div>
+        <div class="option" data-val="c">Bookmark search করতে</div>
+        <div class="option" data-val="d">Malicious URL check করতে — locally, server round-trip ছাড়া</div>
+      </div>
+      <div class="explanation">✅ Chrome এ ২ বিলিয়ন+ known malicious URLs এর একটা Bloom Filter locally store থাকে। তুমি কোনো URL visit করলে প্রথমে Bloom Filter check করে। "Definitely safe" হলে কোনো network call নেই। "Possibly malicious" হলে তবেই Google Safe Browsing server এ check করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="question-num">Q5 / 10</div>
+      <div class="question-text">Bloom Filter এ false positive rate কমাতে কী করতে হয়?</div>
+      <div class="options">
+        <div class="option" data-val="a">Hash function এর সংখ্যা কমাতে হবে</div>
+        <div class="option" data-val="b">Bit array বড় করতে হবে (বেশি bits allocate করতে হবে)</div>
+        <div class="option" data-val="c">Element গুলো sort করতে হবে</div>
+        <div class="option" data-val="d">Delete operation add করতে হবে</div>
+      </div>
+      <div class="explanation">✅ Bit array বড় হলে hash collision কম হয়, false positive rate কমে। Rule of thumb: n elements, desired false positive rate p হলে bit array size m = -n*ln(p)/(ln2)² formula দিয়ে calculate করো। বড় array = কম error = বেশি memory।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="question-num">Q6 / 10</div>
+      <div class="question-text">Redis এ HyperLogLog ব্যবহার করতে কোন command ব্যবহার করতে হয়?</div>
+      <div class="options">
+        <div class="option" data-val="a">SADD ও SCARD</div>
+        <div class="option" data-val="b">ZADD ও ZCOUNT</div>
+        <div class="option" data-val="c">PFADD ও PFCOUNT</div>
+        <div class="option" data-val="d">HSET ও HGETALL</div>
+      </div>
+      <div class="explanation">✅ Redis এ HyperLogLog এর জন্য দুটো command: PFADD key element (element add করো) এবং PFCOUNT key (approximate unique count পাও)। PF prefix এসেছে Philippe Flajolet এর নাম থেকে — HyperLogLog algorithm এর inventor।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="question-num">Q7 / 10</div>
+      <div class="question-text">Count-Min Sketch কোনটা guarantee করে?</div>
+      <div class="options">
+        <div class="option" data-val="a">Estimated count ≥ actual count — কখনো underestimate হয় না</div>
+        <div class="option" data-val="b">Estimated count = actual count সবসময়</div>
+        <div class="option" data-val="c">Estimated count ≤ actual count সবসময়</div>
+        <div class="option" data-val="d">Error rate সবসময় 0%</div>
+      </div>
+      <div class="explanation">✅ Count-Min Sketch এর mathematical guarantee হলো: estimated count কখনো actual count এর চেয়ে কম হবে না (no underestimation)। কিন্তু overcounting হতে পারে hash collision এর কারণে। এই guarantee টা অনেক use case এ acceptable।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="question-num">Q8 / 10</div>
+      <div class="question-text">Cassandra Bloom Filter কীসের জন্য ব্যবহার করে?</div>
+      <div class="options">
+        <div class="option" data-val="a">Data encryption এর জন্য</div>
+        <div class="option" data-val="b">Replication synchronization এর জন্য</div>
+        <div class="option" data-val="c">Query parsing এর জন্য</div>
+        <div class="option" data-val="d">SSTable এ key আছে কিনা check করতে — unnecessary disk read এড়াতে</div>
+      </div>
+      <div class="explanation">✅ Cassandra এর SSTables (disk files) এ প্রতিটার জন্য একটা Bloom Filter থাকে। Read request এলে Bloom Filter check করে — "Definitely not in this SSTable" হলে disk read skip। এতে read performance বহুগুণ বাড়ে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="question-num">Q9 / 10</div>
+      <div class="question-text">HyperLogLog এর standard error কত?</div>
+      <div class="options">
+        <div class="option" data-val="a">10%</div>
+        <div class="option" data-val="b">0.81%</div>
+        <div class="option" data-val="c">5%</div>
+        <div class="option" data-val="d">0%</div>
+      </div>
+      <div class="explanation">✅ HyperLogLog এর standard error হলো ±1.04/√m যেখানে m হলো register count। Redis এর implementation এ 16384 registers use করা হয়, যেটা ±0.81% standard error দেয়। এই accuracy তে ১২ KB memory তে billions of unique elements count করা যায়।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="question-num">Q10 / 10</div>
+      <div class="question-text">তোমার app এ "আজকের trending hashtags" বের করতে কোন structure best?</div>
+      <div class="options">
+        <div class="option" data-val="a">Bloom Filter — hashtag আগে দেখেছি কিনা</div>
+        <div class="option" data-val="b">HyperLogLog — unique hashtag count</div>
+        <div class="option" data-val="c">Count-Min Sketch — প্রতিটা hashtag কতবার use হয়েছে তার frequency</div>
+        <div class="option" data-val="d">Regular HashMap — exact count দরকার</div>
+      </div>
+      <div class="explanation">✅ Trending hashtags মানে কোন hashtag সবচেয়ে বেশিবার use হয়েছে — এটা frequency counting। Count-Min Sketch প্রতিটা hashtag এর approximate frequency রাখে, তারপর top-K বের করো। Billions of tweets এ HashMap এ GB RAM লাগতো, Count-Min Sketch এ কয়েক KB।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT & CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <!-- Assignment -->
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ২-৩ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <p style="margin-bottom:16px; font-size:14px; color:#94a3b8;">Probabilistic data structures এর concept ভালো করে বোঝার জন্য।</p>
+    <ul class="task-list">
+      <li>
+        <strong>Structure Selection:</strong> নিচের প্রতিটা problem এর জন্য কোন structure best এবং কেন বলো: (ক) Email spam filter — কোনো email address কি blacklist এ আছে? (খ) YouTube — একটা video কতবার watch করা হয়েছে? (গ) Spotify — একজন user কতটা unique song শুনেছে এই মাসে? (ঘ) E-commerce — product page কি cache এ আছে?
+      </li>
+      <li>
+        <strong>False Positive Analysis:</strong> Bloom Filter এ bit array size 1MB (8 million bits), hash functions 5টা, elements 1 million। Expected false positive rate বের করার formula হলো (1 - e^(-kn/m))^k যেখানে k=hash count, n=elements, m=bits। Calculate করো। তারপর বলো false positive rate 1% করতে 1M elements এ কত bits লাগবে।
+      </li>
+      <li>
+        <strong>Redis HyperLogLog Experiment:</strong> Redis install করো (বা Redis Cloud free tier use করো)। Node.js দিয়ে ১০,০০০ random UUID generate করে PFADD করো। PFCOUNT দিয়ে result দেখো। Actual count vs estimated count এর পার্থক্য কত percent?
+      </li>
+      <li>
+        <strong>Memory Calculation:</strong> তোমার app এ প্রতিদিন ১০ মিলিয়ন unique users আসে। (ক) Set/HashSet দিয়ে track করলে কত RAM লাগবে? (প্রতিটা UUID 36 bytes) (খ) HyperLogLog দিয়ে করলে কত RAM লাগবে? (গ) ৩০ দিনের data রাখলে দুটো approach এ কত difference?
+      </li>
+      <li>
+        <strong>Design Question:</strong> Twitter এর Trending Topics feature design করো — কীভাবে real-time এ top 10 trending hashtags বের করবে? Count-Min Sketch কোথায় use হবে? প্রতি minute এ data refresh করতে কী করতে হবে? ৫ লাইনে architecture লেখো।
+      </li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>4 problem এর structure selection + justification</li>
+        <li>False positive rate calculation (formula দিয়ে)</li>
+        <li>Redis HyperLogLog experiment result + accuracy analysis</li>
+        <li>Memory comparison calculation (HashSet vs HyperLogLog)</li>
+        <li>Twitter Trending Topics architecture design</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project -->
+  <div class="project-section" id="project">
+    <div class="project-header">
+      <span style="font-size:24px">🚀</span>
+      <h2>Hands-On Project Task</h2>
+    </div>
+    <div class="project-body">
+      <p style="font-size:14px; color:#94a3b8; margin-bottom:20px;">তিনটা structure নিজে implement করো এবং তুলনা করো — Node.js, কোনো library নেই।</p>
+
+      <h3 style="font-family:'Fraunces',serif; font-size:18px; margin-bottom:16px; color:#f1f5f9;">Probabilistic Structures Playground</h3>
+
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-circle">1</div>
+          <div class="step-content">
+            <h4>Bloom Filter implement করো</h4>
+            <p>উপরের code থেকে copy করো। ১০,০০০ words add করো এবং false positive rate measure করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">2</div>
+          <div class="step-content">
+            <h4>Count-Min Sketch implement করো</h4>
+            <p>উপরের code থেকে copy করো। Lorem ipsum text এর word frequency count করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">3</div>
+          <div class="step-content">
+            <h4>Exact vs Approximate Compare করো</h4>
+            <p>একই data তে HashMap (exact) vs Count-Min Sketch (approx) — memory ও accuracy compare।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">4</div>
+          <div class="step-content">
+            <h4>Simple HyperLogLog implement করো</h4>
+            <p>Leading zeros approach দিয়ে একটা basic version বানাও। ১০,০০০ UUID দিয়ে test করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">5</div>
+          <div class="step-content">
+            <h4>Benchmark করো</h4>
+            <p><code>console.time()</code> দিয়ে performance measure করো। ১M operations এ কত ms?</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">6</div>
+          <div class="step-content">
+            <h4>Mini "Trending System" বানাও</h4>
+            <p>Count-Min Sketch দিয়ে একটা fake tweet stream process করো, top-5 trending words বের করো।</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block" style="margin-top:20px">
+        <div class="code-header">
+          <span class="code-lang">javascript</span>
+          <span class="code-file">benchmark.js — Starter Code</span>
+        </div>
+        <pre><span class="cm">// ১ মিলিয়ন random strings generate করো</span>
+<span class="kw">function</span> <span class="fn">generateStrings</span>(n) {
+  <span class="kw">return</span> <span class="fn">Array</span>.<span class="fn">from</span>({ length: n }, (_, i) => `item-${i}-${Math.<span class="fn">random</span>().<span class="fn">toString</span>(<span class="num">36</span>)}`);
+}
+
+<span class="kw">const</span> data = <span class="fn">generateStrings</span>(<span class="num">1_000_000</span>);
+
+<span class="cm">// Bloom Filter benchmark</span>
+<span class="kw">const</span> bf = <span class="kw">new</span> <span class="fn">BloomFilter</span>(<span class="num">10_000_000</span>, <span class="num">5</span>);
+<span class="var">console</span>.<span class="fn">time</span>(<span class="str">'bloom-add'</span>);
+data.<span class="fn">forEach</span>(s => bf.<span class="fn">add</span>(s));
+<span class="var">console</span>.<span class="fn">timeEnd</span>(<span class="str">'bloom-add'</span>);
+
+<span class="cm">// False positive rate test</span>
+<span class="kw">let</span> falsePositives = <span class="num">0</span>;
+<span class="kw">const</span> testData = <span class="fn">generateStrings</span>(<span class="num">10_000</span>); <span class="cm">// new strings, not added</span>
+testData.<span class="fn">forEach</span>(s => { <span class="kw">if</span> (bf.<span class="fn">mightContain</span>(s)) falsePositives++; });
+<span class="var">console</span>.<span class="fn">log</span>(`False positive rate: ${(falsePositives / <span class="num">10_000</span> * <span class="num">100</span>).<span class="fn">toFixed</span>(<span class="num">2</span>)}%`);
+
+<span class="cm">// Count-Min Sketch vs HashMap memory</span>
+<span class="kw">const</span> words = [<span class="str">'cricket'</span>, <span class="str">'football'</span>, <span class="str">'rain'</span>, <span class="str">'politics'</span>];
+<span class="kw">const</span> cms = <span class="kw">new</span> <span class="fn">CountMinSketch</span>(<span class="num">1000</span>, <span class="num">5</span>);
+<span class="kw">const</span> exact = <span class="kw">new</span> <span class="fn">Map</span>();
+
+<span class="cm">// 100K random word selections simulate করো</span>
+<span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i &lt; <span class="num">100_000</span>; i++) {
+  <span class="kw">const</span> w = words[Math.<span class="fn">floor</span>(Math.<span class="fn">random</span>() * words.length)];
+  cms.<span class="fn">add</span>(w);
+  exact.<span class="fn">set</span>(w, (exact.<span class="fn">get</span>(w) || <span class="num">0</span>) + <span class="num">1</span>);
+}
+
+words.<span class="fn">forEach</span>(w => {
+  <span class="var">console</span>.<span class="fn">log</span>(`${w}: exact=${exact.<span class="fn">get</span>(w)}, approx=${cms.<span class="fn">estimate</span>(w)}`);
+});</pre>
+      </div>
+
+      <div class="info-box tip" style="margin-top:16px">
+        <div class="box-label">🎯 এটা করলে যা শিখবে</div>
+        হাতে কোড লিখে দেখবে probabilistic structures কীভাবে কাজ করে। False positive নিজে measure করবে। Memory difference নিজে calculate করবে। এরপর interview তে "Bloom Filter কীভাবে কাজ করে?" প্রশ্নে সরাসরি diagram এঁকে explain করতে পারবে।
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-label">Phase 5 Complete! 🎉</div>
+    <h2 class="section-title">আজকে ও পুরো Phase 5 তে যা শিখলাম</h2>
+    <table class="compare-table">
+      <tr><th>Concept</th><th>এক লাইনে</th></tr>
+      <tr><td>Bloom Filter</td><td>"Definitely not" বলতে পারে, "Probably yes" বলে — zero false negative</td></tr>
+      <tr><td>HyperLogLog</td><td>Billions of unique elements count করো ১২ KB তে — ০.৮১% error</td></tr>
+      <tr><td>Count-Min Sketch</td><td>Element frequency approximate করো, কখনো undercount না</td></tr>
+      <tr><td>Probabilistic DS</td><td>Exact answer এর বদলে approximate — memory ও speed এ বিশাল লাভ</td></tr>
+    </table>
+
+    <div style="background:var(--card); border:1px solid rgba(6,182,212,0.3); border-radius:12px; padding:28px; margin-top:24px; text-align:center;">
+      <div style="font-size:48px; margin-bottom:12px;">🏆</div>
+      <div style="font-family:'Fraunces',serif; font-size:24px; color:#f1f5f9; margin-bottom:8px;">Phase 5 সম্পূর্ণ!</div>
+      <div style="font-size:14px; color:var(--muted2); max-width:500px; margin:0 auto 20px;">
+        Security, Observability, Cloud/IaC, CQRS, Deployment Patterns, এবং Advanced Data Structures — তুমি এখন Advanced level এর system design জানো। এগুলো FAANG interview তে জিজ্ঞেস করা হয়।
+      </div>
+      <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; padding:6px 14px; border-radius:20px; background:rgba(6,182,212,0.1); border:1px solid rgba(6,182,212,0.3); color:var(--accent);">✓ JWT & OAuth2</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; padding:6px 14px; border-radius:20px; background:rgba(6,182,212,0.1); border:1px solid rgba(6,182,212,0.3); color:var(--accent);">✓ Prometheus & Grafana</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; padding:6px 14px; border-radius:20px; background:rgba(6,182,212,0.1); border:1px solid rgba(6,182,212,0.3); color:var(--accent);">✓ AWS & Terraform</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; padding:6px 14px; border-radius:20px; background:rgba(6,182,212,0.1); border:1px solid rgba(6,182,212,0.3); color:var(--accent);">✓ CQRS & Event Sourcing</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; padding:6px 14px; border-radius:20px; background:rgba(6,182,212,0.1); border:1px solid rgba(6,182,212,0.3); color:var(--accent);">✓ Blue-Green & Canary</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; padding:6px 14px; border-radius:20px; background:rgba(6,182,212,0.1); border:1px solid rgba(6,182,212,0.3); color:var(--accent);">✓ Bloom Filter & HLL</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="next-cta">
+    <div>
+      <div class="next-label">Phase Complete →</div>
+      <div class="next-title">🎓 System Design Mastery Course — Phase 5 Done!</div>
+    </div>
+    <div class="next-arrow">🏆</div>
+  </div>
+
+</div>
+</main>
+
+<script>
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scroll = doc.scrollTop || document.body.scrollTop;
+  const height = doc.scrollHeight - doc.clientHeight;
+  document.getElementById('progressFill').style.width = ((scroll / height) * 100) + '%';
+});
+let answered = {};
+document.querySelectorAll('.option').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const block = this.closest('.question-block');
+    const qId = Array.from(document.querySelectorAll('.question-block')).indexOf(block);
+    if (answered[qId]) return;
+    answered[qId] = this.dataset.val;
+    block.querySelectorAll('.option').forEach(o => {
+      o.style.pointerEvents = 'none';
+      if (o.dataset.val === block.dataset.correct) o.classList.add('correct');
+      else if (o.dataset.val === this.dataset.val && this.dataset.val !== block.dataset.correct) o.classList.add('wrong');
+    });
+    block.querySelector('.explanation').classList.add('visible');
+  });
+});
+function submitMCQ() {
+  let correct = 0;
+  const blocks = document.querySelectorAll('.question-block');
+  blocks.forEach((block, i) => { if (answered[i] === block.dataset.correct) correct++; });
+  const unanswered = blocks.length - Object.keys(answered).length;
+  if (unanswered > 0) { alert(`এখনও ${unanswered}টা প্রশ্নের উত্তর দাওনি!`); return; }
+  document.getElementById('scoreDisplay').textContent = correct;
+  const banner = document.getElementById('resultBanner');
+  banner.classList.add('visible');
+  if (correct >= 7) { banner.classList.add('pass'); banner.textContent = `🎉 দারুণ! ${correct}/10 সঠিক। Phase 5 সম্পূর্ণ করেছো!`; }
+  else { banner.classList.add('fail'); banner.textContent = `📖 ${correct}/10 সঠিক। Concept গুলো আবার পড়ো এবং retry করো। ৭/১০ পেলেই pass।`; }
+}
+document.querySelectorAll('.nav-item[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => { e.preventDefault(); document.getElementById(link.getAttribute('href').slice(1))?.scrollIntoView({ behavior: 'smooth' }); });
+});
+</script>
+</body>
+</html>

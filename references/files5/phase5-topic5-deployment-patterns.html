@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 5 · Topic 5 — Deployment Patterns</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05080f; --surface: #090e1a; --card: #0c1220; --border: #162035; --border2: #1e2d4a;
+  --accent: #eab308; --accent-glow: rgba(234,179,8,0.15);
+  --green: #10b981; --green-glow: rgba(16,185,129,0.12);
+  --orange: #f97316; --red: #ef4444; --yellow: #eab308; --purple: #8b5cf6;
+  --text: #e2e8f0; --muted: #64748b; --muted2: #94a3b8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Sans Bengali', sans-serif; line-height: 1.7; font-size: 15px; }
+body::after { content:''; position:fixed; inset:0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events:none; z-index:999; opacity:0.4; }
+.sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: var(--surface); border-right: 1px solid var(--border); padding: 24px 0; overflow-y: auto; z-index: 100; }
+.sidebar-logo { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.sidebar-logo .phase-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; display: block; margin-bottom: 4px; }
+.sidebar-logo .course-title { font-family: 'Fraunces', serif; font-size: 14px; color: var(--text); font-weight: 700; }
+.nav-section-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 8px 20px 4px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; color: var(--muted2); text-decoration: none; font-size: 13px; transition: all 0.2s; border-left: 2px solid transparent; }
+.nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); border-left-color: var(--border2); }
+.nav-item.active { color: var(--accent); background: var(--accent-glow); border-left-color: var(--accent); }
+.nav-item .icon { font-size: 14px; width: 18px; text-align: center; }
+.progress-bar { position: fixed; top: 0; left: 240px; right: 0; height: 2px; background: var(--border); z-index: 200; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #facc15); width: 0%; transition: width 0.1s; }
+main { margin-left: 240px; min-height: 100vh; }
+.content { max-width: 860px; margin: 0 auto; padding: 60px 48px 80px; }
+.topic-hero { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+.hero-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.hero-phase { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; }
+.hero-sep { color: var(--border2); }
+.hero-topic-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+.hero-title { font-family: 'Fraunces', serif; font-size: 42px; font-weight: 900; line-height: 1.15; margin-bottom: 16px; background: linear-gradient(135deg, #f1f5f9, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-subtitle { font-size: 15px; color: var(--muted2); max-width: 600px; margin-bottom: 24px; }
+.hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border2); color: var(--muted2); background: var(--card); }
+.tag.accent { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+.section { margin-bottom: 48px; }
+.section-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.section-title { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 700; margin-bottom: 20px; color: #f1f5f9; }
+.section p { color: var(--muted2); margin-bottom: 16px; font-size: 14px; line-height: 1.8; }
+.section p strong { color: var(--text); }
+.card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+.card:hover { border-color: var(--border2); }
+.card-icon { font-size: 24px; margin-bottom: 10px; }
+.card-title { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.card p { font-size: 13px; color: var(--muted2); margin: 0; }
+.code-block { background: #060b14; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 24px; }
+.code-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.code-lang { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
+.code-file { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+.code-block pre { padding: 20px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7; overflow-x: auto; color: #a8b4c8; }
+.kw { color: #7dd3fc; } .str { color: #86efac; } .fn { color: #fbbf24; } .cm { color: #475569; font-style: italic; } .var { color: #c4b5fd; } .num { color: #f9a8d4; }
+.info-box { border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; font-size: 14px; line-height: 1.7; border-left: 3px solid; }
+.info-box .box-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; font-weight: 700; }
+.info-box.tip { background: rgba(16,185,129,0.08); border-color: var(--green); color: #a7f3d0; }
+.info-box.tip .box-label { color: var(--green); }
+.info-box.warning { background: rgba(234,179,8,0.08); border-color: var(--yellow); color: #fef08a; }
+.info-box.warning .box-label { color: var(--yellow); }
+.info-box.danger { background: rgba(239,68,68,0.08); border-color: var(--red); color: #fca5a5; }
+.info-box.danger .box-label { color: var(--red); }
+.info-box.purple { background: rgba(139,92,246,0.08); border-color: var(--purple); color: #c4b5fd; }
+.info-box.purple .box-label { color: var(--purple); }
+.compare-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 13px; }
+.compare-table th { background: var(--surface); padding: 10px 14px; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); border: 1px solid var(--border); }
+.compare-table td { padding: 10px 14px; border: 1px solid var(--border); color: var(--muted2); vertical-align: top; }
+.compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+.diagram-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center; }
+.diagram-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; }
+.mcq-section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 32px; margin-bottom: 32px; }
+.mcq-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.mcq-header h2 { font-family: 'Fraunces', serif; font-size: 22px; color: #f1f5f9; }
+.mcq-meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 28px; display: flex; gap: 16px; }
+.question-block { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+.question-block:last-of-type { border-bottom: none; }
+.question-text { font-size: 14px; color: var(--text); margin-bottom: 12px; line-height: 1.7; }
+.question-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); margin-bottom: 6px; }
+.options { display: flex; flex-direction: column; gap: 8px; }
+.option { padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--muted2); font-size: 13px; cursor: pointer; transition: all 0.2s; text-align: left; }
+.option:hover { border-color: var(--accent); color: var(--text); background: var(--accent-glow); }
+.option.correct { border-color: var(--green); background: rgba(16,185,129,0.12); color: #a7f3d0; }
+.option.wrong { border-color: var(--red); background: rgba(239,68,68,0.1); color: #fca5a5; }
+.explanation { margin-top: 12px; padding: 12px 14px; background: rgba(234,179,8,0.06); border-left: 2px solid var(--yellow); border-radius: 6px; font-size: 13px; color: var(--muted2); display: none; }
+.explanation.visible { display: block; }
+.score-display { text-align: center; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--muted); margin-top: 16px; }
+.score-display span { font-size: 28px; color: var(--accent); font-weight: 700; }
+.mcq-submit { width: 100%; padding: 14px; background: var(--accent-glow); border: 1px solid var(--accent); border-radius: 8px; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; margin-top: 8px; }
+.mcq-submit:hover { background: var(--accent); color: #000; }
+.result-banner { margin-top: 16px; padding: 16px; border-radius: 8px; font-size: 14px; text-align: center; font-weight: 600; display: none; }
+.result-banner.visible { display: block; }
+.result-banner.pass { background: rgba(16,185,129,0.15); border: 1px solid var(--green); color: #a7f3d0; }
+.result-banner.fail { background: rgba(239,68,68,0.1); border: 1px solid var(--red); color: #fca5a5; }
+.assignment-section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 32px; margin-bottom: 32px; }
+.assignment-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.assignment-icon { font-size: 24px; }
+.assignment-header h2 { font-family: 'Fraunces', serif; font-size: 22px; color: #f1f5f9; }
+.assignment-meta { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.a-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border2); color: var(--muted2); }
+.task-list { list-style: none; counter-reset: task-counter; display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+.task-list li { counter-increment: task-counter; padding: 14px 16px 14px 52px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 14px; color: var(--muted2); position: relative; line-height: 1.7; }
+.task-list li::before { content: counter(task-counter); position: absolute; left: 14px; top: 14px; width: 24px; height: 24px; background: var(--accent-glow); border: 1px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); font-weight: 700; line-height: 24px; text-align: center; }
+.task-list li strong { color: var(--text); }
+.deliverable-box { background: rgba(234,179,8,0.06); border: 1px dashed rgba(234,179,8,0.3); border-radius: 8px; padding: 16px 20px; }
+.d-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--yellow); margin-bottom: 10px; }
+.deliverable-box ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.deliverable-box li { font-size: 13px; color: #fef08a; padding-left: 16px; position: relative; }
+.deliverable-box li::before { content: '✓'; position: absolute; left: 0; color: var(--yellow); }
+.project-section { background: linear-gradient(135deg, rgba(234,179,8,0.05), rgba(250,204,21,0.03)); border: 1px solid rgba(234,179,8,0.2); border-radius: 12px; overflow: hidden; margin-bottom: 32px; }
+.project-header { display: flex; align-items: center; gap: 12px; padding: 20px 28px; background: rgba(234,179,8,0.08); border-bottom: 1px solid rgba(234,179,8,0.15); }
+.project-header h2 { font-family: 'Fraunces', serif; font-size: 20px; color: #f1f5f9; }
+.project-body { padding: 24px 28px; }
+.step-flow { display: flex; flex-direction: column; gap: 0; }
+.step-item { display: flex; gap: 16px; padding: 16px 0; border-left: 2px solid var(--border2); margin-left: 14px; padding-left: 24px; position: relative; }
+.step-item:last-child { border-left-color: transparent; }
+.step-circle { position: absolute; left: -13px; top: 16px; width: 26px; height: 26px; background: var(--card); border: 2px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+.step-content h4 { font-family: 'Fraunces', serif; font-size: 15px; color: var(--text); margin-bottom: 4px; }
+.step-content p { font-size: 13px; color: var(--muted2); margin: 0; }
+.step-content code { background: var(--surface); border: 1px solid var(--border); padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); }
+.next-cta { display: flex; align-items: center; justify-content: space-between; padding: 24px 28px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-top: 48px; cursor: pointer; transition: border-color 0.2s; }
+.next-cta:hover { border-color: var(--accent); }
+.next-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+.next-title { font-family: 'Fraunces', serif; font-size: 18px; color: var(--text); }
+.next-arrow { font-size: 24px; color: var(--accent); }
+/* Deployment specific */
+.deployment-visual { display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 24px; }
+.traffic-bar { height: 32px; border-radius: 6px; display: flex; overflow: hidden; margin: 12px 0; }
+.traffic-seg { display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; transition: all 0.3s; }
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 5 · Advanced</span>
+    <div class="course-title">System Design Mastery</div>
+  </div>
+  <div class="nav-section-label">Topics</div>
+  <a href="#intro" class="nav-item"><span class="icon">💥</span> Downtime সমস্যা</a>
+  <a href="#blue-green" class="nav-item"><span class="icon">🔵</span> Blue-Green</a>
+  <a href="#canary" class="nav-item"><span class="icon">🐦</span> Canary Release</a>
+  <a href="#rolling" class="nav-item"><span class="icon">🔄</span> Rolling Update</a>
+  <a href="#feature-flags" class="nav-item"><span class="icon">🚩</span> Feature Flags</a>
+  <a href="#comparison" class="nav-item"><span class="icon">⚖️</span> Comparison</a>
+  <a href="#mcq" class="nav-item"><span class="icon">🧠</span> MCQ Quiz</a>
+  <a href="#assignment" class="nav-item"><span class="icon">📝</span> Assignment</a>
+  <a href="#project" class="nav-item"><span class="icon">🚀</span> Project</a>
+</nav>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<main>
+<div class="content">
+
+  <div class="topic-hero">
+    <div class="hero-meta">
+      <span class="hero-phase">Phase 5</span>
+      <span class="hero-sep">·</span>
+      <span class="hero-topic-num">Topic 05 / 06</span>
+    </div>
+    <h1 class="hero-title">Deployment<br>Patterns</h1>
+    <p class="hero-subtitle">নতুন version deploy করতে গিয়ে production crash হলে? Blue-Green, Canary, Rolling Update — এই patterns দিয়ে zero-downtime deployment করো।</p>
+    <div class="hero-tags">
+      <span class="tag accent">Blue-Green</span>
+      <span class="tag">Canary Release</span>
+      <span class="tag">Rolling Update</span>
+      <span class="tag">Feature Flags</span>
+      <span class="tag">Zero Downtime</span>
+      <span class="tag">Kubernetes</span>
+    </div>
+  </div>
+
+  <!-- Section 1: Problem -->
+  <div class="section" id="intro">
+    <div class="section-label">The Real Problem</div>
+    <h2 class="section-title">Naive Deployment এর ভয়ংকর পরিণতি</h2>
+    <p>Junior engineer প্রথমবার production deploy করে কীভাবে? Server বন্ধ করে, নতুন code দেয়, আবার চালু করে। এই সময়ে কেউ app use করতে পারে না। এটাকে বলে <strong>Downtime</strong>।</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">💸</div>
+        <div class="card-title">Downtime = টাকা ক্ষতি</div>
+        <p>Amazon এর ১ ঘণ্টার downtime মানে কোটি কোটি টাকা ক্ষতি। Shopify এর ৫ মিনিটের downtime মানে হাজার হাজার merchants এর business বন্ধ।</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🐛</div>
+        <div class="card-title">Bug Production এ গেলে</div>
+        <p>নতুন version deploy করার পর bug পেলে, কীভাবে rollback করবে? আগের version এ কীভাবে ফিরবে দ্রুত?</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌊</div>
+        <div class="card-title">Big Bang Release</div>
+        <p>সব features একসাথে deploy — ১০০% users একসাথে নতুন version পায়। Bug হলে সবাই affected।</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">😱</div>
+        <div class="card-title">Fear of Deployment</div>
+        <p>Traditional teams প্রতি ৩ মাসে একবার deploy করে — ভয়ে। Modern teams প্রতিদিন ১০০ বার deploy করে — confidently।</p>
+      </div>
+    </div>
+
+    <div class="info-box tip">
+      <div class="box-label">🎯 Modern Deployment Goal</div>
+      Zero downtime, instant rollback capability, gradual traffic shift, ও production confidence — এই চারটা লক্ষ্য পূরণ করতে পারলেই তুমি একজন deployment-confident engineer।
+    </div>
+  </div>
+
+  <!-- Section 2: Blue-Green -->
+  <div class="section" id="blue-green">
+    <div class="section-label">Pattern 1</div>
+    <h2 class="section-title">Blue-Green Deployment — দুটো Environment রাখো</h2>
+    <p>Blue-Green মানে হলো সবসময় <strong>দুটো identical production environment</strong> রাখো। একটা Live (Blue), একটা Idle (Green)। নতুন version Green এ deploy করো, test করো, তারপর traffic switch করো।</p>
+
+    <div class="diagram-box">
+      <div class="diagram-title">Blue-Green Deployment Flow</div>
+      <svg viewBox="0 0 700 360" width="100%" style="max-width:700px">
+        <!-- Stage 1: Before -->
+        <text x="20" y="22" fill="#94a3b8" font-size="11" font-family="JetBrains Mono">STEP 1: Normal State — Blue is Live</text>
+        <!-- Users -->
+        <text x="30" y="65" fill="#e2e8f0" font-size="18">👥</text>
+        <text x="60" y="68" fill="#94a3b8" font-size="11" font-family="JetBrains Mono">Users</text>
+        <!-- Arrow to LB -->
+        <line x1="100" y1="62" x2="160" y2="62" stroke="#eab308" stroke-width="2"/>
+        <polygon points="160,58 170,62 160,66" fill="#eab308"/>
+        <!-- Load Balancer -->
+        <rect x="170" y="48" width="110" height="30" rx="6" fill="rgba(234,179,8,0.1)" stroke="rgba(234,179,8,0.4)"/>
+        <text x="225" y="68" text-anchor="middle" fill="#eab308" font-size="11" font-family="JetBrains Mono">Load Balancer</text>
+        <!-- Arrow to Blue (active) -->
+        <line x1="280" y1="58" x2="340" y2="48" stroke="#3b82f6" stroke-width="2"/>
+        <polygon points="335,43 345,48 335,52" fill="#3b82f6"/>
+        <!-- Blue env -->
+        <rect x="348" y="32" width="130" height="50" rx="8" fill="rgba(59,130,246,0.15)" stroke="#3b82f6" stroke-width="2"/>
+        <text x="413" y="52" text-anchor="middle" fill="#7dd3fc" font-size="13" font-family="JetBrains Mono">🔵 BLUE</text>
+        <text x="413" y="70" text-anchor="middle" fill="#64748b" font-size="10">v1.0 — LIVE</text>
+        <!-- Green env (idle) -->
+        <rect x="348" y="95" width="130" height="50" rx="8" fill="rgba(16,185,129,0.05)" stroke="#1e2d4a" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="413" y="115" text-anchor="middle" fill="#64748b" font-size="13" font-family="JetBrains Mono">🟢 GREEN</text>
+        <text x="413" y="133" text-anchor="middle" fill="#475569" font-size="10">idle / v1.0</text>
+
+        <!-- Stage 2: Deploy to Green -->
+        <line x1="20" y1="165" x2="680" y2="165" stroke="#1e2d4a" stroke-dasharray="6,4"/>
+        <text x="20" y="183" fill="#94a3b8" font-size="11" font-family="JetBrains Mono">STEP 2: Deploy v2.0 to Green, Blue still Live</text>
+        <!-- Blue still live -->
+        <rect x="348" y="192" width="130" height="50" rx="8" fill="rgba(59,130,246,0.15)" stroke="#3b82f6" stroke-width="2"/>
+        <text x="413" y="212" text-anchor="middle" fill="#7dd3fc" font-size="13" font-family="JetBrains Mono">🔵 BLUE</text>
+        <text x="413" y="230" text-anchor="middle" fill="#64748b" font-size="10">v1.0 — LIVE</text>
+        <!-- Green being updated -->
+        <rect x="348" y="255" width="130" height="50" rx="8" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.5)" stroke-width="1.5"/>
+        <text x="413" y="275" text-anchor="middle" fill="#10b981" font-size="13" font-family="JetBrains Mono">🟢 GREEN</text>
+        <text x="413" y="293" text-anchor="middle" fill="#10b981" font-size="10">v2.0 — TESTING ✓</text>
+        <!-- Deploy arrow -->
+        <text x="510" y="278" fill="#10b981" font-size="12">← Deploy v2.0</text>
+
+        <!-- Stage 3: Switch -->
+        <line x1="20" y1="325" x2="680" y2="325" stroke="#1e2d4a" stroke-dasharray="6,4"/>
+        <text x="20" y="345" fill="#94a3b8" font-size="11" font-family="JetBrains Mono">STEP 3: Switch traffic to Green — instant, zero downtime</text>
+        <!-- LB now points to green -->
+        <text x="170" y="180" fill="#eab308" font-size="11" font-family="JetBrains Mono">Load Balancer</text>
+        <rect x="170" y="185" width="110" height="30" rx="6" fill="rgba(234,179,8,0.1)" stroke="rgba(234,179,8,0.4)"/>
+        <!-- Switch arrow to Green -->
+        <line x1="280" y1="268" x2="340" y2="268" stroke="#10b981" stroke-width="2"/>
+        <polygon points="340,264 350,268 340,272" fill="#10b981"/>
+        <text x="300" y="260" fill="#10b981" font-size="10" font-family="JetBrains Mono">switch!</text>
+      </svg>
+    </div>
+
+    <div class="info-box tip">
+      <div class="box-label">✅ Blue-Green এর সুবিধা</div>
+      <strong>Instant rollback:</strong> Bug পেলে Load Balancer কে আবার Blue তে point করো — ১ সেকেন্ডে rollback। <strong>Zero downtime:</strong> Traffic switch instantaneous। <strong>Testing:</strong> Green এ deploy করে production traffic ছাড়াই test করো।
+    </div>
+
+    <div class="info-box warning">
+      <div class="box-label">⚠️ সমস্যা</div>
+      দুটো full environment মানে দ্বিগুণ cost। Database migration complex হয় (দুটো version same DB share করলে schema compatibility দরকার)।
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">yaml</span>
+        <span class="code-file">blue-green-k8s.yaml — Kubernetes Blue-Green</span>
+      </div>
+      <pre><span class="cm"># Blue deployment — current live version</span>
+<span class="kw">apiVersion:</span> apps/v1
+<span class="kw">kind:</span> Deployment
+<span class="kw">metadata:</span>
+  <span class="var">name:</span> app-blue
+<span class="kw">spec:</span>
+  <span class="var">replicas:</span> <span class="num">3</span>
+  <span class="var">selector:</span>
+    <span class="fn">matchLabels:</span>
+      <span class="var">app:</span> myapp
+      <span class="var">version:</span> blue
+  <span class="var">template:</span>
+    <span class="fn">metadata:</span>
+      <span class="var">labels:</span>
+        <span class="var">app:</span> myapp
+        <span class="var">version:</span> blue
+    <span class="fn">spec:</span>
+      <span class="fn">containers:</span>
+      - <span class="var">name:</span> app
+        <span class="var">image:</span> myapp:<span class="str">v1.0</span>
+---
+<span class="cm"># Green deployment — new version (deploy করো, traffic নেই এখনো)</span>
+<span class="kw">apiVersion:</span> apps/v1
+<span class="kw">kind:</span> Deployment
+<span class="kw">metadata:</span>
+  <span class="var">name:</span> app-green
+<span class="kw">spec:</span>
+  <span class="var">replicas:</span> <span class="num">3</span>
+  <span class="var">selector:</span>
+    <span class="fn">matchLabels:</span>
+      <span class="var">app:</span> myapp
+      <span class="var">version:</span> green
+  <span class="var">template:</span>
+    <span class="fn">metadata:</span>
+      <span class="var">labels:</span>
+        <span class="var">app:</span> myapp
+        <span class="var">version:</span> green
+    <span class="fn">spec:</span>
+      <span class="fn">containers:</span>
+      - <span class="var">name:</span> app
+        <span class="var">image:</span> myapp:<span class="str">v2.0</span>
+---
+<span class="cm"># Service — শুধু selector পরিবর্তন করে traffic switch হয়</span>
+<span class="kw">apiVersion:</span> v1
+<span class="kw">kind:</span> Service
+<span class="kw">metadata:</span>
+  <span class="var">name:</span> app-service
+<span class="kw">spec:</span>
+  <span class="fn">selector:</span>
+    <span class="var">app:</span> myapp
+    <span class="var">version:</span> blue   <span class="cm"># এটা green করলেই switch!</span>
+  <span class="fn">ports:</span>
+  - <span class="var">port:</span> <span class="num">80</span>
+    <span class="var">targetPort:</span> <span class="num">3000</span></pre>
+    </div>
+  </div>
+
+  <!-- Section 3: Canary -->
+  <div class="section" id="canary">
+    <div class="section-label">Pattern 2</div>
+    <h2 class="section-title">Canary Release — ধীরে ধীরে Traffic বাড়াও</h2>
+    <p>Canary deployment এর নাম এসেছে coal miners এর "canary bird" থেকে — খনিতে বিষাক্ত gas আছে কিনা পরীক্ষা করার জন্য canary পাখি পাঠানো হতো। ঠিক তেমনি <strong>কিছু users কে নতুন version এ পাঠাও</strong>, তারপর দেখো সব ঠিক আছে কিনা।</p>
+
+    <div class="diagram-box">
+      <div class="diagram-title">Canary Deployment — Gradual Traffic Shift</div>
+      <svg viewBox="0 0 700 280" width="100%" style="max-width:700px">
+        <!-- Users -->
+        <text x="30" y="70" font-size="24">👥</text>
+        <text x="30" y="92" fill="#64748b" font-size="10" font-family="JetBrains Mono">100 users</text>
+
+        <!-- LB -->
+        <line x1="70" y1="75" x2="130" y2="75" stroke="#eab308" stroke-width="2"/>
+        <polygon points="130,71 140,75 130,79" fill="#eab308"/>
+        <rect x="142" y="58" width="120" height="34" rx="6" fill="rgba(234,179,8,0.1)" stroke="rgba(234,179,8,0.4)"/>
+        <text x="202" y="78" text-anchor="middle" fill="#eab308" font-size="11" font-family="JetBrains Mono">Load Balancer</text>
+
+        <!-- Split: 95% to stable -->
+        <line x1="262" y1="68" x2="340" y2="44" stroke="#3b82f6" stroke-width="2"/>
+        <polygon points="335,39 345,44 337,50" fill="#3b82f6"/>
+        <text x="290" y="52" fill="#3b82f6" font-size="10" font-family="JetBrains Mono">95%</text>
+
+        <!-- Stable env -->
+        <rect x="348" y="24" width="150" height="50" rx="8" fill="rgba(59,130,246,0.12)" stroke="#3b82f6"/>
+        <text x="423" y="44" text-anchor="middle" fill="#7dd3fc" font-size="12" font-family="JetBrains Mono">Stable (v1.0)</text>
+        <text x="423" y="62" text-anchor="middle" fill="#64748b" font-size="10">95 users → old version</text>
+
+        <!-- Split: 5% to canary -->
+        <line x1="262" y1="82" x2="340" y2="106" stroke="#10b981" stroke-width="2"/>
+        <polygon points="335,101 345,106 337,112" fill="#10b981"/>
+        <text x="290" y="102" fill="#10b981" font-size="10" font-family="JetBrains Mono">5%</text>
+
+        <!-- Canary env -->
+        <rect x="348" y="86" width="150" height="50" rx="8" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.5)"/>
+        <text x="423" y="106" text-anchor="middle" fill="#10b981" font-size="12" font-family="JetBrains Mono">Canary (v2.0)</text>
+        <text x="423" y="124" text-anchor="middle" fill="#64748b" font-size="10">5 users → new version</text>
+
+        <!-- Monitor -->
+        <text x="515" y="75" fill="#64748b" font-size="12">→</text>
+        <rect x="525" y="55" width="150" height="60" rx="8" fill="rgba(234,179,8,0.06)" stroke="rgba(234,179,8,0.2)"/>
+        <text x="600" y="76" text-anchor="middle" fill="#eab308" font-size="11" font-family="JetBrains Mono">📊 Monitor</text>
+        <text x="600" y="92" text-anchor="middle" fill="#64748b" font-size="10">Error rate?</text>
+        <text x="600" y="106" text-anchor="middle" fill="#64748b" font-size="10">Latency ok?</text>
+
+        <!-- Progress -->
+        <text x="20" y="175" fill="#94a3b8" font-size="11" font-family="JetBrains Mono">GRADUAL ROLLOUT PROGRESS:</text>
+
+        <!-- Day 1: 5% -->
+        <text x="20" y="198" fill="#64748b" font-size="11">Day 1:</text>
+        <rect x="70" y="186" width="250" height="18" rx="4" fill="#0c1220" stroke="#1e2d4a"/>
+        <rect x="70" y="186" width="12" height="18" rx="4" fill="#10b981"/>
+        <text x="330" y="200" fill="#10b981" font-size="11" font-family="JetBrains Mono">5% → Canary</text>
+
+        <!-- Day 2: 25% -->
+        <text x="20" y="224" fill="#64748b" font-size="11">Day 2:</text>
+        <rect x="70" y="212" width="250" height="18" rx="4" fill="#0c1220" stroke="#1e2d4a"/>
+        <rect x="70" y="212" width="62" height="18" rx="4" fill="#10b981"/>
+        <text x="330" y="226" fill="#10b981" font-size="11" font-family="JetBrains Mono">25% → no issues</text>
+
+        <!-- Day 3: 100% -->
+        <text x="20" y="250" fill="#64748b" font-size="11">Day 3:</text>
+        <rect x="70" y="238" width="250" height="18" rx="4" fill="#0c1220" stroke="#1e2d4a"/>
+        <rect x="70" y="238" width="250" height="18" rx="4" fill="#10b981"/>
+        <text x="330" y="252" fill="#10b981" font-size="11" font-family="JetBrains Mono">100% → Full rollout ✓</text>
+
+        <!-- Rollback arrow -->
+        <text x="20" y="275" fill="#ef4444" font-size="10">✗ Bug পেলে canary কে 0% করে rollback — stable users একদম affected না!</text>
+      </svg>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">yaml</span>
+        <span class="code-file">canary-nginx.conf — Nginx Weighted Traffic Split</span>
+      </div>
+      <pre><span class="cm"># Nginx এ weighted upstream দিয়ে canary করো</span>
+<span class="kw">upstream</span> <span class="fn">app_servers</span> {
+  <span class="cm"># Stable version — 95% traffic</span>
+  <span class="var">server</span> stable-v1:3000 weight=<span class="num">95</span>;
+
+  <span class="cm"># Canary version — 5% traffic</span>
+  <span class="var">server</span> canary-v2:3000 weight=<span class="num">5</span>;
+}
+
+<span class="kw">server</span> {
+  <span class="var">listen</span> <span class="num">80</span>;
+
+  <span class="fn">location</span> / {
+    <span class="var">proxy_pass</span> http://app_servers;
+  }
+}</pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">yaml</span>
+        <span class="code-file">canary-k8s.yaml — Kubernetes Canary with Argo Rollouts</span>
+      </div>
+      <pre><span class="kw">apiVersion:</span> argoproj.io/v1alpha1
+<span class="kw">kind:</span> Rollout
+<span class="kw">metadata:</span>
+  <span class="var">name:</span> app-rollout
+<span class="kw">spec:</span>
+  <span class="var">replicas:</span> <span class="num">10</span>
+  <span class="fn">strategy:</span>
+    <span class="fn">canary:</span>
+      <span class="cm"># Step by step traffic increase</span>
+      <span class="fn">steps:</span>
+      - <span class="fn">setWeight:</span> <span class="num">5</span>      <span class="cm"># 5% canary তে</span>
+      - <span class="fn">pause:</span> {<span class="var">duration</span>: <span class="str">10m</span>}  <span class="cm"># 10 মিনিট monitor</span>
+      - <span class="fn">setWeight:</span> <span class="num">25</span>     <span class="cm"># 25% canary তে</span>
+      - <span class="fn">pause:</span> {<span class="var">duration</span>: <span class="str">30m</span>}  <span class="cm"># 30 মিনিট monitor</span>
+      - <span class="fn">setWeight:</span> <span class="num">50</span>     <span class="cm"># 50% canary তে</span>
+      - <span class="fn">pause:</span> {<span class="var">duration</span>: <span class="str">1h</span>}   <span class="cm"># 1 ঘণ্টা monitor</span>
+      <span class="cm"># সব ঠিক থাকলে 100% হয়ে যাবে</span>
+
+      <span class="cm"># Auto rollback — error rate 5% এর বেশি হলে</span>
+      <span class="fn">analysis:</span>
+        <span class="fn">templates:</span>
+        - <span class="var">templateName:</span> error-rate-check
+        <span class="fn">args:</span>
+        - <span class="var">name:</span> canary-service
+          <span class="var">value:</span> app-canary
+  <span class="fn">template:</span>
+    <span class="fn">spec:</span>
+      <span class="fn">containers:</span>
+      - <span class="var">name:</span> app
+        <span class="var">image:</span> myapp:<span class="str">v2.0</span>   <span class="cm"># নতুন version</span></pre>
+    </div>
+  </div>
+
+  <!-- Section 4: Rolling -->
+  <div class="section" id="rolling">
+    <div class="section-label">Pattern 3</div>
+    <h2 class="section-title">Rolling Update — একটা একটা করে Update করো</h2>
+    <p>Rolling Update হলো সবচেয়ে সহজ zero-downtime pattern। <strong>একটা একটা করে instance update করো</strong>। একটা পুরনো instance বন্ধ করো, নতুন version তে start করো, health check pass করলে পরের instance এ যাও।</p>
+
+    <div class="diagram-box">
+      <div class="diagram-title">Rolling Update — Pods একটা একটা করে Update হচ্ছে</div>
+      <svg viewBox="0 0 700 220" width="100%" style="max-width:700px">
+        <!-- Labels -->
+        <text x="20" y="20" fill="#94a3b8" font-size="11" font-family="JetBrains Mono">BEFORE (all v1.0)</text>
+        <text x="370" y="20" fill="#94a3b8" font-size="11" font-family="JetBrains Mono">DURING (mixed)</text>
+
+        <!-- Before -->
+        <rect x="20" y="30" width="80" height="50" rx="6" fill="rgba(59,130,246,0.12)" stroke="#3b82f6"/>
+        <text x="60" y="52" text-anchor="middle" fill="#7dd3fc" font-size="10" font-family="JetBrains Mono">Pod 1</text>
+        <text x="60" y="68" text-anchor="middle" fill="#64748b" font-size="9">v1.0 ✓</text>
+
+        <rect x="110" y="30" width="80" height="50" rx="6" fill="rgba(59,130,246,0.12)" stroke="#3b82f6"/>
+        <text x="150" y="52" text-anchor="middle" fill="#7dd3fc" font-size="10" font-family="JetBrains Mono">Pod 2</text>
+        <text x="150" y="68" text-anchor="middle" fill="#64748b" font-size="9">v1.0 ✓</text>
+
+        <rect x="200" y="30" width="80" height="50" rx="6" fill="rgba(59,130,246,0.12)" stroke="#3b82f6"/>
+        <text x="240" y="52" text-anchor="middle" fill="#7dd3fc" font-size="10" font-family="JetBrains Mono">Pod 3</text>
+        <text x="240" y="68" text-anchor="middle" fill="#64748b" font-size="9">v1.0 ✓</text>
+
+        <rect x="290" y="30" width="80" height="50" rx="6" fill="rgba(59,130,246,0.12)" stroke="#3b82f6"/>
+        <text x="330" y="52" text-anchor="middle" fill="#7dd3fc" font-size="10" font-family="JetBrains Mono">Pod 4</text>
+        <text x="330" y="68" text-anchor="middle" fill="#64748b" font-size="9">v1.0 ✓</text>
+
+        <!-- Arrow -->
+        <text x="395" y="58" fill="#eab308" font-size="20">→</text>
+
+        <!-- During -->
+        <rect x="420" y="30" width="80" height="50" rx="6" fill="rgba(16,185,129,0.12)" stroke="#10b981"/>
+        <text x="460" y="52" text-anchor="middle" fill="#10b981" font-size="10" font-family="JetBrains Mono">Pod 1</text>
+        <text x="460" y="68" text-anchor="middle" fill="#10b981" font-size="9">v2.0 ✓</text>
+
+        <rect x="510" y="30" width="80" height="50" rx="6" fill="rgba(16,185,129,0.12)" stroke="#10b981"/>
+        <text x="550" y="52" text-anchor="middle" fill="#10b981" font-size="10" font-family="JetBrains Mono">Pod 2</text>
+        <text x="550" y="68" text-anchor="middle" fill="#10b981" font-size="9">v2.0 ✓</text>
+
+        <rect x="600" y="30" width="80" height="50" rx="6" fill="rgba(234,179,8,0.1)" stroke="rgba(234,179,8,0.5)" stroke-dasharray="4,3"/>
+        <text x="640" y="52" text-anchor="middle" fill="#eab308" font-size="10" font-family="JetBrains Mono">Pod 3</text>
+        <text x="640" y="68" text-anchor="middle" fill="#eab308" font-size="9">updating...</text>
+
+        <!-- Row 2: After -->
+        <text x="20" y="120" fill="#94a3b8" font-size="11" font-family="JetBrains Mono">AFTER (all v2.0)</text>
+        <rect x="20" y="130" width="80" height="50" rx="6" fill="rgba(16,185,129,0.12)" stroke="#10b981"/>
+        <text x="60" y="155" text-anchor="middle" fill="#10b981" font-size="10" font-family="JetBrains Mono">Pod 1 v2</text>
+        <rect x="110" y="130" width="80" height="50" rx="6" fill="rgba(16,185,129,0.12)" stroke="#10b981"/>
+        <text x="150" y="155" text-anchor="middle" fill="#10b981" font-size="10" font-family="JetBrains Mono">Pod 2 v2</text>
+        <rect x="200" y="130" width="80" height="50" rx="6" fill="rgba(16,185,129,0.12)" stroke="#10b981"/>
+        <text x="240" y="155" text-anchor="middle" fill="#10b981" font-size="10" font-family="JetBrains Mono">Pod 3 v2</text>
+        <rect x="290" y="130" width="80" height="50" rx="6" fill="rgba(16,185,129,0.12)" stroke="#10b981"/>
+        <text x="330" y="155" text-anchor="middle" fill="#10b981" font-size="10" font-family="JetBrains Mono">Pod 4 v2</text>
+        <text x="400" y="155" fill="#10b981" font-size="13">✓ All updated!</text>
+
+        <!-- Key points -->
+        <text x="20" y="205" fill="#64748b" font-size="11">⚡ Always N-1 pods running — no downtime</text>
+        <text x="350" y="205" fill="#ef4444" font-size="11">⚠ During update: both v1 + v2 running simultaneously</text>
+      </svg>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">yaml</span>
+        <span class="code-file">rolling-update.yaml — Kubernetes Rolling Update</span>
+      </div>
+      <pre><span class="kw">apiVersion:</span> apps/v1
+<span class="kw">kind:</span> Deployment
+<span class="kw">metadata:</span>
+  <span class="var">name:</span> app-deployment
+<span class="kw">spec:</span>
+  <span class="var">replicas:</span> <span class="num">4</span>
+  <span class="fn">strategy:</span>
+    <span class="var">type:</span> RollingUpdate
+    <span class="fn">rollingUpdate:</span>
+      maxUnavailable: <span class="num">1</span>   <span class="cm"># সর্বোচ্চ ১টা pod একসাথে down থাকতে পারবে</span>
+      maxSurge: <span class="num">1</span>          <span class="cm"># সর্বোচ্চ ১টা extra pod চলতে পারবে update এর সময়</span>
+  <span class="fn">template:</span>
+    <span class="fn">spec:</span>
+      <span class="fn">containers:</span>
+      - <span class="var">name:</span> app
+        <span class="var">image:</span> myapp:<span class="str">v2.0</span>
+        <span class="cm"># Health check — এটা pass না করলে পরের pod update হবে না</span>
+        <span class="fn">readinessProbe:</span>
+          <span class="fn">httpGet:</span>
+            <span class="var">path:</span> /health
+            <span class="var">port:</span> <span class="num">3000</span>
+          <span class="var">initialDelaySeconds:</span> <span class="num">10</span>
+          <span class="var">periodSeconds:</span> <span class="num">5</span>
+        <span class="fn">livenessProbe:</span>
+          <span class="fn">httpGet:</span>
+            <span class="var">path:</span> /health
+            <span class="var">port:</span> <span class="num">3000</span>
+          <span class="var">failureThreshold:</span> <span class="num">3</span></pre>
+    </div>
+
+    <table class="compare-table">
+      <tr><th>কোন version থাকতে পারে</th><th>Rolling Update এর সমস্যা</th></tr>
+      <tr><td>Update চলাকালীন v1 ও v2 দুটোই live থাকে</td><td>API backward compatible না হলে সমস্যা হবে। v1 আর v2 একই DB use করলে schema change সমস্যা।</td></tr>
+    </table>
+  </div>
+
+  <!-- Section 5: Feature Flags -->
+  <div class="section" id="feature-flags">
+    <div class="section-label">Bonus Pattern</div>
+    <h2 class="section-title">Feature Flags — Code Deploy ≠ Feature Enable</h2>
+    <p>Feature Flag (বা Feature Toggle) হলো code এ একটা switch যেটা runtime এ on/off করা যায়। <strong>Code deploy করো কিন্তু feature বন্ধ রাখো</strong>। যখন ready, flag on করো — deploy লাগে না।</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">🚀</div>
+        <div class="card-title">Dark Launch</div>
+        <p>Feature code আছে কিন্তু off। Internal team কে চালু করো। ঠিক হলে সবার জন্য on।</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎯</div>
+        <div class="card-title">A/B Testing</div>
+        <p>User এর ৫০% কে Feature A, বাকি ৫০% কে Feature B দেখাও। Analytics দিয়ে winner বেছে নাও।</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌍</div>
+        <div class="card-title">Gradual Rollout</div>
+        <p>Bangladesh এ আগে on করো। Problems নেই? তাহলে সব দেশে on।</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <div class="card-title">Kill Switch</div>
+        <p>Production এ bug হলে feature flag off করো — instant। Rollback deploy লাগে না।</p>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">javascript</span>
+        <span class="code-file">feature-flags.js — Simple Implementation</span>
+      </div>
+      <pre><span class="cm">// Feature flags — runtime এ control করা যায়</span>
+<span class="kw">const</span> flags = {
+  <span class="var">newCheckoutFlow</span>: <span class="kw">false</span>,     <span class="cm">// off এখন</span>
+  <span class="var">aiRecommendations</span>: <span class="kw">true</span>,   <span class="cm">// on সবার জন্য</span>
+  <span class="var">darkMode</span>: <span class="kw">false</span>,
+};
+
+<span class="cm">// User-specific flag — beta users পাবে</span>
+<span class="kw">function</span> <span class="fn">isEnabled</span>(flagName, userId) {
+  <span class="cm">// LaunchDarkly বা Unleash এর মতো service call করা যায়</span>
+  <span class="kw">const</span> betaUsers = [<span class="str">'user-001'</span>, <span class="str">'user-002'</span>, <span class="str">'user-003'</span>];
+
+  <span class="kw">if</span> (flagName === <span class="str">'newCheckoutFlow'</span>) {
+    <span class="cm">// শুধু beta users পাবে</span>
+    <span class="kw">return</span> betaUsers.<span class="fn">includes</span>(userId);
+  }
+
+  <span class="kw">return</span> flags[flagName] ?? <span class="kw">false</span>;
+}
+
+<span class="cm">// Feature এর পাশে নতুন code রাখো</span>
+<span class="kw">async function</span> <span class="fn">handleCheckout</span>(req, res) {
+  <span class="kw">if</span> (<span class="fn">isEnabled</span>(<span class="str">'newCheckoutFlow'</span>, req.user.id)) {
+    <span class="cm">// নতুন checkout flow (v2)</span>
+    <span class="kw">return</span> <span class="fn">newCheckoutV2</span>(req, res);
+  }
+
+  <span class="cm">// পুরনো checkout flow (v1) — এখনো safe</span>
+  <span class="kw">return</span> <span class="fn">oldCheckoutV1</span>(req, res);
+}</pre>
+    </div>
+  </div>
+
+  <!-- Section 6: Comparison -->
+  <div class="section" id="comparison">
+    <div class="section-label">Decision Guide</div>
+    <h2 class="section-title">কোন Pattern কখন ব্যবহার করবো?</h2>
+
+    <table class="compare-table">
+      <tr><th>Pattern</th><th>Best For</th><th>Cost</th><th>Rollback Speed</th><th>Complexity</th></tr>
+      <tr><td><strong>Blue-Green</strong></td><td>Stateless apps, instant rollback দরকার</td><td>2x infrastructure</td><td>Instant (seconds)</td><td>Medium</td></tr>
+      <tr><td><strong>Canary</strong></td><td>High-risk changes, gradual confidence দরকার</td><td>Slightly more</td><td>Fast (minutes)</td><td>High</td></tr>
+      <tr><td><strong>Rolling</strong></td><td>Most common, Kubernetes default</td><td>Normal</td><td>Slow (rollout time)</td><td>Low</td></tr>
+      <tr><td><strong>Feature Flags</strong></td><td>A/B testing, dark launches, kill switch</td><td>Management overhead</td><td>Instant (flag off)</td><td>Medium</td></tr>
+    </table>
+
+    <div class="info-box tip">
+      <div class="box-label">💡 Real World Combination</div>
+      Netflix, Facebook এরা সব patterns একসাথে use করে: Rolling Update দিয়ে code deploy করে, Feature Flags দিয়ে feature on করে, Canary দিয়ে gradually rollout করে। এগুলো mutually exclusive না।
+    </div>
+
+    <table class="compare-table">
+      <tr><th>Company</th><th>কী করে</th></tr>
+      <tr><td><strong>Netflix</strong></td><td>Canary deployment — প্রথমে ১% users, তারপর ১০%, তারপর ১০০%</td></tr>
+      <tr><td><strong>Facebook</strong></td><td>Feature flags extensively use করে — বড় features মাসের পর মাস off থেকে code এ থাকে</td></tr>
+      <tr><td><strong>Google</strong></td><td>Blue-Green with instant traffic switch — ৩০০+ changes per day deploy করে</td></tr>
+      <tr><td><strong>Shopify</strong></td><td>Rolling updates with automatic canary analysis — error rate বাড়লে auto rollback</td></tr>
+    </table>
+  </div>
+
+  <!-- MCQ -->
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span style="font-size:24px">🧠</span>
+      <h2>MCQ Quiz</h2>
+    </div>
+    <div class="mcq-meta">
+      <span>📊 10টা প্রশ্ন</span>
+      <span>⏱ ~12 মিনিট</span>
+      <span>✅ Pass: 7/10</span>
+    </div>
+    <div class="score-display">Score: <span id="scoreDisplay">0</span> / 10</div>
+
+    <div class="question-block" data-correct="b">
+      <div class="question-num">Q1 / 10</div>
+      <div class="question-text">Blue-Green deployment এ "instant rollback" কীভাবে কাজ করে?</div>
+      <div class="options">
+        <div class="option" data-val="a">নতুন code আবার পুরনো code দিয়ে replace করা হয়</div>
+        <div class="option" data-val="b">Load Balancer কে আবার old (Blue) environment এ point করা হয় — code change লাগে না</div>
+        <div class="option" data-val="c">Database এর backup restore করা হয়</div>
+        <div class="option" data-val="d">Server restart করা হয়</div>
+      </div>
+      <div class="explanation">✅ Blue-Green এ দুটো environment সবসময় থাকে। Bug পেলে Load Balancer এর selector পরিবর্তন করলেই Blue environment এ সব traffic ফিরে যায় — seconds এ। Code redeploy লাগে না।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="question-num">Q2 / 10</div>
+      <div class="question-text">Canary deployment এর নামটা কোথা থেকে এসেছে?</div>
+      <div class="options">
+        <div class="option" data-val="a">একটা programming language এর নাম থেকে</div>
+        <div class="option" data-val="b">একটা cloud provider এর product এর নাম থেকে</div>
+        <div class="option" data-val="c">Coal mines এ বিষাক্ত gas detect করার জন্য ব্যবহৃত canary পাখির থেকে</div>
+        <div class="option" data-val="d">Traffic routing algorithm এর নাম থেকে</div>
+      </div>
+      <div class="explanation">✅ ১৯ শতকে coal miners খনিতে canary পাখি নিয়ে যেতেন — বিষাক্ত gas থাকলে পাখি আগে মারা যেত, miners কে সতর্ক করত। Canary deployment একই principle: ছোট subset (canary users) আগে পায়, problems থাকলে বাকিরা safe।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="question-num">Q3 / 10</div>
+      <div class="question-text">Kubernetes এ Rolling Update এর <code>maxUnavailable: 1</code> মানে কী?</div>
+      <div class="options">
+        <div class="option" data-val="a">Update চলাকালীন সর্বোচ্চ ১টা pod একসাথে down থাকতে পারবে</div>
+        <div class="option" data-val="b">শুধু ১টা pod update হবে মোট</div>
+        <div class="option" data-val="c">Update ১ মিনিটের মধ্যে শেষ হতে হবে</div>
+        <div class="option" data-val="d">১টা pod সবসময় পুরনো version এ থাকবে</div>
+      </div>
+      <div class="explanation">✅ <code>maxUnavailable: 1</code> মানে হলো update চলার সময় সর্বোচ্চ ১টা pod unavailable থাকতে পারবে। ৪টা replica থাকলে কমপক্ষে ৩টা সবসময় running — zero-downtime নিশ্চিত।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="question-num">Q4 / 10</div>
+      <div class="question-text">Blue-Green deployment এর সবচেয়ে বড় সমস্যা কী?</div>
+      <div class="options">
+        <div class="option" data-val="a">Rollback করা যায় না</div>
+        <div class="option" data-val="b">Zero downtime পাওয়া যায় না</div>
+        <div class="option" data-val="c">Kubernetes support করে না</div>
+        <div class="option" data-val="d">দুটো full production environment maintain করতে হয় — প্রায় দ্বিগুণ cost</div>
+      </div>
+      <div class="explanation">✅ Blue-Green এর main drawback হলো cost। দুটো identical production environment মানে EC2, RDS, load balancer সব দুটো করে। Large systems এ এটা significant খরচ। তবে instant rollback capability এই cost justify করতে পারে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="question-num">Q5 / 10</div>
+      <div class="question-text">Feature Flag এর "Kill Switch" কী কাজ করে?</div>
+      <div class="options">
+        <div class="option" data-val="a">Server বন্ধ করে দেয়</div>
+        <div class="option" data-val="b">Production এ bug হলে deploy ছাড়াই feature instantly off করা যায়</div>
+        <div class="option" data-val="c">Database এর connection বন্ধ করে</div>
+        <div class="option" data-val="d">Traffic routing বন্ধ করে</div>
+      </div>
+      <div class="explanation">✅ Kill switch হলো Feature Flag এর emergency use case। Production এ buggy feature পাওয়া গেলে — flag off করো। ১ second এ সব users এর জন্য feature disabled। New deploy করার ১০-৩০ মিনিট অপেক্ষা করতে হয় না।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="question-num">Q6 / 10</div>
+      <div class="question-text">Rolling Update এ কোন সমস্যা হতে পারে?</div>
+      <div class="options">
+        <div class="option" data-val="a">সব users downtime পায়</div>
+        <div class="option" data-val="b">Rollback করা সম্ভব না</div>
+        <div class="option" data-val="c">Update চলাকালীন v1 ও v2 দুটো version একসাথে live থাকে — backward incompatible API change সমস্যা করে</div>
+        <div class="option" data-val="d">শুধু ১টা pod update হয়</div>
+      </div>
+      <div class="explanation">✅ Rolling Update এর সময় কিছু pods v1, কিছু pods v2 চলে। যদি API কে backward compatible না রাখো (যেমন একটা field remove করলে), তাহলে v1 pods এর requests v2 তে আসতে পারে error। তাই API versioning important।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="question-num">Q7 / 10</div>
+      <div class="question-text">Netflix কোন deployment pattern প্রাথমিকভাবে use করে?</div>
+      <div class="options">
+        <div class="option" data-val="a">Canary — প্রথমে ১% users, তারপর ধীরে ধীরে ১০০%</div>
+        <div class="option" data-val="b">Blue-Green শুধু</div>
+        <div class="option" data-val="c">Manual deployment</div>
+        <div class="option" data-val="d">Rolling Update শুধু</div>
+      </div>
+      <div class="explanation">✅ Netflix Canary deployment extensively use করে। নতুন version আগে তাদের internal employees দের দেওয়া হয়, তারপর ১% users, তারপর ১০%, তারপর region by region ১০০%। এই কারণে Netflix এর deploy এ production issue rare।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="question-num">Q8 / 10</div>
+      <div class="question-text">Feature Flag ব্যবহার করে A/B Testing কীভাবে করা যায়?</div>
+      <div class="options">
+        <div class="option" data-val="a">দুটো আলাদা app deploy করতে হয়</div>
+        <div class="option" data-val="b">Database এ আলাদা table রাখতে হয়</div>
+        <div class="option" data-val="c">দুটো domain name রাখতে হয়</div>
+        <div class="option" data-val="d">User এর ৫০% কে variant A এবং বাকি ৫০% কে variant B দেখানো যায় — একই codebase এ</div>
+      </div>
+      <div class="explanation">✅ Feature Flag দিয়ে A/B testing: userId hash করে ৫০% কে flag-A, বাকি ৫০% কে flag-B দেওয়া হয়। Metrics track করো, winner কে ১০০% তে rollout করো। LaunchDarkly, Optimizely এ এটা built-in।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="question-num">Q9 / 10</div>
+      <div class="question-text">একটা stateless REST API এর জন্য সবচেয়ে cost-effective zero-downtime deployment pattern কোনটা?</div>
+      <div class="options">
+        <div class="option" data-val="a">Blue-Green — সবচেয়ে safe</div>
+        <div class="option" data-val="b">Rolling Update — extra infrastructure cost নেই, Kubernetes এর default</div>
+        <div class="option" data-val="c">Feature Flags শুধু</div>
+        <div class="option" data-val="d">Manual deployment</div>
+      </div>
+      <div class="explanation">✅ Stateless API এর জন্য Rolling Update সবচেয়ে practical। Extra infrastructure লাগে না (Blue-Green এর মতো), Kubernetes এর default strategy, এবং backward-compatible API change করলে কোনো সমস্যা নেই।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="question-num">Q10 / 10</div>
+      <div class="question-text">Canary deployment এ "automatic rollback" কীভাবে configure করা যায়?</div>
+      <div class="options">
+        <div class="option" data-val="a">Manually check করে rollback button চাপতে হয়</div>
+        <div class="option" data-val="b">Timer set করলে automatically rollback হয়</div>
+        <div class="option" data-val="c">Error rate বা latency threshold define করো — breach হলে Argo Rollouts automatically rollback করে</div>
+        <div class="option" data-val="d">Database এর size বাড়লে rollback হয়</div>
+      </div>
+      <div class="explanation">✅ Argo Rollouts এ AnalysisTemplate define করে error rate threshold set করো (যেমন 5% এর বেশি হলে)। Prometheus metrics check করে, threshold breach হলে automatically canary rollback করে stable version এ ফিরে যায়। Human intervention লাগে না।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT & CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <!-- Assignment -->
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ২-৩ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <p style="margin-bottom:16px; font-size:14px; color:#94a3b8;">Deployment patterns ভালো করে বুঝতে এই tasks করো।</p>
+    <ul class="task-list">
+      <li>
+        <strong>Scenario Decision:</strong> নিচের ৩টা scenario তে কোন deployment pattern best হবে এবং কেন বলো: (ক) একটা e-commerce site এ নতুন payment gateway integrate হচ্ছে — খুবই risky change (খ) একটা mobile app এর backend API এ minor bug fix (গ) একটা social media app এ নতুন "Stories" feature — আগে ১০% users কে দেখানো হবে।
+      </li>
+      <li>
+        <strong>Rollback Plan:</strong> তুমি একটা app এ নতুন version deploy করলে এবং production এ critical bug পেলে। Blue-Green, Canary, Rolling Update — তিনটার জন্য আলাদা আলাদা rollback procedure লেখো। কোনটায় কতক্ষণ লাগবে?
+      </li>
+      <li>
+        <strong>Feature Flag Design:</strong> একটা food delivery app এ "AI-powered order prediction" feature add হচ্ছে। কীভাবে Feature Flag দিয়ে এটা rollout করবে? লেখো: (ক) কখন internally test করবে (খ) কোন users কে beta দেবে (গ) কীভাবে ধীরে ধীরে ১০০% করবে (ঘ) Bug পেলে কীভাবে rollback করবে।
+      </li>
+      <li>
+        <strong>Kubernetes YAML পড়া:</strong> উপরে দেওয়া Rolling Update YAML পড়ো এবং explain করো: (ক) <code>readinessProbe</code> কী করে? (খ) যদি নতুন pod এর health check fail করে, তাহলে কী হবে? (গ) <code>maxSurge: 1</code> এর মানে কী?
+      </li>
+      <li>
+        <strong>Cost Analysis:</strong> তোমার app এ ১০টা EC2 instance আছে। Blue-Green deployment করলে কত instance লাগবে? Canary করলে? Rolling করলে? Monthly cost comparison করো (t3.small = $0.023/hour ধরো)।
+      </li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>3 scenario এর deployment pattern decision + justification</li>
+        <li>Rollback procedures for all 3 patterns</li>
+        <li>Feature Flag rollout plan for food delivery app</li>
+        <li>Kubernetes YAML explanation</li>
+        <li>Cost comparison analysis</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project -->
+  <div class="project-section" id="project">
+    <div class="project-header">
+      <span style="font-size:24px">🚀</span>
+      <h2>Hands-On Project Task</h2>
+    </div>
+    <div class="project-body">
+      <p style="font-size:14px; color:#94a3b8; margin-bottom:20px;">Docker Compose দিয়ে Blue-Green deployment simulate করো — locally।</p>
+
+      <h3 style="font-family:'Fraunces',serif; font-size:18px; margin-bottom:16px; color:#f1f5f9;">Local Blue-Green Deployment Simulator</h3>
+
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-circle">1</div>
+          <div class="step-content">
+            <h4>দুটো Node.js app বানাও</h4>
+            <p>app-v1: <code>GET /</code> returns <code>{"version": "v1.0", "color": "blue"}</code>. app-v2: returns <code>v2.0, green</code>.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">2</div>
+          <div class="step-content">
+            <h4>Nginx load balancer setup করো</h4>
+            <p>প্রথমে <code>proxy_pass http://blue:3000</code> — Blue তে সব traffic।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">3</div>
+          <div class="step-content">
+            <h4>Docker Compose তে সব service রাখো</h4>
+            <p>blue, green, nginx — তিনটা service। Green শুরুতে চলবে কিন্তু nginx traffic পাঠাবে না।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">4</div>
+          <div class="step-content">
+            <h4>Traffic switch করো</h4>
+            <p>Nginx config এ <code>blue</code> কে <code>green</code> করো, reload করো — <code>docker exec nginx nginx -s reload</code>।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">5</div>
+          <div class="step-content">
+            <h4>Verify করো</h4>
+            <p><code>curl localhost</code> — এখন v2.0 response আসছে। Rollback: আবার blue করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">6</div>
+          <div class="step-content">
+            <h4>Feature Flag add করো (Bonus)</h4>
+            <p>v2 এর code এ একটা feature flag add করো — env var দিয়ে control করো।</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block" style="margin-top:20px">
+        <div class="code-header">
+          <span class="code-lang">yaml</span>
+          <span class="code-file">docker-compose.yml — Blue-Green Setup</span>
+        </div>
+        <pre><span class="kw">version:</span> <span class="str">'3.8'</span>
+<span class="kw">services:</span>
+  <span class="cm"># Blue environment (v1)</span>
+  <span class="fn">blue:</span>
+    <span class="var">build:</span>
+      <span class="var">context:</span> .
+      <span class="var">dockerfile:</span> Dockerfile.v1
+    <span class="var">environment:</span>
+      - <span class="str">VERSION=v1.0</span>
+      - <span class="str">COLOR=blue</span>
+
+  <span class="cm"># Green environment (v2)</span>
+  <span class="fn">green:</span>
+    <span class="var">build:</span>
+      <span class="var">context:</span> .
+      <span class="var">dockerfile:</span> Dockerfile.v2
+    <span class="var">environment:</span>
+      - <span class="str">VERSION=v2.0</span>
+      - <span class="str">COLOR=green</span>
+      - <span class="str">NEW_FEATURE_ENABLED=false</span>  <span class="cm"># Feature flag!</span>
+
+  <span class="cm"># Nginx — traffic controller</span>
+  <span class="fn">nginx:</span>
+    <span class="var">image:</span> nginx:alpine
+    <span class="var">ports:</span>
+      - <span class="str">"80:80"</span>
+    <span class="var">volumes:</span>
+      - <span class="str">./nginx.conf:/etc/nginx/nginx.conf:ro</span>
+    <span class="var">depends_on:</span> [blue, green]</pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">nginx</span>
+          <span class="code-file">nginx.conf — Switch করার জন্য এক line পরিবর্তন করো</span>
+        </div>
+        <pre><span class="kw">events</span> {}
+<span class="kw">http</span> {
+  <span class="kw">server</span> {
+    <span class="var">listen</span> <span class="num">80</span>;
+    <span class="fn">location</span> / {
+      <span class="cm"># Blue-Green switch: blue → green তে change করো</span>
+      <span class="var">proxy_pass</span> http://blue:3000;   <span class="cm"># ← এটাই switch করো</span>
+      <span class="var">proxy_set_header</span> Host $host;
+    }
+  }
+}</pre>
+      </div>
+
+      <div class="info-box tip" style="margin-top:16px">
+        <div class="box-label">🎯 এটা করলে যা শিখবে</div>
+        হাতে-কলমে দেখবে Blue-Green deployment কীভাবে কাজ করে। একটা line পরিবর্তন করে traffic switch হতে দেখবে। Downtime নেই — curl করতে থাকো, response continuously আসতে থাকবে। এটাই zero-downtime।
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-label">Lesson Summary</div>
+    <h2 class="section-title">আজকে যা শিখলাম</h2>
+    <table class="compare-table">
+      <tr><th>Pattern</th><th>এক লাইনে</th></tr>
+      <tr><td>Blue-Green</td><td>দুটো environment রাখো, traffic switch করো — instant rollback</td></tr>
+      <tr><td>Canary</td><td>১% → ১০% → ১০০% — ধীরে ধীরে নতুন version দেওয়া</td></tr>
+      <tr><td>Rolling Update</td><td>একটা একটা করে pod update করো — Kubernetes default</td></tr>
+      <tr><td>Feature Flags</td><td>Code deploy করো, feature পরে on করো — runtime control</td></tr>
+      <tr><td>Zero Downtime</td><td>Users কখনো downtime দেখে না — always-on deployment</td></tr>
+    </table>
+  </div>
+
+  <div class="next-cta">
+    <div>
+      <div class="next-label">Next Topic →</div>
+      <div class="next-title">🔬 Advanced Data Structures: Bloom Filter, HyperLogLog, Count-Min Sketch</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+
+</div>
+</main>
+
+<script>
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scroll = doc.scrollTop || document.body.scrollTop;
+  const height = doc.scrollHeight - doc.clientHeight;
+  document.getElementById('progressFill').style.width = ((scroll / height) * 100) + '%';
+});
+let answered = {};
+document.querySelectorAll('.option').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const block = this.closest('.question-block');
+    const qId = Array.from(document.querySelectorAll('.question-block')).indexOf(block);
+    if (answered[qId]) return;
+    answered[qId] = this.dataset.val;
+    block.querySelectorAll('.option').forEach(o => {
+      o.style.pointerEvents = 'none';
+      if (o.dataset.val === block.dataset.correct) o.classList.add('correct');
+      else if (o.dataset.val === this.dataset.val && this.dataset.val !== block.dataset.correct) o.classList.add('wrong');
+    });
+    block.querySelector('.explanation').classList.add('visible');
+  });
+});
+function submitMCQ() {
+  let correct = 0;
+  const blocks = document.querySelectorAll('.question-block');
+  blocks.forEach((block, i) => { if (answered[i] === block.dataset.correct) correct++; });
+  const unanswered = blocks.length - Object.keys(answered).length;
+  if (unanswered > 0) { alert(`এখনও ${unanswered}টা প্রশ্নের উত্তর দাওনি!`); return; }
+  document.getElementById('scoreDisplay').textContent = correct;
+  const banner = document.getElementById('resultBanner');
+  banner.classList.add('visible');
+  if (correct >= 7) { banner.classList.add('pass'); banner.textContent = `🎉 দারুণ! ${correct}/10 সঠিক। পরের topic এ যেতে পারো!`; }
+  else { banner.classList.add('fail'); banner.textContent = `📖 ${correct}/10 সঠিক। Concept গুলো আবার পড়ো এবং retry করো। ৭/১০ পেলেই pass।`; }
+}
+document.querySelectorAll('.nav-item[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => { e.preventDefault(); document.getElementById(link.getAttribute('href').slice(1))?.scrollIntoView({ behavior: 'smooth' }); });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 5 · Topic 4 — CQRS & Event Sourcing</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05080f;
+  --surface: #090e1a;
+  --card: #0c1220;
+  --border: #162035;
+  --border2: #1e2d4a;
+  --accent: #8b5cf6;
+  --accent-glow: rgba(139,92,246,0.15);
+  --green: #10b981;
+  --green-glow: rgba(16,185,129,0.12);
+  --orange: #f97316;
+  --red: #ef4444;
+  --yellow: #eab308;
+  --purple: #8b5cf6;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --muted2: #94a3b8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans Bengali', sans-serif;
+  line-height: 1.7;
+  font-size: 15px;
+}
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:999;
+  opacity:0.4;
+}
+.sidebar {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: 240px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 24px 0;
+  overflow-y: auto;
+  z-index: 100;
+}
+.sidebar-logo { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.sidebar-logo .phase-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; display: block; margin-bottom: 4px; }
+.sidebar-logo .course-title { font-family: 'Fraunces', serif; font-size: 14px; color: var(--text); font-weight: 700; }
+.nav-section-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); padding: 8px 20px 4px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; color: var(--muted2); text-decoration: none; font-size: 13px; transition: all 0.2s; border-left: 2px solid transparent; }
+.nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); border-left-color: var(--border2); }
+.nav-item.active { color: var(--accent); background: var(--accent-glow); border-left-color: var(--accent); }
+.nav-item .icon { font-size: 14px; width: 18px; text-align: center; }
+.progress-bar { position: fixed; top: 0; left: 240px; right: 0; height: 2px; background: var(--border); z-index: 200; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #a78bfa); width: 0%; transition: width 0.1s; }
+main { margin-left: 240px; min-height: 100vh; }
+.content { max-width: 860px; margin: 0 auto; padding: 60px 48px 80px; }
+.topic-hero { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+.hero-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.hero-phase { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; }
+.hero-sep { color: var(--border2); }
+.hero-topic-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+.hero-title { font-family: 'Fraunces', serif; font-size: 42px; font-weight: 900; line-height: 1.15; margin-bottom: 16px; background: linear-gradient(135deg, #f1f5f9, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-subtitle { font-size: 15px; color: var(--muted2); max-width: 600px; margin-bottom: 24px; }
+.hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border2); color: var(--muted2); background: var(--card); }
+.tag.accent { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+.section { margin-bottom: 48px; }
+.section-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.section-title { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 700; margin-bottom: 20px; color: #f1f5f9; }
+.section p { color: var(--muted2); margin-bottom: 16px; font-size: 14px; line-height: 1.8; }
+.section p strong { color: var(--text); }
+.card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; transition: border-color 0.2s; }
+.card:hover { border-color: var(--border2); }
+.card-icon { font-size: 24px; margin-bottom: 10px; }
+.card-title { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.card p { font-size: 13px; color: var(--muted2); margin: 0; }
+.code-block { background: #060b14; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 24px; }
+.code-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.code-lang { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
+.code-file { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+.code-block pre { padding: 20px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7; overflow-x: auto; color: #a8b4c8; }
+.kw { color: #7dd3fc; } .str { color: #86efac; } .fn { color: #fbbf24; } .cm { color: #475569; font-style: italic; } .var { color: #c4b5fd; } .num { color: #f9a8d4; }
+.info-box { border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; font-size: 14px; line-height: 1.7; border-left: 3px solid; }
+.info-box .box-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; font-weight: 700; }
+.info-box.tip { background: rgba(16,185,129,0.08); border-color: var(--green); color: #a7f3d0; }
+.info-box.tip .box-label { color: var(--green); }
+.info-box.warning { background: rgba(234,179,8,0.08); border-color: var(--yellow); color: #fef08a; }
+.info-box.warning .box-label { color: var(--yellow); }
+.info-box.danger { background: rgba(239,68,68,0.08); border-color: var(--red); color: #fca5a5; }
+.info-box.danger .box-label { color: var(--red); }
+.info-box.purple { background: rgba(139,92,246,0.08); border-color: var(--purple); color: #c4b5fd; }
+.info-box.purple .box-label { color: var(--purple); }
+.compare-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 13px; }
+.compare-table th { background: var(--surface); padding: 10px 14px; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); border: 1px solid var(--border); }
+.compare-table td { padding: 10px 14px; border: 1px solid var(--border); color: var(--muted2); vertical-align: top; }
+.compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+.diagram-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center; }
+.diagram-title { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; }
+.mcq-section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 32px; margin-bottom: 32px; }
+.mcq-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.mcq-header h2 { font-family: 'Fraunces', serif; font-size: 22px; color: #f1f5f9; }
+.mcq-meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 28px; display: flex; gap: 16px; }
+.question-block { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+.question-block:last-of-type { border-bottom: none; }
+.question-text { font-size: 14px; color: var(--text); margin-bottom: 12px; line-height: 1.7; }
+.question-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); margin-bottom: 6px; }
+.options { display: flex; flex-direction: column; gap: 8px; }
+.option { padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--muted2); font-size: 13px; cursor: pointer; transition: all 0.2s; text-align: left; }
+.option:hover { border-color: var(--accent); color: var(--text); background: var(--accent-glow); }
+.option.correct { border-color: var(--green); background: rgba(16,185,129,0.12); color: #a7f3d0; }
+.option.wrong { border-color: var(--red); background: rgba(239,68,68,0.1); color: #fca5a5; }
+.explanation { margin-top: 12px; padding: 12px 14px; background: rgba(139,92,246,0.06); border-left: 2px solid var(--purple); border-radius: 6px; font-size: 13px; color: var(--muted2); display: none; }
+.explanation.visible { display: block; }
+.score-display { text-align: center; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--muted); margin-top: 16px; }
+.score-display span { font-size: 28px; color: var(--accent); font-weight: 700; }
+.mcq-submit { width: 100%; padding: 14px; background: var(--accent-glow); border: 1px solid var(--accent); border-radius: 8px; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; margin-top: 8px; }
+.mcq-submit:hover { background: var(--accent); color: #fff; }
+.result-banner { margin-top: 16px; padding: 16px; border-radius: 8px; font-size: 14px; text-align: center; font-weight: 600; display: none; }
+.result-banner.visible { display: block; }
+.result-banner.pass { background: rgba(16,185,129,0.15); border: 1px solid var(--green); color: #a7f3d0; }
+.result-banner.fail { background: rgba(239,68,68,0.1); border: 1px solid var(--red); color: #fca5a5; }
+.assignment-section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 32px; margin-bottom: 32px; }
+.assignment-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.assignment-icon { font-size: 24px; }
+.assignment-header h2 { font-family: 'Fraunces', serif; font-size: 22px; color: #f1f5f9; }
+.assignment-meta { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.a-chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border2); color: var(--muted2); }
+.task-list { list-style: none; counter-reset: task-counter; display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+.task-list li { counter-increment: task-counter; padding: 14px 16px 14px 52px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 14px; color: var(--muted2); position: relative; line-height: 1.7; }
+.task-list li::before { content: counter(task-counter); position: absolute; left: 14px; top: 14px; width: 24px; height: 24px; background: var(--accent-glow); border: 1px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); font-weight: 700; line-height: 24px; text-align: center; }
+.task-list li strong { color: var(--text); }
+.deliverable-box { background: rgba(139,92,246,0.06); border: 1px dashed rgba(139,92,246,0.3); border-radius: 8px; padding: 16px 20px; }
+.d-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--purple); margin-bottom: 10px; }
+.deliverable-box ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.deliverable-box li { font-size: 13px; color: #c4b5fd; padding-left: 16px; position: relative; }
+.deliverable-box li::before { content: '✓'; position: absolute; left: 0; color: var(--purple); }
+.project-section { background: linear-gradient(135deg, rgba(139,92,246,0.05), rgba(167,139,250,0.03)); border: 1px solid rgba(139,92,246,0.2); border-radius: 12px; overflow: hidden; margin-bottom: 32px; }
+.project-header { display: flex; align-items: center; gap: 12px; padding: 20px 28px; background: rgba(139,92,246,0.08); border-bottom: 1px solid rgba(139,92,246,0.15); }
+.project-header h2 { font-family: 'Fraunces', serif; font-size: 20px; color: #f1f5f9; }
+.project-body { padding: 24px 28px; }
+.step-flow { display: flex; flex-direction: column; gap: 0; }
+.step-item { display: flex; gap: 16px; padding: 16px 0; border-left: 2px solid var(--border2); margin-left: 14px; padding-left: 24px; position: relative; }
+.step-item:last-child { border-left-color: transparent; }
+.step-circle { position: absolute; left: -13px; top: 16px; width: 26px; height: 26px; background: var(--card); border: 2px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+.step-content h4 { font-family: 'Fraunces', serif; font-size: 15px; color: var(--text); margin-bottom: 4px; }
+.step-content p { font-size: 13px; color: var(--muted2); margin: 0; }
+.step-content code { background: var(--surface); border: 1px solid var(--border); padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); }
+.next-cta { display: flex; align-items: center; justify-content: space-between; padding: 24px 28px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-top: 48px; cursor: pointer; transition: border-color 0.2s; }
+.next-cta:hover { border-color: var(--accent); }
+.next-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+.next-title { font-family: 'Fraunces', serif; font-size: 18px; color: var(--text); }
+.next-arrow { font-size: 24px; color: var(--accent); }
+.event-timeline { display: flex; flex-direction: column; gap: 0; margin: 24px 0; }
+.event-item { display: flex; gap: 16px; padding: 14px 0; border-left: 2px solid rgba(139,92,246,0.3); margin-left: 16px; padding-left: 20px; position: relative; }
+.event-item:last-child { border-left-color: transparent; }
+.event-dot { position: absolute; left: -8px; top: 18px; width: 14px; height: 14px; background: var(--accent); border-radius: 50%; border: 2px solid var(--bg); }
+.event-time { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); min-width: 80px; padding-top: 2px; }
+.event-content { flex: 1; }
+.event-name { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); margin-bottom: 2px; }
+.event-data { font-size: 12px; color: var(--muted2); }
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="phase-tag">Phase 5 · Advanced</span>
+    <div class="course-title">System Design Mastery</div>
+  </div>
+  <div class="nav-section-label">Topics</div>
+  <a href="#intro" class="nav-item"><span class="icon">🤔</span> সমস্যাটা কী?</a>
+  <a href="#cqrs" class="nav-item"><span class="icon">✂️</span> CQRS Pattern</a>
+  <a href="#event-sourcing" class="nav-item"><span class="icon">📜</span> Event Sourcing</a>
+  <a href="#projections" class="nav-item"><span class="icon">🔭</span> Projections</a>
+  <a href="#combined" class="nav-item"><span class="icon">🔗</span> CQRS + ES Together</a>
+  <a href="#tradeoffs" class="nav-item"><span class="icon">⚖️</span> Trade-offs</a>
+  <a href="#realworld" class="nav-item"><span class="icon">🌍</span> Real World</a>
+  <a href="#mcq" class="nav-item"><span class="icon">🧠</span> MCQ Quiz</a>
+  <a href="#assignment" class="nav-item"><span class="icon">📝</span> Assignment</a>
+  <a href="#project" class="nav-item"><span class="icon">🚀</span> Project</a>
+</nav>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<main>
+<div class="content">
+
+  <div class="topic-hero">
+    <div class="hero-meta">
+      <span class="hero-phase">Phase 5</span>
+      <span class="hero-sep">·</span>
+      <span class="hero-topic-num">Topic 04 / 06</span>
+    </div>
+    <h1 class="hero-title">CQRS &<br>Event Sourcing</h1>
+    <p class="hero-subtitle">Read আর Write কে আলাদা করো, এবং data এর পরিবর্তনের ইতিহাস event হিসেবে store করো — এটাই CQRS ও Event Sourcing এর মূল ধারণা।</p>
+    <div class="hero-tags">
+      <span class="tag accent">CQRS</span>
+      <span class="tag">Event Sourcing</span>
+      <span class="tag">Event Store</span>
+      <span class="tag">Projection</span>
+      <span class="tag">Aggregate</span>
+      <span class="tag">Command</span>
+      <span class="tag">Query</span>
+    </div>
+  </div>
+
+  <!-- Section 1: Problem -->
+  <div class="section" id="intro">
+    <div class="section-label">The Problem</div>
+    <h2 class="section-title">Traditional CRUD এর সমস্যা কোথায়?</h2>
+    <p>সাধারণ app এ একটাই database — সেখানে <strong>Read</strong> ও <strong>Write</strong> দুটোই হয়। ছোট app এ এটা ঠিক আছে। কিন্তু বড় system এ এটা কেন সমস্যা?</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <div class="card-title">Read vs Write মিসমাচ</div>
+        <p>Write করতে normalized data ভালো (no duplication)। কিন্তু Read করতে denormalized ভালো (fast query, কম JOIN)। একই schema দিয়ে দুটোই optimize করা কঠিন।</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔒</div>
+        <div class="card-title">Lock Contention</div>
+        <p>যখন একজন user data write করছে, তখন অন্যরা read করতে গেলে lock wait করতে হয়। High traffic এ এটা bottleneck হয়।</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📝</div>
+        <div class="card-title">Audit Trail নেই</div>
+        <p>Traditional CRUD এ শুধু current state থাকে। "কে, কখন, কী পরিবর্তন করলো" — এই history থাকে না। কিন্তু banking, healthcare তে এটা must।</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔄</div>
+        <div class="card-title">Time Travel অসম্ভব</div>
+        <p>৩ দিন আগে order এর status কী ছিল? CRUD এ জানা যাবে না। শুধু আজকের state আছে।</p>
+      </div>
+    </div>
+
+    <div class="info-box purple">
+      <div class="box-label">💡 Solution: দুটো Pattern</div>
+      <strong>CQRS</strong> — Command (Write) এবং Query (Read) কে আলাদা করো। দুটোর জন্য আলাদা model, আলাদা database হতে পারে।<br><br>
+      <strong>Event Sourcing</strong> — Current state store না করে, সব <em>events</em> store করো। State হলো সব events এর sum।
+    </div>
+  </div>
+
+  <!-- Section 2: CQRS -->
+  <div class="section" id="cqrs">
+    <div class="section-label">Core Pattern</div>
+    <h2 class="section-title">CQRS — Command Query Responsibility Segregation</h2>
+    <p>CQRS মানে হলো একটা system এর <strong>Write side (Command)</strong> এবং <strong>Read side (Query)</strong> আলাদা করা। এটা Bertrand Meyer এর CQS principle থেকে এসেছে: "A method should either change state OR return data, not both."</p>
+
+    <div class="diagram-box">
+      <div class="diagram-title">CQRS Architecture — Command ও Query আলাদা Path</div>
+      <svg viewBox="0 0 720 340" width="100%" style="max-width:720px">
+        <!-- Client -->
+        <rect x="290" y="10" width="140" height="44" rx="8" fill="rgba(139,92,246,0.1)" stroke="rgba(139,92,246,0.4)"/>
+        <text x="360" y="28" text-anchor="middle" fill="#c4b5fd" font-size="12" font-family="JetBrains Mono">Client / UI</text>
+        <text x="360" y="46" text-anchor="middle" fill="#64748b" font-size="10">User action</text>
+
+        <!-- Split arrows -->
+        <line x1="300" y1="54" x2="180" y2="100" stroke="#c4b5fd" stroke-width="1.5"/>
+        <polygon points="175,97 185,107 178,97" fill="#c4b5fd"/>
+        <text x="218" y="83" fill="#c4b5fd" font-size="10" font-family="JetBrains Mono">Command</text>
+
+        <line x1="420" y1="54" x2="540" y2="100" stroke="#7dd3fc" stroke-width="1.5"/>
+        <polygon points="545,97 535,107 542,97" fill="#7dd3fc"/>
+        <text x="478" y="83" fill="#7dd3fc" font-size="10" font-family="JetBrains Mono">Query</text>
+
+        <!-- Command side -->
+        <rect x="60" y="104" width="220" height="50" rx="8" fill="rgba(139,92,246,0.1)" stroke="rgba(139,92,246,0.4)"/>
+        <text x="170" y="124" text-anchor="middle" fill="#c4b5fd" font-size="12" font-family="JetBrains Mono">Command Handler</text>
+        <text x="170" y="142" text-anchor="middle" fill="#64748b" font-size="10">Validate + Execute</text>
+
+        <line x1="170" y1="154" x2="170" y2="195" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+        <rect x="60" y="198" width="220" height="50" rx="8" fill="rgba(139,92,246,0.06)" stroke="rgba(139,92,246,0.25)"/>
+        <text x="170" y="218" text-anchor="middle" fill="#a78bfa" font-size="12" font-family="JetBrains Mono">Write DB</text>
+        <text x="170" y="236" text-anchor="middle" fill="#64748b" font-size="10">Normalized (PostgreSQL)</text>
+
+        <!-- Event bus -->
+        <line x1="170" y1="248" x2="170" y2="275" stroke="#eab308" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <rect x="60" y="278" width="220" height="40" rx="6" fill="rgba(234,179,8,0.08)" stroke="rgba(234,179,8,0.3)"/>
+        <text x="170" y="303" text-anchor="middle" fill="#fef08a" font-size="11" font-family="JetBrains Mono">Event Bus (Kafka)</text>
+
+        <!-- Event bus to read side -->
+        <line x1="280" y1="298" x2="430" y2="298" stroke="#eab308" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <polygon points="430,294 440,298 430,302" fill="#eab308"/>
+        <text x="355" y="316" text-anchor="middle" fill="#eab308" font-size="10" font-family="JetBrains Mono">sync events</text>
+
+        <!-- Query side -->
+        <rect x="440" y="104" width="220" height="50" rx="8" fill="rgba(59,130,246,0.1)" stroke="rgba(59,130,246,0.4)"/>
+        <text x="550" y="124" text-anchor="middle" fill="#7dd3fc" font-size="12" font-family="JetBrains Mono">Query Handler</text>
+        <text x="550" y="142" text-anchor="middle" fill="#64748b" font-size="10">Read Optimized</text>
+
+        <line x1="550" y1="154" x2="550" y2="195" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+        <rect x="440" y="198" width="220" height="50" rx="8" fill="rgba(59,130,246,0.06)" stroke="rgba(59,130,246,0.25)"/>
+        <text x="550" y="218" text-anchor="middle" fill="#93c5fd" font-size="12" font-family="JetBrains Mono">Read DB</text>
+        <text x="550" y="236" text-anchor="middle" fill="#64748b" font-size="10">Denormalized (Elasticsearch)</text>
+
+        <!-- Event to read db -->
+        <line x1="550" y1="278" x2="550" y2="248" stroke="#eab308" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <polygon points="546,248 550,238 554,248" fill="#eab308"/>
+        <rect x="440" y="278" width="220" height="40" rx="6" fill="rgba(234,179,8,0.08)" stroke="rgba(234,179,8,0.3)"/>
+        <text x="550" y="303" text-anchor="middle" fill="#fef08a" font-size="11" font-family="JetBrains Mono">Event Consumer</text>
+
+        <!-- Labels -->
+        <text x="170" y="335" text-anchor="middle" fill="#8b5cf6" font-size="11" font-family="JetBrains Mono">WRITE SIDE</text>
+        <text x="550" y="335" text-anchor="middle" fill="#3b82f6" font-size="11" font-family="JetBrains Mono">READ SIDE</text>
+      </svg>
+    </div>
+
+    <h3 style="font-family:'Fraunces',serif; font-size:18px; margin-bottom:14px; color:#f1f5f9;">Command কী? Query কী?</h3>
+
+    <table class="compare-table">
+      <tr><th>Aspect</th><th>Command (Write)</th><th>Query (Read)</th></tr>
+      <tr><td>কাজ</td><td>State পরিবর্তন করে</td><td>Data return করে, state পরিবর্তন করে না</td></tr>
+      <tr><td>Return</td><td>Success/Failure (data return করে না)</td><td>Data return করে (কিছু পরিবর্তন করে না)</td></tr>
+      <tr><td>উদাহরণ</td><td>PlaceOrder, CancelOrder, UpdateProfile</td><td>GetOrderDetails, ListProducts, SearchUsers</td></tr>
+      <tr><td>Database</td><td>Write-optimized (normalized)</td><td>Read-optimized (denormalized, cached)</td></tr>
+      <tr><td>Consistency</td><td>Strong consistency</td><td>Eventual consistency OK</td></tr>
+    </table>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">typescript</span>
+        <span class="code-file">commands.ts — Command Handler Pattern</span>
+      </div>
+      <pre><span class="cm">// Command — একটা intention, একটা action</span>
+<span class="kw">interface</span> <span class="fn">PlaceOrderCommand</span> {
+  <span class="kw">type</span>: <span class="str">'PLACE_ORDER'</span>;
+  userId: <span class="kw">string</span>;
+  items: { productId: <span class="kw">string</span>; quantity: <span class="num">number</span> }[];
+  totalAmount: <span class="kw">number</span>;
+}
+
+<span class="cm">// Command Handler — command receive করে, validate করে, execute করে</span>
+<span class="kw">class</span> <span class="fn">PlaceOrderCommandHandler</span> {
+  <span class="kw">constructor</span>(
+    <span class="kw">private</span> orderRepo: <span class="fn">OrderRepository</span>,
+    <span class="kw">private</span> eventBus: <span class="fn">EventBus</span>
+  ) {}
+
+  <span class="kw">async</span> <span class="fn">handle</span>(cmd: <span class="fn">PlaceOrderCommand</span>): <span class="kw">Promise</span>&lt;<span class="kw">void</span>&gt; {
+    <span class="cm">// 1. Validate</span>
+    <span class="kw">if</span> (cmd.items.length === <span class="num">0</span>) {
+      <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">'Order must have at least one item'</span>);
+    }
+
+    <span class="cm">// 2. Create domain object</span>
+    <span class="kw">const</span> order = <span class="kw">new</span> <span class="fn">Order</span>({
+      id: <span class="fn">generateId</span>(),
+      userId: cmd.userId,
+      items: cmd.items,
+      status: <span class="str">'PENDING'</span>,
+      totalAmount: cmd.totalAmount,
+      createdAt: <span class="kw">new</span> <span class="fn">Date</span>()
+    });
+
+    <span class="cm">// 3. Write DB তে save করো</span>
+    <span class="kw">await</span> <span class="var">this</span>.orderRepo.<span class="fn">save</span>(order);
+
+    <span class="cm">// 4. Event publish করো — Read side আপডেট হবে</span>
+    <span class="kw">await</span> <span class="var">this</span>.eventBus.<span class="fn">publish</span>({
+      type: <span class="str">'OrderPlaced'</span>,
+      orderId: order.id,
+      userId: cmd.userId,
+      totalAmount: cmd.totalAmount,
+      timestamp: <span class="kw">new</span> <span class="fn">Date</span>()
+    });
+    <span class="cm">// Command handler void return করে — no data back!</span>
+  }
+}
+
+<span class="cm">// Query Handler — শুধু read করে, কিছু change করে না</span>
+<span class="kw">class</span> <span class="fn">GetOrderQueryHandler</span> {
+  <span class="kw">constructor</span>(<span class="kw">private</span> readRepo: <span class="fn">OrderReadRepository</span>) {}
+
+  <span class="kw">async</span> <span class="fn">handle</span>(orderId: <span class="kw">string</span>): <span class="kw">Promise</span>&lt;<span class="fn">OrderView</span>&gt; {
+    <span class="cm">// Read DB থেকে denormalized view return করো</span>
+    <span class="kw">return</span> <span class="var">this</span>.readRepo.<span class="fn">findById</span>(orderId);
+    <span class="cm">// OrderView তে product names, user info — সব precomputed</span>
+  }
+}</pre>
+    </div>
+  </div>
+
+  <!-- Section 3: Event Sourcing -->
+  <div class="section" id="event-sourcing">
+    <div class="section-label">Event Sourcing</div>
+    <h2 class="section-title">Event Sourcing — State নয়, Events Store করো</h2>
+    <p>Traditional approach এ database তে current state থাকে। Order status "DELIVERED" — কিন্তু কীভাবে এখানে এলো সেটা নেই। Event Sourcing এ <strong>প্রতিটা state change একটা Event হিসেবে store হয়</strong>। Current state বের করতে সব events replay করো।</p>
+
+    <div class="info-box tip">
+      <div class="box-label">🏦 Real Life Analogy: Bank Account</div>
+      তোমার bank account এর balance এখন ৳৫,০০০। Bank কি শুধু "balance = 5000" store করে? না! তারা store করে সব <em>transactions</em>: +10000 (salary), -3000 (rent), -2000 (shopping)। Balance হলো এই transactions এর sum। এটাই Event Sourcing।
+    </div>
+
+    <div class="event-timeline">
+      <div class="event-item">
+        <div class="event-dot"></div>
+        <div class="event-time">2024-01-15 10:00</div>
+        <div class="event-content">
+          <div class="event-name">OrderCreated</div>
+          <div class="event-data">{ orderId: "ord-123", userId: "u-456", items: [...], status: "PENDING" }</div>
+        </div>
+      </div>
+      <div class="event-item">
+        <div class="event-dot"></div>
+        <div class="event-time">2024-01-15 10:05</div>
+        <div class="event-content">
+          <div class="event-name">PaymentProcessed</div>
+          <div class="event-data">{ orderId: "ord-123", amount: 1500, paymentMethod: "card", transactionId: "tx-789" }</div>
+        </div>
+      </div>
+      <div class="event-item">
+        <div class="event-dot"></div>
+        <div class="event-time">2024-01-15 14:30</div>
+        <div class="event-content">
+          <div class="event-name">OrderShipped</div>
+          <div class="event-data">{ orderId: "ord-123", trackingNumber: "TRK-001", carrier: "DHL", estimatedDelivery: "2024-01-18" }</div>
+        </div>
+      </div>
+      <div class="event-item">
+        <div class="event-dot"></div>
+        <div class="event-time">2024-01-18 09:15</div>
+        <div class="event-content">
+          <div class="event-name">OrderDelivered</div>
+          <div class="event-data">{ orderId: "ord-123", deliveredAt: "2024-01-18T09:15:00Z", signedBy: "John" }</div>
+        </div>
+      </div>
+    </div>
+
+    <p>এই ৪টা event থেকে তুমি জানতে পারছো: order কখন হয়েছে, payment কতটা, কখন ship হয়েছে, কখন deliver হয়েছে। এটাই <strong>complete audit trail</strong>।</p>
+
+    <div class="diagram-box">
+      <div class="diagram-title">Event Store — Events Append করা হয়, কখনো Delete/Update হয় না</div>
+      <svg viewBox="0 0 700 220" width="100%" style="max-width:700px">
+        <!-- Event Store -->
+        <rect x="20" y="20" width="660" height="180" rx="10" fill="var(--surface)" stroke="rgba(139,92,246,0.3)"/>
+        <text x="350" y="44" text-anchor="middle" fill="#8b5cf6" font-size="12" font-family="JetBrains Mono">EVENT STORE (Append-Only Log)</text>
+
+        <!-- Events as rows -->
+        <rect x="40" y="56" width="150" height="48" rx="6" fill="rgba(139,92,246,0.1)" stroke="rgba(139,92,246,0.3)"/>
+        <text x="115" y="75" text-anchor="middle" fill="#c4b5fd" font-size="11" font-family="JetBrains Mono">OrderCreated</text>
+        <text x="115" y="93" text-anchor="middle" fill="#64748b" font-size="10">seq: 1 | t: 10:00</text>
+
+        <text x="205" y="84" text-anchor="middle" fill="#475569" font-size="16">→</text>
+
+        <rect x="218" y="56" width="150" height="48" rx="6" fill="rgba(139,92,246,0.1)" stroke="rgba(139,92,246,0.3)"/>
+        <text x="293" y="75" text-anchor="middle" fill="#c4b5fd" font-size="11" font-family="JetBrains Mono">PaymentDone</text>
+        <text x="293" y="93" text-anchor="middle" fill="#64748b" font-size="10">seq: 2 | t: 10:05</text>
+
+        <text x="383" y="84" text-anchor="middle" fill="#475569" font-size="16">→</text>
+
+        <rect x="396" y="56" width="150" height="48" rx="6" fill="rgba(139,92,246,0.1)" stroke="rgba(139,92,246,0.3)"/>
+        <text x="471" y="75" text-anchor="middle" fill="#c4b5fd" font-size="11" font-family="JetBrains Mono">OrderShipped</text>
+        <text x="471" y="93" text-anchor="middle" fill="#64748b" font-size="10">seq: 3 | t: 14:30</text>
+
+        <text x="561" y="84" text-anchor="middle" fill="#475569" font-size="16">→</text>
+
+        <rect x="574" y="56" width="86" height="48" rx="6" fill="rgba(16,185,129,0.08)" stroke="rgba(16,185,129,0.3)" stroke-dasharray="4,3"/>
+        <text x="617" y="79" text-anchor="middle" fill="#10b981" font-size="11" font-family="JetBrains Mono">NEW</text>
+        <text x="617" y="96" text-anchor="middle" fill="#64748b" font-size="10">append...</text>
+
+        <!-- Replay arrow -->
+        <text x="350" y="130" text-anchor="middle" fill="#64748b" font-size="12">⬇ Replay করলে current state পাবে</text>
+
+        <!-- State result -->
+        <rect x="200" y="145" width="300" height="44" rx="8" fill="rgba(16,185,129,0.08)" stroke="rgba(16,185,129,0.3)"/>
+        <text x="350" y="163" text-anchor="middle" fill="#10b981" font-size="11" font-family="JetBrains Mono">Current State: Order #123</text>
+        <text x="350" y="180" text-anchor="middle" fill="#64748b" font-size="10">status=SHIPPED | amount=1500 | carrier=DHL</text>
+
+        <!-- Immutable note -->
+        <text x="350" y="210" text-anchor="middle" fill="#475569" font-size="10" font-family="JetBrains Mono">⚠ Events are IMMUTABLE — never update or delete</text>
+      </svg>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">typescript</span>
+        <span class="code-file">event-sourcing.ts — Order Aggregate</span>
+      </div>
+      <pre><span class="cm">// Event types — প্রতিটা possible state change</span>
+<span class="kw">type</span> <span class="fn">OrderEvent</span> =
+  | { type: <span class="str">'OrderCreated'</span>; orderId: <span class="kw">string</span>; userId: <span class="kw">string</span>; items: <span class="fn">Item</span>[] }
+  | { type: <span class="str">'PaymentProcessed'</span>; amount: <span class="kw">number</span>; transactionId: <span class="kw">string</span> }
+  | { type: <span class="str">'OrderShipped'</span>; trackingNumber: <span class="kw">string</span>; carrier: <span class="kw">string</span> }
+  | { type: <span class="str">'OrderDelivered'</span>; deliveredAt: <span class="fn">Date</span> }
+  | { type: <span class="str">'OrderCancelled'</span>; reason: <span class="kw">string</span> };
+
+<span class="cm">// Order State — events এর sum</span>
+<span class="kw">interface</span> <span class="fn">OrderState</span> {
+  id: <span class="kw">string</span>;
+  userId: <span class="kw">string</span>;
+  status: <span class="str">'PENDING'</span> | <span class="str">'PAID'</span> | <span class="str">'SHIPPED'</span> | <span class="str">'DELIVERED'</span> | <span class="str">'CANCELLED'</span>;
+  totalAmount: <span class="kw">number</span>;
+  trackingNumber?: <span class="kw">string</span>;
+}
+
+<span class="cm">// Aggregate — events apply করে state বানায়</span>
+<span class="kw">function</span> <span class="fn">applyEvent</span>(state: <span class="fn">OrderState</span>, event: <span class="fn">OrderEvent</span>): <span class="fn">OrderState</span> {
+  <span class="kw">switch</span> (event.type) {
+    <span class="kw">case</span> <span class="str">'OrderCreated'</span>:
+      <span class="kw">return</span> { ...state, id: event.orderId, userId: event.userId, status: <span class="str">'PENDING'</span> };
+
+    <span class="kw">case</span> <span class="str">'PaymentProcessed'</span>:
+      <span class="kw">return</span> { ...state, status: <span class="str">'PAID'</span>, totalAmount: event.amount };
+
+    <span class="kw">case</span> <span class="str">'OrderShipped'</span>:
+      <span class="kw">return</span> { ...state, status: <span class="str">'SHIPPED'</span>, trackingNumber: event.trackingNumber };
+
+    <span class="kw">case</span> <span class="str">'OrderDelivered'</span>:
+      <span class="kw">return</span> { ...state, status: <span class="str">'DELIVERED'</span> };
+
+    <span class="kw">case</span> <span class="str">'OrderCancelled'</span>:
+      <span class="kw">return</span> { ...state, status: <span class="str">'CANCELLED'</span> };
+
+    <span class="kw">default</span>: <span class="kw">return</span> state;
+  }
+}
+
+<span class="cm">// Events replay করে current state বের করো</span>
+<span class="kw">function</span> <span class="fn">replayEvents</span>(events: <span class="fn">OrderEvent</span>[]): <span class="fn">OrderState</span> {
+  <span class="kw">const</span> initialState: <span class="fn">OrderState</span> = { id: <span class="str">''</span>, userId: <span class="str">''</span>, status: <span class="str">'PENDING'</span>, totalAmount: <span class="num">0</span> };
+  <span class="kw">return</span> events.<span class="fn">reduce</span>(applyEvent, initialState);
+}
+
+<span class="cm">// ব্যবহার</span>
+<span class="kw">const</span> events = <span class="kw">await</span> eventStore.<span class="fn">getEvents</span>(<span class="str">'order-123'</span>);
+<span class="kw">const</span> currentState = <span class="fn">replayEvents</span>(events);
+<span class="cm">// currentState.status === 'SHIPPED' ✓</span>
+
+<span class="cm">// Time travel — ৩ ঘণ্টা আগের state দেখো</span>
+<span class="kw">const</span> pastEvents = events.<span class="fn">filter</span>(e => e.timestamp &lt; threeHoursAgo);
+<span class="kw">const</span> pastState = <span class="fn">replayEvents</span>(pastEvents);
+<span class="cm">// pastState.status === 'PAID' ✓ (ship হয়নি তখনো)</span></pre>
+    </div>
+  </div>
+
+  <!-- Section 4: Projections -->
+  <div class="section" id="projections">
+    <div class="section-label">Read Models</div>
+    <h2 class="section-title">Projections — Events থেকে Read Model বানাও</h2>
+    <p>Event Store থেকে সরাসরি query করা slow হতে পারে (অনেক events replay করতে হয়)। <strong>Projection</strong> হলো events process করে একটা optimized read model তৈরি করা। যেমন: "সব PENDING orders এর list" — এটা একটা projection।</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">📋</div>
+        <div class="card-title">Order List Projection</div>
+        <p>Orders table তে শুধু latest status রাখো। OrderCreated এলে row insert, OrderShipped এলে status update।</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <div class="card-title">Analytics Projection</div>
+        <p>Daily sales aggregate করো। OrderPlaced event এলে সেই দিনের total বাড়াও।</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔄</div>
+        <div class="card-title">Rebuild করা যায়</div>
+        <p>Projection corrupt হলে বা নতুন view দরকার হলে — Event Store থেকে শুরু থেকে সব events replay করে নতুন projection বানাও।</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎯</div>
+        <div class="card-title">Multiple Views</div>
+        <p>একই events থেকে ভিন্ন projections। Admin view আলাদা, customer view আলাদা।</p>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">typescript</span>
+        <span class="code-file">projection.ts — Order Summary Projection</span>
+      </div>
+      <pre><span class="cm">// Projection handler — events শুনে read model আপডেট করে</span>
+<span class="kw">class</span> <span class="fn">OrderSummaryProjection</span> {
+  <span class="kw">constructor</span>(<span class="kw">private</span> db: <span class="fn">ReadDatabase</span>) {}
+
+  <span class="cm">// Event এলে এই function call হবে</span>
+  <span class="kw">async</span> <span class="fn">on</span>(event: <span class="fn">OrderEvent</span>): <span class="kw">Promise</span>&lt;<span class="kw">void</span>&gt; {
+    <span class="kw">switch</span> (event.type) {
+      <span class="kw">case</span> <span class="str">'OrderCreated'</span>:
+        <span class="cm">// Read DB তে নতুন row insert করো</span>
+        <span class="kw">await</span> <span class="var">this</span>.db.<span class="fn">insert</span>(<span class="str">'order_summaries'</span>, {
+          id: event.orderId,
+          userId: event.userId,
+          status: <span class="str">'PENDING'</span>,
+          itemCount: event.items.length,
+          createdAt: event.timestamp
+        });
+        <span class="kw">break</span>;
+
+      <span class="kw">case</span> <span class="str">'PaymentProcessed'</span>:
+        <span class="cm">// Status update করো</span>
+        <span class="kw">await</span> <span class="var">this</span>.db.<span class="fn">update</span>(<span class="str">'order_summaries'</span>,
+          { id: event.orderId },
+          { status: <span class="str">'PAID'</span>, totalAmount: event.amount }
+        );
+        <span class="kw">break</span>;
+
+      <span class="kw">case</span> <span class="str">'OrderShipped'</span>:
+        <span class="kw">await</span> <span class="var">this</span>.db.<span class="fn">update</span>(<span class="str">'order_summaries'</span>,
+          { id: event.orderId },
+          { status: <span class="str">'SHIPPED'</span>, trackingNumber: event.trackingNumber }
+        );
+        <span class="kw">break</span>;
+    }
+  }
+}
+
+<span class="cm">// Query করা এখন fast — precomputed table থেকে</span>
+<span class="kw">async function</span> <span class="fn">getPendingOrders</span>(userId: <span class="kw">string</span>) {
+  <span class="cm">// Read DB থেকে simple SQL — কোনো replay নেই</span>
+  <span class="kw">return</span> db.<span class="fn">query</span>(
+    <span class="str">'SELECT * FROM order_summaries WHERE userId = ? AND status = ?'</span>,
+    [userId, <span class="str">'PENDING'</span>]
+  );
+}</pre>
+    </div>
+  </div>
+
+  <!-- Section 5: Combined -->
+  <div class="section" id="combined">
+    <div class="section-label">Full Picture</div>
+    <h2 class="section-title">CQRS + Event Sourcing একসাথে</h2>
+    <p>এই দুটো pattern আলাদাভাবেও use করা যায়, কিন্তু একসাথে use করলে সবচেয়ে powerful হয়।</p>
+
+    <div class="info-box purple">
+      <div class="box-label">🔗 Full Flow</div>
+      ১. User একটা <strong>Command</strong> পাঠায় (PlaceOrder)<br>
+      ২. Command Handler validate করে, <strong>Events generate</strong> করে (OrderCreated, PaymentProcessed)<br>
+      ৩. Events <strong>Event Store</strong> এ append হয়<br>
+      ৪. <strong>Projections</strong> events শুনে Read DB আপডেট করে<br>
+      ৫. User <strong>Query</strong> করলে Read DB থেকে fast response পায়
+    </div>
+
+    <table class="compare-table">
+      <tr><th>Pattern</th><th>কী সমস্যা সমাধান করে</th><th>কখন দরকার নেই</th></tr>
+      <tr><td>CQRS alone</td><td>Read/Write performance mismatch</td><td>Simple CRUD app</td></tr>
+      <tr><td>Event Sourcing alone</td><td>Audit trail, time travel, debugging</td><td>Data history দরকার নেই</td></tr>
+      <tr><td>CQRS + Event Sourcing</td><td>উভয়ের সুবিধা, complex domain</td><td>Small app, simple domain</td></tr>
+    </table>
+  </div>
+
+  <!-- Section 6: Trade-offs -->
+  <div class="section" id="tradeoffs">
+    <div class="section-label">Honest Assessment</div>
+    <h2 class="section-title">Trade-offs — সব সমস্যার solution নয়</h2>
+
+    <div class="info-box danger">
+      <div class="box-label">⚠️ Complexity বাড়ে অনেক</div>
+      CQRS + Event Sourcing শুরু করার আগে ভালো করে ভাবো। এটা complexity অনেক বাড়ায়। Simple todo app এ এটা use করা over-engineering। E-commerce, banking, healthcare এর মতো complex domain এ কাজে আসে।
+    </div>
+
+    <table class="compare-table">
+      <tr><th>সুবিধা ✅</th><th>অসুবিধা ❌</th></tr>
+      <tr><td>Read ও Write আলাদা scale করা যায়</td><td>Eventual consistency — read side সামান্য পুরনো থাকতে পারে</td></tr>
+      <tr><td>Complete audit trail ও history</td><td>Schema evolution কঠিন (পুরনো events নতুন schema তে migrate করতে হয়)</td></tr>
+      <tr><td>Bug fix করে past state recalculate করা যায়</td><td>Event Store query করা সরাসরি SQL এর মতো সহজ না</td></tr>
+      <tr><td>Multiple read models বানানো সহজ</td><td>Steep learning curve — team কে train করতে হবে</td></tr>
+      <tr><td>Time travel debugging</td><td>Storage বাড়ে (সব events forever রাখতে হয়)</td></tr>
+    </table>
+  </div>
+
+  <!-- Section 7: Real World -->
+  <div class="section" id="realworld">
+    <div class="section-label">Industry Examples</div>
+    <h2 class="section-title">Real World — কে কীভাবে ব্যবহার করে</h2>
+
+    <table class="compare-table">
+      <tr><th>Company</th><th>কী করে</th><th>কেন</th></tr>
+      <tr><td><strong>Uber</strong></td><td>Trip lifecycle events store করে — TripRequested, DriverAssigned, TripStarted, TripEnded</td><td>Audit trail, billing recalculation, dispute resolution</td></tr>
+      <tr><td><strong>LinkedIn</strong></td><td>Activity feed CQRS দিয়ে build — write করলে read DB আলাদা update হয়</td><td>৮০০+ million users এর feed fast serve করা</td></tr>
+      <tr><td><strong>Microsoft</strong></td><td>Azure DevOps সম্পূর্ণ Event Sourcing — সব pipeline changes events</td><td>History, rollback, audit সব built-in</td></tr>
+      <tr><td><strong>Axon Framework</strong></td><td>Java তে CQRS+ES এর popular framework — banking apps এ বহুল ব্যবহৃত</td><td>Domain-Driven Design এর সাথে ভালো fit</td></tr>
+    </table>
+
+    <div class="info-box tip">
+      <div class="box-label">💡 কখন শুরু করবো?</div>
+      Junior engineer হিসেবে এখনই production এ use করতে হবে না। কিন্তু concept টা বোঝা দরকার — interview তে "CQRS কী?" জিজ্ঞেস করা খুবই common। এই topic টার project করলে portfolio তে দারুণ দেখাবে।
+    </div>
+  </div>
+
+  <!-- MCQ -->
+  <div class="mcq-section" id="mcq">
+    <div class="mcq-header">
+      <span style="font-size:24px">🧠</span>
+      <h2>MCQ Quiz</h2>
+    </div>
+    <div class="mcq-meta">
+      <span>📊 10টা প্রশ্ন</span>
+      <span>⏱ ~12 মিনিট</span>
+      <span>✅ Pass: 7/10</span>
+    </div>
+    <div class="score-display">Score: <span id="scoreDisplay">0</span> / 10</div>
+
+    <div class="question-block" data-correct="b">
+      <div class="question-num">Q1 / 10</div>
+      <div class="question-text">CQRS এর পূর্ণ অর্থ কী?</div>
+      <div class="options">
+        <div class="option" data-val="a">Cache Query Response System</div>
+        <div class="option" data-val="b">Command Query Responsibility Segregation</div>
+        <div class="option" data-val="c">Concurrent Query Resolution Service</div>
+        <div class="option" data-val="d">Create Query Read Store</div>
+      </div>
+      <div class="explanation">✅ CQRS = <strong>Command Query Responsibility Segregation</strong>। Bertrand Meyer এর CQS (Command Query Separation) principle থেকে এসেছে। Command মানে write, Query মানে read — এদের দায়িত্ব আলাদা।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="question-num">Q2 / 10</div>
+      <div class="question-text">Event Sourcing এ "Time Travel" বলতে কী বোঝায়?</div>
+      <div class="options">
+        <div class="option" data-val="a">System এ timezone change করা</div>
+        <div class="option" data-val="b">Scheduled future events তৈরি করা</div>
+        <div class="option" data-val="c">Past events replay করে অতীতের যেকোনো সময়ের state পুনরুদ্ধার করা</div>
+        <div class="option" data-val="d">Event এর timestamp manually পরিবর্তন করা</div>
+      </div>
+      <div class="explanation">✅ Event Sourcing এ সব events immutable হিসেবে stored আছে। যেকোনো timestamp পর্যন্তের events replay করলে সেই মুহূর্তের state পাবে। এটাই Time Travel — debugging ও auditing এর জন্য অসাধারণ।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="question-num">Q3 / 10</div>
+      <div class="question-text">CQRS এ Command Handler কী return করে?</div>
+      <div class="options">
+        <div class="option" data-val="a">Void/Nothing — শুধু success/failure, কোনো data নয়</div>
+        <div class="option" data-val="b">Created object এর full data</div>
+        <div class="option" data-val="c">SQL query result</div>
+        <div class="option" data-val="d">Event list</div>
+      </div>
+      <div class="explanation">✅ CQS principle অনুযায়ী, Command এর কাজ হলো state change করা — data return করা না। Command Handler void return করে। Data দরকার হলে আলাদা Query করতে হবে। এটাই separation of concerns।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="question-num">Q4 / 10</div>
+      <div class="question-text">Event Sourcing এ Event Store কেন "Append-Only" হয়?</div>
+      <div class="options">
+        <div class="option" data-val="a">Storage বাঁচানোর জন্য</div>
+        <div class="option" data-val="b">Database performance বাড়ানোর জন্য</div>
+        <div class="option" data-val="c">Concurrency সমস্যা এড়ানোর জন্য</div>
+        <div class="option" data-val="d">Events immutable রাখার জন্য — ইতিহাস পরিবর্তন করা যাবে না</div>
+      </div>
+      <div class="explanation">✅ Events হলো facts — "এটা হয়েছিল।" Past পরিবর্তন করা যায় না, তাই events কখনো update বা delete হয় না। শুধু নতুন events append হয়। এটাই audit trail এর integrity নিশ্চিত করে।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="question-num">Q5 / 10</div>
+      <div class="question-text">CQRS এ "Eventual Consistency" কোন side এ apply হয়?</div>
+      <div class="options">
+        <div class="option" data-val="a">Write (Command) side এ</div>
+        <div class="option" data-val="b">Read (Query) side এ — Write এর পর Read DB আপডেট হতে সামান্য সময় লাগে</div>
+        <div class="option" data-val="c">Event Store এ</div>
+        <div class="option" data-val="d">Command Handler এ</div>
+      </div>
+      <div class="explanation">✅ Write করার পর Event Bus এ event publish হয়, তারপর Projection সেটা process করে Read DB আপডেট করে। এই pipeline এ কয়েক milliseconds থেকে seconds লাগতে পারে। তাই Read side eventual consistent।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="question-num">Q6 / 10</div>
+      <div class="question-text">Event Sourcing এর "Projection" কী করে?</div>
+      <div class="options">
+        <div class="option" data-val="a">Events delete করে</div>
+        <div class="option" data-val="b">Commands validate করে</div>
+        <div class="option" data-val="c">Events process করে optimized read model (view) তৈরি করে</div>
+        <div class="option" data-val="d">Database backup নেয়</div>
+      </div>
+      <div class="explanation">✅ Projection হলো event-driven read model builder। Events শুনে Read DB তে data upsert করে। Projection corrupt হলে Event Store থেকে সব events আবার replay করে নতুন projection build করা যায়।</div>
+    </div>
+
+    <div class="question-block" data-correct="a">
+      <div class="question-num">Q7 / 10</div>
+      <div class="question-text">Bank account এর transaction history কোন pattern এর analogy?</div>
+      <div class="options">
+        <div class="option" data-val="a">Event Sourcing — transactions হলো events, balance হলো তাদের sum</div>
+        <div class="option" data-val="b">CQRS — debit ও credit আলাদা</div>
+        <div class="option" data-val="c">Microservices — প্রতিটা transaction আলাদা service</div>
+        <div class="option" data-val="d">CRUD — balance শুধু update হয়</div>
+      </div>
+      <div class="explanation">✅ Bank account balance কখনো সরাসরি update হয় না — transactions log হয় (events)। Balance হলো সব transactions এর algebraic sum। এটাই Event Sourcing এর core concept।</div>
+    </div>
+
+    <div class="question-block" data-correct="d">
+      <div class="question-num">Q8 / 10</div>
+      <div class="question-text">কোন situation এ CQRS + Event Sourcing সবচেয়ে উপযুক্ত?</div>
+      <div class="options">
+        <div class="option" data-val="a">Simple personal todo app</div>
+        <div class="option" data-val="b">Static blog website</div>
+        <div class="option" data-val="c">Small company এর internal HR tool</div>
+        <div class="option" data-val="d">Banking system যেখানে complete audit trail ও high read/write ratio দরকার</div>
+      </div>
+      <div class="explanation">✅ Banking, e-commerce, healthcare — এই complex domains এ audit trail, compliance, ও high scalability দরকার। CQRS + Event Sourcing এর complexity justify হয় এখানে। Simple apps এ এটা over-engineering।</div>
+    </div>
+
+    <div class="question-block" data-correct="b">
+      <div class="question-num">Q9 / 10</div>
+      <div class="question-text">Event Sourcing এ নতুন Read Model দরকার হলে কী করতে হয়?</div>
+      <div class="options">
+        <div class="option" data-val="a">সব data manually migrate করতে হয়</div>
+        <div class="option" data-val="b">Event Store থেকে শুরু থেকে সব events replay করে নতুন projection build করতে হয়</div>
+        <div class="option" data-val="c">Production system বন্ধ করতে হয়</div>
+        <div class="option" data-val="d">Database schema change করতে হয়</div>
+      </div>
+      <div class="explanation">✅ Event Store এ সব historical events আছে। নতুন Projection handler লিখে সব events আবার replay করলে নতুন read model তৈরি হবে। এটাই Event Sourcing এর superpower — যেকোনো সময় নতুন view বানানো যায়।</div>
+    </div>
+
+    <div class="question-block" data-correct="c">
+      <div class="question-num">Q10 / 10</div>
+      <div class="question-text">CQRS এ Write DB ও Read DB আলাদা রাখলে কী সুবিধা?</div>
+      <div class="options">
+        <div class="option" data-val="a">শুধু cost কমে</div>
+        <div class="option" data-val="b">Security বাড়ে</div>
+        <div class="option" data-val="c">Write DB কে Write optimize করা যায় (normalized), Read DB কে Read optimize করা যায় (denormalized/cached) — দুটো independently scale হয়</div>
+        <div class="option" data-val="d">Backup সহজ হয়</div>
+      </div>
+      <div class="explanation">✅ Write DB তে normalized schema (data integrity), Read DB তে denormalized schema (query speed)। Write heavy হলে শুধু Write DB scale করো, Read heavy হলে Read DB scale করো — independent scaling। এটাই CQRS এর অন্যতম বড় সুবিধা।</div>
+    </div>
+
+    <button class="mcq-submit" onclick="submitMCQ()">📊 SUBMIT & CHECK SCORE</button>
+    <div class="result-banner" id="resultBanner"></div>
+  </div>
+
+  <!-- Assignment -->
+  <div class="assignment-section" id="assignment">
+    <div class="assignment-header">
+      <span class="assignment-icon">📝</span>
+      <h2>Assignment</h2>
+    </div>
+    <div class="assignment-meta">
+      <span class="a-chip time">⏱ সময়: ২-৩ ঘণ্টা</span>
+      <span class="a-chip level">📊 Junior Level</span>
+    </div>
+    <p style="margin-bottom:16px; font-size:14px; color:#94a3b8;">Concept বোঝার জন্য এবং practically ভাবার জন্য।</p>
+    <ul class="task-list">
+      <li>
+        <strong>Event Design:</strong> একটা ride-sharing app (Uber এর মতো) এর জন্য ৮টা event design করো। প্রতিটা event এর জন্য: name, কখন emit হয়, কী data থাকে — তিনটা তথ্য দাও। যেমন: TripRequested, DriverAssigned, etc.
+      </li>
+      <li>
+        <strong>CRUD vs Event Sourcing:</strong> একটা simple bank account আছে — balance ৳১০,০০০। CRUD approach এ "UPDATE accounts SET balance = balance - 500 WHERE id = 1" করলে কী সমস্যা? Event Sourcing approach এ কীভাবে করতে হবে? দুটো approach এর পার্থক্য ৫ লাইনে লেখো।
+      </li>
+      <li>
+        <strong>Projection Design:</strong> উপরের ride-sharing events থেকে দুটো আলাদা Projection design করো: (১) Driver Dashboard — কতটা trip completed, total earnings (২) Admin Analytics — hourly trip count। প্রতিটা projection এর জন্য কোন events শুনবে এবং কী store করবে তা বলো।
+      </li>
+      <li>
+        <strong>Flow Diagram:</strong> CQRS + Event Sourcing combined flow diagram আঁকো — User → Command → Event Store → Projection → Read DB → Query → User। Excalidraw বা draw.io তে আঁকো।
+      </li>
+      <li>
+        <strong>Trade-off Analysis:</strong> তোমার current project বা পরিচিত কোনো app এ CQRS use করলে কী সুবিধা হতো? কী অসুবিধা হতো? Use করা উচিত কিনা — সিদ্ধান্ত দাও এবং কারণ বলো।
+      </li>
+    </ul>
+    <div class="deliverable-box">
+      <div class="d-label">📦 Deliverables</div>
+      <ul>
+        <li>Ride-sharing events design document</li>
+        <li>CRUD vs Event Sourcing comparison write-up</li>
+        <li>Two projection designs with event mappings</li>
+        <li>CQRS + ES combined flow diagram</li>
+        <li>Trade-off analysis for a real/familiar app</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Project -->
+  <div class="project-section" id="project">
+    <div class="project-header">
+      <span style="font-size:24px">🚀</span>
+      <h2>Hands-On Project Task</h2>
+    </div>
+    <div class="project-body">
+      <p style="font-size:14px; color:#94a3b8; margin-bottom:20px;">Node.js দিয়ে একটা simple Event Sourced bank account বানাও — in-memory, কোনো database লাগবে না।</p>
+
+      <h3 style="font-family:'Fraunces',serif; font-size:18px; margin-bottom:16px; color:#f1f5f9;">In-Memory Event Sourced Bank Account</h3>
+
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-circle">1</div>
+          <div class="step-content">
+            <h4>Event types define করো</h4>
+            <p>AccountOpened, MoneyDeposited, MoneyWithdrawn, AccountClosed — ৪টা event type।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">2</div>
+          <div class="step-content">
+            <h4>Event Store বানাও (array)</h4>
+            <p>Simple JavaScript array — events.push() দিয়ে append, কখনো splice/delete করবে না।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">3</div>
+          <div class="step-content">
+            <h4>applyEvent function লেখো</h4>
+            <p>প্রতিটা event type এর জন্য state কীভাবে পরিবর্তন হবে সেটা define করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">4</div>
+          <div class="step-content">
+            <h4>Command handlers লেখো</h4>
+            <p>deposit(amount), withdraw(amount) — validate করো, event create করো, store তে add করো।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">5</div>
+          <div class="step-content">
+            <h4>Time travel করো</h4>
+            <p>৫টা transaction করো। তারপর ৩টা পর্যন্ত replay করে balance দেখো। এটাই time travel।</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">6</div>
+          <div class="step-content">
+            <h4>Projection বানাও</h4>
+            <p>Events থেকে monthly statement তৈরি করো — প্রতিটা transaction এর list with running balance।</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block" style="margin-top:20px">
+        <div class="code-header">
+          <span class="code-lang">javascript</span>
+          <span class="code-file">bank-account.js — Starter Code</span>
+        </div>
+        <pre><span class="cm">// Event Store — simple array, append only</span>
+<span class="kw">const</span> eventStore = [];
+
+<span class="cm">// Event create করো এবং store তে add করো</span>
+<span class="kw">function</span> <span class="fn">appendEvent</span>(event) {
+  eventStore.<span class="fn">push</span>({ ...event, timestamp: <span class="kw">new</span> <span class="fn">Date</span>(), seq: eventStore.length + <span class="num">1</span> });
+}
+
+<span class="cm">// State apply করার logic</span>
+<span class="kw">function</span> <span class="fn">applyEvent</span>(state, event) {
+  <span class="kw">switch</span> (event.type) {
+    <span class="kw">case</span> <span class="str">'AccountOpened'</span>:
+      <span class="kw">return</span> { ...state, id: event.accountId, balance: <span class="num">0</span>, isOpen: <span class="kw">true</span> };
+    <span class="kw">case</span> <span class="str">'MoneyDeposited'</span>:
+      <span class="kw">return</span> { ...state, balance: state.balance + event.amount };
+    <span class="kw">case</span> <span class="str">'MoneyWithdrawn'</span>:
+      <span class="kw">return</span> { ...state, balance: state.balance - event.amount };
+    <span class="kw">default</span>: <span class="kw">return</span> state;
+  }
+}
+
+<span class="cm">// Replay করে current state পাও</span>
+<span class="kw">function</span> <span class="fn">getBalance</span>(upToSeq = <span class="var">Infinity</span>) {
+  <span class="kw">const</span> events = eventStore.<span class="fn">filter</span>(e => e.seq &lt;= upToSeq);
+  <span class="kw">return</span> events.<span class="fn">reduce</span>(applyEvent, { balance: <span class="num">0</span>, isOpen: <span class="kw">false</span> });
+}
+
+<span class="cm">// Commands</span>
+<span class="kw">function</span> <span class="fn">openAccount</span>(id) {
+  <span class="fn">appendEvent</span>({ type: <span class="str">'AccountOpened'</span>, accountId: id });
+}
+
+<span class="kw">function</span> <span class="fn">deposit</span>(amount) {
+  <span class="kw">if</span> (amount &lt;= <span class="num">0</span>) <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">'Amount must be positive'</span>);
+  <span class="fn">appendEvent</span>({ type: <span class="str">'MoneyDeposited'</span>, amount });
+}
+
+<span class="kw">function</span> <span class="fn">withdraw</span>(amount) {
+  <span class="kw">const</span> { balance } = <span class="fn">getBalance</span>();
+  <span class="kw">if</span> (amount > balance) <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">'Insufficient funds'</span>);
+  <span class="fn">appendEvent</span>({ type: <span class="str">'MoneyWithdrawn'</span>, amount });
+}
+
+<span class="cm">// Test করো</span>
+<span class="fn">openAccount</span>(<span class="str">'acc-001'</span>);
+<span class="fn">deposit</span>(<span class="num">10000</span>);
+<span class="fn">deposit</span>(<span class="num">5000</span>);
+<span class="fn">withdraw</span>(<span class="num">3000</span>);
+<span class="fn">deposit</span>(<span class="num">2000</span>);
+
+<span class="var">console</span>.<span class="fn">log</span>(<span class="str">'Current balance:'</span>, <span class="fn">getBalance</span>().balance); <span class="cm">// 14000</span>
+<span class="var">console</span>.<span class="fn">log</span>(<span class="str">'After 2 events:'</span>, <span class="fn">getBalance</span>(<span class="num">2</span>).balance);  <span class="cm">// 10000 (time travel!)</span></pre>
+      </div>
+
+      <div class="info-box tip" style="margin-top:16px">
+        <div class="box-label">🎯 এটা করলে যা শিখবে</div>
+        Theoretical না — নিজে হাতে Event Store বানিয়ে দেখবে। Time travel করবে — সত্যিই past state দেখতে পাবে। এটা করলে CQRS ও Event Sourcing এর core concept চিরকাল মনে থাকবে।
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-label">Lesson Summary</div>
+    <h2 class="section-title">আজকে যা শিখলাম</h2>
+    <table class="compare-table">
+      <tr><th>Concept</th><th>এক লাইনে</th></tr>
+      <tr><td>CQRS</td><td>Write (Command) ও Read (Query) আলাদা করো — আলাদা model, আলাদা DB</td></tr>
+      <tr><td>Command</td><td>State change করে, কিছু return করে না</td></tr>
+      <tr><td>Query</td><td>Data return করে, কিছু change করে না</td></tr>
+      <tr><td>Event Sourcing</td><td>Current state না রেখে সব events store করো</td></tr>
+      <tr><td>Event Store</td><td>Append-only log — events কখনো delete হয় না</td></tr>
+      <tr><td>Projection</td><td>Events থেকে optimized read model তৈরি করে</td></tr>
+      <tr><td>Time Travel</td><td>Events replay করে যেকোনো সময়ের state পুনরুদ্ধার</td></tr>
+    </table>
+  </div>
+
+  <!-- Next CTA -->
+  <div class="next-cta">
+    <div>
+      <div class="next-label">Next Topic →</div>
+      <div class="next-title">🚀 Deployment Patterns: Blue-Green, Canary, Rolling</div>
+    </div>
+    <div class="next-arrow">→</div>
+  </div>
+
+</div>
+</main>
+
+<script>
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scroll = doc.scrollTop || document.body.scrollTop;
+  const height = doc.scrollHeight - doc.clientHeight;
+  document.getElementById('progressFill').style.width = ((scroll / height) * 100) + '%';
+});
+
+let answered = {};
+
+document.querySelectorAll('.option').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const block = this.closest('.question-block');
+    const qId = Array.from(document.querySelectorAll('.question-block')).indexOf(block);
+    if (answered[qId]) return;
+    answered[qId] = this.dataset.val;
+    block.querySelectorAll('.option').forEach(o => {
+      o.style.pointerEvents = 'none';
+      if (o.dataset.val === block.dataset.correct) o.classList.add('correct');
+      else if (o.dataset.val === this.dataset.val && this.dataset.val !== block.dataset.correct) o.classList.add('wrong');
+    });
+    block.querySelector('.explanation').classList.add('visible');
+  });
+});
+
+function submitMCQ() {
+  let correct = 0;
+  const blocks = document.querySelectorAll('.question-block');
+  blocks.forEach((block, i) => { if (answered[i] === block.dataset.correct) correct++; });
+  const unanswered = blocks.length - Object.keys(answered).length;
+  if (unanswered > 0) { alert(`এখনও ${unanswered}টা প্রশ্নের উত্তর দাওনি!`); return; }
+  document.getElementById('scoreDisplay').textContent = correct;
+  const banner = document.getElementById('resultBanner');
+  banner.classList.add('visible');
+  if (correct >= 7) {
+    banner.classList.add('pass');
+    banner.textContent = `🎉 দারুণ! ${correct}/10 সঠিক। পরের topic এ যেতে পারো!`;
+  } else {
+    banner.classList.add('fail');
+    banner.textContent = `📖 ${correct}/10 সঠিক। Concept গুলো আবার পড়ো এবং retry করো। ৭/১০ পেলেই pass।`;
+  }
+}
+
+document.querySelectorAll('.nav-item[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    document.getElementById(link.getAttribute('href').slice(1))?.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>

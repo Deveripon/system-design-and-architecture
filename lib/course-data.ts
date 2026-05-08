@@ -13,6 +13,7 @@ import {
     Network,
     Play,
     Puzzle,
+    Radar,
     RefreshCw,
     Repeat,
     Scale,
@@ -22,6 +23,7 @@ import {
     ShieldAlert,
     ShoppingCart,
     Waves,
+    Workflow,
     Zap,
 } from 'lucide-react';
 
@@ -311,6 +313,44 @@ export const courseData = [
                     'DDoS protection: Throttling',
                     'SaaS API limits: Rate Limiting',
                     'Fair resource usage',
+                ],
+            },
+            {
+                id: 'service-discovery',
+                title: 'Service Discovery & Registry',
+                icon: Radar,
+                tag: 'MICROSERVICES',
+                time: '৪৫-৬০ মিনিট',
+                level: 'Intermediate',
+                type: 'Service Mesh',
+                summary:
+                    'Microservices এ services কীভাবে একে অপরকে খুঁজে পায় — Client-side, Server-side discovery।',
+                details:
+                    'Service registry patterns, health checking, DNS-based vs API-based discovery। Consul, etcd, Eureka তুলনা।',
+                tools: ['Consul', 'Eureka', 'etcd', 'Kubernetes DNS'],
+                useCases: [
+                    'Dynamic service location: Client-side discovery',
+                    'Load balancer integration: Server-side discovery',
+                    'K8s services: DNS-based',
+                ],
+            },
+            {
+                id: 'saga-pattern',
+                title: 'Saga Pattern & Distributed Transactions',
+                icon: Workflow,
+                tag: 'ADVANCED',
+                time: '৬০-৯০ মিনিট',
+                level: 'Advanced',
+                type: 'Transaction Management',
+                summary:
+                    'Distributed transaction সমস্যার সমাধান — Choreography vs Orchestration Saga।',
+                details:
+                    'Long-running transactions across services, compensating transactions, and eventual consistency patterns।',
+                tools: ['Kafka', 'Temporal', 'Axon Framework'],
+                useCases: [
+                    'Order processing: Choreography Saga',
+                    'Complex workflows: Orchestration Saga',
+                    'Financial transactions: Compensating actions',
                 ],
             },
         ],
