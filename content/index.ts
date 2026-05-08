@@ -15,6 +15,13 @@ import { resilienceContent } from './distributed-systems/topics/resilience';
 import { throttlingContent } from './distributed-systems/topics/throttling';
 import { serviceDiscoveryContent } from './distributed-systems/topics/service-discovery';
 import { sagaPatternContent } from './distributed-systems/topics/saga-pattern';
+import { tinyurlContent } from './real-world-systems/topics/tinyurl';
+import { twitterContent } from './real-world-systems/topics/twitter';
+import { youtubeContent } from './real-world-systems/topics/youtube';
+import { whatsappContent } from './real-world-systems/topics/whatsapp';
+import { amazonContent } from './real-world-systems/topics/amazon';
+import { searchEngineContent } from './real-world-systems/topics/search-engine';
+import { uberContent } from './real-world-systems/topics/uber';
 
 export const contentMap: Record<string, TopicData> = {
     scalability: scalabilityContent,
@@ -33,12 +40,11 @@ export const contentMap: Record<string, TopicData> = {
     throttling: throttlingContent,
     'service-discovery': serviceDiscoveryContent,
     'saga-pattern': sagaPatternContent,
+    tinyurl: tinyurlContent,
+    twitter: twitterContent,
+    youtube: youtubeContent,
+    whatsapp: whatsappContent,
+    amazon: amazonContent,
+    'search-engine': searchEngineContent,
+    uber: uberContent,
 };
-
-
-
-
-
-
-
-

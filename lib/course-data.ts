@@ -1,6 +1,13 @@
 import {
+    IconBrandX,
+    IconBrandYoutube,
+    IconBrandWhatsapp,
+    IconBrandAmazon,
+} from '@tabler/icons-react';
+import {
     BarChart3,
     Box,
+    Car,
     Cloud,
     CloudUpload,
     Cpu,
@@ -19,14 +26,12 @@ import {
     Scale,
     Search,
     Server,
-    Share2,
     ShieldAlert,
     ShoppingCart,
     Waves,
     Workflow,
     Zap,
 } from 'lucide-react';
-
 export const courseData = [
     {
         id: 'phase-1',
@@ -363,7 +368,7 @@ export const courseData = [
             {
                 id: 'twitter',
                 title: 'Design Twitter/X',
-                icon: Share2,
+                icon: IconBrandX,
                 tag: 'INTERVIEW FAV',
                 time: '৯০-১২০ মিনিট',
                 level: 'Advanced',
@@ -382,7 +387,7 @@ export const courseData = [
             {
                 id: 'youtube',
                 title: 'Design YouTube/Netflix',
-                icon: Play,
+                icon: IconBrandYoutube,
                 tag: 'INTERVIEW FAV',
                 time: '৯০-১২০ মিনিট',
                 level: 'Advanced',
@@ -419,7 +424,7 @@ export const courseData = [
             {
                 id: 'whatsapp',
                 title: 'Design WhatsApp/Chat System',
-                icon: MessageSquare,
+                icon: IconBrandWhatsapp,
                 tag: 'INTERVIEW FAV',
                 time: '৬০-৯০ মিনিট',
                 level: 'Intermediate',
@@ -438,7 +443,7 @@ export const courseData = [
             {
                 id: 'amazon',
                 title: 'Design Amazon/E-commerce',
-                icon: ShoppingCart,
+                icon: IconBrandAmazon,
                 tag: 'COMPLEX',
                 time: '৯০-১২০ মিনিট',
                 level: 'Advanced',
@@ -470,6 +475,25 @@ export const courseData = [
                     'Auto-complete: Trie',
                     'Full-text search: Inverted Index',
                     'Global search ranking',
+                ],
+            },
+            {
+                id: 'uber',
+                title: 'Design Uber/Ride Sharing',
+                icon: Car,
+                tag: 'INTERVIEW FAV',
+                time: '৯০-১২০ মিনিট',
+                level: 'Advanced',
+                type: 'System Design Case',
+                summary:
+                    'Real-time location tracking, driver matching, surge pricing — geo-distributed system।',
+                details:
+                    'Geospatial indexing, Driver-Rider matching algorithms, Real-time tracking with WebSockets, and dynamic pricing।',
+                tools: ['Kafka', 'Redis', 'PostGIS'],
+                useCases: [
+                    'Driver matching: Geohash/QuadTree',
+                    'Real-time tracking: WebSocket',
+                    'Surge pricing: Dynamic algorithm',
                 ],
             },
         ],
@@ -595,5 +619,10 @@ export const courseData = [
         ],
     },
 ];
+
+
+
+
+
 
 

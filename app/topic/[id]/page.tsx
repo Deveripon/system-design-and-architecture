@@ -45,7 +45,7 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
         <DynamicTopicContent data={contentData} />
       ) : (
         <BorderCross>
-          <section className="min-h-[400px] flex flex-col items-center justify-center text-center p-12 rounded-none border border-border bg-muted/20">
+          <section className="min-h-100 flex flex-col items-center justify-center text-center p-12 rounded-none border border-border bg-muted/20">
             <div className="w-20 h-20 border border-primary flex items-center justify-center mb-6 bg-primary/5">
               <Rocket className="w-10 h-10 text-primary" />
             </div>
