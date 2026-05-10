@@ -1,8 +1,18 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
 import {
     CAPTriangleDiagram,
     PartitionSimulationDiagram,
 } from '../../../components/course/topics/cap/diagrams';
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+    ProConGrid,
+    ProConItem,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -16,28 +26,28 @@ export const capContent: TopicData = {
             id: 'concept',
             subHeader: { index: '001', title: 'Concept' },
             title: (
-                <span className='font-heading'>CAP Theorem কেন শিখতে হবে?</span>
+                <SectionTitle>CAP Theorem কেন শিখতে হবে?</SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 আপনি একটা distributed system design করছো।
                                 Interview এ জিজ্ঞেস করলো — &quot;আপনার system এ
                                 network failure হলে কী হবে? User কি wrong data
                                 দেখবেন নাকি error পাবেন?&quot; — এই question এর
                                 answer হলো CAP Theorem।
-                            </p>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            </ContentParagraph>
+                            <ContentParagraph>
                                 Cassandra vs MongoDB vs PostgreSQL কোনটা choose
                                 করবেন — এই decision এর পেছনে CAP আছে।{' '}
                                 <em className='text-foreground'>
                                     Senior engineer হতে হলে এই trade-off বুঝতেই
                                     হবে।
                                 </em>
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -61,7 +71,7 @@ export const capContent: TopicData = {
             id: 'cap-deep',
             subHeader: { index: '002', title: 'C, A, P Deep Dive' },
             title: (
-                <span className='font-heading'>C, A, P — তিনটা কি মানে?</span>
+                <SectionTitle>C, A, P — তিনটা কি মানে?</SectionTitle>
             ),
             blocks: [
                 {
@@ -71,64 +81,40 @@ export const capContent: TopicData = {
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <div className='grid grid-cols-1 md:grid-cols-2 gap-0 border border-border mb-12'>
-                            <div className='p-8 border-r border-border bg-card/30'>
-                                <h4 className='font-bold text-foreground mb-4 flex items-center gap-3 font-mono uppercase tracking-widest text-[10px]'>
-                                    <span className='w-1.5 h-1.5 bg-blue-500' />
-                                    C — Consistency
-                                </h4>
-                                <p className='text-sm text-muted-foreground leading-relaxed'>
+                            <ProConGrid className='mb-12'>
+                                <ProConItem title='C — Consistency' badge=''>
                                     সব nodes এ same time এ same data। Write করার
                                     পর যেকোনো node থেকে read করলেন latest value
                                     পানয়া যাবেন। &quot;All nodes see the same
                                     data simultaneously।&quot;
-                                </p>
-                            </div>
-                            <div className='p-8 bg-card/30'>
-                                <h4 className='font-bold text-foreground mb-4 flex items-center gap-3 font-mono uppercase tracking-widest text-[10px]'>
-                                    <span className='w-1.5 h-1.5 bg-emerald-500' />
-                                    A — Availability
-                                </h4>
-                                <p className='text-sm text-muted-foreground leading-relaxed'>
+                                </ProConItem>
+                                <ProConItem title='A — Availability' badge='' isLast type='positive'>
                                     প্রতিটি request এর response আসবেনই — error
                                     নয়, timeout নয়। কিছু nodes down থাকলেও
                                     system respond করবেন। তবে response টা stale
                                     হতে পারে।
-                                </p>
-                            </div>
-                        </div>
+                                </ProConItem>
+                            </ProConGrid>
                     ),
                 },
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <div className='grid grid-cols-1 md:grid-cols-2 gap-0 border border-border mb-12'>
-                            <div className='p-8 border-r border-border bg-card/30'>
-                                <h4 className='font-bold text-foreground mb-4 flex items-center gap-3 font-mono uppercase tracking-widest text-[10px]'>
-                                    <span className='w-1.5 h-1.5 bg-purple-500' />
-                                    P — Partition Tolerance
-                                </h4>
-                                <p className='text-sm text-muted-foreground leading-relaxed'>
+                            <ProConGrid className='mb-12'>
+                                <ProConItem title='P — Partition Tolerance' badge='' type='positive'>
                                     Network partition (nodes এর communication
                                     বিচ্ছিন্ন) হলেও system কাজ করতে থাকে।
                                     Distributed system এ P সবসময় দরকার —
                                     network কখনো ১০০% reliable না।
-                                </p>
-                            </div>
-                            <div className='p-8 bg-card/30 border-l border-border'>
-                                <h4 className='font-bold text-foreground mb-4 flex items-center gap-3 font-mono uppercase tracking-widest text-[10px]'>
-                                    <span className='w-1.5 h-1.5 bg-yellow-500' />
-                                    💡 Real Choice
-                                </h4>
-                                <p className='text-sm text-muted-foreground leading-relaxed'>
+                                </ProConItem>
+                                <ProConItem title='💡 Real Choice' badge='' isLast type='positive'>
                                     Distributed system এ P বাদ দেওয়া যায় না।
                                     তাই real choice হলো:{' '}
                                     <strong>CP নাকি AP?</strong> Network
                                     partition হলে কোনটা sacrifice করবো —
                                     Consistency নাকি Availability?
-                                </p>
-                            </div>
-                        </div>
+                                </ProConItem>
+                            </ProConGrid>
                     ),
                 },
                 {
@@ -151,9 +137,9 @@ export const capContent: TopicData = {
             id: 'cp-ap',
             subHeader: { index: '003', title: 'Network Partition' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Network Partition হলে কি হয়?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -243,9 +229,9 @@ export const capContent: TopicData = {
             id: 'consistency-levels',
             subHeader: { index: '004', title: 'Consistency Levels' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Consistency — Strong থেকে Eventual
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -319,7 +305,7 @@ CONSISTENCY ALL;            -- Critical financial op`,
             id: 'pacelc',
             subHeader: { index: '005', title: 'PACELC Theorem' },
             title: (
-                <span className='font-heading'>PACELC — CAP এর Extension</span>
+                <SectionTitle>PACELC — CAP এর Extension</SectionTitle>
             ),
             blocks: [
                 {
@@ -404,9 +390,9 @@ CONSISTENCY ALL;            -- Critical financial op`,
             id: 'real-world',
             subHeader: { index: '006', title: 'Real World Examples' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     বড় কোম্পানিগুলো কীভাবে করেছেনে
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -516,9 +502,9 @@ asyncio.run(demo())`,
             id: 'tools',
             subHeader: { index: '007', title: 'Tools Classification' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Database CAP Classification
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {

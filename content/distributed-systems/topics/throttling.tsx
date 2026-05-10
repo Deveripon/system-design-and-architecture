@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,29 +20,29 @@ export const throttlingContent: TopicData = {
             id: 'intro-concept',
             subHeader: { index: '001', title: 'Why It Matters' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Rate Limiting কেন শিখতে হবে?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 আপনার API তে একজন user প্রতি second এ ১০,০০০
                                 request পাঠাচ্ছে। হয় DDoS attack, নাহয় তার
                                 buggy code এ infinite loop। Server overload —
                                 অন্য সব users blocked।
-                            </p>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            </ContentParagraph>
+                            <ContentParagraph>
                                 <strong className='text-foreground'>
                                     Rate Limiting
                                 </strong>{' '}
                                 হলো সমাধান — একটা user বা client কতটা request
                                 করতে পারবেন সেটা restrict করুন। এটা ছাড়া কোনো
                                 production API চালানো উচিত না।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -110,7 +118,7 @@ export const throttlingContent: TopicData = {
             id: 'algorithms',
             subHeader: { index: '002', title: 'Algorithms' },
             title: (
-                <span className='font-heading'>৪টা Rate Limiting Algorithm</span>
+                <SectionTitle>৪টা Rate Limiting Algorithm</SectionTitle>
             ),
             blocks: [
                 {
@@ -235,23 +243,23 @@ export const throttlingContent: TopicData = {
             id: 'distributed',
             subHeader: { index: '003', title: 'Distributed Rate Limiting' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Multiple Servers এ কীভাবে করবেন?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 Single server এ in-memory counter সহজ। কিন্তু
                                 ১০টা API server থাকলে? প্রতিটার আলাদা counter
                                 থাকলে user ১০x request করতে পারবেন। সমাধান:{' '}
                                 <strong className='text-foreground'>
                                     Shared Redis counter।
                                 </strong>
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -316,7 +324,7 @@ export const throttlingContent: TopicData = {
             id: 'code-examples',
             subHeader: { index: '004', title: 'Code Examples' },
             title: (
-                <span className='font-heading'>Practical Code</span>
+                <SectionTitle>Practical Code</SectionTitle>
             ),
             blocks: [
                 {
@@ -452,7 +460,7 @@ app.use('/api/', rateLimit(100, 60000));       // 100 per min`,
             id: 'realworld',
             subHeader: { index: '005', title: 'Real World' },
             title: (
-                <span className='font-heading'>Real World Rate Limits</span>
+                <SectionTitle>Real World Rate Limits</SectionTitle>
             ),
             blocks: [
                 {
@@ -554,7 +562,7 @@ app.use('/api/', rateLimit(100, 60000));       // 100 per min`,
             id: 'interview',
             subHeader: { index: '006', title: 'Interview Preparation' },
             title: (
-                <span className='font-heading'>Common Interview Questions</span>
+                <SectionTitle>Common Interview Questions</SectionTitle>
             ),
             blocks: [
                 {
@@ -626,9 +634,9 @@ app.use('/api/', rateLimit(100, 60000));       // 100 per min`,
             id: 'nginx-config',
             subHeader: { index: '007', title: 'Nginx Rate Limiting' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Nginx দিয়ে Rate Limiting Setup
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -712,9 +720,9 @@ http {
             id: 'tiered-limits',
             subHeader: { index: '008', title: 'Tiered API Limits' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Tiered Rate Limiting — API Monetization
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {

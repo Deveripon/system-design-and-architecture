@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,9 +20,9 @@ export const securityContent: TopicData = {
             id: 'why-security',
             subHeader: { index: '001', title: 'Why Security Matters' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Security কেন Critical? System Design-এ Security First
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -32,7 +40,7 @@ export const securityContent: TopicData = {
                                     🛡️ Phase 5 — Topic 1
                                 </span>
                             </div>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 System Design interview-এ security একটা
                                 overlooked topic — কিন্তু senior engineers
                                 সবসময়{' '}
@@ -46,7 +54,7 @@ export const securityContent: TopicData = {
                                     business existential threat
                                 </strong>
                                 ।
-                            </p>
+                            </ContentParagraph>
                             <p className='text-muted-foreground leading-relaxed'>
                                 Facebook-এর Cambridge Analytica scandal, Equifax
                                 data breach (147M users), বা Bangladesh Bank
@@ -525,15 +533,15 @@ export const securityContent: TopicData = {
             id: 'authentication',
             subHeader: { index: '002', title: 'Authentication' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Authentication — আপনি কে? JWT থেকে OAuth2
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Authentication মানে{' '}
                             <strong className='text-foreground'>
                                 identity verification
@@ -546,7 +554,7 @@ export const securityContent: TopicData = {
                             এবং{' '}
                             <strong className='text-foreground'>OAuth2</strong>।
                             প্রতিটার নিজস্ব use case আছে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -790,15 +798,15 @@ def verify_token(token: str) -> dict:
             id: 'oauth2-flow',
             subHeader: { index: '003', title: 'OAuth2 & OIDC' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     OAuth2 & OpenID Connect — Delegated Authorization
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             OAuth2 হলো{' '}
                             <strong className='text-foreground'>
                                 authorization framework
@@ -811,7 +819,7 @@ def verify_token(token: str) -> dict:
                                 identity layer
                             </strong>{' '}
                             — authentication add করে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -980,15 +988,15 @@ def verify_token(token: str) -> dict:
             id: 'authorization',
             subHeader: { index: '004', title: 'Authorization' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Authorization — আপনি কী করতে পারবেন? RBAC vs ABAC
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Authentication verify করে{' '}
                             <strong className='text-foreground'>
                                 &quot;আপনি কে&quot;
@@ -1002,7 +1010,7 @@ def verify_token(token: str) -> dict:
                             (Role-Based Access Control) এবং{' '}
                             <strong className='text-foreground'>ABAC</strong>{' '}
                             (Attribute-Based Access Control)।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1162,15 +1170,15 @@ export function checkPolicy(action: string, resource: any) {
             id: 'encryption',
             subHeader: { index: '005', title: 'Encryption & TLS' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Encryption & TLS/mTLS — Data Protect করুন
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Encryption দুই ধরনের:{' '}
                             <strong className='text-foreground'>
                                 Encryption in Transit
@@ -1182,7 +1190,7 @@ export function checkPolicy(action: string, resource: any) {
                             (storage-এ)। TLS handle করে transit encryption।
                             mTLS microservices-এর মধ্যে mutual authentication
                             নিশ্চিত করে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1519,15 +1527,15 @@ export function checkPolicy(action: string, resource: any) {
             id: 'zero-trust',
             subHeader: { index: '006', title: 'Zero Trust Architecture' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Zero Trust — &quot;Never Trust, Always Verify&quot;
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Traditional security model বলতো:{' '}
                             <strong className='text-foreground'>
                                 &quot;Castle and Moat&quot;
@@ -1538,7 +1546,7 @@ export function checkPolicy(action: string, resource: any) {
                             </strong>{' '}
                             — internal network-ও trust করুন না। প্রতিটা request
                             verify করুন।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1932,15 +1940,15 @@ export function checkPolicy(action: string, resource: any) {
             id: 'secrets-management',
             subHeader: { index: '007', title: 'Secrets Management' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Secrets Management — HashiCorp Vault & AWS Secrets Manager
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Database passwords, API keys, TLS certificates —
                             এগুলো{' '}
                             <strong className='text-foreground'>secrets</strong>।
@@ -1955,7 +1963,7 @@ export function checkPolicy(action: string, resource: any) {
                                 AWS Secrets Manager
                             </strong>
                             ।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -2168,20 +2176,20 @@ async function getSecret(secretName: string): Promise<Record<string, string>> {
             id: 'owasp-interview',
             subHeader: { index: '008', title: 'OWASP & Interview Tips' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     OWASP Top 10 & Security Interview Tips
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             OWASP (Open Web Application Security Project) প্রতি
                             কয়েক বছরে web security-র top risks publish করে।
                             System design interview-এ এগুলো জানা থাকলে
                             security discussion অনেক productive হয়।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {

@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,14 +20,14 @@ export const amazonContent: TopicData = {
             id: 'intro-complexity',
             subHeader: { index: '001', title: 'Why This System' },
             title: (
-                <span className='font-heading'>Amazon কেন Complex?</span>
+                <SectionTitle>Amazon কেন Complex?</SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-4'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 Amazon-এ প্রতি second হাজারো orders হয়। Black
                                 Friday-তে traffic ১০০x spike করে। এখানে সবচেয়ে
                                 কঠিন problem হলো{' '}
@@ -29,7 +37,7 @@ export const amazonContent: TopicData = {
                                 </strong>{' '}
                                 — এই তিনটা atomic হতে হবে। একই সময়ে 1000 user
                                 একটা শেষ item কিনতে চাইলে কী হবে?
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -52,7 +60,7 @@ export const amazonContent: TopicData = {
             id: 'requirements',
             subHeader: { index: '002', title: 'Requirements' },
             title: (
-                <span className='font-heading'>Features কী কী?</span>
+                <SectionTitle>Features কী কী?</SectionTitle>
             ),
             blocks: [
                 {
@@ -120,7 +128,7 @@ export const amazonContent: TopicData = {
             id: 'estimation',
             subHeader: { index: '003', title: 'Back-of-Envelope Estimation' },
             title: (
-                <span className='font-heading'>Amazon Scale</span>
+                <SectionTitle>Amazon Scale</SectionTitle>
             ),
             blocks: [
                 {
@@ -167,16 +175,16 @@ export const amazonContent: TopicData = {
             id: 'architecture',
             subHeader: { index: '004', title: 'High Level Architecture' },
             title: (
-                <span className='font-heading'>Microservices Architecture</span>
+                <SectionTitle>Microservices Architecture</SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Amazon early 2000s-এ monolith থেকে microservices-এ
                             migrate করেছেনিল। এখন thousands of microservices।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -640,20 +648,20 @@ export const amazonContent: TopicData = {
             id: 'product-catalog-search',
             subHeader: { index: '005', title: 'Product Catalog & Search' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Product Catalog এবং Search
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Amazon-এ 350M+ products আছে। User যখন "wireless
                             headphones" search করে তখন milliseconds-এ relevant
                             results দেখাতে হবে। এজন্য দরকার সঠিক database
                             strategy।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -733,9 +741,9 @@ export const amazonContent: TopicData = {
                 title: 'Inventory Management & Flash Sales',
             },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Inventory Management এবং Flash Sales
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -813,9 +821,9 @@ export const amazonContent: TopicData = {
             id: 'order-processing-saga',
             subHeader: { index: '007', title: 'Order Processing — Saga Pattern' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Order Placement — সবচেয়ে Critical Flow
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -995,9 +1003,9 @@ export const amazonContent: TopicData = {
                 title: 'Scaling & Tech Stack',
             },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Black Friday Scaling এবং Tech Stack
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {

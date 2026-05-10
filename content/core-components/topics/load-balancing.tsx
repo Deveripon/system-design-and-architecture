@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,19 +20,19 @@ export const loadBalancingContent: TopicData = {
             id: 'core-concept',
             subHeader: { index: '001', title: 'Core Concept' },
             title: (
-                <span className='font-heading'>Load Balancer কী?</span>
+                <SectionTitle>Load Balancer কী?</SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 ধরুন একটা bank এ ১০টা counter আছে, কিন্তু সবাই
                                 একটা counter এ গিয়ে দাঁড়াচ্ছে। বাকি ৯টা
                                 counter খালি পড়ে আছে। এটা কি বোকামি না?
-                            </p>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            </ContentParagraph>
+                            <ContentParagraph>
                                 <strong className='text-foreground'>
                                     Load Balancer
                                 </strong>{' '}
@@ -32,12 +40,12 @@ export const loadBalancingContent: TopicData = {
                                 &quot;আপনি counter 3 এ যান, আপনি counter 7 এ
                                 যান।&quot; প্রতিটা counter সমান কাজ পায়, কেউ
                                 overwhelmed না।
-                            </p>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            </ContentParagraph>
+                            <ContentParagraph>
                                 সেরকমভাবে, যখন লক্ষ লক্ষ user আপনার app এ
                                 request পাঠায়, Load Balancer সেই request গুলো
                                 বিভিন্ন server এ distribute করে দেয়।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -94,9 +102,9 @@ export const loadBalancingContent: TopicData = {
             id: 'l4-vs-l7',
             subHeader: { index: '002', title: 'L4 vs L7' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     L4 vs L7 Load Balancing
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -203,9 +211,9 @@ export const loadBalancingContent: TopicData = {
             id: 'algorithms',
             subHeader: { index: '003', title: 'Algorithms' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Load Balancing Algorithms
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -329,15 +337,15 @@ export const loadBalancingContent: TopicData = {
             id: 'health-check',
             subHeader: { index: '004', title: 'Health Check' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Health Check ও Failover
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Load Balancer periodically সব servers কে ping করে
                             দেখে তারা alive আছে কিনা। কোনো server respond না
                             করলেন সেটাকে automatically rotation থেকে বাদ দেয়।
@@ -346,7 +354,7 @@ export const loadBalancingContent: TopicData = {
                                 Automatic Failover
                             </strong>
                             ।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -426,9 +434,9 @@ server {
             id: 'tools-comparison',
             subHeader: { index: '005', title: 'Tools' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Popular Load Balancers — তুলনা
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -513,19 +521,19 @@ server {
             id: 'code-examples',
             subHeader: { index: '006', title: 'Code Examples' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Load Balancer Code Implementation
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Concept বোঝার জন্য নিজে implement করে দেখা সবচেয়ে
                             ভালো। নিচে Python এবং Node.js এ Load Balancer
                             algorithms দেওয়া হলো।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -681,10 +689,9 @@ Promise.all([
             id: 'real-world',
             subHeader: { index: '007', title: 'Real World' },
             title: (
-                <span className='font-heading'>
-                    Real World{' '}
-                    <span className='italic'>Use Cases</span>
-                </span>
+                <SectionTitle>
+                    Real World <span className='italic'>Use Cases</span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -747,9 +754,9 @@ Promise.all([
             id: 'interview-prep',
             subHeader: { index: '008', title: 'Interview Prep' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Interview এ যা জিজ্ঞেস করে
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {

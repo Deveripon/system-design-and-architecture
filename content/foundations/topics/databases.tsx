@@ -1,9 +1,17 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
 import {
     ACIDDiagram,
     DBReplicationDiagram,
     IndexingDiagram,
 } from '../../../components/course/topics/databases/diagrams';
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -17,22 +25,22 @@ export const databasesContent: TopicData = {
             id: 'concept',
             subHeader: { index: '001', title: 'Why It Matters' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Database কেন এত গুরুত্বপূর্ণ?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 একটা system এর performance এর ৮০% নির্ভর করে
                                 database design এর উপর। ভুল database choose
                                 করলেন, index না দিলে, বা wrong schema করলেন — ১০০
                                 জন user এলেই সব crash করে।
-                            </p>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            </ContentParagraph>
+                            <ContentParagraph>
                                 Interview এ &quot;Design Instagram&quot; বললে —
                                 কোন database? SQL নাকি NoSQL? Photos কোথায়?
                                 Follow relationship কীভাবে? Feed কীভাবে fast? —
@@ -41,7 +49,7 @@ export const databasesContent: TopicData = {
                                     Database choice ই system এর সবচেয়ে critical
                                     decision।
                                 </em>
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -65,9 +73,9 @@ export const databasesContent: TopicData = {
             id: 'sql-nosql',
             subHeader: { index: '002', title: 'SQL vs NoSQL' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     SQL vs NoSQL — সবচেয়ে বড় decision
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -214,9 +222,9 @@ export const databasesContent: TopicData = {
             id: 'acid',
             subHeader: { index: '003', title: 'ACID Properties' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     ACID — Transaction এর ৪টি Guarantee
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -267,9 +275,9 @@ COMMIT;  -- সব ঠিক থাকলে permanent save — Durability!`,
             id: 'indexing',
             subHeader: { index: '004', title: 'Indexing' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Indexing — Database এর Superpower
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -342,7 +350,7 @@ SELECT * FROM users WHERE email = 'test@example.com';
             id: 'scaling',
             subHeader: { index: '005', title: 'Database Scaling' },
             title: (
-                <span className='font-heading'>Sharding এবং Replication</span>
+                <SectionTitle>Sharding এবং Replication</SectionTitle>
             ),
             blocks: [
                 {
@@ -352,12 +360,12 @@ SELECT * FROM users WHERE email = 'test@example.com';
                             <h3 className='text-xl font-bold mt-8 mb-4'>
                                 Read Replica — Read Load কমাও
                             </h3>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 সব database operation এর ৮০-৯০% হলো READ।
                                 Primary database এর copy (Replica) রাখুন — Read
                                 requests Replica তে পাঠাও। Primary শুধু Write
                                 handle করবেন। এভাবে Primary এর load অনেক কমে।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -372,11 +380,11 @@ SELECT * FROM users WHERE email = 'test@example.com';
                             <h3 className='text-xl font-bold mt-12 mb-4'>
                                 Sharding — Write Load ভাগ করুন
                             </h3>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 একটা বড় table কে multiple databases এ ভাগ করা।
                                 User ID 1-1M → DB1, 1M-2M → DB2। প্রতিটি shard
                                 আলাদাভাবে serve করতে পারে।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -421,7 +429,7 @@ SELECT * FROM users WHERE email = 'test@example.com';
             id: 'practical-impl',
             subHeader: { index: '006', title: 'Practical Implementation' },
             title: (
-                <span className='font-heading'>DB Pool & Caching Pattern</span>
+                <SectionTitle>DB Pool & Caching Pattern</SectionTitle>
             ),
             blocks: [
                 {
@@ -479,9 +487,9 @@ async function updateUser(userId, data) {
             id: 'tools',
             subHeader: { index: '007', title: 'Tools Comparison' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Database Tools — কোনটা কখন ব্যবহার করবেন
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -537,9 +545,9 @@ async function updateUser(userId, data) {
             id: 'real-world',
             subHeader: { index: '008', title: 'Real World Examples' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     বড় কোম্পানিগুলো কীভাবে করেছেনে
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {

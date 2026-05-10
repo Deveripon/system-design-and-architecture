@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,9 +20,9 @@ export const deploymentPatternsContent: TopicData = {
             id: 'downtime-problem',
             subHeader: { index: '001', title: 'Naive Deployment এর সমস্যা' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Naive Deployment এর ভয়ংকর পরিণতি
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -32,7 +40,7 @@ export const deploymentPatternsContent: TopicData = {
                                     TOPIC 05 / 07
                                 </span>
                             </div>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 একজন junior developer production-এ code deploy
                                 করতে চায়। সে যা করে:{' '}
                                 <strong className='text-foreground'>
@@ -41,7 +49,7 @@ export const deploymentPatternsContent: TopicData = {
                                 </strong>
                                 । এই সময়টায় হাজারো user error দেখে।
                                 Production-এ এটা অগ্রহণযোগ্য।
-                            </p>
+                            </ContentParagraph>
                             <div className='bg-muted/30 border border-border rounded-lg p-5'>
                                 <p className='font-mono text-xs uppercase tracking-widest text-red-400 mb-4'>
                                     Naive Deploy Flow — ভয়ংকর পরিণতি
@@ -182,15 +190,15 @@ export const deploymentPatternsContent: TopicData = {
             id: 'blue-green',
             subHeader: { index: '002', title: 'Blue-Green Deployment' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Blue-Green Deployment — দুটো Environment রাখুন
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Blue-Green deployment-এ সবসময় দুটো identical
                             production environment থাকে —{' '}
                             <strong className='text-blue-400'>Blue</strong>{' '}
@@ -198,7 +206,7 @@ export const deploymentPatternsContent: TopicData = {
                             <strong className='text-emerald-400'>Green</strong>{' '}
                             (new version)। Traffic switch করে deployment হয়।
                             Downtime zero।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -431,15 +439,15 @@ spec:
             id: 'canary',
             subHeader: { index: '003', title: 'Canary Release' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Canary Release — ধীরে ধীরে Traffic বাড়াও
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Coal mine-এ canary পাখি ব্যবহার করা হতো বিপদ
                             detect করতে। Software-এ{' '}
                             <strong className='text-foreground'>
@@ -447,7 +455,7 @@ spec:
                             </strong>{' '}
                             মানে নতুন version-এ প্রথমে মাত্র ৫% traffic পাঠাও।
                             Problem না হলে আস্তে আস্তে বাড়াও।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -676,19 +684,19 @@ spec:
             id: 'rolling-update',
             subHeader: { index: '004', title: 'Rolling Update' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Rolling Update — একটা একটা করে Replace করুন
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Rolling update-এ একবারে সব pods replace করা হয় না।
                             একটা একটা করে (বা batch-এ) নতুন version দিয়ে replace
                             করা হয়। সবসময় কিছু পুরনো আর কিছু নতুন pod চালু থাকে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -860,16 +868,16 @@ spec:
             id: 'feature-flags',
             subHeader: { index: '005', title: 'Feature Flags' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Feature Flags — Code Deploy করুন, Feature আলাদা রাখুন
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-4'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 Feature Flag (বা Feature Toggle) হলো code-এর মধ্যে
                                 একটা on/off switch।{' '}
                                 <strong className='text-foreground'>
@@ -877,7 +885,7 @@ spec:
                                 </strong>
                                 , কিন্তু flag off রাখুন। যখন চাও তখন flag on করুন।
                                 Deployment আর Release আলাদা।
-                            </p>
+                            </ContentParagraph>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                                 <div className='bg-muted/30 border border-border rounded-lg p-4'>
                                     <p className='font-mono text-xs text-red-400 uppercase tracking-widest mb-3'>
@@ -1087,19 +1095,19 @@ async function handleCheckout(userId: string, cart: Cart) {
             id: 'comparison',
             subHeader: { index: '006', title: 'কোনটা কখন Use করবো?' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     কোনটা কখন Use করবো?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             প্রতিটা deployment pattern-এর আলাদা tradeoff আছে।
                             Context বুঝে সঠিক pattern বেছে নেওয়া একজন senior
                             engineer-এর দক্ষতা।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1216,20 +1224,20 @@ async function handleCheckout(userId: string, cart: Cart) {
             id: 'interview-tips',
             subHeader: { index: '007', title: 'Interview Tips' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Deployment Patterns Interview Tips
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-4'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 System design interview-এ deployment strategy
                                 নিয়ে প্রশ্ন এখন common। সঠিক pattern propose
                                 করতে পারা senior-level thinking দেখায়।
-                            </p>
+                            </ContentParagraph>
                             <div className='bg-muted/30 border border-border rounded-lg p-5'>
                                 <p className='font-mono text-xs uppercase tracking-widest text-muted-foreground mb-4'>
                                     Common Interview প্রশ্ন

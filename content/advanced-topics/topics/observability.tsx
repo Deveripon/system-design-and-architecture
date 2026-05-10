@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -15,9 +23,9 @@ export const observabilityContent: TopicData = {
             id: 'why-observability',
             subHeader: { index: '001', title: 'Why Observability' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Production এ যখন কিছু ভাঙে... রাত ৩টায় Alert
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -38,14 +46,14 @@ export const observabilityContent: TopicData = {
                                     TOPIC 02 / Phase 5
                                 </span>
                             </div>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 কল্পনা করুন রাত ৩টা। হঠাৎ PagerDuty alert:{' '}
                                 <strong className='text-foreground'>
                                     Payment service down
                                 </strong>
                                 । Users transaction করতে পারছে না। আপনার কাছে দুটো
                                 option:
-                            </p>
+                            </ContentParagraph>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-4'>
                                 <div className='bg-red-500/5 border border-red-500/20 rounded-lg p-5'>
                                     <p className='font-mono text-xs uppercase tracking-widest text-red-400 mb-3'>
@@ -127,9 +135,9 @@ export const observabilityContent: TopicData = {
             id: 'three-pillars',
             subHeader: { index: '002', title: 'Three Pillars' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Observability এর ৩টা Pillar — Metrics, Logs, Traces
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -557,15 +565,15 @@ export const observabilityContent: TopicData = {
             id: 'prometheus',
             subHeader: { index: '003', title: 'Prometheus — Metrics' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Prometheus — Metrics Collection এবং PromQL
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             <strong className='text-foreground'>
                                 Prometheus
                             </strong>{' '}
@@ -578,7 +586,7 @@ export const observabilityContent: TopicData = {
                             endpoint থেকে নিজে data collect করে। এরপর
                             AlertManager দিয়ে alert এবং Grafana দিয়ে
                             visualize করা হয়।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -898,21 +906,21 @@ groups:
             id: 'grafana',
             subHeader: { index: '004', title: 'Grafana — Visualization' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Grafana — Dashboards এবং SLI/SLO/SLA
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             <strong className='text-foreground'>Grafana</strong>{' '}
                             হলো open-source visualization platform। এটা নিজে
                             data store করে না — বরং Prometheus, Loki, Tempo,
                             Elasticsearch সহ ৫০+ data source-এ connect করে
                             beautiful dashboards বানায়।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1058,15 +1066,15 @@ groups:
             id: 'jaeger-tracing',
             subHeader: { index: '005', title: 'Jaeger — Distributed Tracing' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Distributed Tracing — Jaeger দিয়ে Request Journey Track করুন
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Microservices-এ একটা request ১০টা service পার করে।
                             কোন service-এ কতটুকু সময় গেছে?{' '}
                             <strong className='text-foreground'>
@@ -1077,7 +1085,7 @@ groups:
                             <strong className='text-foreground'>trace</strong>{' '}
                             তৈরি হয়, প্রতিটা service call হলো একটা{' '}
                             <strong className='text-foreground'>span</strong>।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1396,22 +1404,22 @@ def get_trace_headers() -> dict:
             id: 'elk-stack',
             subHeader: { index: '006', title: 'ELK Stack — Centralized Logging' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     ELK Stack — Elasticsearch, Logstash, Kibana দিয়ে Log Management
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Hundreds of services-এর logs আলাদা আলাদা machine-এ
                             থাকলে debug করা nightmare।{' '}
                             <strong className='text-foreground'>ELK Stack</strong>{' '}
                             সব logs এক জায়গায় এনে searchable করে তোলে।
                             Elasticsearch + Logstash + Kibana + Beats (Filebeat)
                             মিলে complete log pipeline তৈরি করে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1832,21 +1840,21 @@ def process_payment(user_id: str, amount: float, request_id: str):
             id: 'code-examples',
             subHeader: { index: '007', title: 'Production Code Examples' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Production Code — Metrics + Logs + Traces একসাথে
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Real production code-এ তিনটা pillar একসাথে থাকে।
                             নিচের example-এ Node.js service-এ Prometheus
                             metrics, structured logging, এবং OpenTelemetry
                             trace — সবই একই request handling-এ integrate করা
                             হয়েছে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -2012,9 +2020,9 @@ app.listen(3000);`,
             id: 'real-world-interview',
             subHeader: { index: '008', title: 'Real World & Interview Tips' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Real World Use Cases এবং Interview Tips
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {

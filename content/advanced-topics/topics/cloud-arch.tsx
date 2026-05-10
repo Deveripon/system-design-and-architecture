@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,9 +20,9 @@ export const cloudArchContent: TopicData = {
             id: 'why-cloud',
             subHeader: { index: '001', title: 'Why Cloud?' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Cloud কেন বদলে দিল সব কিছু?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -35,7 +43,7 @@ export const cloudArchContent: TopicData = {
                                     TOPIC 03 / Phase 5
                                 </span>
                             </div>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 ২০০০-এর দশকের শুরুতে একটা startup শুরু করতে হলে
                                 প্রথমে{' '}
                                 <strong className='text-foreground'>
@@ -44,7 +52,7 @@ export const cloudArchContent: TopicData = {
                                 , data center rent করতে হতো, network configure
                                 করতে হতো — software লেখার আগেই লাখ টাকা খরচ। Cloud
                                 এই reality সম্পূর্ণ বদলে দিয়েছে।
-                            </p>
+                            </ContentParagraph>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-4'>
                                 <div className='bg-muted/30 border border-border rounded-lg p-5'>
                                     <p className='font-mono text-xs uppercase tracking-widest text-red-400 mb-4'>
@@ -168,19 +176,19 @@ export const cloudArchContent: TopicData = {
             id: 'aws-core',
             subHeader: { index: '002', title: 'AWS Core Services' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     AWS Core Services — System Design View
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             AWS-এ ২০০+ services আছে। System design-এর জন্য মূল
                             services জানলেনই চলে। প্রতিটা service একটা specific
                             problem solve করে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -728,16 +736,16 @@ export const cloudArchContent: TopicData = {
             id: 'serverless',
             subHeader: { index: '003', title: 'Serverless Architecture' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Serverless Architecture — Lambda &amp; FaaS
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-4'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 <strong className='text-foreground'>
                                     Serverless
                                 </strong>{' '}
@@ -745,7 +753,7 @@ export const cloudArchContent: TopicData = {
                                 করুন না। AWS Lambda হলো সবচেয়ে popular FaaS
                                 (Function as a Service)। আপনি শুধু function লিখুন,
                                 AWS execution, scaling, patching সব করে।
-                            </p>
+                            </ContentParagraph>
                             <div className='grid grid-cols-1 md:grid-cols-3 gap-3'>
                                 {[
                                     {
@@ -940,16 +948,16 @@ def lambda_handler(event, context):
             id: 'iac-terraform',
             subHeader: { index: '004', title: 'Infrastructure as Code' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Infrastructure as Code — Terraform
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-4'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 Manual clicks দিয়ে AWS console-এ infrastructure
                                 তৈরি করলেন{' '}
                                 <strong className='text-foreground'>
@@ -961,7 +969,7 @@ def lambda_handler(event, context):
                                 </strong>{' '}
                                 দিয়ে infrastructure code হিসেবে define করলেন এই
                                 সব সমস্যা solve হয়।
-                            </p>
+                            </ContentParagraph>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                                 <div className='bg-muted/30 border border-red-500/20 rounded-lg p-4'>
                                     <p className='font-mono text-xs text-red-400 uppercase tracking-widest mb-3'>
@@ -1164,15 +1172,15 @@ output "db_endpoint" {
             id: 'multi-region',
             subHeader: { index: '005', title: 'Multi-Region Architecture' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Multi-Region Architecture
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Single region-এ থাকলে region outage হলে সব down হয়ে
                             যায়। Multi-region architecture দিয়ে{' '}
                             <strong className='text-foreground'>
@@ -1183,7 +1191,7 @@ output "db_endpoint" {
                                 lower latency
                             </strong>{' '}
                             globally achieve করা যায়।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1547,15 +1555,15 @@ output "db_endpoint" {
             id: 'cost-optimization',
             subHeader: { index: '006', title: 'Cost Optimization' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Cloud Cost Optimization
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Cloud-এর সবচেয়ে বড় ভুল হলো{' '}
                             <strong className='text-foreground'>
                                 cost optimize না করা
@@ -1566,7 +1574,7 @@ output "db_endpoint" {
                                 ৫০-৭০% cost কমানো
                             </strong>{' '}
                             সম্ভব।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1753,19 +1761,19 @@ resource "aws_cloudwatch_metric_alarm" "high_cpu" {
             id: 'cloud-patterns',
             subHeader: { index: '007', title: 'Cloud-Native Patterns' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Cloud-Native Design Patterns
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Cloud-native application design-এ কিছু proven patterns
                             আছে যা resilience, scalability, এবং maintainability
                             নিশ্চিত করে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1940,20 +1948,20 @@ spec:
             id: 'interview-tips',
             subHeader: { index: '008', title: 'Interview Tips' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Cloud Architecture Interview Tips
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             System design interview-এ cloud নিয়ে জিজ্ঞেস করলেন
                             সঠিক service choose করাটা important। কোন situation-এ
                             কোন AWS service use করবেন — এটা clearly বলতে পারলেন
                             interviewer impress হবে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {

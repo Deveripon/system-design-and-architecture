@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -15,16 +23,16 @@ export const cachingContent: TopicData = {
             id: 'core-concept',
             subHeader: { index: '001', title: 'Core Concept' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Cache কী এবং কেন দরকার?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 ধরুন আপনি প্রতিদিন অফিসে যান। রাস্তায় একটা
                                 দোকান আছে যেখান থেকে চা কিনো। আপনি কি প্রতিদিন
                                 দোকানদারকে নতুন করে বলুন &quot;আমি চা খাই, চিনি
@@ -32,8 +40,8 @@ export const cachingContent: TopicData = {
                                 <strong className='text-foreground'>Cache</strong>{' '}
                                 — frequently used data কে database এর বদলে
                                 memory তে রেখে দ্রুত serve করা।
-                            </p>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            </ContentParagraph>
+                            <ContentParagraph>
                                 Technical ভাবে বলতে গেলে: Database থেকে data
                                 আনতে{' '}
                                 <strong className='text-foreground'>
@@ -42,7 +50,7 @@ export const cachingContent: TopicData = {
                                 লাগে। Cache থেকে আনতে লাগে{' '}
                                 <strong className='text-emerald-400'>1ms</strong>
                                 এরও কম। পার্থক্যটা ৫০০ গুণ পর্যন্ত।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -67,12 +75,12 @@ export const cachingContent: TopicData = {
                             <h3 className='text-xs font-mono font-bold uppercase tracking-[0.3em] text-blue-400 mb-6'>
                                 Cache ছাড়া কী হয়?
                             </h3>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 ধরুন একটা news website। প্রতি second এ ১০,০০০
                                 user &quot;আজকের top news&quot; দেখতে চাইছে।
                                 Cache ছাড়া = ১০,০০০ database queries প্রতি
                                 second। Database crash। Site down।
-                            </p>
+                            </ContentParagraph>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-0 border border-border'>
                                 <div className='p-8 border-r border-border bg-card/30'>
                                     <h4 className='font-bold text-red-400 mb-4 flex items-center gap-3 font-mono uppercase tracking-widest text-[10px]'>
@@ -118,7 +126,7 @@ export const cachingContent: TopicData = {
             id: 'why-it-matters',
             subHeader: { index: '002', title: 'Why It Matters' },
             title: (
-                <span className='font-heading'>কেন Cache জানা দরকার?</span>
+                <SectionTitle>কেন Cache জানা দরকার?</SectionTitle>
             ),
             blocks: [
                 {
@@ -227,7 +235,7 @@ export const cachingContent: TopicData = {
             id: 'how-it-works',
             subHeader: { index: '003', title: 'How It Works' },
             title: (
-                <span className='font-heading'>Cache কীভাবে কাজ করে?</span>
+                <SectionTitle>Cache কীভাবে কাজ করে?</SectionTitle>
             ),
             blocks: [
                 {
@@ -264,12 +272,12 @@ export const cachingContent: TopicData = {
                                     </p>
                                 </div>
                             </div>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 প্রথম request এ সবসময় cache miss হবে। কিন্তু
                                 তারপর থেকে same data এর request আসলে cache
                                 থেকে serve হবে। এই pattern টাই caching এর মূল
                                 শক্তি।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -332,9 +340,9 @@ export const cachingContent: TopicData = {
             id: 'cache-strategies',
             subHeader: { index: '004', title: 'Cache Strategies' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     ৪টি প্রধান Caching Pattern
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -349,13 +357,13 @@ export const cachingContent: TopicData = {
                                     </span>
                                     Cache-Aside (Lazy Loading)
                                 </h3>
-                                <p className='text-muted-foreground leading-relaxed text-lg mb-4'>
+                                <ContentParagraph className='mb-4'>
                                     Application নিজেই cache manage করে। Read
                                     করার সময়: cache check → miss হলে DB থেকে
                                     আনো → cache এ রাখুন → return করুন। এটাই সবচেয়ে
                                     popular pattern। Redis সাথে এই pattern সবচেয়ে
                                     বেশি দেখা যায়।
-                                </p>
+                                </ContentParagraph>
                                 <div className='font-mono text-xs text-muted-foreground bg-card/50 border border-border p-4 space-y-1'>
                                     <p>
                                         1. GET /user/123 →{' '}
@@ -389,13 +397,13 @@ export const cachingContent: TopicData = {
                                     </span>
                                     Write-Through
                                 </h3>
-                                <p className='text-muted-foreground leading-relaxed text-lg'>
+                                <ContentParagraph>
                                     Data write করার সময় cache এবং database
                                     দুটোতেই একসাথে write করুন। Cache সবসময় DB
                                     এর সাথে sync থাকে। Write একটু slow কিন্তু
                                     data always consistent। Banking, payment
                                     system এর জন্য ideal।
-                                </p>
+                                </ContentParagraph>
                             </div>
 
                             {/* Write-Behind */}
@@ -406,13 +414,13 @@ export const cachingContent: TopicData = {
                                     </span>
                                     Write-Behind (Write-Back)
                                 </h3>
-                                <p className='text-muted-foreground leading-relaxed text-lg'>
+                                <ContentParagraph>
                                     Cache এ write করুন, DB তে পরে (asynchronously)
                                     write করুন। Write অনেক fast। কিন্তু cache
                                     crash হলে data loss হতে পারে। High-write
                                     throughput apps এর জন্য — gaming scores,
                                     analytics counters।
-                                </p>
+                                </ContentParagraph>
                             </div>
 
                             {/* Read-Through */}
@@ -423,13 +431,13 @@ export const cachingContent: TopicData = {
                                     </span>
                                     Read-Through
                                 </h3>
-                                <p className='text-muted-foreground leading-relaxed text-lg'>
+                                <ContentParagraph>
                                     Cache-Aside এর মতোই, কিন্তু এখানে cache
                                     নিজেই DB থেকে data load করে। Application
                                     শুধু cache কে জিজ্ঞেস করে। Cache miss হলে
                                     cache নিজেই DB থেকে আনে। Application code
                                     clean থাকে।
-                                </p>
+                                </ContentParagraph>
                             </div>
                         </div>
                     ),
@@ -518,16 +526,16 @@ export const cachingContent: TopicData = {
             id: 'redis-deep-dive',
             subHeader: { index: '005', title: 'Redis Deep Dive' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Redis — এর ভেতরে কী আছে?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 Redis (Remote Dictionary Server) হলো world এর
                                 most popular in-memory data store। এটা{' '}
                                 <strong className='text-foreground'>
@@ -539,7 +547,7 @@ export const cachingContent: TopicData = {
                                 </strong>{' '}
                                 handle করতে পারে। কারণ সব data RAM এ থাকে —
                                 disk I/O নেই।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -752,18 +760,18 @@ export const cachingContent: TopicData = {
             id: 'code-examples',
             subHeader: { index: '006', title: 'Code Examples' },
             title: (
-                <span className='font-heading'>হাতে-কলমে Code</span>
+                <SectionTitle>হাতে-কলমে Code</SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Redis এর basic operations থেকে শুরু করে production-ready
                             Cache-Aside pattern এবং Rate Limiting পর্যন্ত — এই
                             তিনটা code snippet আপনার interview এবং real project
                             দুটোতেই কাজে আসবেন।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -977,7 +985,7 @@ app.use('/api/auth/', rateLimitMiddleware(5, 60));  // Login: 5 req/min`,
             id: 'real-world',
             subHeader: { index: '007', title: 'Real World' },
             title: (
-                <span className='font-heading'>Real World Use Cases</span>
+                <SectionTitle>Real World Use Cases</SectionTitle>
             ),
             blocks: [
                 {
@@ -1091,9 +1099,9 @@ app.use('/api/auth/', rateLimitMiddleware(5, 60));  // Login: 5 req/min`,
             id: 'interview-prep',
             subHeader: { index: '008', title: 'Interview Prep' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Common Interview Questions
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {

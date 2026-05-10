@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,30 +20,30 @@ export const microservicesContent: TopicData = {
             id: 'intro-concept',
             subHeader: { index: '001', title: 'Why It Matters' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Microservices কেন শিখতে হবে?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 আপনি একটা বড় e-commerce app বানাচ্ছো। User
                                 login, product catalog, payment, order tracking,
                                 notification — সব একটা codebase এ। এক জায়গায়
                                 bug হলে পুরো system down। Team বড় হলে merge
                                 conflict। Deploy করতে পুরো app restart।
-                            </p>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            </ContentParagraph>
+                            <ContentParagraph>
                                 এই সমস্যার সমাধান হলো{' '}
                                 <strong className='text-foreground'>
                                     Microservices Architecture
                                 </strong>
                                 । আজকাল Amazon, Netflix, Uber, Spotify সহ প্রায়
                                 সব বড় company এই approach ব্যবহার করে।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -60,18 +68,18 @@ export const microservicesContent: TopicData = {
             id: 'monolith-vs-microservices',
             subHeader: { index: '002', title: 'Monolith vs Microservices' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     আগে কী ছিল, এখন কী হয়েছে?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             দুটো approach এর মূল পার্থক্য বোঝা দরকার — কারণ
                             interview তে এই comparison প্রায়ই আসে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -599,18 +607,18 @@ export const microservicesContent: TopicData = {
             id: 'how-it-works',
             subHeader: { index: '003', title: 'How It Works' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Microservices কীভাবে কাজ করে?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             একটা real e-commerce order flow দেখি — user order
                             দিলে কী হয়:
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1055,9 +1063,9 @@ export const microservicesContent: TopicData = {
             id: 'design-patterns',
             subHeader: { index: '004', title: 'Design Patterns' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Microservices Design Patterns
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -1071,11 +1079,11 @@ export const microservicesContent: TopicData = {
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             প্রতিটা service এর নিজের database থাকবেন। কোনো
                             service অন্য service এর database সরাসরি access
                             করবেন না। এতে loose coupling নিশ্চিত হয়।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1102,11 +1110,11 @@ export const microservicesContent: TopicData = {
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Multiple services এ একটা transaction। Order service
                             → Payment service → Inventory service। কোনো step
                             fail করলেন rollback। Topic 6 এ বিস্তারিত।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1120,12 +1128,12 @@ export const microservicesContent: TopicData = {
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Read এবং Write এর জন্য আলাদা model। Write
                             operations যায় Command side এ, Read operations
                             যায় Query side এ। High traffic systems এ খুব
                             useful।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1351,9 +1359,9 @@ export const microservicesContent: TopicData = {
             id: 'code-examples',
             subHeader: { index: '005', title: 'Code Examples' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Practical Code — Python &amp; Node.js
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -1526,10 +1534,9 @@ services:
             id: 'realworld',
             subHeader: { index: '006', title: 'Real World Use Cases' },
             title: (
-                <span className='font-heading'>
-                    বাস্তব জীবনে{' '}
-                    <span className='italic'>Microservices</span>
-                </span>
+                <SectionTitle>
+                    বাস্তব জীবনে <span className='italic'>Microservices</span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -1648,9 +1655,9 @@ services:
             id: 'interview',
             subHeader: { index: '007', title: 'Interview Preparation' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Common Interview Questions
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {

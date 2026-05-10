@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,22 +20,22 @@ export const messageQueuesContent: TopicData = {
             id: 'core-concept',
             subHeader: { index: '001', title: 'Core Concept' },
             title: (
-                <span className='font-heading'>Message Queue কী?</span>
+                <SectionTitle>Message Queue কী?</SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 ধরুন আপনি Swiggy তে খাবার order দিলে। তৎক্ষণাৎ
                                 screen এ আসে &quot;Order Confirmed!&quot; — আপনি
                                 phone রেখে দিলে। কিন্তু পেছনে কী হচ্ছে? Restaurant
                                 কে notification গেলো, delivery partner assign হলো,
                                 payment process হলো, invoice তৈরি হলো। এই সব কাজ
                                 আপনার জন্য wait করছে না।
-                            </p>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            </ContentParagraph>
+                            <ContentParagraph>
                                 এটাই{' '}
                                 <strong className='text-foreground'>
                                     Async Messaging
@@ -35,7 +43,7 @@ export const messageQueuesContent: TopicData = {
                                 । Sync মানে — আপনি কাজ দিলে, সে শেষ করলেন, তারপর
                                 next step। Async মানে — আপনি কাজ দিলে, সে নিজের
                                 সময়ে করবেন, আপনি এগিয়ে যান।
-                            </p>
+                            </ContentParagraph>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-0 border border-border'>
                                 <div className='p-8 border-r border-border bg-card/30'>
                                     <h4 className='font-bold text-foreground mb-4 flex items-center gap-3 font-mono uppercase tracking-widest text-[10px]'>
@@ -104,9 +112,9 @@ export const messageQueuesContent: TopicData = {
             id: 'why-async',
             subHeader: { index: '002', title: 'Why Async?' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     কেন Async Messaging দরকার?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -208,7 +216,7 @@ export const messageQueuesContent: TopicData = {
             id: 'mq-patterns',
             subHeader: { index: '003', title: 'MQ Patterns' },
             title: (
-                <span className='font-heading'>Message Queue Patterns</span>
+                <SectionTitle>Message Queue Patterns</SectionTitle>
             ),
             blocks: [
                 {
@@ -319,10 +327,9 @@ export const messageQueuesContent: TopicData = {
             id: 'kafka',
             subHeader: { index: '004', title: 'Kafka Deep Dive' },
             title: (
-                <span className='font-heading'>
-                    Apache Kafka —{' '}
-                    <span className='italic'>Event Streaming Platform</span>
-                </span>
+                <SectionTitle>
+                    Apache Kafka — <span className='italic'>Event Streaming Platform</span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -468,9 +475,9 @@ export const messageQueuesContent: TopicData = {
             id: 'rabbitmq',
             subHeader: { index: '005', title: 'RabbitMQ' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     RabbitMQ — Traditional Message Broker
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -575,9 +582,9 @@ export const messageQueuesContent: TopicData = {
             id: 'code-examples',
             subHeader: { index: '006', title: 'Code Examples' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Code Examples — হাতে-কলমে দেখুন
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -741,9 +748,9 @@ setupDLQ();`,
             id: 'comparison',
             subHeader: { index: '007', title: 'Full Comparison' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Kafka vs RabbitMQ vs AWS SQS — কোনটা কখন?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -844,9 +851,9 @@ setupDLQ();`,
             id: 'interview-prep',
             subHeader: { index: '008', title: 'Interview Prep' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Interview Prep — এই প্রশ্নগুলো আসবেনই
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {

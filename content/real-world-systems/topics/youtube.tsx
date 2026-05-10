@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,16 +20,16 @@ export const youtubeContent: TopicData = {
             id: 'why-complex',
             subHeader: { index: '001', title: 'Why This System' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Video Streaming কেন আলাদা?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-4'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 YouTube প্রতি মিনিটে{' '}
                                 <strong className='text-foreground'>
                                     500 ঘণ্টার video upload
@@ -33,7 +41,7 @@ export const youtubeContent: TopicData = {
                                     video storage, processing, এবং delivery
                                 </strong>{' '}
                                 — এটা regular web app থেকে সম্পূর্ণ আলাদা।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -86,7 +94,7 @@ export const youtubeContent: TopicData = {
             id: 'requirements',
             subHeader: { index: '002', title: 'Requirements' },
             title: (
-                <span className='font-heading'>Features কী কী?</span>
+                <SectionTitle>Features কী কী?</SectionTitle>
             ),
             blocks: [
                 {
@@ -151,7 +159,7 @@ export const youtubeContent: TopicData = {
             id: 'estimation',
             subHeader: { index: '003', title: 'Back-of-Envelope Estimation' },
             title: (
-                <span className='font-heading'>YouTube-এর Numbers</span>
+                <SectionTitle>YouTube-এর Numbers</SectionTitle>
             ),
             blocks: [
                 {
@@ -207,15 +215,15 @@ export const youtubeContent: TopicData = {
             id: 'architecture',
             subHeader: { index: '004', title: 'High Level Architecture' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     YouTube-এর Two Flows
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             YouTube-এ দুটো completely আলাদা path:{' '}
                             <strong className='text-foreground'>
                                 Upload path
@@ -225,7 +233,7 @@ export const youtubeContent: TopicData = {
                                 Stream path
                             </strong>
                             ।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -694,9 +702,9 @@ export const youtubeContent: TopicData = {
             id: 'video-pipeline',
             subHeader: { index: '005', title: 'Deep Dive' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Video Processing Pipeline
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -832,22 +840,22 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
             id: 'abr-cdn',
             subHeader: { index: '006', title: 'ABR & CDN Strategy' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Adaptive Bitrate &amp; CDN — Global Delivery
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             YouTube-এর streaming architecture-এর দুটো secret
                             weapon:{' '}
                             <strong className='text-foreground'>ABR</strong>{' '}
                             (buffer-free playback) এবং{' '}
                             <strong className='text-foreground'>CDN</strong>{' '}
                             (global fast delivery)।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1015,9 +1023,9 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
             id: 'database',
             subHeader: { index: '007', title: 'Database Design' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Data কোথায় রাখবো?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -1080,7 +1088,7 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
             id: 'scaling',
             subHeader: { index: '008', title: 'Scaling Decisions' },
             title: (
-                <span className='font-heading'>Scale করার উপায়</span>
+                <SectionTitle>Scale করার উপায়</SectionTitle>
             ),
             blocks: [
                 {
@@ -1147,9 +1155,9 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
             id: 'techstack',
             subHeader: { index: '009', title: 'Full Tech Stack' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     YouTube/Netflix-এর Technologies
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -1262,9 +1270,9 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
             id: 'recommendations-interview',
             subHeader: { index: '010', title: 'Recommendations & Interview Tips' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Recommendations &amp; Interview Tips
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {

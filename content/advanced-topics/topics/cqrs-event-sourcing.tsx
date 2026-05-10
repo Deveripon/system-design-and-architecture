@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,9 +20,9 @@ export const cqrsEventSourcingContent: TopicData = {
             id: 'crud-problem',
             subHeader: { index: '001', title: 'CRUD এর সমস্যা' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Traditional CRUD এর সমস্যা কোথায়?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -35,7 +43,7 @@ export const cqrsEventSourcingContent: TopicData = {
                                     TOPIC 04 / Phase 5
                                 </span>
                             </div>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 Traditional CRUD (Create, Read, Update, Delete) সহজ ও সুন্দর —
                                 কিন্তু complex domain-এ এটি{' '}
                                 <strong className='text-foreground'>
@@ -43,7 +51,7 @@ export const cqrsEventSourcingContent: TopicData = {
                                 </strong>{' '}
                                 তৈরি করে। একটা banking system বা e-commerce platform
                                 যখন scale করতে চায়, তখন এই সমস্যাগুলো তীব্র হয়ে ওঠে।
-                            </p>
+                            </ContentParagraph>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-4'>
                                 {[
                                     {
@@ -118,22 +126,22 @@ export const cqrsEventSourcingContent: TopicData = {
             id: 'cqrs-pattern',
             subHeader: { index: '002', title: 'CQRS Pattern' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     CQRS — Command Query Responsibility Segregation
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             CQRS একটি architectural pattern যেখানে{' '}
                             <strong className='text-foreground'>Command</strong> (data
                             পরিবর্তন করে) এবং{' '}
                             <strong className='text-foreground'>Query</strong> (data পড়ে) —
                             এই দুটি দায়িত্ব সম্পূর্ণ আলাদা করা হয়। আলাদা model, আলাদা database,
                             আলাদা service।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -391,15 +399,15 @@ class GetOrderQueryHandler {
             id: 'event-sourcing',
             subHeader: { index: '003', title: 'Event Sourcing' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Event Sourcing — State নয়, Events Store করুন
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Traditional CRUD-এ{' '}
                             <strong className='text-foreground'>শুধু current state</strong>{' '}
                             store হয়। Event Sourcing-এ{' '}
@@ -407,7 +415,7 @@ class GetOrderQueryHandler {
                                 সব events (যা ঘটেছে) store হয়
                             </strong>
                             । Current state = সব events replay করার ফলাফল।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -643,20 +651,20 @@ class BankAccountAggregate {
             id: 'event-store',
             subHeader: { index: '004', title: 'Event Store Design' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Event Store Design
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Event Store হলো একটি{' '}
                             <strong className='text-foreground'>append-only log</strong>{' '}
                             — events শুধু যোগ হয়, কখনো update বা delete হয় না। এটি
                             traditional database থেকে মৌলিকভাবে আলাদা।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -803,22 +811,22 @@ class EventStore {
             id: 'projections',
             subHeader: { index: '005', title: 'Projections' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Projections — Events থেকে Views তৈরি করুন
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Event Store-এ raw events আছে — কিন্তু UI দ্রুত data দেখাতে
                             হবে। Projection হলো সেই mechanism যা events শুনে{' '}
                             <strong className='text-foreground'>
                                 optimized read models (views) তৈরি করে
                             </strong>
                             । একই events থেকে multiple projections তৈরি করা যায়।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1002,15 +1010,15 @@ class InventoryProjection {
             id: 'cqrs-es-combined',
             subHeader: { index: '006', title: 'CQRS + ES Combined' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     CQRS + Event Sourcing Together
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             CQRS এবং Event Sourcing আলাদাভাবেও ব্যবহার করা যায়, কিন্তু একসাথে
                             ব্যবহার করলেন এরা{' '}
                             <strong className='text-foreground'>
@@ -1018,7 +1026,7 @@ class InventoryProjection {
                             </strong>
                             । Event Sourcing CQRS-এর Write side-এর natural implementation,
                             এবং events সরাসরি Query side-এ push করতে পারে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1217,19 +1225,19 @@ class GetOrderQueryHandler {
             id: 'tradeoffs',
             subHeader: { index: '007', title: 'Trade-offs' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Trade-offs ও কখন Use করবেন?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             CQRS ও Event Sourcing powerful — কিন্তু সব জায়গায় use করলেন
                             unnecessary complexity তৈরি হয়। কখন use করবেন, কখন করবেন না —
                             এটা বোঝাটাই সত্যিকারের দক্ষতা।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1320,20 +1328,20 @@ class GetOrderQueryHandler {
             id: 'real-world',
             subHeader: { index: '008', title: 'Real World Usage' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Real World: কোথায় Use করে?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             CQRS ও Event Sourcing real production systems-এ ব্যাপকভাবে
                             ব্যবহৃত হয়। বিশেষত যেসব domain-এ{' '}
                             <strong className='text-foreground'>audit trail critical</strong>
                             , ইতিহাস হারানো যাবেন না।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {

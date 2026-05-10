@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,23 +20,23 @@ export const searchEngineContent: TopicData = {
             id: 'intro-why-search',
             subHeader: { index: '001', title: 'Why This System' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Search কেন Hard?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 Google প্রতিদিন <strong className='text-foreground'>8.5 billion searches</strong> process
                                 করে। Typeahead-এ প্রতিটা keypress-এ suggestions দেখাতে হয় —{' '}
                                 <strong className='text-foreground'>100ms-এর মধ্যে</strong>।
                                 এই system-এ দুটো আলাদা challenge:{' '}
                                 <strong className='text-foreground'>Full-text search</strong> এবং{' '}
                                 <strong className='text-foreground'>real-time autocomplete</strong>।
-                            </p>
+                            </ContentParagraph>
 
                             {/* Architecture Overview SVG */}
                             <div className='bg-card/50 border border-border rounded-lg p-6 overflow-x-auto'>
@@ -564,7 +572,7 @@ export const searchEngineContent: TopicData = {
             id: 'requirements',
             subHeader: { index: '002', title: 'Requirements' },
             title: (
-                <span className='font-heading'>Features কী কী?</span>
+                <SectionTitle>Features কী কী?</SectionTitle>
             ),
             blocks: [
                 {
@@ -678,18 +686,18 @@ export const searchEngineContent: TopicData = {
             id: 'typeahead-trie',
             subHeader: { index: '003', title: 'Typeahead / Autocomplete' },
             title: (
-                <span className='font-heading'>Trie Data Structure</span>
+                <SectionTitle>Trie Data Structure</SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Typeahead-এর জন্য{' '}
                             <strong className='text-foreground'>Trie</strong>{' '}
                             (Prefix Tree) সবচেয়ে natural data structure। প্রতিটা
                             node একটা character represent করে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1108,15 +1116,15 @@ print(trie.autocomplete("app"))
             id: 'web-crawling',
             subHeader: { index: '004', title: 'Web Crawling Architecture' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Web Crawler — Internet কীভাবে Index হয়?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Search engine index তৈরি করতে প্রথমে web থেকে
                             documents collect করতে হয়। এই কাজ করে{' '}
                             <strong className='text-foreground'>
@@ -1124,7 +1132,7 @@ print(trie.autocomplete("app"))
                             </strong>{' '}
                             (বা Spider)। Google প্রতিদিন billions of pages crawl
                             করে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1226,15 +1234,15 @@ print(trie.autocomplete("app"))
             id: 'inverted-index',
             subHeader: { index: '005', title: 'Deep Dive — Full-Text Search' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Inverted Index — Search-এর Core
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Search engine-এর সবচেয়ে important data structure
                             হলো{' '}
                             <strong className='text-foreground'>
@@ -1245,7 +1253,7 @@ print(trie.autocomplete("app"))
                                 word → document list
                             </strong>{' '}
                             map করা থাকে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1362,21 +1370,21 @@ def search(query: str) -> list:
             id: 'search-ranking',
             subHeader: { index: '006', title: 'Search Ranking' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Search Ranking Algorithms
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             TF-IDF দিয়ে basic relevance বোঝা যায়, কিন্তু
                             modern search engines আরও অনেক signal use করে।
                             Google-এর ranking{' '}
                             <strong className='text-foreground'>200+</strong>{' '}
                             factors consider করে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1458,7 +1466,7 @@ def search(query: str) -> list:
             id: 'database-storage',
             subHeader: { index: '007', title: 'Database Choice' },
             title: (
-                <span className='font-heading'>কোন Data কোথায়?</span>
+                <SectionTitle>কোন Data কোথায়?</SectionTitle>
             ),
             blocks: [
                 {
@@ -1533,9 +1541,9 @@ def search(query: str) -> list:
             id: 'scalability',
             subHeader: { index: '008', title: 'Scaling Decisions' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Search Scale করার উপায়
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -1744,9 +1752,9 @@ def search(query: str) -> list:
             id: 'interview-tips',
             subHeader: { index: '009', title: 'Interview Tips' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Interview-এ কী জিজ্ঞেস করা হয়?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {

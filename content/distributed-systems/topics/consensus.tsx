@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,22 +20,22 @@ export const consensusContent: TopicData = {
             id: 'intro-concept',
             subHeader: { index: '001', title: 'Why It Matters' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Distributed Consensus কেন শিখতে হবে?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 ৩টা server আছে — Server A, B, C। সবাই একই data
                                 রাখে। কিন্তু হঠাৎ network problem — A এবং B
                                 একটা value দেখছে, C আরেকটা। এখন কোনটা সত্য?
                                 কে decide করবেন?
-                            </p>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            </ContentParagraph>
+                            <ContentParagraph>
                                 এই সমস্যার নাম{' '}
                                 <strong className='text-foreground'>
                                     Distributed Consensus Problem
@@ -36,7 +44,7 @@ export const consensusContent: TopicData = {
                                 value তে পৌঁছাবে — এটাই consensus। Kubernetes,
                                 etcd, Kafka, CockroachDB — সব জায়গায় এটা
                                 ব্যবহার হয়।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -60,18 +68,18 @@ export const consensusContent: TopicData = {
             id: 'core-problem',
             subHeader: { index: '002', title: 'The Core Problem' },
             title: (
-                <span className='font-heading'>সমস্যাটা কী?</span>
+                <SectionTitle>সমস্যাটা কী?</SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 ধরুন আপনি একটা bank এ কাজ করুন। Account balance
                                 হলো ১০,০০০ টাকা। ৩টা server এই data replicate
                                 করে রাখে। এখন একসাথে দুটো transaction আসলো:
-                            </p>
+                            </ContentParagraph>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-0 border border-border'>
                                 <div className='p-8 border-r border-border bg-card/30'>
                                     <h4 className='font-bold text-foreground mb-4 flex items-center gap-3 font-mono uppercase tracking-widest text-[10px]'>
@@ -117,13 +125,13 @@ export const consensusContent: TopicData = {
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Distributed Consensus এর classic problem। কয়েকজন
                             general একটা city attack করবেন — সবাইকে একসাথে
                             attack বা retreat করতে হবে। কিন্তু messenger
                             unreliable, কিছু general traitor হতে পারে। কীভাবে
                             সবাই agree করবেন?
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -190,9 +198,9 @@ export const consensusContent: TopicData = {
             id: 'raft',
             subHeader: { index: '003', title: 'Raft Algorithm' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Raft — Understandable Consensus
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -340,9 +348,9 @@ export const consensusContent: TopicData = {
             id: 'zookeeper',
             subHeader: { index: '004', title: 'ZooKeeper' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Apache ZooKeeper — Coordination Service
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -489,7 +497,7 @@ export const consensusContent: TopicData = {
             id: 'code',
             subHeader: { index: '005', title: 'Code Examples' },
             title: (
-                <span className='font-heading'>Practical Code</span>
+                <SectionTitle>Practical Code</SectionTitle>
             ),
             blocks: [
                 {
@@ -627,10 +635,9 @@ Promise.all([
             id: 'realworld',
             subHeader: { index: '006', title: 'Real World' },
             title: (
-                <span className='font-heading'>
-                    Real World{' '}
-                    <span className='italic'>Use Cases</span>
-                </span>
+                <SectionTitle>
+                    Real World <span className='italic'>Use Cases</span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -688,9 +695,9 @@ Promise.all([
             id: 'interview',
             subHeader: { index: '007', title: 'Interview Preparation' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Common Interview Questions
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {

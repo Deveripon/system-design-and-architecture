@@ -1,8 +1,16 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
 import {
     HorizontalScalingDiagram,
     VerticalScalingDiagram,
 } from '../../../components/course/topics/scalability/diagrams';
+import {
+    SectionTitle,
+    ContentParagraph,
+    ConceptHeading,
+    ProConGrid,
+    ProConItem,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -16,19 +24,19 @@ export const scalabilityContent: TopicData = {
             id: 'intro-concept',
             subHeader: { index: '001', title: 'Introduction' },
             title: (
-                <span className='font-heading'>SCALABILITY কেন শিখতে হবে?</span>
+                <SectionTitle>SCALABILITY কেন শিখতে হবে?</SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 ধরুন আপনি একটা অ্যাপ বানালেনন। শুরুতে ১০০ ইউজার। সব ঠিকঠাক
                                 চলছে। কিন্তু হঠাৎ TechCrunch এ feature হলো — ১০
                                 লক্ষ ইউজার একসাথে ঢুকলো। Server crash। App down।
-                            </p>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            </ContentParagraph>
+                            <ContentParagraph>
                                 এই সমস্যার নাম হলো{' '}
                                 <strong className='text-foreground'>
                                     Scalability problem
@@ -36,7 +44,7 @@ export const scalabilityContent: TopicData = {
                                 । একজন system engineer হিসেবে আপনাকে আগে থেকেই
                                 plan করতে হবে — আমার system যদি ১০x, ১০০x, ১০০০x
                                 বড় হয়, তখনও কি এটা কাজ করবেন?
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -59,16 +67,16 @@ export const scalabilityContent: TopicData = {
             id: 'vertical',
             subHeader: { index: '002', title: 'Vertical Scaling' },
             title: (
-                <span className='font-heading'>Scale Up — বড় মেশিন কিনো</span>
+                <SectionTitle>Vertical vs Horizontal Scaling</SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed mb-10 text-lg'>
+                        <ContentParagraph className='mb-10'>
                             Vertical scaling মানে আপনার existing server কে আরো
                             powerful বানানো। বেশি RAM, বেশি CPU, বেশি storage।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -79,39 +87,19 @@ export const scalabilityContent: TopicData = {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <>
-                            <h3 className='text-xs font-mono font-bold uppercase tracking-[0.3em] text-blue-400 mb-10 mt-20'>
-                                কখন Vertical Scaling সঠিক?
-                            </h3>
-                            <div className='grid grid-cols-1 md:grid-cols-2 gap-0 border border-border'>
-                                <div className='p-8 border-r border-border bg-card/30'>
-                                    <h4 className='font-bold text-foreground mb-4 flex items-center gap-3 font-mono uppercase tracking-widest text-[10px]'>
-                                        <span className='w-1.5 h-1.5 bg-blue-500' />
-                                        CASE{' '}
-                                        <span className='text-emerald-400'>
-                                            ✅ ভালো situation
-                                        </span>
-                                    </h4>
-                                    <p className='text-sm text-muted-foreground leading-relaxed'>
-                                        Database server — PostgreSQL, MySQL।
-                                        Single-threaded workload। Code change
-                                        করা সম্ভব না। Quick fix দরকার।
-                                    </p>
-                                </div>
-                                <div className='p-8 bg-card/30'>
-                                    <h4 className='font-bold text-foreground mb-4 flex items-center gap-3 font-mono uppercase tracking-widest text-[10px]'>
-                                        <span className='w-1.5 h-1.5 bg-blue-500' />
-                                        CASE{' '}
-                                        <span className='text-red-400'>
-                                            ❌ খারাপ situation
-                                        </span>
-                                    </h4>
-                                    <p className='text-sm text-muted-foreground leading-relaxed'>
-                                        Already সবচেয়ে বড় machine কিনে ফেলেছো।
-                                        Hardware limit আছে। Cost অনেক বেশি।
-                                        Single point of failure।
-                                    </p>
-                                </div>
-                            </div>
+                            <ConceptHeading>কখন Vertical Scaling সঠিক?</ConceptHeading>
+                            <ProConGrid>
+                                <ProConItem title='CASE' badge='✅ ভালো situation'>
+                                    Database server — PostgreSQL, MySQL।
+                                    Single-threaded workload। Code change
+                                    করা সম্ভব না। Quick fix দরকার।
+                                </ProConItem>
+                                <ProConItem title='CASE' badge='❌ খারাপ situation' isLast type='negative'>
+                                    Already সবচেয়ে বড় machine কিনে ফেলেছো।
+                                    Hardware limit আছে। Cost অনেক বেশি।
+                                    Single point of failure।
+                                </ProConItem>
+                            </ProConGrid>
                         </>
                     ),
                 },

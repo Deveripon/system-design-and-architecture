@@ -1,3 +1,4 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
 import {
     DNSLookupDiagram,
@@ -5,6 +6,13 @@ import {
     OSIModeDiagram,
     TCPHandshakeDiagram,
 } from '../../../components/course/topics/networking/diagrams';
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -27,13 +35,13 @@ export const networkingContent: TopicData = {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 আপনি একটা API লিখলে। Production এ গিয়ে হঠাৎ
                                 slow হয়ে গেলো। Logs দেখলে কিছু বুঝছো না।
                                 Problem কোথায়? — Network layer এ। Networking না
                                 জানলেন এই debug করা impossible।
-                            </p>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            </ContentParagraph>
+                            <ContentParagraph>
                                 System Design interview এ &quot;Design
                                 Twitter&quot; বললে — Load balancer কোথায় বসবে?
                                 CDN কেন লাগবে? TCP নাকি UDP? HTTP/2 কেন better?
@@ -41,7 +49,7 @@ export const networkingContent: TopicData = {
                                 <em>
                                     Networking হলো System Design এর backbone।
                                 </em>
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -75,12 +83,12 @@ export const networkingContent: TopicData = {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 OSI (Open Systems Interconnection) Model হলো
                                 networking এর conceptual framework। ৭টি layer এ
                                 কাজ ভাগ করা হয়। প্রতিটি layer শুধু নিচের layer
                                 এর সাথে কথা বলে।
-                            </p>
+                            </ContentParagraph>
                             <p className='text-muted-foreground leading-relaxed text-lg italic'>
                                 মনে রাখার trick:{' '}
                                 <strong>
@@ -129,12 +137,12 @@ export const networkingContent: TopicData = {
                             <h3 className='text-xl font-bold mt-8 mb-4'>
                                 TCP — 3-Way Handshake দিয়ে Connection
                             </h3>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 TCP connection শুরু হওয়ার আগে তিনটা step এ
                                 handshake করে। তারপর reliable data transfer হয়।
                                 প্রতিটি packet এর acknowledgement (ACK) পাঠানো
                                 হয়।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -149,11 +157,11 @@ export const networkingContent: TopicData = {
                             <h3 className='text-xl font-bold mt-12 mb-4'>
                                 UDP — Fire and Forget
                             </h3>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 UDP তে কোনো handshake নেই। Data পাঠিয়ে দিন —
                                 পৌঁছালো কিনা দেখুন না। Overhead কম, তাই speed
                                 বেশি। Real-time applications এর জন্য perfect।
-                            </p>
+                            </ContentParagraph>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-0 border border-border mt-8'>
                                 <div className='p-8 border-r border-border bg-card/30'>
                                     <h4 className='font-bold text-foreground mb-4 flex items-center gap-3 font-mono uppercase tracking-widest text-[10px]'>
@@ -273,11 +281,11 @@ udpServer.bind(4000);`,
                             <h3 className='text-xl font-bold mt-8 mb-4'>
                                 DNS — Internet এর Phone Book
                             </h3>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 আপনি <code>facebook.com</code> type করুন — কিন্তু
                                 computer বোঝে IP address। DNS এই translation
                                 করে। DNS lookup সবসময় cache থেকে শুরু হয়।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },

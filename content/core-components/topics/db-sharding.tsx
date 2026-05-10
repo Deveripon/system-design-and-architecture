@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,13 +20,13 @@ export const dbShardingContent: TopicData = {
             id: 'db-scaling-problem',
             subHeader: { index: '001', title: 'Core Concept' },
             title: (
-                <span className='font-heading'>Database Scaling সমস্যা</span>
+                <SectionTitle>Database Scaling সমস্যা</SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             একটা single database server এ ১ কোটি user এর data
                             রাখা যায়। কিন্তু ১০ কোটি user হলে? Query slow হয়,
                             disk full হয়, single server overload হয়। এই সমস্যা
@@ -29,7 +37,7 @@ export const dbShardingContent: TopicData = {
                             এবং{' '}
                             <strong className='text-foreground'>Sharding</strong>
                             ।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -57,17 +65,17 @@ export const dbShardingContent: TopicData = {
             id: 'replication',
             subHeader: { index: '002', title: 'Replication' },
             title: (
-                <span className='font-heading'>Database Replication</span>
+                <SectionTitle>Database Replication</SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Replication মানে same data multiple servers এ রাখা।
                             Primary (Master) server এ write হয়, Replica (Slave)
                             servers এ copy propagate হয়।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -351,18 +359,18 @@ export const dbShardingContent: TopicData = {
             id: 'sharding',
             subHeader: { index: '003', title: 'Sharding' },
             title: (
-                <span className='font-heading'>Database Sharding</span>
+                <SectionTitle>Database Sharding</SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Sharding মানে data কে multiple database servers এ
                             ভাগ করে রাখা। প্রতিটা server (shard) data এর একটা
                             subset রাখে। ১ কোটি users থাকলে, Shard 1 এ প্রথম ৩৩
                             লাখ, Shard 2 এ পরের ৩৩ লাখ, Shard 3 এ বাকি ৩৪ লাখ।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -564,7 +572,7 @@ export const dbShardingContent: TopicData = {
             id: 'strategies',
             subHeader: { index: '004', title: 'Shard Strategies' },
             title: (
-                <span className='font-heading'>Sharding Strategies</span>
+                <SectionTitle>Sharding Strategies</SectionTitle>
             ),
             blocks: [
                 {
@@ -574,11 +582,11 @@ export const dbShardingContent: TopicData = {
                             <h3 className='text-xs font-mono font-bold uppercase tracking-[0.3em] text-blue-400 mb-6'>
                                 1. Range-based Sharding
                             </h3>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 Data কে value range অনুযায়ী ভাগ করা। সহজ কিন্তু
                                 hotspot হতে পারে (নতুন users সবাই একই shard এ
                                 যায়)।
-                            </p>
+                            </ContentParagraph>
                         </>
                     ),
                 },
@@ -601,10 +609,10 @@ export const dbShardingContent: TopicData = {
                             <h3 className='text-xs font-mono font-bold uppercase tracking-[0.3em] text-blue-400 mb-6 mt-10'>
                                 2. Hash-based Sharding
                             </h3>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 Shard key hash করে shard select করা। Even
                                 distribution দেয়। সবচেয়ে popular।
-                            </p>
+                            </ContentParagraph>
                         </>
                     ),
                 },
@@ -655,11 +663,11 @@ print(ring.get_shard("user:67890"))   # → shard-1`,
                             <h3 className='text-xs font-mono font-bold uppercase tracking-[0.3em] text-blue-400 mb-6 mt-10'>
                                 3. Directory-based Sharding
                             </h3>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 একটা lookup table রাখা হয় — কোন key কোন shard
                                 এ আছে। Flexible কিন্তু lookup table নিজেই
                                 bottleneck হতে পারে।
-                            </p>
+                            </ContentParagraph>
                         </>
                     ),
                 },
@@ -731,7 +739,7 @@ print(ring.get_shard("user:67890"))   # → shard-1`,
             id: 'sharding-problems',
             subHeader: { index: '005', title: 'Common Problems' },
             title: (
-                <span className='font-heading'>Sharding এর সমস্যা</span>
+                <SectionTitle>Sharding এর সমস্যা</SectionTitle>
             ),
             blocks: [
                 {
@@ -792,7 +800,7 @@ print(ring.get_shard("user:67890"))   # → shard-1`,
             id: 'code-examples',
             subHeader: { index: '006', title: 'Code Examples' },
             title: (
-                <span className='font-heading'>Code Examples</span>
+                <SectionTitle>Code Examples</SectionTitle>
             ),
             blocks: [
                 {
@@ -883,9 +891,9 @@ print(get_user(12346))   # User 12346 → Shard 1 (12346 % 3 = 1)`,
             id: 'interview-prep',
             subHeader: { index: '007', title: 'Interview Prep' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Common Interview Questions
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {

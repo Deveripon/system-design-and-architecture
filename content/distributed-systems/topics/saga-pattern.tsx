@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,30 +20,30 @@ export const sagaPatternContent: TopicData = {
             id: 'intro-concept',
             subHeader: { index: '001', title: 'Why It Matters' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Distributed Transaction কেন কঠিন?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 Single database এ transaction সহজ — ACID
                                 guarantee আছে। কিন্তু microservices এ Order
                                 service, Payment service, Inventory service —
                                 তিনটা আলাদা database। একটা order place করতে
                                 তিনটাতেই write করতে হবে।
-                            </p>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            </ContentParagraph>
+                            <ContentParagraph>
                                 Payment succeed করলো, কিন্তু Inventory update
                                 করতে গিয়ে crash। এখন payment deducted কিন্তু
                                 product deliver হবে না।{' '}
                                 <strong className='text-foreground'>
                                     Inconsistent state!
                                 </strong>
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -75,18 +83,18 @@ export const sagaPatternContent: TopicData = {
             id: 'problem',
             subHeader: { index: '002', title: 'The Core Problem' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Order Placement — ৩টা Service, ১টা Business Operation
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             একটা e-commerce order flow দেখুন। সব ঠিক চললে easy।
                             কিন্তু মাঝপথে fail করলেন কী হয়?
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -185,13 +193,13 @@ export const sagaPatternContent: TopicData = {
             id: 'choreography',
             subHeader: { index: '003', title: 'Saga Type 1' },
             title: (
-                <span className='font-heading'>Choreography-based Saga</span>
+                <SectionTitle>Choreography-based Saga</SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             কোনো central coordinator নেই। প্রতিটা service নিজের
                             কাজ করে এবং event publish করে। অন্য services সেই
                             event listen করে নিজের কাজ করে।{' '}
@@ -199,7 +207,7 @@ export const sagaPatternContent: TopicData = {
                                 Decentralized
                             </strong>{' '}
                             approach।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -310,13 +318,13 @@ export const sagaPatternContent: TopicData = {
             id: 'orchestration',
             subHeader: { index: '004', title: 'Saga Type 2' },
             title: (
-                <span className='font-heading'>Orchestration-based Saga</span>
+                <SectionTitle>Orchestration-based Saga</SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             একটা central{' '}
                             <strong className='text-foreground'>
                                 Saga Orchestrator
@@ -328,7 +336,7 @@ export const sagaPatternContent: TopicData = {
                                 Centralized
                             </strong>{' '}
                             approach।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -449,15 +457,15 @@ export const sagaPatternContent: TopicData = {
             id: 'compensation',
             subHeader: { index: '005', title: 'Compensating Transactions' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Failure হলে কীভাবে Rollback করবেন?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Traditional database rollback Saga তে কাজ করে না।
                             কারণ প্রতিটা step আলাদা service এ committed হয়ে
                             গেছে। তাই প্রতিটা step এর জন্য একটা{' '}
@@ -465,7 +473,7 @@ export const sagaPatternContent: TopicData = {
                                 compensating transaction
                             </strong>{' '}
                             define করতে হয়।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -567,7 +575,7 @@ export const sagaPatternContent: TopicData = {
         {
             id: 'code',
             subHeader: { index: '006', title: 'Code Examples' },
-            title: <span className='font-heading'>Practical Code</span>,
+            title: <SectionTitle>Practical Code</SectionTitle>,
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
@@ -747,9 +755,9 @@ bus.emit('order.start', { orderId: 'nostock-002', userId: 'u2', productId: 'p2',
             id: 'realworld',
             subHeader: { index: '007', title: 'Real World' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Real World Use Cases &amp; Tools
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -841,7 +849,7 @@ bus.emit('order.start', { orderId: 'nostock-002', userId: 'u2', productId: 'p2',
             id: 'interview',
             subHeader: { index: '008', title: 'Interview Preparation' },
             title: (
-                <span className='font-heading'>Common Interview Questions</span>
+                <SectionTitle>Common Interview Questions</SectionTitle>
             ),
             blocks: [
                 {

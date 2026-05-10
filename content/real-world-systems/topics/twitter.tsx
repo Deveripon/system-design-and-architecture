@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -13,16 +21,16 @@ export const twitterContent: TopicData = {
             id: 'why-twitter',
             subHeader: { index: '001', title: 'Why This System' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Twitter কেন Design শেখা দরকার?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-5'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 Twitter/X হলো সবচেয়ে complex social media system
                                 design interview question গুলোর একটা। এখানে{' '}
                                 <strong className='text-foreground'>
@@ -37,7 +45,7 @@ export const twitterContent: TopicData = {
                                     real-time trending
                                 </strong>{' '}
                                 — এই তিনটা hard problem একসাথে solve করতে হয়।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -515,7 +523,7 @@ export const twitterContent: TopicData = {
             id: 'requirements',
             subHeader: { index: '002', title: 'Requirements' },
             title: (
-                <span className='font-heading'>কী কী Features লাগবে?</span>
+                <SectionTitle>কী কী Features লাগবে?</SectionTitle>
             ),
             blocks: [
                 {
@@ -585,7 +593,7 @@ export const twitterContent: TopicData = {
             id: 'estimation',
             subHeader: { index: '003', title: 'Capacity Estimation' },
             title: (
-                <span className='font-heading'>Twitter Scale বোঝা</span>
+                <SectionTitle>Twitter Scale বোঝা</SectionTitle>
             ),
             blocks: [
                 {
@@ -640,22 +648,22 @@ export const twitterContent: TopicData = {
             id: 'architecture',
             subHeader: { index: '004', title: 'High-Level Architecture' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Twitter-এর Big Picture Components
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Twitter একটা{' '}
                             <strong className='text-foreground'>
                                 microservices architecture
                             </strong>{' '}
                             follow করে। প্রতিটা service আলাদা responsibility
                             নিয়ে কাজ করে এবং একে অপরের সাথে communicate করে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -741,18 +749,18 @@ export const twitterContent: TopicData = {
             id: 'fanout',
             subHeader: { index: '005', title: 'Deep Dive — Fanout' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Fanout Problem — Twitter-এর Hardest Part
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             যখন কেউ tweet করে, সেই tweet তার সব followers-এর home
                             timeline-এ দেখা যায়। এটা করার দুটো approach আছে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -936,15 +944,15 @@ export const twitterContent: TopicData = {
             id: 'celebrity-problem',
             subHeader: { index: '006', title: 'Celebrity Problem' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Celebrity Problem ও Hybrid Model
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Elon Musk (150M followers) যখন একটা tweet করেন, শুধু
                             সেই একটা tweet-এর জন্য{' '}
                             <strong className='text-foreground'>
@@ -952,7 +960,7 @@ export const twitterContent: TopicData = {
                             </strong>{' '}
                             দরকার হয়। এটা milliseconds-এ করা impossible। Twitter
                             এই problem solve করেছেনে hybrid approach দিয়ে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1042,18 +1050,18 @@ export const twitterContent: TopicData = {
             id: 'database',
             subHeader: { index: '007', title: 'Database Choices' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Multiple Databases — কোনটা কিসের জন্য?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Twitter-এ single database দিয়ে হয় না। Different use
                             cases-এর জন্য different databases।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1174,9 +1182,9 @@ LTRIM timeline:user123 0 799   -- Keep last 800 tweets only`,
                 title: 'Scaling + Real-time + Interview Tips',
             },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Scaling Strategies, Real-time Notifications ও Interview Tips
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {

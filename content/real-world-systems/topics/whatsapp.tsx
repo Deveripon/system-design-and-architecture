@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,16 +20,16 @@ export const whatsappContent: TopicData = {
             id: 'intro-challenge',
             subHeader: { index: '001', title: 'Why This System' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Chat System-এর Unique Challenges
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 WhatsApp-এ প্রতিদিন{' '}
                                 <strong className='text-foreground'>
                                     100 billion messages
@@ -32,7 +40,7 @@ export const whatsappContent: TopicData = {
                                 </strong>{' '}
                                 — message পাঠানো সাথে সাথে receiver পাবেন, এমনকি
                                 receiver offline থাকলেও পরে পাবেন।
-                            </p>
+                            </ContentParagraph>
 
                             {/* Architecture Overview Diagram */}
                             <div className='border border-border rounded-lg bg-card/50 p-6 overflow-x-auto'>
@@ -519,7 +527,7 @@ export const whatsappContent: TopicData = {
             id: 'requirements',
             subHeader: { index: '002', title: 'Requirements' },
             title: (
-                <span className='font-heading'>Features কী কী?</span>
+                <SectionTitle>Features কী কী?</SectionTitle>
             ),
             blocks: [
                 {
@@ -585,7 +593,7 @@ export const whatsappContent: TopicData = {
             id: 'estimation',
             subHeader: { index: '003', title: 'Back-of-Envelope Estimation' },
             title: (
-                <span className='font-heading'>WhatsApp Scale</span>
+                <SectionTitle>WhatsApp Scale</SectionTitle>
             ),
             blocks: [
                 {
@@ -666,7 +674,7 @@ export const whatsappContent: TopicData = {
             id: 'architecture',
             subHeader: { index: '004', title: 'High Level Architecture' },
             title: (
-                <span className='font-heading'>Chat System Architecture</span>
+                <SectionTitle>Chat System Architecture</SectionTitle>
             ),
             blocks: [
                 {
@@ -839,15 +847,15 @@ export const whatsappContent: TopicData = {
             id: 'websocket-management',
             subHeader: { index: '005', title: 'Deep Dive' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     WebSocket Connection Management
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             HTTP request-response model real-time chat-এর জন্য
                             suitable না। WebSocket একটা{' '}
                             <strong className='text-foreground'>
@@ -855,7 +863,7 @@ export const whatsappContent: TopicData = {
                             </strong>{' '}
                             রাখে — server যেকোনো সময় client-কে push করতে
                             পারে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -984,9 +992,9 @@ async def send_message(sender_id, receiver_id, content):
             id: 'message-storage-delivery',
             subHeader: { index: '006', title: 'Message Storage & Delivery' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Message Storage এবং Delivery Receipts
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -1106,9 +1114,9 @@ CREATE TABLE message_receipts (
             id: 'group-chat-pubsub',
             subHeader: { index: '007', title: 'Group Chat & Pub/Sub' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Group Chat Architecture এবং Pub/Sub
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -1219,9 +1227,9 @@ CREATE TABLE message_receipts (
             id: 'advanced-features',
             subHeader: { index: '008', title: 'Advanced Features' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Push Notifications, Presence, Encryption এবং Interview Tips
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {

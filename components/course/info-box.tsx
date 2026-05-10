@@ -43,7 +43,7 @@ export function InfoBox({ variant, title, children }: InfoBoxProps) {
                 <div className='w-8 h-8 md:w-10 md:h-10 border border-border flex items-center justify-center bg-background shrink-0'>
                     {icons[variant]}
                 </div>
-                <h4 className='text-[9px] md:text-[10px] font-mono font-black uppercase tracking-[0.2em] md:tracking-[0.3em] opacity-80'>
+                <h4 className='text-[10px] md:text-[11px] font-mono font-black uppercase  opacity-80'>
                     {title}
                 </h4>
             </div>

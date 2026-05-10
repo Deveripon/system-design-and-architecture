@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,22 +20,22 @@ export const resilienceContent: TopicData = {
             id: 'intro-concept',
             subHeader: { index: '001', title: 'Why It Matters' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Resilience কেন শিখতে হবে?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 আপনার e-commerce app এ Payment service কাজ করছে
                                 না। কিন্তু Payment service down থাকলেই কি পুরো
                                 app down হওয়া উচিত? User কি product browse করতে
                                 পারবেন না?
-                            </p>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            </ContentParagraph>
+                            <ContentParagraph>
                                 Distributed system এ{' '}
                                 <strong className='text-foreground'>
                                     Cascading Failure
@@ -35,7 +43,7 @@ export const resilienceContent: TopicData = {
                                 সবচেয়ে ভয়ানক সমস্যা। একটা service slow হলে
                                 সেটা অন্য services কে block করে — সব collapse
                                 করে। Circuit Breaker এই cascade থামায়।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -72,9 +80,9 @@ export const resilienceContent: TopicData = {
             id: 'cb-states',
             subHeader: { index: '002', title: 'Circuit Breaker States' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     তিনটা State — বুঝে রাখুন
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -190,9 +198,9 @@ export const resilienceContent: TopicData = {
             id: 'resilience-patterns',
             subHeader: { index: '003', title: 'Resilience Patterns' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Circuit Breaker ছাড়াও আরো Patterns
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -331,7 +339,7 @@ export const resilienceContent: TopicData = {
             id: 'code-examples',
             subHeader: { index: '004', title: 'Code Examples' },
             title: (
-                <span className='font-heading'>Practical Code</span>
+                <SectionTitle>Practical Code</SectionTitle>
             ),
             blocks: [
                 {
@@ -453,7 +461,7 @@ const result = await retryWithBackoff(async () => {
             id: 'tools-comparison',
             subHeader: { index: '005', title: 'Real World' },
             title: (
-                <span className='font-heading'>Tools Comparison</span>
+                <SectionTitle>Tools Comparison</SectionTitle>
             ),
             blocks: [
                 {
@@ -525,9 +533,9 @@ const result = await retryWithBackoff(async () => {
             id: 'interview-prep',
             subHeader: { index: '006', title: 'Interview Preparation' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Common Interview Questions
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -596,9 +604,9 @@ const result = await retryWithBackoff(async () => {
             id: 'istio-config',
             subHeader: { index: '007', title: 'Infrastructure Level' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Istio দিয়ে Circuit Breaker — Code ছাড়াই
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {

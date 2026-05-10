@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,14 +20,14 @@ export const cdnStorageContent: TopicData = {
             id: 'concept',
             subHeader: { index: '001', title: 'Core Concept' },
             title: (
-                <span className='font-heading'>CDN ও Object Storage কী?</span>
+                <SectionTitle>CDN ও Object Storage কী?</SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 ধরুন আপনি ঢাকায় বসে Netflix এ একটা movie দেখছো।
                                 সেই movie র file কি USA এর server থেকে আসছে? না!
                                 Netflix CDN এর মাধ্যমে সেই file টা আপনার
@@ -30,7 +38,7 @@ export const cdnStorageContent: TopicData = {
                                     ১০x faster
                                 </strong>
                                 ।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -80,12 +88,12 @@ export const cdnStorageContent: TopicData = {
         {
             id: 'cdn-how-it-works',
             subHeader: { index: '002', title: 'CDN How it Works' },
-            title: <span className='font-heading'>CDN কীভাবে কাজ করে?</span>,
+            title: <SectionTitle>CDN কীভাবে কাজ করে?</SectionTitle>,
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             CDN এর মূল concept হলো{' '}
                             <strong className='text-foreground'>
                                 Edge Caching
@@ -93,7 +101,7 @@ export const cdnStorageContent: TopicData = {
                             । User এর request প্রথমে nearest CDN edge server এ
                             যায়। Cache hit হলে সেখান থেকেই response। Miss হলে
                             origin server থেকে content fetch করে cache করে রাখে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -182,13 +190,13 @@ export const cdnStorageContent: TopicData = {
                             <h3 className='text-xs font-mono font-bold uppercase tracking-[0.3em] text-blue-400 mb-4 mt-10'>
                                 CDN Cache Control
                             </h3>
-                            <p className='text-muted-foreground leading-relaxed text-lg mb-4'>
+                            <ContentParagraph className='mb-4'>
                                 কতক্ষণ CDN এ cache থাকবেন সেটা{' '}
                                 <strong className='text-foreground'>
                                     Cache-Control header
                                 </strong>{' '}
                                 দিয়ে control করা যায়।
-                            </p>
+                            </ContentParagraph>
                         </>
                     ),
                 },
@@ -270,13 +278,13 @@ Cache-Control: no-store
             id: 'object-storage-s3',
             subHeader: { index: '003', title: 'Object Storage (S3)' },
             title: (
-                <span className='font-heading'>AWS S3 — Object Storage</span>
+                <SectionTitle>AWS S3 — Object Storage</SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             S3 (Simple Storage Service) হলো AWS এর object
                             storage। File upload করুন, একটা URL পান — ব্যস।
                             Database এর মতো complex না, শুধু key-value:{' '}
@@ -284,7 +292,7 @@ Cache-Control: no-store
                                 key = file path, value = file content
                             </strong>
                             ।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -427,16 +435,16 @@ Cache-Control: no-store
         {
             id: 'cloudfront',
             subHeader: { index: '004', title: 'CloudFront' },
-            title: <span className='font-heading'>AWS CloudFront — CDN</span>,
+            title: <SectionTitle>AWS CloudFront — CDN</SectionTitle>,
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             CloudFront হলো AWS এর CDN। S3 এর সাথে perfectly
                             integrate হয়। S3 bucket কে origin set করুন,
                             CloudFront globally distribute করবেন।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -541,18 +549,18 @@ Cache-Control: no-store
             id: 'complete-architecture',
             subHeader: { index: '005', title: 'Full Architecture' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Production-Ready Media Upload Architecture
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             একটা social media app এ user photo upload করলেন
                             কীভাবে S3 + CloudFront কাজ করে:
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -671,7 +679,7 @@ Cache-Control: no-store
         {
             id: 'code-examples',
             subHeader: { index: '006', title: 'Code Examples' },
-            title: <span className='font-heading'>হাতে-কলমে Code</span>,
+            title: <SectionTitle>হাতে-কলমে Code</SectionTitle>,
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
@@ -785,7 +793,7 @@ app.post('/api/upload-url', async (req, res) => {
             id: 'interview-prep',
             subHeader: { index: '007', title: 'Interview Prep' },
             title: (
-                <span className='font-heading'>Common Interview Questions</span>
+                <SectionTitle>Common Interview Questions</SectionTitle>
             ),
             blocks: [
                 {

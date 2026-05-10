@@ -27,7 +27,7 @@ export function DynamicTopicContent({ data }: { data: TopicData }) {
                     <h1 className='text-3xl sm:text-4xl md:text-6xl font-black uppercase tracking-tighter mb-6 md:mb-8 leading-none'>
                         {data.introduction.title}
                     </h1>
-                    <div className='text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mb-8 md:mb-12'>
+                    <div className='text-lg md:text-xl text-muted-foreground leading-relaxed mb-8 md:mb-12'>
                         {data.introduction.description}
                     </div>
 

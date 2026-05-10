@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,29 +20,29 @@ export const serviceDiscoveryContent: TopicData = {
             id: 'intro-concept',
             subHeader: { index: '001', title: 'Why It Matters' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Service Discovery কেন শিখতে হবে?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 আপনার microservices system এ Order Service কে
                                 Payment Service কে call করতে হবে। কিন্তু Payment
                                 Service এর IP কী? Kubernetes এ pods dynamically
                                 scale হয় — IP বদলায়। Hardcode করা impossible।
-                            </p>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            </ContentParagraph>
+                            <ContentParagraph>
                                 এই সমস্যার সমাধান হলো{' '}
                                 <strong className='text-foreground'>
                                     Service Discovery
                                 </strong>{' '}
                                 — services নিজেদের register করে, অন্যরা সেই
                                 registry থেকে খুঁজে নেয়।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -103,9 +111,9 @@ export const serviceDiscoveryContent: TopicData = {
             id: 'patterns',
             subHeader: { index: '002', title: 'Discovery Patterns' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     দুটো Pattern — Client-side vs Server-side
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -272,22 +280,22 @@ export const serviceDiscoveryContent: TopicData = {
             id: 'service-mesh',
             subHeader: { index: '003', title: 'Service Mesh' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Service Mesh — Infrastructure Layer
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 Service Discovery solve করার পরও বাকি থাকে:
                                 load balancing, circuit breaking, retry, mTLS,
                                 observability। প্রতিটা service এ আলাদাভাবে
                                 এগুলো implement করা tedious।
-                            </p>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            </ContentParagraph>
+                            <ContentParagraph>
                                 <strong className='text-foreground'>
                                     Service Mesh
                                 </strong>{' '}
@@ -298,7 +306,7 @@ export const serviceDiscoveryContent: TopicData = {
                                 </strong>{' '}
                                 বসায় (যেমন Envoy)। সব network traffic এই proxy
                                 দিয়ে যায়। Service কোড change করতে হয় না।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -484,7 +492,7 @@ export const serviceDiscoveryContent: TopicData = {
             id: 'code-examples',
             subHeader: { index: '004', title: 'Code Examples' },
             title: (
-                <span className='font-heading'>Practical Code</span>
+                <SectionTitle>Practical Code</SectionTitle>
             ),
             blocks: [
                 {
@@ -612,9 +620,9 @@ spec:
             id: 'realworld',
             subHeader: { index: '005', title: 'Real World' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Real World <span className='italic'>Use Cases</span>
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -683,7 +691,7 @@ spec:
             id: 'interview',
             subHeader: { index: '006', title: 'Interview Preparation' },
             title: (
-                <span className='font-heading'>Common Interview Questions</span>
+                <SectionTitle>Common Interview Questions</SectionTitle>
             ),
             blocks: [
                 {
@@ -750,22 +758,22 @@ spec:
             id: 'health-checks',
             subHeader: { index: '007', title: 'Health Checks' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Health Check — কেন গুরুত্বপূর্ণ?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 Service crash হলে registry থেকে remove হওয়া
                                 দরকার। Regular health checks (HTTP /health
                                 endpoint, TCP check) দিয়ে Consul/K8s
                                 automatically unhealthy pods কে deregister করে।
                                 Traffic only healthy instances এ যায়।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -849,9 +857,9 @@ async def health_check(response: Response):
             id: 'comparison',
             subHeader: { index: '008', title: 'Tool Comparison' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     কোন Tool কখন ব্যবহার করবো?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {

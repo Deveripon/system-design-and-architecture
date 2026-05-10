@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -15,9 +23,9 @@ export const advancedDsContent: TopicData = {
             id: 'why-probabilistic',
             subHeader: { index: '001', title: 'Why Probabilistic Structures' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     কেন এই &apos;Weird&apos; Data Structures দরকার?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -38,7 +46,7 @@ export const advancedDsContent: TopicData = {
                                     FINAL TOPIC 06 / 06
                                 </span>
                             </div>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 কল্পনা করুন ১ বিলিয়ন URL-এর একটা set রাখতে হবে।
                                 Standard{' '}
                                 <strong className='text-foreground'>
@@ -58,7 +66,7 @@ export const advancedDsContent: TopicData = {
                                     ১ MB
                                 </strong>
                                 -তে সব কিছু রাখা সম্ভব।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -214,15 +222,15 @@ export const advancedDsContent: TopicData = {
             id: 'bloom-filter',
             subHeader: { index: '002', title: 'Bloom Filter' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Bloom Filter — &apos;আছে কিনা&apos; দ্রুত বলুন
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Bloom Filter একটা{' '}
                             <strong className='text-foreground'>
                                 probabilistic data structure
@@ -230,7 +238,7 @@ export const advancedDsContent: TopicData = {
                             যা বলতে পারে: &quot;এই element definitely নেই&quot;
                             অথবা &quot;এই element probably আছে&quot;। কখনো false
                             negative দেয় না।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -715,15 +723,15 @@ console.log(\`Memory used: \${usernameFilter.memoryBytes()} bytes\`);`,
             id: 'hyperloglog',
             subHeader: { index: '003', title: 'HyperLogLog' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     HyperLogLog — Unique Count করুন, Memory তে নয়
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             YouTube-এ একটা video-তে ১ বিলিয়ন ইউনিক views count
                             করতে হবে। Exact counter রাখলে ১ বিলিয়ন entries।{' '}
                             <strong className='text-foreground'>
@@ -734,7 +742,7 @@ console.log(\`Memory used: \${usernameFilter.memoryBytes()} bytes\`);`,
                                 ১২ KB memory
                             </strong>{' '}
                             তে এটা করতে পারে — ৯৯%+ accuracy সহ।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -918,15 +926,15 @@ async function getWeeklyActiveUsers(weekDates) {
             id: 'count-min-sketch',
             subHeader: { index: '004', title: 'Count-Min Sketch' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Count-Min Sketch — Frequency Estimate করুন
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Twitter-এ trending topics বের করতে হলে প্রতিটা
                             word-এর count রাখতে হবে। কিন্তু ১ কোটি unique
                             word-এর exact counter রাখা অসম্ভব।{' '}
@@ -934,7 +942,7 @@ async function getWeeklyActiveUsers(weekDates) {
                                 Count-Min Sketch
                             </strong>{' '}
                             approximate frequency count করে — fixed memory-তে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1144,9 +1152,9 @@ print(f"Memory: {cms.memory_bytes()} bytes vs exact dict: huge")`,
             id: 'comparison-table',
             subHeader: { index: '005', title: 'Comparison' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     তিনটা Structure এর Comparison
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -1235,19 +1243,19 @@ print(f"Memory: {cms.memory_bytes()} bytes vs exact dict: huge")`,
             id: 'redis-production',
             subHeader: { index: '006', title: 'Redis Production Use' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Redis এ Production Use
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Redis Stack এই তিনটা probabilistic structure
                             built-in support করে। Production-এ কোনো custom
                             implementation দরকার নেই।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1378,9 +1386,9 @@ async function getHashtagFrequency(hashtag) {
             id: 'real-world',
             subHeader: { index: '007', title: 'Real World Usage' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Real World: Big Tech কোথায় Use করে?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -1481,16 +1489,16 @@ async function getHashtagFrequency(hashtag) {
             id: 'interview-tips',
             subHeader: { index: '008', title: 'Interview Tips' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Interview Tips — Probabilistic Structures
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-4'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 System design interview-এ এই structures mention
                                 করলেন{' '}
                                 <strong className='text-foreground'>
@@ -1498,7 +1506,7 @@ async function getHashtagFrequency(hashtag) {
                                 </strong>{' '}
                                 দেখা যায়। কিন্তু জানতে হবে কখন mention করতে হবে
                                 এবং trade-off কীভাবে explain করতে হবে।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -1595,9 +1603,9 @@ async function getHashtagFrequency(hashtag) {
             id: 'phase-complete-banner',
             subHeader: { index: '009', title: 'Course Complete' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Course Complete — Next Learning Path
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {

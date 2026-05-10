@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,9 +20,9 @@ export const uberContent: TopicData = {
             id: 'why-uber',
             subHeader: { index: '001', title: 'Why This System' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Uber কেন Unique? Real-Time Geospatial Challenge
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -35,7 +43,7 @@ export const uberContent: TopicData = {
                                     FINAL SYSTEM 07 / 07
                                 </span>
                             </div>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 Uber-এ সবচেয়ে কঠিন সমস্যা হলো{' '}
                                 <strong className='text-foreground'>
                                     real-time geospatial matching
@@ -47,7 +55,7 @@ export const uberContent: TopicData = {
                                     location-aware computing
                                 </strong>
                                 ।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -521,7 +529,7 @@ export const uberContent: TopicData = {
         {
             id: 'requirements',
             subHeader: { index: '002', title: 'Requirements' },
-            title: <span className='font-heading'>Features কী কী?</span>,
+            title: <SectionTitle>Features কী কী?</SectionTitle>,
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
@@ -586,9 +594,9 @@ export const uberContent: TopicData = {
             id: 'estimation',
             subHeader: { index: '003', title: 'Capacity Estimation' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Uber-এর Numbers — Back-of-Envelope
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -678,20 +686,20 @@ export const uberContent: TopicData = {
             id: 'architecture',
             subHeader: { index: '004', title: 'High-Level Architecture' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Uber Architecture — Services Breakdown
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Uber microservices-এ built। প্রতিটা core function
                             আলাদা service। Key services হলো: Location Service,
                             Geospatial Index, Trip Service, Matching Service,
                             Surge Pricing, Notification, এবং Payment।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -886,20 +894,20 @@ export const uberContent: TopicData = {
             id: 'geospatial',
             subHeader: { index: '005', title: 'Geospatial Indexing' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Geohash — Location Encode করার উপায়
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             পৃথিবীর যেকোনো location-কে একটা string-এ encode করা
                             যায় — এটাই{' '}
                             <strong className='text-foreground'>Geohash</strong>
                             । Geohash-এর length precision নির্ধারণ করে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1236,19 +1244,19 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
                 title: 'Driver Matching & Surge Pricing',
             },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Driver কীভাবে Select করা হয়?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             শুধু কাছের driver খুঁজলেই হবে না — সেরা driver বেছে
                             নিতে হবে। Uber matching algorithm multiple factors
                             consider করে।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1341,15 +1349,15 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
             id: 'realtime-tracking',
             subHeader: { index: '007', title: 'Real-Time Location Tracking' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     WebSocket + Kafka — Real-time Communication
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             Uber-এর core real-time infrastructure দুটো
                             technology-র উপর নির্ভর করে:{' '}
                             <strong className='text-foreground'>
@@ -1360,7 +1368,7 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
                                 Apache Kafka
                             </strong>{' '}
                             (event streaming)।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -1480,9 +1488,9 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
             id: 'database-scaling',
             subHeader: { index: '008', title: 'Database & Scaling' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     কোন Data কোথায়? Scale করার উপায়
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {

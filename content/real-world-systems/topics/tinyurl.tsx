@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,21 +20,21 @@ export const tinyurlContent: TopicData = {
             id: 'why-url-shortener',
             subHeader: { index: '001', title: 'Why This System' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     URL Shortener কেন শিখবো?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-4'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 TinyURL, bit.ly — এই সিস্টেমগুলো দেখতে simple মনে হয়, কিন্তু এটা design
                                 করতে গেলে অনেক interesting problem আসে। Interview-তে এটা সবচেয়ে common
                                 system design question।
-                            </p>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            </ContentParagraph>
+                            <ContentParagraph>
                                 <strong className='text-foreground'>
                                     https://www.amazon.com/dp/B0893CFLMS/ref=sr_1_1?keywords=...
                                 </strong>{' '}
@@ -35,7 +43,7 @@ export const tinyurlContent: TopicData = {
                                     https://tinyurl.com/y4dz9b
                                 </strong>{' '}
                                 বানানো — এই simple কাজের পেছনে অনেক complexity।
-                            </p>
+                            </ContentParagraph>
                             <div className='grid grid-cols-1 md:grid-cols-3 gap-3 mt-6'>
                                 {[
                                     { num: '100M', label: 'Daily URL Creations' },
@@ -75,7 +83,7 @@ export const tinyurlContent: TopicData = {
             id: 'requirements',
             subHeader: { index: '002', title: 'Requirements' },
             title: (
-                <span className='font-heading'>কী কী লাগবে?</span>
+                <SectionTitle>কী কী লাগবে?</SectionTitle>
             ),
             blocks: [
                 {
@@ -144,15 +152,15 @@ export const tinyurlContent: TopicData = {
             id: 'capacity-estimation',
             subHeader: { index: '003', title: 'Back-of-Envelope Estimation' },
             title: (
-                <span className='font-heading'>Numbers এর হিসাব</span>
+                <SectionTitle>Numbers এর হিসাব</SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             System design-এ numbers জানা দরকার। এটা না জানলেন সঠিক architecture করা যায় না।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -200,15 +208,15 @@ export const tinyurlContent: TopicData = {
             id: 'high-level-design',
             subHeader: { index: '004', title: 'High Level Architecture' },
             title: (
-                <span className='font-heading'>System এর Big Picture</span>
+                <SectionTitle>System এর Big Picture</SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
-                        <p className='text-muted-foreground leading-relaxed text-lg'>
+                        <ContentParagraph>
                             এই system-এ দুটো main flow আছে: (1) URL creation flow এবং (2) URL redirect flow।
-                        </p>
+                        </ContentParagraph>
                     ),
                 },
                 {
@@ -346,7 +354,7 @@ export const tinyurlContent: TopicData = {
             id: 'key-generation',
             subHeader: { index: '005', title: 'Deep Dive' },
             title: (
-                <span className='font-heading'>Core Components বিস্তারিত</span>
+                <SectionTitle>Core Components বিস্তারিত</SectionTitle>
             ),
             blocks: [
                 {
@@ -482,7 +490,7 @@ def create_short_url(long_url: str, db, cache) -> str:
             id: 'database-schema',
             subHeader: { index: '006', title: 'Database Choice' },
             title: (
-                <span className='font-heading'>কোন Database, কেন?</span>
+                <SectionTitle>কোন Database, কেন?</SectionTitle>
             ),
             blocks: [
                 {
@@ -567,7 +575,7 @@ CREATE TABLE url_clicks (
             id: 'scaling',
             subHeader: { index: '007', title: 'Scaling Decisions' },
             title: (
-                <span className='font-heading'>Scale করার পরিকল্পনা</span>
+                <SectionTitle>Scale করার পরিকল্পনা</SectionTitle>
             ),
             blocks: [
                 {
@@ -670,7 +678,7 @@ CREATE TABLE url_clicks (
             id: 'tech-stack',
             subHeader: { index: '008', title: 'Full Tech Stack' },
             title: (
-                <span className='font-heading'>কোন Technology ব্যবহার করবো?</span>
+                <SectionTitle>কোন Technology ব্যবহার করবো?</SectionTitle>
             ),
             blocks: [
                 {
@@ -755,7 +763,7 @@ CREATE TABLE url_clicks (
             id: 'interview-tips',
             subHeader: { index: '009', title: 'Interview Preparation' },
             title: (
-                <span className='font-heading'>Interview Tips ও Common Mistakes</span>
+                <SectionTitle>Interview Tips ও Common Mistakes</SectionTitle>
             ),
             blocks: [
                 {

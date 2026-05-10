@@ -1,4 +1,12 @@
+import React from 'react';
 /* eslint-disable react/jsx-key */
+import {
+    SectionTitle,
+    ContentParagraph,
+    FeatureGrid,
+    FeatureCard,
+    GradientText,
+} from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -12,23 +20,23 @@ export const apiDesignContent: TopicData = {
             id: 'concept',
             subHeader: { index: '001', title: 'Core Concept' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     API Design কী এবং কেন Design Matter করে?
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <div className='space-y-6'>
-                            <p className='text-muted-foreground leading-relaxed text-lg'>
+                            <ContentParagraph>
                                 API (Application Programming Interface) হলো দুটো
                                 system এর মধ্যে communication এর চুক্তি। ধরুন
                                 একটা restaurant এর menu — আপনি menu দেখে order
                                 করুন, kitchen কীভাবে বানায় সেটা আপনাকে জানতে
                                 হয় না। API ও ঠিক তাই — client কী চাইতে পারে
                                 এবং server কী দেবে সেটা define করে।
-                            </p>
+                            </ContentParagraph>
                         </div>
                     ),
                 },
@@ -199,9 +207,9 @@ export const apiDesignContent: TopicData = {
             id: 'rest',
             subHeader: { index: '002', title: 'REST API' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     REST — Representational State Transfer
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -351,9 +359,9 @@ export const apiDesignContent: TopicData = {
             id: 'graphql',
             subHeader: { index: '003', title: 'GraphQL' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     GraphQL — Query Language for APIs
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -453,7 +461,7 @@ mutation UpdateProfile($name: String!, $bio: String) {
             id: 'grpc',
             subHeader: { index: '004', title: 'gRPC' },
             title: (
-                <span className='font-heading'>gRPC — High Performance RPC</span>
+                <SectionTitle>gRPC — High Performance RPC</SectionTitle>
             ),
             blocks: [
                 {
@@ -572,9 +580,9 @@ message UserResponse {
             id: 'gateway',
             subHeader: { index: '005', title: 'API Gateway' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     API Gateway — Single Entry Point
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
@@ -834,7 +842,7 @@ message UserResponse {
         {
             id: 'code',
             subHeader: { index: '006', title: 'Code Examples' },
-            title: <span className='font-heading'>Code Examples</span>,
+            title: <SectionTitle>Code Examples</SectionTitle>,
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
@@ -920,9 +928,9 @@ app.use('/api/', apiLimiter);`,
             id: 'interview',
             subHeader: { index: '007', title: 'Interview Prep' },
             title: (
-                <span className='font-heading'>
+                <SectionTitle>
                     Interview Preparation — Common Questions
-                </span>
+                </SectionTitle>
             ),
             blocks: [
                 {
