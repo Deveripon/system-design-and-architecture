@@ -38,12 +38,21 @@ export async function generateMetadata({
       url,
       type: 'article',
       section: phase?.title,
+      images: [
+        {
+          url: '/og-default.png',
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
       tags: [topic.tag, topic.level, topic.type].filter(Boolean) as string[],
     },
     twitter: {
       card: 'summary_large_image',
       title: `${title} | System Design Mastery`,
       description,
+      images: ['/og-default.png'],
     },
   };
 }
