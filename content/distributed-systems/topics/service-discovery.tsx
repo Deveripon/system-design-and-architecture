@@ -22,7 +22,7 @@ export const serviceDiscoveryContent: TopicData = {
                     content: (
                         <div className='space-y-6'>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
-                                তোমার microservices system এ Order Service কে
+                                আপনার microservices system এ Order Service কে
                                 Payment Service কে call করতে হবে। কিন্তু Payment
                                 Service এর IP কী? Kubernetes এ pods dynamically
                                 scale হয় — IP বদলায়। Hardcode করা impossible।
@@ -417,7 +417,7 @@ export const serviceDiscoveryContent: TopicData = {
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
                                         Code change ছাড়াই circuit breaker।
-                                        YAML config এ define করো।
+                                        YAML config এ define করুন।
                                         Language-agnostic।
                                     </p>
                                 </div>
@@ -514,7 +514,7 @@ SERVICE_PORT = 8001
 SERVICE_ID = f"payment-service-{socket.gethostname()}"
 
 def register_service():
-    """Consul এ service register করো"""
+    """Consul এ service register করুন"""
     c.agent.service.register(
         name=SERVICE_NAME,
         service_id=SERVICE_ID,
@@ -530,16 +530,16 @@ def register_service():
     print(f"✅ Registered: {SERVICE_ID}")
 
 def deregister_service():
-    """Shutdown এ deregister করো"""
+    """Shutdown এ deregister করুন"""
     c.agent.service.deregister(SERVICE_ID)
     print(f"❌ Deregistered: {SERVICE_ID}")
 
 def discover_service(service_name: str) -> str:
-    """Service এর URL বের করো"""
+    """Service এর URL বের করুন"""
     _, services = c.health.service(service_name, passing=True)
     if not services:
         raise Exception(f"No healthy instances of {service_name}")
-    # Simple round-robin (real এ load balancer করবে)
+    # Simple round-robin (real এ load balancer করবেন)
     service = services[0]['Service']
     return f"http://{service['Address']}:{service['Port']}"
 
@@ -578,7 +578,7 @@ metadata:
   namespace: default
 spec:
   selector:
-    app: payment          # এই label এর pods কে route করবে
+    app: payment          # এই label এর pods কে route করবেন
   ports:
     - port: 80            # Service port
       targetPort: 8001     # Pod এর actual port
@@ -628,7 +628,7 @@ spec:
                                         ☸️ Kubernetes DNS
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
-                                        সবচেয়ে common। K8s Service create করলেই
+                                        সবচেয়ে common। K8s Service create করলেনই
                                         DNS entry হয়।{' '}
                                         <code>
                                             payment-service.default.svc.cluster.local
@@ -710,7 +710,7 @@ spec:
                             communication — Service Mesh overkill। K8s DNS
                             যথেষ্ট। ৫০+ services, complex traffic policies,
                             zero-trust security, observability দরকার হলে Service
-                            Mesh consider করো।
+                            Mesh consider করুন।
                         </p>
                     ),
                 },
@@ -724,7 +724,7 @@ spec:
                             service, (2) Envoy proxy sidecar। সব
                             inbound/outbound traffic proxy দিয়ে যায়। Service
                             কোড change ছাড়াই mTLS, retry, circuit breaking
-                            পাওয়া যায়। Control Plane (Istiod) সব sidecars কে
+                            পানয়া যায়। Control Plane (Istiod) সব sidecars কে
                             configure করে।
                         </p>
                     ),
@@ -732,7 +732,7 @@ spec:
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.IMPORTANT,
-                    title: 'Interview এ এটা বলো',
+                    title: 'Interview এ এটা বলুন',
                     content: (
                         <>
                             &quot;Service Discovery এর জন্য আমি Kubernetes এ
@@ -803,7 +803,7 @@ app = FastAPI()
 @app.get("/health")
 async def health_check(response: Response):
     """
-    Proper health check — সব dependencies check করো
+    Proper health check — সব dependencies check করুন
     """
     checks = {
         "status": "healthy",
@@ -839,9 +839,9 @@ async def health_check(response: Response):
 
     return checks
 
-# Consul এ register করার সময় এই endpoint দাও:
+# Consul এ register করার সময় এই endpoint দিন:
 # "http": "http://localhost:8001/health"
-# Consul 503 response দেখলে automatically deregister করবে`,
+# Consul 503 response দেখলে automatically deregister করবেন`,
                 },
             ],
         },
@@ -859,7 +859,7 @@ async def health_check(response: Response):
                     content: (
                         <p className='text-muted-foreground leading-relaxed mb-10 text-lg'>
                             Service Discovery এর জন্য অনেক tool আছে। কোনটা
-                            কখন ব্যবহার করবে সেটা জানা important।
+                            কখন ব্যবহার করবেন সেটা জানা important।
                         </p>
                     ),
                 },
@@ -920,9 +920,9 @@ async def health_check(response: Response):
                             শুরুতে সবসময় simplest option নাও।{' '}
                             <strong>K8s এ আছো?</strong> → K8s DNS যথেষ্ট।{' '}
                             <strong>mTLS/observability দরকার?</strong> → Istio
-                            বা Linkerd যোগ করো।{' '}
+                            বা Linkerd যোগ করুন।{' '}
                             <strong>K8s ছাড়া VM আছে?</strong> → Consul। Over-engineer
-                            করো না।
+                            করুন না।
                         </>
                     ),
                 },
@@ -948,7 +948,7 @@ async def health_check(response: Response):
             ],
             [
                 <span className='font-bold text-primary'>K8s DNS</span>,
-                'Simplest — Service create করলেই DNS auto',
+                'Simplest — Service create করলেনই DNS auto',
             ],
             [
                 <span className='font-bold text-primary'>Service Mesh</span>,
@@ -1040,10 +1040,10 @@ async def health_check(response: Response):
                 options: [
                     {
                         key: 'A',
-                        text: 'K8s Service create করলে DNS entry হয় — service name দিয়ে call করা যায়',
+                        text: 'K8s Service create করলেন DNS entry হয় — service name দিয়ে call করা যায়',
                         isCorrect: true,
                         explanation:
-                            'K8s Service object create করলে automatically DNS entry হয়: service-name.namespace.svc.cluster.local। kube-dns / CoreDNS এটা handle করে। কোনো external tool লাগে না।',
+                            'K8s Service object create করলেন automatically DNS entry হয়: service-name.namespace.svc.cluster.local। kube-dns / CoreDNS এটা handle করে। কোনো external tool লাগে না।',
                     },
                     {
                         key: 'B',
@@ -1098,7 +1098,7 @@ async def health_check(response: Response):
                         text: 'প্রতিটা service এর পাশে থাকা lightweight proxy — সব network traffic intercept করে',
                         isCorrect: true,
                         explanation:
-                            'Sidecar = প্রতিটা service pod এ একটা extra proxy container (Envoy)। সব inbound/outbound traffic এই proxy দিয়ে যায়। Service code change ছাড়াই mTLS, circuit breaking, observability পাওয়া যায়।',
+                            'Sidecar = প্রতিটা service pod এ একটা extra proxy container (Envoy)। সব inbound/outbound traffic এই proxy দিয়ে যায়। Service code change ছাড়াই mTLS, circuit breaking, observability পানয়া যায়।',
                     },
                 ],
             },
@@ -1172,14 +1172,14 @@ async def health_check(response: Response):
             },
             {
                 id: 7,
-                text: 'কখন Service Mesh use করবে না?',
+                text: 'কখন Service Mesh use করবেন না?',
                 options: [
                     {
                         key: 'A',
                         text: '৫-১০ টা simple microservices এ — complexity worth না',
                         isCorrect: true,
                         explanation:
-                            'Service Mesh complex — additional latency (sidecar overhead), steep learning curve, operational complexity। Small systems এ K8s DNS + basic service communication যথেষ্ট। ৫০+ services, complex policies, zero-trust দরকার হলে consider করো।',
+                            'Service Mesh complex — additional latency (sidecar overhead), steep learning curve, operational complexity। Small systems এ K8s DNS + basic service communication যথেষ্ট। ৫০+ services, complex policies, zero-trust দরকার হলে consider করুন।',
                     },
                     {
                         key: 'B',
@@ -1190,7 +1190,7 @@ async def health_check(response: Response):
                     },
                     {
                         key: 'C',
-                        text: 'Kubernetes ব্যবহার করলে সবসময়',
+                        text: 'Kubernetes ব্যবহার করলেন সবসময়',
                         isCorrect: false,
                         explanation:
                             'K8s এ Service Mesh optional — K8s এর নিজস্ব DNS আছে।',
@@ -1315,27 +1315,27 @@ async def health_check(response: Response):
         tasks: [
             <span key='1'>
                 <strong>Pattern Comparison:</strong> Client-Side vs Server-Side
-                discovery — ৩টা করে pros এবং cons লেখো। একটা ride-sharing app
-                (Pathao/Uber) এ কোনটা use করবে এবং কেন?
+                discovery — ৩টা করে pros এবং cons লিখুন। একটা ride-sharing app
+                (Pathao/Uber) এ কোনটা use করবেন এবং কেন?
             </span>,
             <span key='2'>
                 <strong>K8s YAML:</strong> দেওয়া payment-service.yaml পড়ো। যদি
                 payment service এর ৩টা replica চলে এবং একটা crash করে, কী হবে?
-                K8s কীভাবে handle করবে?
+                K8s কীভাবে handle করবেন?
             </span>,
             <span key='3'>
                 <strong>Consul Exploration:</strong> Consul website (consul.io)
                 এ গিয়ে &quot;What is Consul&quot; পড়ো। ZooKeeper এর সাথে ৩টা
-                মূল পার্থক্য লেখো।
+                মূল পার্থক্য লিখুন।
             </span>,
             <span key='4'>
-                <strong>Service Mesh Decision:</strong> তুমি ১৫টা microservices
-                system design করছো। Service Mesh use করবে কি? কোনটা
-                (Istio/Linkerd/Consul Connect) এবং কেন? Justify করো।
+                <strong>Service Mesh Decision:</strong> আপনি ১৫টা microservices
+                system design করছো। Service Mesh use করবেন কি? কোনটা
+                (Istio/Linkerd/Consul Connect) এবং কেন? Justify করুন।
             </span>,
             <span key='5'>
                 <strong>Health Check Design:</strong> একটা FastAPI service এর
-                জন্য proper /health endpoint design করো — database connection,
+                জন্য proper /health endpoint design করুন — database connection,
                 external service dependency সব check করে।
             </span>,
         ],
@@ -1367,24 +1367,24 @@ async def health_check(response: Response):
                 ),
             },
             {
-                title: 'Order Service বানাও',
+                title: 'Order Service বানান',
                 description:
                     'FastAPI app যেটা startup এ Consul তে register করে এবং /health endpoint আছে।',
             },
             {
-                title: 'Payment Service বানাও',
+                title: 'Payment Service বানান',
                 description:
                     'একইভাবে Consul তে register করে। Order Service Consul থেকে Payment discover করে call করে।',
             },
             {
-                title: 'Consul UI দেখো',
+                title: 'Consul UI দেখুন',
                 description:
-                    'localhost:8500 এ দুটো service registered দেখবে। Health check passing।',
+                    'localhost:8500 এ দুটো service registered দেখবেন। Health check passing।',
             },
             {
-                title: 'Payment service kill করো',
+                title: 'Payment service kill করুন',
                 description:
-                    'Payment service stop করো। Consul automatically unhealthy mark করবে। Order service graceful error দেবে।',
+                    'Payment service stop করুন। Consul automatically unhealthy mark করবেন। Order service graceful error দেবে।',
             },
         ],
         codeBlock: {
@@ -1423,7 +1423,7 @@ async def health():
 
 @app.post("/orders")
 async def create_order(amount: float):
-    # Consul থেকে payment service discover করো
+    # Consul থেকে payment service discover করুন
     _, services = c.health.service("payment-service", passing=True)
     if not services:
         return {"error": "Payment service unavailable"}
@@ -1435,6 +1435,6 @@ async def create_order(amount: float):
         resp = await client.post(f"{payment_url}/charge", json={"amount": amount})
         return {"order": "created", "payment": resp.json()}`,
         },
-        tip: 'Service Discovery practically দেখবে — service register হয়, health check fail করে deregister হয়, client discover করে। Kubernetes এর ভেতরে ঠিক এটাই হয়, শুধু automatically।',
+        tip: 'Service Discovery practically দেখবেন — service register হয়, health check fail করে deregister হয়, client discover করে। Kubernetes এর ভেতরে ঠিক এটাই হয়, শুধু automatically।',
     },
 };

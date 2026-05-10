@@ -22,7 +22,7 @@ export const microservicesContent: TopicData = {
                     content: (
                         <div className='space-y-6'>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
-                                তুমি একটা বড় e-commerce app বানাচ্ছো। User
+                                আপনি একটা বড় e-commerce app বানাচ্ছো। User
                                 login, product catalog, payment, order tracking,
                                 notification — সব একটা codebase এ। এক জায়গায়
                                 bug হলে পুরো system down। Team বড় হলে merge
@@ -537,7 +537,7 @@ export const microservicesContent: TopicData = {
                         [
                             'Scale',
                             'পুরো app scale করতে হয়',
-                            'শুধু দরকারী service scale করো',
+                            'শুধু দরকারী service scale করুন',
                         ],
                         [
                             'Team',
@@ -588,8 +588,8 @@ export const microservicesContent: TopicData = {
                             Microservices মানে এই না যে সবসময় ভালো। Small
                             startup এ monolith দিয়ে শুরু করা অনেক বেশি
                             sensible। System জটিল হলে, team বড় হলে, তখন
-                            microservices এ migrate করো। Amazon নিজেও monolith
-                            দিয়ে শুরু করেছিল!
+                            microservices এ migrate করুন। Amazon নিজেও monolith
+                            দিয়ে শুরু করেছেনিল!
                         </p>
                     ),
                 },
@@ -1019,7 +1019,7 @@ export const microservicesContent: TopicData = {
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
                                         Services এর মধ্যে async communication।
-                                        Direct call না করে event publish করো।
+                                        Direct call না করে event publish করুন।
                                         (Kafka, RabbitMQ, AWS SQS)
                                     </p>
                                 </div>
@@ -1072,9 +1072,9 @@ export const microservicesContent: TopicData = {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <p className='text-muted-foreground leading-relaxed text-lg'>
-                            প্রতিটা service এর নিজের database থাকবে। কোনো
+                            প্রতিটা service এর নিজের database থাকবেন। কোনো
                             service অন্য service এর database সরাসরি access
-                            করবে না। এতে loose coupling নিশ্চিত হয়।
+                            করবেন না। এতে loose coupling নিশ্চিত হয়।
                         </p>
                     ),
                 },
@@ -1105,7 +1105,7 @@ export const microservicesContent: TopicData = {
                         <p className='text-muted-foreground leading-relaxed text-lg'>
                             Multiple services এ একটা transaction। Order service
                             → Payment service → Inventory service। কোনো step
-                            fail করলে rollback। Topic 6 এ বিস্তারিত।
+                            fail করলেন rollback। Topic 6 এ বিস্তারিত।
                         </p>
                     ),
                 },
@@ -1375,7 +1375,7 @@ import asyncio
 
 app = FastAPI(title="Order Service")
 
-# অন্য services এর URL — real এ এটা env variable থেকে আসবে
+# অন্য services এর URL — real এ এটা env variable থেকে আসবেন
 PAYMENT_SERVICE_URL = "http://payment-service:8001"
 INVENTORY_SERVICE_URL = "http://inventory-service:8002"
 
@@ -1393,14 +1393,14 @@ order_counter = 1
 async def create_order(order: OrderRequest):
     global order_counter
     async with httpx.AsyncClient() as client:
-        # Step 1: Inventory check করো
+        # Step 1: Inventory check করুন
         inv_response = await client.get(
             f"{INVENTORY_SERVICE_URL}/check/{order.product_id}/{order.quantity}"
         )
         if inv_response.status_code != 200:
             raise HTTPException(400, "Insufficient inventory")
 
-        # Step 2: Payment process করো
+        # Step 2: Payment process করুন
         pay_response = await client.post(
             f"{PAYMENT_SERVICE_URL}/charge",
             json={"user_id": order.user_id, "amount": order.total_amount}
@@ -1408,7 +1408,7 @@ async def create_order(order: OrderRequest):
         if pay_response.status_code != 200:
             raise HTTPException(402, "Payment failed")
 
-    # Step 3: Order save করো
+    # Step 3: Order save করুন
     order_id = order_counter
     orders_db[order_id] = {"id": order_id, "status": "confirmed", **order.dict()}
     order_counter += 1
@@ -1553,7 +1553,7 @@ services:
                                 </h3>
                                 <p className='text-muted-foreground leading-relaxed italic'>
                                     2-pizza rule: প্রতিটা team এত ছোট হবে যে
-                                    দুটো pizza তে খাওয়া যাবে। প্রতিটা team তার
+                                    দুটো pizza তে খাওয়া যাবেন। প্রতিটা team তার
                                     service নিজেই deploy করে।
                                 </p>
                             </div>
@@ -1562,7 +1562,7 @@ services:
                                     Uber
                                 </h3>
                                 <p className='text-muted-foreground leading-relaxed italic'>
-                                    Monolith থেকে migrate করেছে। Rider, Driver,
+                                    Monolith থেকে migrate করেছেনে। Rider, Driver,
                                     Maps, Payment সব আলাদা service। Peak hour
                                     এ শুধু Matching service scale করে।
                                 </p>
@@ -1656,11 +1656,11 @@ services:
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.CONCEPT,
-                    title: 'Q1: Monolith vs Microservices কখন কোনটা choose করবে?',
+                    title: 'Q1: Monolith vs Microservices কখন কোনটা choose করবেন?',
                     content: (
                         <>
                             <strong>Answer:</strong> Small team, early startup,
-                            simple domain — Monolith দিয়ে শুরু করো। Complex
+                            simple domain — Monolith দিয়ে শুরু করুন। Complex
                             domain, multiple teams, different scaling needs,
                             independent deployments দরকার হলে Microservices।
                             &quot;Don&apos;t start with microservices&quot; —
@@ -1690,8 +1690,8 @@ services:
                     content: (
                         <>
                             <strong>Answer:</strong> Single Responsibility
-                            Principle follow করো। একটা service একটা business
-                            capability handle করবে। &quot;Microservice&quot;
+                            Principle follow করুন। একটা service একটা business
+                            capability handle করবেন। &quot;Microservice&quot;
                             মানে code এর size না — responsibility এর size। User
                             management একটা service, Payment একটা service।
                         </>
@@ -1700,13 +1700,13 @@ services:
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.CONCEPT,
-                    title: 'Q4: Distributed system এ data consistency কীভাবে manage করো?',
+                    title: 'Q4: Distributed system এ data consistency কীভাবে manage করুন?',
                     content: (
                         <>
                             <strong>Answer:</strong> Eventual consistency।
                             Strong consistency সব সময় possible না distributed
                             এ। Saga pattern, event sourcing, compensating
-                            transactions ব্যবহার করো। CAP theorem মনে রাখো।
+                            transactions ব্যবহার করুন। CAP theorem মনে রাখুন।
                         </>
                     ),
                 },
@@ -1718,7 +1718,7 @@ services:
         rows: [
             [
                 <span className='font-bold text-primary'>Microservices</span>,
-                'বড় app কে ছোট independent services এ ভাগ করো',
+                'বড় app কে ছোট independent services এ ভাগ করুন',
             ],
             [
                 <span className='font-bold text-primary'>API Gateway</span>,
@@ -1742,7 +1742,7 @@ services:
             ],
             [
                 <span className='font-bold text-primary'>CQRS</span>,
-                'Read ও Write আলাদা করো — performance boost',
+                'Read ও Write আলাদা করুন — performance boost',
             ],
             [
                 <span className='font-bold text-primary'>When to use</span>,
@@ -1775,7 +1775,7 @@ services:
                         text: 'Independent deployment এবং scaling করা যায়',
                         isCorrect: true,
                         explanation:
-                            'Microservices এর core benefit হলো প্রতিটা service independently deploy এবং scale করা যায়। Payment service suddenly slow হলে শুধু সেটাই scale করো, পুরো system না।',
+                            'Microservices এর core benefit হলো প্রতিটা service independently deploy এবং scale করা যায়। Payment service suddenly slow হলে শুধু সেটাই scale করুন, পুরো system না।',
                     },
                     {
                         key: 'D',
@@ -1802,7 +1802,7 @@ services:
                         text: 'Services এর মধ্যে loose coupling নিশ্চিত করতে',
                         isCorrect: true,
                         explanation:
-                            'Shared database থাকলে services tightly coupled হয়। একটা service এর schema change করলে অন্যটা ভাঙে। Separate DB দিলে প্রতিটা service independent থাকে।',
+                            'Shared database থাকলে services tightly coupled হয়। একটা service এর schema change করলেন অন্যটা ভাঙে। Separate DB দিলে প্রতিটা service independent থাকে।',
                     },
                     {
                         key: 'C',
@@ -1904,7 +1904,7 @@ services:
                         text: 'Independent team autonomy, fault isolation, এবং massive scale handle করতে',
                         isCorrect: true,
                         explanation:
-                            'Netflix এর ৫০০+ teams প্রতিটা আলাদা service own করে এবং independently deploy করে। একটা service fail করলে বাকিগুলো চলে। এই scale এ monolith কাজ করে না।',
+                            'Netflix এর ৫০০+ teams প্রতিটা আলাদা service own করে এবং independently deploy করে। একটা service fail করলেন বাকিগুলো চলে। এই scale এ monolith কাজ করে না।',
                     },
                     {
                         key: 'C',
@@ -1958,14 +1958,14 @@ services:
             },
             {
                 id: 7,
-                text: 'একটা Startup এ নতুন product launch করছো। Microservices দিয়ে শুরু করবে কি?',
+                text: 'একটা Startup এ নতুন product launch করছো। Microservices দিয়ে শুরু করবেন কি?',
                 options: [
                     {
                         key: 'A',
-                        text: 'না, Monolith দিয়ে শুরু করো — team ছোট, domain বোঝা যাচ্ছে না এখনো',
+                        text: 'না, Monolith দিয়ে শুরু করুন — team ছোট, domain বোঝা যাচ্ছে না এখনো',
                         isCorrect: true,
                         explanation:
-                            'Martin Fowler বলেন: "Don\'t start with microservices." শুরুতে domain ভালো না বুঝলে ভুল boundaries তৈরি হবে। Monolith থেকে শুরু করো, প্রয়োজনে পরে migrate করো।',
+                            'Martin Fowler বলেন: "Don\'t start with microservices." শুরুতে domain ভালো না বুঝলে ভুল boundaries তৈরি হবে। Monolith থেকে শুরু করুন, প্রয়োজনে পরে migrate করুন।',
                     },
                     {
                         key: 'B',
@@ -1979,11 +1979,11 @@ services:
                         text: 'হ্যাঁ, কারণ Netflix এটা করে',
                         isCorrect: false,
                         explanation:
-                            'Netflix ও শুরুতে monolith ছিল। তোমার context Netflix এর মতো না।',
+                            'Netflix ও শুরুতে monolith ছিল। আপনার context Netflix এর মতো না।',
                     },
                     {
                         key: 'D',
-                        text: 'না, serverless use করো',
+                        text: 'না, serverless use করুন',
                         isCorrect: false,
                         explanation:
                             'Serverless একটা ভালো option কিন্তু এটা microservices এর alternative না — এবং startup এ complexity যোগ করতে পারে।',
@@ -2064,10 +2064,10 @@ services:
                 options: [
                     {
                         key: 'A',
-                        text: 'Payment service সরাসরি Email service কে HTTP call করবে',
+                        text: 'Payment service সরাসরি Email service কে HTTP call করবেন',
                         isCorrect: false,
                         explanation:
-                            'Direct HTTP call করলে Payment service Email service এর উপর dependent হয়ে যায়। Email service down থাকলে payment ও fail করবে।',
+                            'Direct HTTP call করলেন Payment service Email service এর উপর dependent হয়ে যায়। Email service down থাকলে payment ও fail করবেন।',
                     },
                     {
                         key: 'B',
@@ -2078,10 +2078,10 @@ services:
                     },
                     {
                         key: 'C',
-                        text: 'Payment service একটা "payment.completed" event publish করবে, Notification service সেটা consume করবে',
+                        text: 'Payment service একটা "payment.completed" event publish করবেন, Notification service সেটা consume করবেন',
                         isCorrect: true,
                         explanation:
-                            'Event-driven approach সবচেয়ে ভালো। Payment service জানে না Notification service আছে কিনা। Event publish করে দাও — যে সে consume করবে। এটাই microservices এর spirit: loose coupling।',
+                            'Event-driven approach সবচেয়ে ভালো। Payment service জানে না Notification service আছে কিনা। Event publish করে দিন — যে সে consume করবেন। এটাই microservices এর spirit: loose coupling।',
                     },
                     {
                         key: 'D',
@@ -2101,29 +2101,29 @@ services:
         tasks: [
             <span key='1'>
                 <strong>Decomposition Exercise:</strong> একটা food delivery app
-                (যেমন Pathao Food) কে microservices এ decompose করো। কমপক্ষে
-                ৬টা service চিহ্নিত করো এবং প্রতিটার responsibility লেখো।
+                (যেমন Pathao Food) কে microservices এ decompose করুন। কমপক্ষে
+                ৬টা service চিহ্নিত করুন এবং প্রতিটার responsibility লিখুন।
             </span>,
             <span key='2'>
                 <strong>Communication Design:</strong> উপরের services গুলো
-                কীভাবে communicate করবে সেটা design করো। কোনটা sync
+                কীভাবে communicate করবেন সেটা design করুন। কোনটা sync
                 (REST/gRPC), কোনটা async (Kafka) হবে এবং কেন — সেটা explain
-                করো।
+                করুন।
             </span>,
             <span key='3'>
                 <strong>Code Reading:</strong> উপরে দেওয়া FastAPI Order
                 service এর code পড়ো। যদি Inventory service down থাকে তাহলে কী
-                হবে? Error handling কীভাবে improve করবে?
+                হবে? Error handling কীভাবে improve করবেন?
             </span>,
             <span key='4'>
                 <strong>Diagram:</strong> excalidraw.com বা draw.io তে একটা
-                Microservices architecture diagram আঁকো — API Gateway, কমপক্ষে
+                Microservices architecture diagram আঁকুন — API Gateway, কমপক্ষে
                 ৩টা service, Message Bus, এবং databases সহ।
             </span>,
             <span key='5'>
-                <strong>Trade-off Analysis:</strong> তোমার পরিচিত বা কাজ করা
+                <strong>Trade-off Analysis:</strong> আপনার পরিচিত বা কাজ করা
                 কোনো project — সেটা Monolith দিয়ে শুরু করা কি ঠিক হবে নাকি
-                Microservices? ৫-৭ লাইনে justify করো।
+                Microservices? ৫-৭ লাইনে justify করুন।
             </span>,
         ],
         deliverables: [
@@ -2147,34 +2147,34 @@ services:
         subtitle: 'Mini E-Commerce Microservices (Docker)',
         steps: [
             {
-                title: 'Project structure তৈরি করো',
+                title: 'Project structure তৈরি করুন',
                 description:
-                    'user_service/, product_service/, order_service/, nginx/ folders বানাও।',
+                    'user_service/, product_service/, order_service/, nginx/ folders বানান।',
             },
             {
-                title: 'প্রতিটা service এ simple FastAPI app বানাও',
+                title: 'প্রতিটা service এ simple FastAPI app বানান',
                 description:
                     'User service: GET /users, POST /users। Product: GET /products। Order: POST /orders (user ও product validate করে)।',
             },
             {
-                title: 'Nginx API Gateway configure করো',
+                title: 'Nginx API Gateway configure করুন',
                 description:
                     '/api/users → user_service, /api/products → product_service, /api/orders → order_service।',
             },
             {
-                title: 'docker-compose.yml লেখো এবং চালাও',
+                title: 'docker-compose.yml লিখুন এবং চালাও',
                 description:
                     'docker-compose up --build দিয়ে সব service একসাথে চালাও।',
             },
             {
-                title: 'Postman/curl দিয়ে test করো',
+                title: 'Postman/curl দিয়ে test করুন',
                 description:
-                    'localhost/api/users, localhost/api/products, localhost/api/orders — তিনটাই কাজ করছে কিনা check করো।',
+                    'localhost/api/users, localhost/api/products, localhost/api/orders — তিনটাই কাজ করছে কিনা check করুন।',
             },
             {
-                title: 'Bonus: একটা service বন্ধ করো',
+                title: 'Bonus: একটা service বন্ধ করুন',
                 description:
-                    'Product service stop করো। Order service কীভাবে handle করে? Graceful error দেখো।',
+                    'Product service stop করুন। Order service কীভাবে handle করে? Graceful error দেখুন।',
             },
         ],
         codeBlock: {
@@ -2208,6 +2208,6 @@ services:
       USER_SERVICE_URL: "http://user-service:8000"
       PRODUCT_SERVICE_URL: "http://product-service:8001"`,
         },
-        tip: 'Microservices theory না — practically দেখবে কীভাবে services আলাদাভাবে চলে, কীভাবে communicate করে, এবং একটা fail হলে কী হয়। এটাই real-world microservices এর foundation।',
+        tip: 'Microservices theory না — practically দেখবেন কীভাবে services আলাদাভাবে চলে, কীভাবে communicate করে, এবং একটা fail হলে কী হয়। এটাই real-world microservices এর foundation।',
     },
 };

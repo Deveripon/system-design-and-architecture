@@ -39,12 +39,12 @@ export const advancedDsContent: TopicData = {
                                 </span>
                             </div>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
-                                কল্পনা করো ১ বিলিয়ন URL-এর একটা set রাখতে হবে।
+                                কল্পনা করুন ১ বিলিয়ন URL-এর একটা set রাখতে হবে।
                                 Standard{' '}
                                 <strong className='text-foreground'>
                                     HashSet
                                 </strong>{' '}
-                                use করলে{' '}
+                                use করলেন{' '}
                                 <strong className='text-foreground'>
                                     ৫০+ GB memory
                                 </strong>{' '}
@@ -95,7 +95,7 @@ export const advancedDsContent: TopicData = {
                                     title: '⚖️ The Trade-off',
                                     color: 'text-emerald-400',
                                     border: 'border-emerald-500/20 bg-emerald-500/5',
-                                    desc: 'Approximate answer accept করলে — ৯৯%+ accurate হলে production-এ sufficient। False positive rate controllable।',
+                                    desc: 'Approximate answer accept করলেন — ৯৯%+ accurate হলে production-এ sufficient। False positive rate controllable।',
                                     stat: 'Bloom Filter: 1 MB (50,000x savings!)',
                                     statColor: 'text-emerald-400',
                                 },
@@ -215,7 +215,7 @@ export const advancedDsContent: TopicData = {
             subHeader: { index: '002', title: 'Bloom Filter' },
             title: (
                 <span className='font-heading'>
-                    Bloom Filter — &apos;আছে কিনা&apos; দ্রুত বলো
+                    Bloom Filter — &apos;আছে কিনা&apos; দ্রুত বলুন
                 </span>
             ),
             blocks: [
@@ -716,7 +716,7 @@ console.log(\`Memory used: \${usernameFilter.memoryBytes()} bytes\`);`,
             subHeader: { index: '003', title: 'HyperLogLog' },
             title: (
                 <span className='font-heading'>
-                    HyperLogLog — Unique Count করো, Memory তে নয়
+                    HyperLogLog — Unique Count করুন, Memory তে নয়
                 </span>
             ),
             blocks: [
@@ -748,26 +748,26 @@ console.log(\`Memory used: \${usernameFilter.memoryBytes()} bytes\`);`,
                                 {[
                                     {
                                         step: '01',
-                                        title: 'Hash করো',
-                                        desc: 'প্রতিটা element hash করো → uniform binary string পাও। "user_123" → "0001101100110..."',
+                                        title: 'Hash করুন',
+                                        desc: 'প্রতিটা element hash করুন → uniform binary string পান। "user_123" → "0001101100110..."',
                                         color: 'text-primary border-primary/30 bg-primary/5',
                                     },
                                     {
                                         step: '02',
-                                        title: 'Leading Zeros Count করো',
-                                        desc: 'Hash-এর শুরুতে কতটা 0 আছে সেটা track করো। "0001101..." → 3 leading zeros।',
+                                        title: 'Leading Zeros Count করুন',
+                                        desc: 'Hash-এর শুরুতে কতটা 0 আছে সেটা track করুন। "0001101..." → 3 leading zeros।',
                                         color: 'text-purple-400 border-purple-400/30 bg-purple-400/5',
                                     },
                                     {
                                         step: '03',
-                                        title: 'Maximum Track করো',
-                                        desc: 'সর্বোচ্চ leading zeros count রাখো। Max leading zeros = k হলে → set-এ ≈ 2^k unique elements।',
+                                        title: 'Maximum Track করুন',
+                                        desc: 'সর্বোচ্চ leading zeros count রাখুন। Max leading zeros = k হলে → set-এ ≈ 2^k unique elements।',
                                         color: 'text-orange-400 border-orange-400/30 bg-orange-400/5',
                                     },
                                     {
                                         step: '04',
-                                        title: 'Cardinality Estimate করো',
-                                        desc: 'Multiple sub-streams average করো। Harmonic mean use করে accuracy improve করো। Error rate: ~0.81%।',
+                                        title: 'Cardinality Estimate করুন',
+                                        desc: 'Multiple sub-streams average করুন। Harmonic mean use করে accuracy improve করুন। Error rate: ~0.81%।',
                                         color: 'text-emerald-400 border-emerald-500/30 bg-emerald-500/5',
                                     },
                                 ].map((item, i) => (
@@ -898,11 +898,11 @@ async function getWeeklyActiveUsers(weekDates) {
                         <p>
                             Redis নিজেই HyperLogLog support করে —{' '}
                             <strong className='font-mono'>PFADD</strong> দিয়ে
-                            element add করো,{' '}
+                            element add করুন,{' '}
                             <strong className='font-mono'>PFCOUNT</strong> দিয়ে
-                            unique count পাও,{' '}
+                            unique count পান,{' '}
                             <strong className='font-mono'>PFMERGE</strong> দিয়ে
-                            multiple counters merge করো। কোনো external library
+                            multiple counters merge করুন। কোনো external library
                             দরকার নেই। Daily active users, unique video views,
                             unique page visitors — সব কিছু Redis দিয়েই করা যায়।
                         </p>
@@ -919,7 +919,7 @@ async function getWeeklyActiveUsers(weekDates) {
             subHeader: { index: '004', title: 'Count-Min Sketch' },
             title: (
                 <span className='font-heading'>
-                    Count-Min Sketch — Frequency Estimate করো
+                    Count-Min Sketch — Frequency Estimate করুন
                 </span>
             ),
             blocks: [
@@ -1122,10 +1122,10 @@ print(f"Memory: {cms.memory_bytes()} bytes vs exact dict: huge")`,
                     title: '📌 Conservative Update কীভাবে Error কমায়?',
                     content: (
                         <p>
-                            Standard update: সব positions increment করো।
+                            Standard update: সব positions increment করুন।
                             Conservative update:{' '}
                             <strong>
-                                শুধু minimum value-র positions increment করো
+                                শুধু minimum value-র positions increment করুন
                             </strong>
                             । এতে overcounting কমে এবং estimate আরো accurate হয়।
                             Twitter-এর trending algorithm, network traffic
@@ -1197,7 +1197,7 @@ print(f"Memory: {cms.memory_bytes()} bytes vs exact dict: huge")`,
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.TIP,
-                    title: '💡 কোনটা কখন Use করবে?',
+                    title: '💡 কোনটা কখন Use করবেন?',
                     content: (
                         <div className='space-y-2'>
                             <p>
@@ -1364,7 +1364,7 @@ async function getHashtagFrequency(hashtag) {
                             part) load করতে হবে।{' '}
                             <strong>PFADD / PFCOUNT</strong> Redis core-এ আছে —
                             extra module দরকার নেই। Production-এ Redis Stack
-                            Docker image use করলে সব automatically available।
+                            Docker image use করলেন সব automatically available।
                         </p>
                     ),
                 },
@@ -1492,7 +1492,7 @@ async function getHashtagFrequency(hashtag) {
                         <div className='space-y-4'>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
                                 System design interview-এ এই structures mention
-                                করলে{' '}
+                                করলেন{' '}
                                 <strong className='text-foreground'>
                                     senior-level knowledge
                                 </strong>{' '}
@@ -1512,19 +1512,19 @@ async function getHashtagFrequency(hashtag) {
                             {[
                                 {
                                     q: 'How would you design a web crawler that doesn\'t revisit URLs?',
-                                    a: 'Bloom Filter দিয়ে already-visited URLs track করো। HashSet-এর ৫০,০০০ গুণ কম memory-তে।',
+                                    a: 'Bloom Filter দিয়ে already-visited URLs track করুন। HashSet-এর ৫০,০০০ গুণ কম memory-তে।',
                                     tag: 'Web Crawler',
                                     color: 'text-primary border-primary/20',
                                 },
                                 {
                                     q: 'How does YouTube count unique views efficiently?',
-                                    a: 'HyperLogLog use করো। ১ বিলিয়ন unique viewers-ও মাত্র ১২ KB memory-তে count করা যায়।',
+                                    a: 'HyperLogLog use করুন। ১ বিলিয়ন unique viewers-ও মাত্র ১২ KB memory-তে count করা যায়।',
                                     tag: 'Video Platform',
                                     color: 'text-purple-400 border-purple-400/20',
                                 },
                                 {
                                     q: 'How would you find trending topics on Twitter in real-time?',
-                                    a: 'Count-Min Sketch দিয়ে hashtag frequency track করো। Fixed memory-তে top-K find করো।',
+                                    a: 'Count-Min Sketch দিয়ে hashtag frequency track করুন। Fixed memory-তে top-K find করুন।',
                                     tag: 'Social Media',
                                     color: 'text-orange-400 border-orange-400/20',
                                 },
@@ -1536,7 +1536,7 @@ async function getHashtagFrequency(hashtag) {
                                 },
                                 {
                                     q: 'Design a username availability check at scale',
-                                    a: 'Bloom Filter দিয়ে first check করো। Definitely not taken → no DB query। Probably taken → DB confirm।',
+                                    a: 'Bloom Filter দিয়ে first check করুন। Definitely not taken → no DB query। Probably taken → DB confirm।',
                                     tag: 'User Service',
                                     color: 'text-yellow-400 border-yellow-400/20',
                                 },
@@ -1572,14 +1572,14 @@ async function getHashtagFrequency(hashtag) {
                     title: '💡 Magic Phrase for Interviews',
                     content: (
                         <p>
-                            Interview-এ সবসময় বলো:{' '}
+                            Interview-এ সবসময় বলুন:{' '}
                             <strong>
                                 &quot;If we can tolerate a small error rate,
                                 probabilistic data structures give us huge
                                 memory and speed gains.&quot;
                             </strong>{' '}
-                            তারপর specific structure mention করো। এই phrase
-                            interviewer-কে বুঝিয়ে দেয় যে তুমি trade-off
+                            তারপর specific structure mention করুন। এই phrase
+                            interviewer-কে বুঝিয়ে দেয় যে আপনি trade-off
                             consciously accept করছো — এটাই senior-level
                             thinking।
                         </p>
@@ -1614,9 +1614,9 @@ async function getHashtagFrequency(hashtag) {
                                     System Design Mastery সম্পূর্ণ!
                                 </p>
                                 <p className='text-muted-foreground text-base mb-8 max-w-xl mx-auto leading-relaxed'>
-                                    তুমি <strong className='text-emerald-400'>৫টা Phase</strong> এবং{' '}
+                                    আপনি <strong className='text-emerald-400'>৫টা Phase</strong> এবং{' '}
                                     <strong className='text-emerald-400'>২৯টা Topic</strong> সম্পূর্ণ
-                                    করেছো। তুমি এখন একজন{' '}
+                                    করেছেনো। আপনি এখন একজন{' '}
                                     <strong className='text-foreground'>System Design Expert</strong>।
                                 </p>
 
@@ -1683,9 +1683,9 @@ async function getHashtagFrequency(hashtag) {
                                 <div className='border border-yellow-400/30 bg-yellow-400/5 rounded-lg p-5 max-w-lg mx-auto'>
                                     <p className='text-yellow-400 font-bold text-base italic leading-relaxed'>
                                         &ldquo;জ্ঞান অর্জন করা শেষ হয় না — কিন্তু
-                                        foundation গড়া শেষ হয়। তুমি সেই foundation
-                                        গড়েছো। এখন তুমি যেকোনো system design
-                                        challenge face করতে পারবে।&rdquo;
+                                        foundation গড়া শেষ হয়। আপনি সেই foundation
+                                        গড়েছো। এখন আপনি যেকোনো system design
+                                        challenge face করতে পারবেন।&rdquo;
                                     </p>
                                     <p className='text-muted-foreground text-xs mt-2 font-mono'>
                                         — System Design Mastery Course
@@ -1696,10 +1696,10 @@ async function getHashtagFrequency(hashtag) {
                             {/* ── Part B: Next Learning Path ── */}
                             <div>
                                 <h3 className='text-2xl font-black text-foreground mb-2'>
-                                    এখন কোথায় যাবে?
+                                    এখন কোথায় যাবেন?
                                 </h3>
                                 <p className='text-muted-foreground text-base mb-8'>
-                                    Deep Mastery Roadmap — তোমার পরের পদক্ষেপ
+                                    Deep Mastery Roadmap — আপনার পরের পদক্ষেপ
                                 </p>
 
                                 {/* ── Subsection 1: Books ── */}
@@ -1853,7 +1853,7 @@ async function getHashtagFrequency(hashtag) {
                                             {
                                                 step: '01',
                                                 title: 'Open Source Contribution',
-                                                desc: 'Redis, Kafka, PostgreSQL, Kubernetes এর codebase পড়ো। Issues solve করো। Real distributed systems বোঝার সেরা উপায় — real code দেখা।',
+                                                desc: 'Redis, Kafka, PostgreSQL, Kubernetes এর codebase পড়ো। Issues solve করুন। Real distributed systems বোঝার সেরা উপায় — real code দেখা।',
                                                 tags: [
                                                     'Redis',
                                                     'Kafka',
@@ -1865,8 +1865,8 @@ async function getHashtagFrequency(hashtag) {
                                             },
                                             {
                                                 step: '02',
-                                                title: 'Production Project Build করো',
-                                                desc: 'একটা real system build করো যেটায় এই course এর সব concepts use হয় — distributed, scalable, observable, secure। Portfolio project হিসেবেও কাজে আসবে।',
+                                                title: 'Production Project Build করুন',
+                                                desc: 'একটা real system build করুন যেটায় এই course এর সব concepts use হয় — distributed, scalable, observable, secure। Portfolio project হিসেবেও কাজে আসবেন।',
                                                 tags: [
                                                     'Docker',
                                                     'Kubernetes',
@@ -1878,7 +1878,7 @@ async function getHashtagFrequency(hashtag) {
                                             },
                                             {
                                                 step: '03',
-                                                title: 'Postmortem Study করো',
+                                                title: 'Postmortem Study করুন',
                                                 desc: 'Netflix, AWS, Cloudflare এর public postmortems পড়ো। Real incident থেকে শেখো — কেন system fail করে, কীভাবে recover করে।',
                                                 tags: [
                                                     'Netflix Tech Blog',
@@ -1891,7 +1891,7 @@ async function getHashtagFrequency(hashtag) {
                                             {
                                                 step: '04',
                                                 title: 'System Design Interview Practice',
-                                                desc: 'প্রতি সপ্তাহে ২টা mock system design interview করো। Excalidraw দিয়ে diagram আঁকো। Time-box করো — ৪৫ মিনিট।',
+                                                desc: 'প্রতি সপ্তাহে ২টা mock system design interview করুন। Excalidraw দিয়ে diagram আঁকুন। Time-box করুন — ৪৫ মিনিট।',
                                                 tags: [
                                                     'Excalidraw',
                                                     'Mock Interview',
@@ -1902,8 +1902,8 @@ async function getHashtagFrequency(hashtag) {
                                             },
                                             {
                                                 step: '05',
-                                                title: 'Community তে Join করো',
-                                                desc: 'High Scalability blog, AWS Architecture blog, Engineering blogs (Netflix Tech, Uber Engineering) follow করো। Community থেকে শেখা accelerate করে।',
+                                                title: 'Community তে Join করুন',
+                                                desc: 'High Scalability blog, AWS Architecture blog, Engineering blogs (Netflix Tech, Uber Engineering) follow করুন। Community থেকে শেখা accelerate করে।',
                                                 tags: [
                                                     'High Scalability',
                                                     'Uber Engineering',
@@ -1954,21 +1954,21 @@ async function getHashtagFrequency(hashtag) {
                                                 Interview Readiness Checklist
                                             </h3>
                                             <p className='text-sm text-muted-foreground'>
-                                                তুমি এখন কী কী করতে পারো
+                                                আপনি এখন কী কী করতে পারেন
                                             </p>
                                         </div>
                                     </div>
                                     <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
                                         {[
-                                            'যেকোনো system design question এ structured approach নিতে পারো (requirements → estimation → architecture → deep dive)',
-                                            'CAP theorem ব্যাখ্যা করতে পারো এবং real systems-এ apply করতে পারো',
-                                            'Database selection justify করতে পারো (SQL vs NoSQL vs NewSQL — when and why)',
-                                            'Scalability bottlenecks identify করতে পারো এবং solutions propose করতে পারো',
-                                            'Distributed system trade-offs discuss করতে পারো (consistency, availability, partition tolerance)',
-                                            'Real-world systems (Uber, Twitter, YouTube, WhatsApp) design করতে পারো',
-                                            'Security, observability, deployment strategy confidently explain করতে পারো',
-                                            'Probabilistic data structures (Bloom Filter, HyperLogLog) কখন use করতে হয় জানো',
-                                            'Microservices vs monolith trade-offs discuss করতে পারো',
+                                            'যেকোনো system design question এ structured approach নিতে পারেন (requirements → estimation → architecture → deep dive)',
+                                            'CAP theorem ব্যাখ্যা করতে পারেন এবং real systems-এ apply করতে পারেন',
+                                            'Database selection justify করতে পারেন (SQL vs NoSQL vs NewSQL — when and why)',
+                                            'Scalability bottlenecks identify করতে পারেন এবং solutions propose করতে পারেন',
+                                            'Distributed system trade-offs discuss করতে পারেন (consistency, availability, partition tolerance)',
+                                            'Real-world systems (Uber, Twitter, YouTube, WhatsApp) design করতে পারেন',
+                                            'Security, observability, deployment strategy confidently explain করতে পারেন',
+                                            'Probabilistic data structures (Bloom Filter, HyperLogLog) কখন use করতে হয় জানেন',
+                                            'Microservices vs monolith trade-offs discuss করতে পারেন',
                                             'FAANG level system design interview এ confident feel হচ্ছে ✨',
                                         ].map((item, i) => (
                                             <div
@@ -1985,7 +1985,7 @@ async function getHashtagFrequency(hashtag) {
                                     </div>
                                     <div className='mt-6 text-center'>
                                         <p className='text-yellow-400 font-bold text-base'>
-                                            তুমি এখন System Design-এ Expert।
+                                            আপনি এখন System Design-এ Expert।
                                         </p>
                                         <p className='text-muted-foreground text-sm mt-1'>
                                             এই journey শেষ নয় — এটা শুরু। Best of luck! 🚀
@@ -2131,14 +2131,14 @@ async function getHashtagFrequency(hashtag) {
             },
             {
                 id: 3,
-                text: 'Count-Min Sketch এর query result কীভাবে পাওয়া যায়?',
+                text: 'Count-Min Sketch এর query result কীভাবে পানয়া যায়?',
                 options: [
                     {
                         key: 'a',
                         text: 'সব hash positions এর sum',
                         isCorrect: false,
                         explanation:
-                            'Sum করলে overcounting হবে কারণ collisions থাকে।',
+                            'Sum করলেন overcounting হবে কারণ collisions থাকে।',
                     },
                     {
                         key: 'b',
@@ -2186,7 +2186,7 @@ async function getHashtagFrequency(hashtag) {
                         text: 'PFADD / PFCOUNT',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Redis HyperLogLog commands: PFADD (add element), PFCOUNT (get unique count), PFMERGE (merge multiple HLLs)। PF = Philippe Flajolet, যিনি algorithm invent করেছিলেন।',
+                            'সঠিক। Redis HyperLogLog commands: PFADD (add element), PFCOUNT (get unique count), PFMERGE (merge multiple HLLs)। PF = Philippe Flajolet, যিনি algorithm invent করেছেনিলেন।',
                     },
                     {
                         key: 'd',
@@ -2213,7 +2213,7 @@ async function getHashtagFrequency(hashtag) {
                         text: 'না (basic bloom filter তে)',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Basic Bloom Filter-এ deletion করা যায় না কারণ একটা bit multiple element share করতে পারে — delete করলে অন্য elements-এর bits ভেঙে যাবে। Counting Bloom Filter use করলে deletion possible।',
+                            'সঠিক। Basic Bloom Filter-এ deletion করা যায় না কারণ একটা bit multiple element share করতে পারে — delete করলেন অন্য elements-এর bits ভেঙে যাবেন। Counting Bloom Filter use করলেন deletion possible।',
                     },
                     {
                         key: 'c',
@@ -2281,7 +2281,7 @@ async function getHashtagFrequency(hashtag) {
                         text: 'bit array বড় করতে হবে',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Bit array size বাড়ালে (এবং hash function count optimize করলে) false positive rate কমে। Larger bit array = fewer collisions = lower false positive। Rule: প্রতি element ~10 bits use করলে ~1% false positive rate পাওয়া যায়।',
+                            'সঠিক। Bit array size বাড়ালে (এবং hash function count optimize করলেন) false positive rate কমে। Larger bit array = fewer collisions = lower false positive। Rule: প্রতি element ~10 bits use করলেন ~1% false positive rate পানয়া যায়।',
                     },
                     {
                         key: 'c',
@@ -2390,7 +2390,7 @@ async function getHashtagFrequency(hashtag) {
                         text: 'Exactness vs Memory/Speed',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Probabilistic structures-এর core trade-off হলো Exactness vs Memory/Speed। Exact answer-এর বদলে approximate answer accept করো — বিনিময়ে ১০,০০০x কম memory এবং অনেক বেশি speed। Production-এ এই trade-off প্রায়ই worth it।',
+                            'সঠিক। Probabilistic structures-এর core trade-off হলো Exactness vs Memory/Speed। Exact answer-এর বদলে approximate answer accept করুন — বিনিময়ে ১০,০০০x কম memory এবং অনেক বেশি speed। Production-এ এই trade-off প্রায়ই worth it।',
                     },
                     {
                         key: 'd',
@@ -2408,33 +2408,33 @@ async function getHashtagFrequency(hashtag) {
     // Assignment
     // ─────────────────────────────────────────────────────────────────────
     assignment: {
-        title: 'Probabilistic Data Structure Implementation করো',
+        title: 'Probabilistic Data Structure Implementation করুন',
         time: '৩-৪ ঘন্টা',
         difficulty: 'Expert',
         tasks: [
             <span>
                 <strong>Bloom Filter from Scratch (JavaScript):</strong>{' '}
-                BloomFilter class implement করো — constructor(size, hashCount),
+                BloomFilter class implement করুন — constructor(size, hashCount),
                 _hash(item, seed), add(item), mightContain(item)। ১ লাখ random
-                string add করো। False positive rate measure করো।
+                string add করুন। False positive rate measure করুন।
             </span>,
             <span>
                 <strong>HyperLogLog with Redis:</strong> Node.js দিয়ে PFADD /
-                PFCOUNT use করো। ১ লাখ unique user visit simulate করো। Exact
-                count vs HyperLogLog estimate compare করো। Memory difference
-                measure করো।
+                PFCOUNT use করুন। ১ লাখ unique user visit simulate করুন। Exact
+                count vs HyperLogLog estimate compare করুন। Memory difference
+                measure করুন।
             </span>,
             <span>
                 <strong>Count-Min Sketch Implementation:</strong> Python দিয়ে
-                CountMinSketch class implement করো। Twitter tweet stream
-                simulate করো (১০ লাখ tweets, ১০ হাজার unique words)। Top-10
-                trending words বের করো।
+                CountMinSketch class implement করুন। Twitter tweet stream
+                simulate করুন (১০ লাখ tweets, ১০ হাজার unique words)। Top-10
+                trending words বের করুন।
             </span>,
             <span>
                 <strong>Performance Benchmarks vs HashSet:</strong> সব তিনটা
-                structure-এর জন্য benchmark করো — insert time, query time,
-                memory usage। HashSet-এর সাথে compare করো। Results table-এ
-                present করো।
+                structure-এর জন্য benchmark করুন — insert time, query time,
+                memory usage। HashSet-এর সাথে compare করুন। Results table-এ
+                present করুন।
             </span>,
         ],
         deliverables: [
@@ -2459,29 +2459,29 @@ async function getHashtagFrequency(hashtag) {
         subtitle: 'Redis Stack + Node.js + RedisBloom module',
         steps: [
             {
-                title: 'Redis Stack Setup করো',
+                title: 'Redis Stack Setup করুন',
                 description:
-                    'Docker দিয়ে Redis Stack run করো: docker run -p 6379:6379 redis/redis-stack-server। Node.js ioredis install করো। Connection verify করো।',
+                    'Docker দিয়ে Redis Stack run করুন: docker run -p 6379:6379 redis/redis-stack-server। Node.js ioredis install করুন। Connection verify করুন।',
             },
             {
                 title: 'Bloom Filter — URL Deduplication',
                 description:
-                    'BF.RESERVE দিয়ে filter create করো (1% error, 10M capacity)। ১০ লাখ URL add করো। Query করো — already-crawled URL skip হচ্ছে কিনা দেখো।',
+                    'BF.RESERVE দিয়ে filter create করুন (1% error, 10M capacity)। ১০ লাখ URL add করুন। Query করুন — already-crawled URL skip হচ্ছে কিনা দেখুন।',
             },
             {
                 title: 'HyperLogLog — Unique Visitor Counter',
                 description:
-                    'PFADD দিয়ে daily visitors track করো। Duplicate users add করো — count-এ effect হয় কিনা দেখো। PFMERGE দিয়ে weekly count বের করো।',
+                    'PFADD দিয়ে daily visitors track করুন। Duplicate users add করুন — count-এ effect হয় কিনা দেখুন। PFMERGE দিয়ে weekly count বের করুন।',
             },
             {
                 title: 'Count-Min Sketch — Trending Topics',
                 description:
-                    'CMS.INITBYDIM দিয়ে sketch create করো। Tweet stream simulate করো। CMS.QUERY দিয়ে top hashtags বের করো।',
+                    'CMS.INITBYDIM দিয়ে sketch create করুন। Tweet stream simulate করুন। CMS.QUERY দিয়ে top hashtags বের করুন।',
             },
             {
-                title: 'Memory Comparison করো',
+                title: 'Memory Comparison করুন',
                 description:
-                    'Probabilistic structures-এর memory usage measure করো। JavaScript Set দিয়ে same data রাখো। Memory difference quantify করো — কতগুণ কম?',
+                    'Probabilistic structures-এর memory usage measure করুন। JavaScript Set দিয়ে same data রাখুন। Memory difference quantify করুন — কতগুণ কম?',
             },
         ],
         codeBlock: {
@@ -2605,7 +2605,7 @@ async function countMinSketchLab() {
   redis.disconnect();
 })();`,
         },
-        tip: 'এই তিনটা structure একসাথে implement করলে বুঝতে পারবে কেন Big Tech এগুলো use করে। Bloom Filter false negative কখনো দেয় না — এটা practically verify করো। HyperLogLog-এর 12 KB memory দেখে অবাক হবে। Redis Stack Docker container-এ সব commands ready আছে।',
+        tip: 'এই তিনটা structure একসাথে implement করলেন বুঝতে পারবেন কেন Big Tech এগুলো use করে। Bloom Filter false negative কখনো দেয় না — এটা practically verify করুন। HyperLogLog-এর 12 KB memory দেখে অবাক হবে। Redis Stack Docker container-এ সব commands ready আছে।',
     },
 
     // ─────────────────────────────────────────────────────────────────────
@@ -2614,7 +2614,7 @@ async function countMinSketchLab() {
     phaseComplete: {
         title: '🎉 System Design Mastery সম্পূর্ণ! সমগ্র Course Finished',
         description:
-            'System Design Mastery সম্পূর্ণ! ৫টা Phase, ২৯টা Topic — তুমি এখন একজন System Design Expert।',
+            'System Design Mastery সম্পূর্ণ! ৫টা Phase, ২৯টা Topic — আপনি এখন একজন System Design Expert।',
         topics: [
             { title: 'Security in System Design', id: 'security' },
             { title: 'Observability & Monitoring', id: 'observability' },

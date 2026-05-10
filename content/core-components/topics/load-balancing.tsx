@@ -20,7 +20,7 @@ export const loadBalancingContent: TopicData = {
                     content: (
                         <div className='space-y-6'>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
-                                ধরো একটা bank এ ১০টা counter আছে, কিন্তু সবাই
+                                ধরুন একটা bank এ ১০টা counter আছে, কিন্তু সবাই
                                 একটা counter এ গিয়ে দাঁড়াচ্ছে। বাকি ৯টা
                                 counter খালি পড়ে আছে। এটা কি বোকামি না?
                             </p>
@@ -29,12 +29,12 @@ export const loadBalancingContent: TopicData = {
                                     Load Balancer
                                 </strong>{' '}
                                 হলো সেই manager যে দরজায় দাঁড়িয়ে বলে —
-                                &quot;তুমি counter 3 এ যাও, তুমি counter 7 এ
-                                যাও।&quot; প্রতিটা counter সমান কাজ পায়, কেউ
+                                &quot;আপনি counter 3 এ যান, আপনি counter 7 এ
+                                যান।&quot; প্রতিটা counter সমান কাজ পায়, কেউ
                                 overwhelmed না।
                             </p>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
-                                সেরকমভাবে, যখন লক্ষ লক্ষ user তোমার app এ
+                                সেরকমভাবে, যখন লক্ষ লক্ষ user আপনার app এ
                                 request পাঠায়, Load Balancer সেই request গুলো
                                 বিভিন্ন server এ distribute করে দেয়।
                             </p>
@@ -230,8 +230,8 @@ export const loadBalancingContent: TopicData = {
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
                                         Server এর capacity অনুযায়ী weight assign
-                                        করো। Server A (weight=3) → Server B
-                                        (weight=1)। বড় server বেশি traffic পাবে।
+                                        করুন। Server A (weight=3) → Server B
+                                        (weight=1)। বড় server বেশি traffic পাবেন।
                                         Mixed hardware এ ভালো।
                                     </p>
                                 </div>
@@ -255,7 +255,7 @@ export const loadBalancingContent: TopicData = {
                                         Client এর IP address hash করে always same
                                         server এ পাঠাও। Session persistence এর
                                         জন্য দরকার। Same user সবসময় same server
-                                        এ যাবে।
+                                        এ যাবেন।
                                     </p>
                                 </div>
                                 <div className='p-8 border-r border-border bg-card/30'>
@@ -263,7 +263,7 @@ export const loadBalancingContent: TopicData = {
                                         Random
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
-                                        Randomly একটা server select করো। Simple
+                                        Randomly একটা server select করুন। Simple
                                         কিন্তু uneven distribution হতে পারে।
                                         Production এ rarely ব্যবহার হয়।
                                     </p>
@@ -340,7 +340,7 @@ export const loadBalancingContent: TopicData = {
                         <p className='text-muted-foreground leading-relaxed text-lg'>
                             Load Balancer periodically সব servers কে ping করে
                             দেখে তারা alive আছে কিনা। কোনো server respond না
-                            করলে সেটাকে automatically rotation থেকে বাদ দেয়।
+                            করলেন সেটাকে automatically rotation থেকে বাদ দেয়।
                             Server ঠিক হলে আবার যোগ করে নেয়। এটাই{' '}
                             <strong className='text-foreground'>
                                 Automatic Failover
@@ -376,7 +376,7 @@ export const loadBalancingContent: TopicData = {
                                 Database connection, disk space ইত্যাদি check
                                 করতে পারে। সাধারণত{' '}
                                 <code>/health</code> বা{' '}
-                                <code>/ping</code> endpoint ব্যবহার করো।
+                                <code>/ping</code> endpoint ব্যবহার করুন।
                             </li>
                         </ul>
                     ),
@@ -395,8 +395,8 @@ export const loadBalancingContent: TopicData = {
     server 192.168.1.12:3000 weight=1;
 
     # Health check settings
-    # max_fails: এতবার fail হলে server বাদ দাও
-    # fail_timeout: এই সময়ের মধ্যে fail হলে count করো
+    # max_fails: এতবার fail হলে server বাদ দিন
+    # fail_timeout: এই সময়ের মধ্যে fail হলে count করুন
     server 192.168.1.13:3000 max_fails=3 fail_timeout=30s;
 }
 
@@ -545,14 +545,14 @@ class RoundRobinLoadBalancer:
         self._lock = threading.Lock()
 
     def get_next_server(self) -> str | None:
-        """Round Robin: পরবর্তী healthy server return করো"""
+        """Round Robin: পরবর্তী healthy server return করুন"""
         with self._lock:
             if not self.healthy_servers:
                 return None  # সব server down!
             return next(self._cycle)
 
     def health_check(self):
-        """প্রতি 5 সেকেন্ডে সব server check করো"""
+        """প্রতি 5 সেকেন্ডে সব server check করুন"""
         while True:
             for server in self.servers:
                 try:
@@ -570,7 +570,7 @@ class RoundRobinLoadBalancer:
             time.sleep(5)
 
     def forward_request(self, request_data: dict) -> dict:
-        """Request কে next available server এ forward করো"""
+        """Request কে next available server এ forward করুন"""
         server = self.get_next_server()
         if not server:
             return {"error": "No healthy servers available", "status": 503}
@@ -592,7 +592,7 @@ lb = RoundRobinLoadBalancer([
 health_thread = threading.Thread(target=lb.health_check, daemon=True)
 health_thread.start()
 
-# Request handle করো
+# Request handle করুন
 result = lb.forward_request({"user_id": 123, "action": "get_profile"})`,
                 },
                 {
@@ -601,7 +601,7 @@ result = lb.forward_request({"user_id": 123, "action": "get_profile"})`,
                     filename: 'leastConnections.js',
                     code: `class LeastConnectionsLB {
     constructor(servers) {
-        // প্রতিটা server এর active connection count track করো
+        // প্রতিটা server এর active connection count track করুন
         this.servers = servers.map(server => ({
             url: server,
             connections: 0,
@@ -617,7 +617,7 @@ result = lb.forward_request({"user_id": 123, "action": "get_profile"})`,
             throw new Error('No healthy servers available');
         }
 
-        // Least connections server খোঁজো
+        // Least connections server খুঁজুন
         return healthyServers.reduce((min, server) =>
             server.connections < min.connections ? server : min
         );
@@ -668,7 +668,7 @@ const lb = new LeastConnectionsLB([
     'http://server3:3000',
 ]);
 
-// Multiple concurrent requests — সবচেয়ে কম busy server পাবে প্রতিটা
+// Multiple concurrent requests — সবচেয়ে কম busy server পাবেন প্রতিটা
 Promise.all([
     lb.handleRequest({ userId: 1 }),
     lb.handleRequest({ userId: 2 }),
@@ -732,7 +732,7 @@ Promise.all([
                                 </h4>
                                 <p className='text-sm text-muted-foreground leading-relaxed'>
                                     IP Hash algorithm ব্যবহার করে session
-                                    persistence এর জন্য। একবার login করলে same
+                                    persistence এর জন্য। একবার login করলেন same
                                     server এ থাকো — session data consistent
                                     থাকে। Security এবং compliance এর জন্য
                                     critical।
@@ -759,7 +759,7 @@ Promise.all([
                     content: (
                         <>
                             <strong className='text-emerald-400'>
-                                L4 ব্যবহার করো যখন:
+                                L4 ব্যবহার করুন যখন:
                             </strong>{' '}
                             Ultra-low latency দরকার (gaming, video streaming,
                             financial trading)। HTTP content inspect করার দরকার
@@ -767,7 +767,7 @@ Promise.all([
                             <br />
                             <br />
                             <strong className='text-blue-400'>
-                                L7 ব্যবহার করো যখন:
+                                L7 ব্যবহার করুন যখন:
                             </strong>{' '}
                             Path-based routing দরকার (<code>/api</code> vs{' '}
                             <code>/web</code>)। SSL termination করতে হবে।
@@ -799,8 +799,8 @@ Promise.all([
                             <strong className='text-emerald-400'>
                                 Better solution:
                             </strong>{' '}
-                            Session data Redis এ রাখো — যেকোনো server request
-                            handle করতে পারবে।
+                            Session data Redis এ রাখুন — যেকোনো server request
+                            handle করতে পারবেন।
                         </>
                     ),
                 },
@@ -826,7 +826,7 @@ Promise.all([
                             </strong>{' '}
                             একটা primary, একটা standby। Primary down হলে
                             automatically failover। AWS ALB/NLB এগুলো
-                            automatically managed — তোমাকে চিন্তা করতে হয় না।
+                            automatically managed — আপনাকে চিন্তা করতে হয় না।
                         </>
                     ),
                 },
@@ -856,7 +856,7 @@ Promise.all([
                 <span className='font-bold text-primary'>
                     Least Connections
                 </span>,
-                'সবচেয়ে কম busy server কে request দাও',
+                'সবচেয়ে কম busy server কে request দিন',
             ],
             [
                 <span className='font-bold text-primary'>IP Hash</span>,
@@ -1021,7 +1021,7 @@ Promise.all([
                         text: 'Server alive কিনা check করে, unhealthy হলে rotation থেকে বাদ দেয়',
                         isCorrect: true,
                         explanation:
-                            'Health check periodically servers কে ping করে। কোনো server respond না করলে সেটাকে বাদ দেয়, ঠিক হলে আবার যোগ করে।',
+                            'Health check periodically servers কে ping করে। কোনো server respond না করলেন সেটাকে বাদ দেয়, ঠিক হলে আবার যোগ করে।',
                     },
                     {
                         key: 'C',
@@ -1091,14 +1091,14 @@ Promise.all([
                     },
                     {
                         key: 'C',
-                        text: 'শুধু একটা server ব্যবহার করো',
+                        text: 'শুধু একটা server ব্যবহার করুন',
                         isCorrect: false,
                         explanation:
                             'একটা server মানেই single point of failure।',
                     },
                     {
                         key: 'D',
-                        text: 'Load Balancer ব্যবহার বন্ধ করো',
+                        text: 'Load Balancer ব্যবহার বন্ধ করুন',
                         isCorrect: false,
                         explanation:
                             'LB না থাকলে horizontal scaling সম্ভব না।',
@@ -1155,27 +1155,27 @@ Promise.all([
                         text: 'A=3, B=1',
                         isCorrect: true,
                         explanation:
-                            'Weight এর ratio 3:1 তাই 4টা request এ A পাবে 3টা এবং B পাবে 1টা। A বেশি powerful তাই বেশি load নেয়।',
+                            'Weight এর ratio 3:1 তাই 4টা request এ A পাবেন 3টা এবং B পাবেন 1টা। A বেশি powerful তাই বেশি load নেয়।',
                     },
                     {
                         key: 'C',
                         text: 'A=4, B=0',
                         isCorrect: false,
                         explanation:
-                            'B এর weight 1 তাই B কিছু request পাবেই।',
+                            'B এর weight 1 তাই B কিছু request পাবেনই।',
                     },
                     {
                         key: 'D',
                         text: 'A=1, B=3',
                         isCorrect: false,
                         explanation:
-                            'A এর weight বেশি তাই A বেশি request পাবে।',
+                            'A এর weight বেশি তাই A বেশি request পাবেন।',
                     },
                 ],
             },
             {
                 id: 10,
-                text: 'Microservices architecture এ path-based routing (/api/users → User Service, /api/orders → Order Service) কোনটা দিয়ে করা যাবে?',
+                text: 'Microservices architecture এ path-based routing (/api/users → User Service, /api/orders → Order Service) কোনটা দিয়ে করা যাবেন?',
                 options: [
                     {
                         key: 'A',
@@ -1216,7 +1216,7 @@ Promise.all([
         tasks: [
             <span key='1'>
                 <strong>Algorithm Selection:</strong> নিচের ৩টা scenario তে
-                কোন Load Balancing algorithm ব্যবহার করবে এবং কেন: (ক) একটি
+                কোন Load Balancing algorithm ব্যবহার করবেন এবং কেন: (ক) একটি
                 chat application যেখানে WebSocket connections long-lived —
                 প্রতিটা connection ঘণ্টার পর ঘণ্টা active থাকে। (খ) একটি
                 e-commerce site যেখানে ৩টা server আছে: 32-core, 16-core,
@@ -1224,26 +1224,26 @@ Promise.all([
                 শুধু নির্দিষ্ট server এ আছে।
             </span>,
             <span key='2'>
-                <strong>Nginx Config লেখো:</strong> একটা Nginx configuration
-                লেখো যেখানে: ৩টা backend server (192.168.1.10, .11, .12 সব
+                <strong>Nginx Config লিখুন:</strong> একটা Nginx configuration
+                লিখুন যেখানে: ৩টা backend server (192.168.1.10, .11, .12 সব
                 port 3000), Least Connections algorithm, Health check — 3 fails
-                এর পর বাদ দাও, Weighted — প্রথম server এর weight 2, বাকি দুটো
+                এর পর বাদ দিন, Weighted — প্রথম server এর weight 2, বাকি দুটো
                 1।
             </span>,
             <span key='3'>
-                <strong>Diagram বানাও:</strong> Excalidraw বা draw.io তে একটা
-                diagram আঁকো যেখানে দেখাবে: Users → L7 Load Balancer →
+                <strong>Diagram বানান:</strong> Excalidraw বা draw.io তে একটা
+                diagram আঁকুন যেখানে দেখাবে: Users → L7 Load Balancer →
                 [Web Server 1, 2, 3] → [Redis Cache] → [Database Primary →
-                Database Replica]। Label দাও প্রতিটা component এ।
+                Database Replica]। Label দিন প্রতিটা component এ।
             </span>,
             <span key='4'>
                 <strong>AWS Pricing Research:</strong> AWS console বা
-                calculator তে দেখো AWS ALB এবং NLB এর pricing কীভাবে আলাদা।
-                কোনটা কখন cost-effective সেটা ৩-৪ লাইনে লেখো।
+                calculator তে দেখুন AWS ALB এবং NLB এর pricing কীভাবে আলাদা।
+                কোনটা কখন cost-effective সেটা ৩-৪ লাইনে লিখুন।
             </span>,
             <span key='5'>
                 <strong>Code পড়ো:</strong> উপরের Python RoundRobinLoadBalancer
-                code পড়ো এবং explain করো: (ক){' '}
+                code পড়ো এবং explain করুন: (ক){' '}
                 <code>itertools.cycle</code> কী করে? (খ){' '}
                 <code>threading.Lock()</code> কেন দরকার? (গ) Server down হলে
                 কী হয় এবং কীভাবে handle করা হয়েছে?
@@ -1262,29 +1262,29 @@ Promise.all([
         subtitle: 'Docker + Nginx Load Balancer',
         steps: [
             {
-                title: 'Node.js server বানাও artificial delay দিয়ে',
+                title: 'Node.js server বানান artificial delay দিয়ে',
                 description:
-                    'server.js এ random delay যোগ করো (100ms - 2000ms) যাতে Least Connections এর পার্থক্য বোঝা যায়। Response এ server name এবং active connections count দেখাও।',
+                    'server.js এ random delay যোগ করুন (100ms - 2000ms) যাতে Least Connections এর পার্থক্য বোঝা যায়। Response এ server name এবং active connections count দেখাও।',
             },
             {
-                title: 'Round Robin config করো',
+                title: 'Round Robin config করুন',
                 description:
-                    'nginx.conf এ upstream block এ শুধু server list দাও (default round robin)। Browser এ বারবার refresh করো এবং দেখো কোন server respond করছে।',
+                    'nginx.conf এ upstream block এ শুধু server list দিন (default round robin)। Browser এ বারবার refresh করুন এবং দেখুন কোন server respond করছে।',
             },
             {
-                title: 'Least Connections config করো',
+                title: 'Least Connections config করুন',
                 description:
-                    'upstream block এ least_conn; যোগ করো। একই requests পাঠাও। দেখো এবার কীভাবে distribution আলাদা — ধীর server কম request পাচ্ছে।',
+                    'upstream block এ least_conn; যোগ করুন। একই requests পাঠাও। দেখুন এবার কীভাবে distribution আলাদা — ধীর server কম request পাচ্ছে।',
             },
             {
-                title: 'Health check test করো',
+                title: 'Health check test করুন',
                 description:
-                    'docker stop দিয়ে একটা server বন্ধ করো। Nginx log দেখো — server automatically বাদ গেছে কিনা। তারপর আবার start করো এবং দেখো automatically ফিরে আসে কিনা।',
+                    'docker stop দিয়ে একটা server বন্ধ করুন। Nginx log দেখুন — server automatically বাদ গেছে কিনা। তারপর আবার start করুন এবং দেখুন automatically ফিরে আসে কিনা।',
             },
             {
-                title: 'Comparison report বানাও',
+                title: 'Comparison report বানান',
                 description:
-                    'Round Robin এবং Least Connections — দুটোতে ১০০টা request পাঠিয়ে distribution record করো। কোন server কতটা request পেলো এবং average response time কত — সেটা compare করো।',
+                    'Round Robin এবং Least Connections — দুটোতে ১০০টা request পাঠিয়ে distribution record করুন। কোন server কতটা request পেলো এবং average response time কত — সেটা compare করুন।',
             },
         ],
         codeBlock: {
@@ -1319,6 +1319,6 @@ services:
       MIN_DELAY_MS: "100"
       MAX_DELAY_MS: "200"`,
         },
-        tip: 'Artificial delay দিয়ে দেখবে Least Connections কতটা smart। Server-2 ধীর তাই সে কম request পাবে — Round Robin এ সে সমান পেতো। এটাই real world এ Least Connections এর power।',
+        tip: 'Artificial delay দিয়ে দেখবেন Least Connections কতটা smart। Server-2 ধীর তাই সে কম request পাবেন — Round Robin এ সে সমান পেতো। এটাই real world এ Least Connections এর power।',
     },
 };

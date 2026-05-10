@@ -113,6 +113,7 @@ export default function RootLayout({
     return (
         <html lang='bn' suppressHydrationWarning>
             <body
+                suppressHydrationWarning
                 className={cn(
                     'min-h-screen bg-background font-sans antialiased',
                     fraunces.variable,
@@ -135,5 +136,4 @@ export default function RootLayout({
         </html>
     );
 }
-
 

@@ -541,7 +541,7 @@ export const searchEngineContent: TopicData = {
                         <div className='space-y-2'>
                             <p>
                                 <strong>Search:</strong> "wireless headphones"
-                                type করলে relevant results দেখাও (relevance,
+                                type করলেন relevant results দেখাও (relevance,
                                 ranking)।
                             </p>
                             <p>
@@ -663,7 +663,7 @@ export const searchEngineContent: TopicData = {
                     title: '🔢 Typeahead Requests',
                     content: (
                         <p>
-                            User "apple" type করলে: <code>a → ap → app → appl → apple</code> = 5 requests।{' '}
+                            User "apple" type করলেন: <code>a → ap → app → appl → apple</code> = 5 requests।{' '}
                             99K searches/sec × 5 ={' '}
                             <strong>~500K typeahead requests/sec</strong>।
                             Typeahead traffic search-এর চেয়ে অনেক বেশি! তাই{' '}
@@ -1056,18 +1056,18 @@ class Trie:
         node.frequency = freq
 
     def autocomplete(self, prefix: str, limit: int = 5) -> list:
-        # Prefix node খুঁজে বের করো
+        # Prefix node খুঁজে বের করুন
         node = self.root
         for char in prefix.lower():
             if char not in node.children:
                 return []  # কোনো match নেই
             node = node.children[char]
 
-        # Prefix node থেকে সব words collect করো
+        # Prefix node থেকে সব words collect করুন
         results = []
         self._dfs(node, prefix, results)
 
-        # Frequency দিয়ে sort করো (popular first)
+        # Frequency দিয়ে sort করুন (popular first)
         results.sort(key=lambda x: x[1], reverse=True)
         return [word for word, _ in results[:limit]]
 
@@ -1095,8 +1095,8 @@ print(trie.autocomplete("app"))
                             Billions of search queries-এর Trie memory-তে রাখা
                             possible না। Solution:{' '}
                             <strong>Top-K suggestions per node</strong> store
-                            করো। প্রতিটা prefix node-এ top 5-10 most popular
-                            completions pre-computed রাখো। DFS করতে হবে না —{' '}
+                            করুন। প্রতিটা prefix node-এ top 5-10 most popular
+                            completions pre-computed রাখুন। DFS করতে হবে না —{' '}
                             <strong>O(1) lookup</strong>।
                         </p>
                     ),
@@ -1138,8 +1138,8 @@ print(trie.autocomplete("app"))
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
-                                    কিছু popular domains দিয়ে শুরু করো (wikipedia,
-                                    news sites)। এগুলো queue-এ add করো।
+                                    কিছু popular domains দিয়ে শুরু করুন (wikipedia,
+                                    news sites)। এগুলো queue-এ add করুন।
                                 </span>
                             ),
                         },
@@ -1152,7 +1152,7 @@ print(trie.autocomplete("app"))
                             description: (
                                 <span className='text-muted-foreground'>
                                     Crawl করার pending URLs এর queue। Priority
-                                    দিয়ে important pages আগে crawl করো।
+                                    দিয়ে important pages আগে crawl করুন।
                                     Politeness policy — same domain বারবার hit
                                     না করা।
                                 </span>
@@ -1167,7 +1167,7 @@ print(trie.autocomplete("app"))
                             description: (
                                 <span className='text-muted-foreground'>
                                     HTTP request করে HTML নামাও। Links extract
-                                    করো। Robots.txt respect করো। Content
+                                    করুন। Robots.txt respect করুন। Content
                                     Document Processor-এ পাঠাও।
                                 </span>
                             ),
@@ -1181,8 +1181,8 @@ print(trie.autocomplete("app"))
                             description: (
                                 <span className='text-muted-foreground'>
                                     একই content বা URL আবার crawl করা waste।
-                                    URL fingerprint (hash) store করো। Already
-                                    seen? Skip করো।
+                                    URL fingerprint (hash) store করুন। Already
+                                    seen? Skip করুন।
                                 </span>
                             ),
                         },
@@ -1194,9 +1194,9 @@ print(trie.autocomplete("app"))
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
-                                    Crawled content S3/HDFS-এ store করো।
+                                    Crawled content S3/HDFS-এ store করুন।
                                     Indexing pipeline-এ পাঠাও। New links
-                                    queue-এ add করো।{' '}
+                                    queue-এ add করুন।{' '}
                                     <span className='text-emerald-400'>
                                         Repeat ✓
                                     </span>
@@ -1211,10 +1211,10 @@ print(trie.autocomplete("app"))
                     title: '💡 Distributed Crawling',
                     content: (
                         <p>
-                            Single crawler billions of pages handle করতে পারবে
-                            না। Distributed crawler cluster use করো।{' '}
+                            Single crawler billions of pages handle করতে পারবেন
+                            না। Distributed crawler cluster use করুন।{' '}
                             <strong>Consistent hashing</strong> দিয়ে URLs
-                            different crawler nodes-এ assign করো। Same domain
+                            different crawler nodes-এ assign করুন। Same domain
                             same node-এ যায় — politeness enforce সহজ।
                         </p>
                     ),
@@ -1256,8 +1256,8 @@ print(trie.autocomplete("app"))
                         <p>
                             <strong>Forward index:</strong> Document → Words।{' '}
                             <strong>Inverted index:</strong> Word → Documents।
-                            "apple" search করলে directly "apple" key look up
-                            করো → সব relevant documents পাওয়া যায়। Sequential
+                            "apple" search করলেন directly "apple" key look up
+                            করুন → সব relevant documents পানয়া যায়। Sequential
                             scan দরকার নেই।
                         </p>
                     ),
@@ -1281,7 +1281,7 @@ inverted_index = {
     "galaxy":  [3],          # শুধু Doc 3 এ
 }
 
-# Search "apple review" করলে:
+# Search "apple review" করলেন:
 # apple → [1, 2]
 # review → [1, 3]
 # Intersection → [1] ← Most relevant!
@@ -1290,7 +1290,7 @@ def search(query: str) -> list:
     words = query.lower().split()
     # প্রতিটা word-এর document list নাও
     doc_lists = [set(inverted_index.get(w, [])) for w in words]
-    # Intersection করো (সব word আছে এমন docs)
+    # Intersection করুন (সব word আছে এমন docs)
     result = doc_lists[0].intersection(*doc_lists[1:])
     return sorted(result)`,
                 },
@@ -1351,7 +1351,7 @@ def search(query: str) -> list:
                             low। "Elasticsearch" rare word, শুধু কিছু docs-এ →
                             IDF high। এই doc-এ "Elasticsearch" অনেকবার → TF
                             high → Score very high। তাই "Elasticsearch tutorial"
-                            search করলে এই document আগে আসবে।
+                            search করলেন এই document আগে আসবেন।
                         </p>
                     ),
                 },
@@ -1390,7 +1390,7 @@ def search(query: str) -> list:
                         ],
                         [
                             'PageRank',
-                            'কতটা important sites link করেছে',
+                            'কতটা important sites link করেছেনে',
                             <span className='text-emerald-400 font-bold'>
                                 High
                             </span>,
@@ -1429,7 +1429,7 @@ def search(query: str) -> list:
                         <p>
                             Larry Page এবং Sergey Brin-এর original algorithm।
                             Web pages একটা directed graph। যে page-এ বেশি
-                            important sites link করেছে, সেটার PageRank বেশি।{' '}
+                            important sites link করেছেনে, সেটার PageRank বেশি।{' '}
                             <strong>Iterative calculation</strong> — সব pages-এর
                             score calculate হওয়ার পর converge করে। আজও Google-এর
                             core ranking signal।
@@ -1445,7 +1445,7 @@ def search(query: str) -> list:
                             Traditional signals এর বাইরে আজকাল{' '}
                             <strong>Machine Learning</strong> use করা হয়। BERT
                             দিয়ে query intent বোঝো। User behavior (clicks,
-                            dwell time) থেকে learn করো। LambdaMART, RankNet
+                            dwell time) থেকে learn করুন। LambdaMART, RankNet
                             — ML-based ranking models। Google BERT 2019 থেকে
                             use করছে।
                         </p>
@@ -1516,7 +1516,7 @@ def search(query: str) -> list:
                     content: (
                         <p>
                             <code>Redis ZADD "queries" &lt;frequency&gt; "apple"</code>।{' '}
-                            ZRANGEBYSCORE দিয়ে top queries পাও।{' '}
+                            ZRANGEBYSCORE দিয়ে top queries পান।{' '}
                             Prefix matching-এর জন্য ZRANGEBYLEX command।
                             Real-time frequency update করা যায়।{' '}
                             <strong>
@@ -1552,8 +1552,8 @@ def search(query: str) -> list:
                                                 Index Sharding:
                                             </strong>{' '}
                                             Billions of documents single
-                                            index-এ রাখা যাবে না। Document ID
-                                            বা alphabetically shard করো। Query
+                                            index-এ রাখা যাবেন না। Document ID
+                                            বা alphabetically shard করুন। Query
                                             সব shards-এ যায়, results merge হয়।
                                         </span>
                                     ),
@@ -1567,7 +1567,7 @@ def search(query: str) -> list:
                                                 Query Cache:
                                             </strong>{' '}
                                             Popular queries (যেমন "iphone 15")
-                                            result cache করো Redis-এ। 80%
+                                            result cache করুন Redis-এ। 80%
                                             queries repeat হয়। Cache hit হলে
                                             index touch করতে হয় না।
                                         </span>
@@ -1583,7 +1583,7 @@ def search(query: str) -> list:
                                             </strong>{' '}
                                             Popular prefixes ("app", "goo",
                                             "you") static JSON file হিসেবে
-                                            CDN-এ serve করো। Server hit হয় না।
+                                            CDN-এ serve করুন। Server hit হয় না।
                                         </span>
                                     ),
                                 },
@@ -1595,8 +1595,8 @@ def search(query: str) -> list:
                                             <strong className='text-foreground'>
                                                 Index Freshness vs Speed:
                                             </strong>{' '}
-                                            Real-time indexing করলে latency
-                                            বাড়ে। Batch indexing করলে নতুন
+                                            Real-time indexing করলেন latency
+                                            বাড়ে। Batch indexing করলেন নতুন
                                             content দেখাতে দেরি হয়। Google
                                             15-minute crawl lag normal।
                                         </span>
@@ -1785,14 +1785,14 @@ def search(query: str) -> list:
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.CONCEPT,
-                    title: '🎯 Q3: Typeahead কীভাবে scale করবে?',
+                    title: '🎯 Q3: Typeahead কীভাবে scale করবেন?',
                     content: (
                         <p>
                             <strong>1)</strong> In-memory Trie — single server।{' '}
                             <strong>2)</strong> Redis Sorted Set — distributed,
                             real-time frequency update।{' '}
                             <strong>3)</strong> Top-K per prefix node — DFS
-                            avoid করো।{' '}
+                            avoid করুন।{' '}
                             <strong>4)</strong> Popular prefixes CDN-এ cache।{' '}
                             <strong>5)</strong> Debounce — user থামলে তবেই
                             request (300ms wait)।
@@ -1802,7 +1802,7 @@ def search(query: str) -> list:
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.IMPORTANT,
-                    title: '🎯 Q4: Typo Tolerance কীভাবে implement করবে?',
+                    title: '🎯 Q4: Typo Tolerance কীভাবে implement করবেন?',
                     content: (
                         <p>
                             <strong>Levenshtein distance:</strong> দুটো
@@ -1813,7 +1813,7 @@ def search(query: str) -> list:
                             <strong>
                                 common typos pre-compute করে cache
                             </strong>{' '}
-                            করো।
+                            করুন।
                         </p>
                     ),
                 },
@@ -1875,7 +1875,7 @@ def search(query: str) -> list:
                         text: 'শব্দ → document list (word to docs mapping)',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Inverted Index: word → [doc1, doc2, doc3...]। "apple" search করলে directly এই list lookup করো। Sequential scan করতে হয় না। এই structure-এর জন্যই Google milliseconds-এ billions of pages search করতে পারে।',
+                            'সঠিক। Inverted Index: word → [doc1, doc2, doc3...]। "apple" search করলেন directly এই list lookup করুন। Sequential scan করতে হয় না। এই structure-এর জন্যই Google milliseconds-এ billions of pages search করতে পারে।',
                     },
                     {
                         key: 'c',
@@ -1916,7 +1916,7 @@ def search(query: str) -> list:
                         text: 'Trie (Prefix Tree)',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Trie prefix-based lookup-এর জন্য designed। "app" type করলে a → p → p node-এ যাও, সেই subtree-এর সব words = suggestions। O(prefix length) time।',
+                            'সঠিক। Trie prefix-based lookup-এর জন্য designed। "app" type করলেন a → p → p node-এ যান, সেই subtree-এর সব words = suggestions। O(prefix length) time।',
                     },
                     {
                         key: 'd',
@@ -1991,13 +1991,13 @@ def search(query: str) -> list:
                         text: 'Search frequency (কতবার search হয়েছে)',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। প্রতিটা query log করো। "apple" কতবার searched? Trie node-এ frequency store করো। High frequency = সামনে দেখাও। Redis Sorted Set ZADD দিয়ে score update করো। Trending searches automatically উপরে আসে।',
+                            'সঠিক। প্রতিটা query log করুন। "apple" কতবার searched? Trie node-এ frequency store করুন। High frequency = সামনে দেখাও। Redis Sorted Set ZADD দিয়ে score update করুন। Trending searches automatically উপরে আসে।',
                     },
                 ],
             },
             {
                 id: 5,
-                text: 'Search query cache করলে কী সুবিধা?',
+                text: 'Search query cache করলেন কী সুবিধা?',
                 options: [
                     {
                         key: 'a',
@@ -2011,7 +2011,7 @@ def search(query: str) -> list:
                         text: 'Popular queries index hit করে না — latency কমে, cost কমে',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। 80% queries repeat। "iphone 15 price" প্রতিদিন millions বার search হয়। Redis cache-এ result রাখো (TTL 1 hr)। Cache hit → Elasticsearch touch করতে হয় না। Massive cost saving + lower latency।',
+                            'সঠিক। 80% queries repeat। "iphone 15 price" প্রতিদিন millions বার search হয়। Redis cache-এ result রাখুন (TTL 1 hr)। Cache hit → Elasticsearch touch করতে হয় না। Massive cost saving + lower latency।',
                     },
                     {
                         key: 'c',
@@ -2052,7 +2052,7 @@ def search(query: str) -> list:
                         text: 'Inverted Index (Apache Lucene)',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Elasticsearch under the hood Apache Lucene use করে। Lucene inverted index-based search engine। Elasticsearch Lucene-এর উপরে distributed layer, REST API, JSON support add করেছে। Core search logic = inverted index।',
+                            'সঠিক। Elasticsearch under the hood Apache Lucene use করে। Lucene inverted index-based search engine। Elasticsearch Lucene-এর উপরে distributed layer, REST API, JSON support add করেছেনে। Core search logic = inverted index।',
                     },
                     {
                         key: 'd',
@@ -2065,11 +2065,11 @@ def search(query: str) -> list:
             },
             {
                 id: 7,
-                text: 'Billions of documents-এর index scale করতে কী করবে?',
+                text: 'Billions of documents-এর index scale করতে কী করবেন?',
                 options: [
                     {
                         key: 'a',
-                        text: 'Index sharding — multiple nodes-এ ভাগ করো',
+                        text: 'Index sharding — multiple nodes-এ ভাগ করুন',
                         isCorrect: true,
                         explanation:
                             'সঠিক। Elasticsearch natively sharding support করে। প্রতিটা shard একটা Lucene instance। Query সব shards-এ parallel যায়, results merge হয়। 100 shards = 100x parallel search capability।',
@@ -2090,7 +2090,7 @@ def search(query: str) -> list:
                     },
                     {
                         key: 'd',
-                        text: 'Old documents delete করো',
+                        text: 'Old documents delete করুন',
                         isCorrect: false,
                         explanation:
                             'Data delete করা scalability solution নয়।',
@@ -2099,18 +2099,18 @@ def search(query: str) -> list:
             },
             {
                 id: 8,
-                text: 'Typo tolerance ("appel" → "apple") কীভাবে implement করবে?',
+                text: 'Typo tolerance ("appel" → "apple") কীভাবে implement করবেন?',
                 options: [
                     {
                         key: 'a',
-                        text: 'User-কে ঠিক করতে বলো',
+                        text: 'User-কে ঠিক করতে বলুন',
                         isCorrect: false,
                         explanation:
-                            'Poor UX — search engine নিজেই correct করবে।',
+                            'Poor UX — search engine নিজেই correct করবেন।',
                     },
                     {
                         key: 'b',
-                        text: 'All possible typos store করো',
+                        text: 'All possible typos store করুন',
                         isCorrect: false,
                         explanation:
                             'Infinite typos possible — feasible নয়।',
@@ -2147,7 +2147,7 @@ def search(query: str) -> list:
                         text: 'প্রতিটা keypress একটা request — 1 search = 5-10 typeahead requests',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। "apple" type করলে: a, ap, app, appl, apple = 5 typeahead requests, 1 search request। 5x বেশি। Google-এ 99K searches/sec মানে ~500K typeahead req/sec। তাই typeahead ultra-optimized হতে হবে।',
+                            'সঠিক। "apple" type করলেন: a, ap, app, appl, apple = 5 typeahead requests, 1 search request। 5x বেশি। Google-এ 99K searches/sec মানে ~500K typeahead req/sec। তাই typeahead ultra-optimized হতে হবে।',
                     },
                     {
                         key: 'c',
@@ -2167,14 +2167,14 @@ def search(query: str) -> list:
             },
             {
                 id: 10,
-                text: 'Trending search suggestions ("iphone 16 release date" suddenly popular) কীভাবে real-time update করবে?',
+                text: 'Trending search suggestions ("iphone 16 release date" suddenly popular) কীভাবে real-time update করবেন?',
                 options: [
                     {
                         key: 'a',
                         text: 'Manual update daily',
                         isCorrect: false,
                         explanation:
-                            'Manual update real-time trending handle করতে পারবে না।',
+                            'Manual update real-time trending handle করতে পারবেন না।',
                     },
                     {
                         key: 'b',
@@ -2195,7 +2195,7 @@ def search(query: str) -> list:
                         text: 'ML model monthly retrain',
                         isCorrect: false,
                         explanation:
-                            'Monthly ML retrain real-time trending handle করতে পারবে না।',
+                            'Monthly ML retrain real-time trending handle করতে পারবেন না।',
                     },
                 ],
             },
@@ -2203,36 +2203,36 @@ def search(query: str) -> list:
     },
 
     assignment: {
-        title: 'Search Engine System ডিজাইন করো',
+        title: 'Search Engine System ডিজাইন করুন',
         time: '৪-৫ ঘন্টা',
         difficulty: 'Advanced',
         tasks: [
             <span key='1'>
-                <strong>Inverted Index Build করো:</strong> নিচের 4টা sentence
-                দিয়ে manually inverted index তৈরি করো। তারপর "system design"
-                search করলে কোন documents আসবে? "System design is important",
+                <strong>Inverted Index Build করুন:</strong> নিচের 4টা sentence
+                দিয়ে manually inverted index তৈরি করুন। তারপর "system design"
+                search করলেন কোন documents আসবেন? "System design is important",
                 "Design patterns matter", "Search system architecture", "System
                 architecture review"।
             </span>,
             <span key='2'>
-                <strong>Trie Implement করো:</strong> Python-এ একটা simple Trie
-                implement করো যেটা: <code>insert(word, frequency)</code>,{' '}
+                <strong>Trie Implement করুন:</strong> Python-এ একটা simple Trie
+                implement করুন যেটা: <code>insert(word, frequency)</code>,{' '}
                 <code>autocomplete(prefix, top_k=5)</code> support করে। Test
-                করো: insert "apple"(1M), "application"(500K), "apply"(200K),
-                "apt"(50K)। autocomplete("app") → কী আসবে?
+                করুন: insert "apple"(1M), "application"(500K), "apply"(200K),
+                "apt"(50K)। autocomplete("app") → কী আসবেন?
             </span>,
             <span key='3'>
                 <strong>Architecture Diagram:</strong> Search system-এর complete
-                diagram আঁকো। Indexing pipeline (Crawler → Processor → Index
+                diagram আঁকুন। Indexing pipeline (Crawler → Processor → Index
                 Builder → Elasticsearch) এবং Query pipeline (User → Query
                 Processor → Cache → Search Engine → Ranker → Results) আলাদা
                 দেখাও।
             </span>,
             <span key='4'>
                 <strong>Redis Typeahead:</strong> Redis Sorted Set দিয়ে
-                typeahead কীভাবে implement করবে explain করো। ZADD, ZINCRBY,
-                ZREVRANGEBYSCORE commands কীভাবে use করবে? "ap" prefix-এর top
-                5 suggestions কীভাবে পাবে?
+                typeahead কীভাবে implement করবেন explain করুন। ZADD, ZINCRBY,
+                ZREVRANGEBYSCORE commands কীভাবে use করবেন? "ap" prefix-এর top
+                5 suggestions কীভাবে পাবেন?
             </span>,
             <span key='5'>
                 <strong>Scaling Plan:</strong> Google-এর 100B pages-এর index
@@ -2257,29 +2257,29 @@ def search(query: str) -> list:
         subtitle: 'Trie + Redis + Elasticsearch',
         steps: [
             {
-                title: 'Trie Data Structure Implement করো',
+                title: 'Trie Data Structure Implement করুন',
                 description:
-                    'Python-এ TrieNode এবং Trie class লেখো। insert(word, frequency) এবং autocomplete(prefix, limit=5) method যোগ করো। Frequency দিয়ে sort করো।',
+                    'Python-এ TrieNode এবং Trie class লিখুন। insert(word, frequency) এবং autocomplete(prefix, limit=5) method যোগ করুন। Frequency দিয়ে sort করুন।',
             },
             {
                 title: 'Redis Sorted Set দিয়ে Typeahead',
                 description:
-                    'Redis ZADD দিয়ে query frequency track করো। ZRANGEBYLEX দিয়ে prefix matching করো। Real-time frequency update করো ZINCRBY দিয়ে।',
+                    'Redis ZADD দিয়ে query frequency track করুন। ZRANGEBYLEX দিয়ে prefix matching করুন। Real-time frequency update করুন ZINCRBY দিয়ে।',
             },
             {
-                title: 'Elasticsearch Index Setup করো',
+                title: 'Elasticsearch Index Setup করুন',
                 description:
-                    'Elasticsearch-এ index create করো। Analyzer configure করো (tokenize, lowercase, remove stop words)। Sample documents index করো।',
+                    'Elasticsearch-এ index create করুন। Analyzer configure করুন (tokenize, lowercase, remove stop words)। Sample documents index করুন।',
             },
             {
-                title: 'Query Pipeline Build করো',
+                title: 'Query Pipeline Build করুন',
                 description:
-                    'User query নাও → Cache check (Redis) → Cache miss হলে Elasticsearch query করো → TF-IDF score দিয়ে sort করো → Result return করো।',
+                    'User query নাও → Cache check (Redis) → Cache miss হলে Elasticsearch query করুন → TF-IDF score দিয়ে sort করুন → Result return করুন।',
             },
             {
-                title: 'Performance Test করো',
+                title: 'Performance Test করুন',
                 description:
-                    'locust বা k6 দিয়ে load test করো। Typeahead 100ms-এর মধ্যে respond করছে কিনা দেখো। Search 500ms-এর মধ্যে respond করছে কিনা verify করো।',
+                    'locust বা k6 দিয়ে load test করুন। Typeahead 100ms-এর মধ্যে respond করছে কিনা দেখুন। Search 500ms-এর মধ্যে respond করছে কিনা verify করুন।',
             },
         ],
         codeBlock: {
@@ -2389,7 +2389,7 @@ redis_typeahead.record_search("apple macbook")
 suggestions = redis_typeahead.get_suggestions("apple")
 print("Redis suggestions:", suggestions)`,
         },
-        tip: 'Production-এ Trie এবং Redis দুটোই use করো। Trie in-memory fast lookups-এর জন্য। Redis distributed state এবং real-time trending-এর জন্য। CDN-এ popular prefixes cache করো — server hit আরও কমে। এটাই Google-scale typeahead architecture।',
+        tip: 'Production-এ Trie এবং Redis দুটোই use করুন। Trie in-memory fast lookups-এর জন্য। Redis distributed state এবং real-time trending-এর জন্য। CDN-এ popular prefixes cache করুন — server hit আরও কমে। এটাই Google-scale typeahead architecture।',
     },
 
 };

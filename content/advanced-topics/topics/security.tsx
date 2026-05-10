@@ -51,7 +51,7 @@ export const securityContent: TopicData = {
                                 Facebook-এর Cambridge Analytica scandal, Equifax
                                 data breach (147M users), বা Bangladesh Bank
                                 heist ($81M) — সব ক্ষেত্রেই security oversight
-                                ছিল। একজন system designer হিসেবে তোমাকে attack
+                                ছিল। একজন system designer হিসেবে আপনাকে attack
                                 surface বুঝতে হবে এবং{' '}
                                 <strong className='text-foreground'>
                                     defence in depth
@@ -69,7 +69,7 @@ export const securityContent: TopicData = {
                         <div className='space-y-2'>
                             <p>
                                 <strong>Confidentiality (গোপনীয়তা):</strong>{' '}
-                                শুধু authorized users data access করতে পারবে।
+                                শুধু authorized users data access করতে পারবেন।
                                 Encryption, access control।
                             </p>
                             <p>
@@ -79,12 +79,12 @@ export const securityContent: TopicData = {
                             </p>
                             <p>
                                 <strong>Availability (প্রাপ্যতা):</strong>{' '}
-                                Authorized users সবসময় service পাবে। DDoS
+                                Authorized users সবসময় service পাবেন। DDoS
                                 protection, redundancy।
                             </p>
                             <p className='mt-2 text-xs font-mono text-muted-foreground'>
                                 → সব security decision এই তিনটির trade-off।
-                                Over-encryption করলে availability কমে।
+                                Over-encryption করলেন availability কমে।
                             </p>
                         </div>
                     ),
@@ -526,7 +526,7 @@ export const securityContent: TopicData = {
             subHeader: { index: '002', title: 'Authentication' },
             title: (
                 <span className='font-heading'>
-                    Authentication — তুমি কে? JWT থেকে OAuth2
+                    Authentication — আপনি কে? JWT থেকে OAuth2
                 </span>
             ),
             blocks: [
@@ -538,7 +538,7 @@ export const securityContent: TopicData = {
                             <strong className='text-foreground'>
                                 identity verification
                             </strong>{' '}
-                            — তুমি কে তা prove করো। Modern systems-এ তিনটি
+                            — আপনি কে তা prove করুন। Modern systems-এ তিনটি
                             major approach:{' '}
                             <strong className='text-foreground'>
                                 Session-based, JWT (JSON Web Token),
@@ -643,7 +643,7 @@ const ACCESS_TOKEN_SECRET = process.env.JWT_SECRET!;
 const REFRESH_TOKEN_SECRET = process.env.JWT_REFRESH_SECRET!;
 
 // ─────────────────────────────────────────────
-// JWT Token Generate করো
+// JWT Token Generate করুন
 // ─────────────────────────────────────────────
 export function generateTokens(userId: string, role: string) {
     // Access token — short-lived (15 minutes)
@@ -664,7 +664,7 @@ export function generateTokens(userId: string, role: string) {
 }
 
 // ─────────────────────────────────────────────
-// JWT Middleware — Request verify করো
+// JWT Middleware — Request verify করুন
 // ─────────────────────────────────────────────
 export function authenticate(req: Request, res: Response, next: NextFunction) {
     // Authorization: Bearer <token>
@@ -763,7 +763,7 @@ def verify_token(token: str) -> dict:
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.WARNING,
-                    title: '⚠️ JWT Token কোথায় Store করবে?',
+                    title: '⚠️ JWT Token কোথায় Store করবেন?',
                     content: (
                         <div className='space-y-2'>
                             <p>
@@ -779,7 +779,7 @@ def verify_token(token: str) -> dict:
                             <p>
                                 <strong>Memory (React state) — OK:</strong>{' '}
                                 Page refresh-এ logout। Refresh token HttpOnly
-                                cookie-তে রাখো।
+                                cookie-তে রাখুন।
                             </p>
                         </div>
                     ),
@@ -803,7 +803,7 @@ def verify_token(token: str) -> dict:
                             <strong className='text-foreground'>
                                 authorization framework
                             </strong>{' '}
-                            — তুমি কাউকে তোমার হয়ে কিছু করার permission দিচ্ছ।
+                            — আপনি কাউকে আপনার হয়ে কিছু করার permission দিচ্ছ।
                             &quot;Login with Google&quot; বা GitHub OAuth —
                             এগুলো OAuth2। OpenID Connect (OIDC) হলো OAuth2-এর
                             উপর{' '}
@@ -846,7 +846,7 @@ def verify_token(token: str) -> dict:
                                 <span className='text-muted-foreground'>
                                     Google user-কে authenticate করে এবং permission
                                     চায় (email, profile access)। User consent
-                                    করলে Google একটা{' '}
+                                    করলেন Google একটা{' '}
                                     <strong>authorization code</strong> generate
                                     করে।
                                 </span>
@@ -888,14 +888,14 @@ def verify_token(token: str) -> dict:
                         {
                             title: (
                                 <span className='font-mono text-emerald-400'>
-                                    Step 5 — Access Token দিয়ে Resource Access করো
+                                    Step 5 — Access Token দিয়ে Resource Access করুন
                                 </span>
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
-                                    Access token দিয়ে Google APIs call করো
+                                    Access token দিয়ে Google APIs call করুন
                                     (email, calendar)। id_token (OIDC) দিয়ে user
-                                    identity verify করো। Token expire হলে refresh
+                                    identity verify করুন। Token expire হলে refresh
                                     token দিয়ে নতুন access token নাও।
                                 </span>
                             ),
@@ -906,7 +906,7 @@ def verify_token(token: str) -> dict:
                     type: CONTENT_TYPES.COMPARE_TABLE,
                     headers: [
                         'Grant Type',
-                        'কখন Use করবে',
+                        'কখন Use করবেন',
                         'Security Level',
                         'Example',
                     ],
@@ -959,7 +959,7 @@ def verify_token(token: str) -> dict:
                         <div className='space-y-2'>
                             <p>
                                 <strong>OAuth2:</strong> Authorization protocol —
-                                &quot;এই app-কে আমার Gmail read করতে দাও।&quot;
+                                &quot;এই app-কে আমার Gmail read করতে দিন।&quot;
                                 Access control, delegation।
                             </p>
                             <p>
@@ -969,7 +969,7 @@ def verify_token(token: str) -> dict:
                             </p>
                             <p className='font-mono text-xs text-muted-foreground mt-1'>
                                 → Rule: OAuth2 = Authorization। OIDC =
-                                Authentication। Login flow-এ OIDC use করো।
+                                Authentication। Login flow-এ OIDC use করুন।
                             </p>
                         </div>
                     ),
@@ -981,7 +981,7 @@ def verify_token(token: str) -> dict:
             subHeader: { index: '004', title: 'Authorization' },
             title: (
                 <span className='font-heading'>
-                    Authorization — তুমি কী করতে পারবে? RBAC vs ABAC
+                    Authorization — আপনি কী করতে পারবেন? RBAC vs ABAC
                 </span>
             ),
             blocks: [
@@ -991,11 +991,11 @@ def verify_token(token: str) -> dict:
                         <p className='text-muted-foreground leading-relaxed text-lg'>
                             Authentication verify করে{' '}
                             <strong className='text-foreground'>
-                                &quot;তুমি কে&quot;
+                                &quot;আপনি কে&quot;
                             </strong>
                             , Authorization decide করে{' '}
                             <strong className='text-foreground'>
-                                &quot;তুমি কী করতে পারবে&quot;
+                                &quot;আপনি কী করতে পারবেন&quot;
                             </strong>
                             । দুটো major model:{' '}
                             <strong className='text-foreground'>RBAC</strong>{' '}
@@ -1103,8 +1103,8 @@ const policies: Policy[] = [
     {
         action: 'document:read',
         condition: (user, resource, env) =>
-            // User নিজের department-এর document read করতে পারবে
-            // অথবা admin সবসময় পারবে
+            // User নিজের department-এর document read করতে পারবেন
+            // অথবা admin সবসময় পারবেন
             user.department === resource.department || user.role === 'admin',
     },
     {
@@ -1148,8 +1148,8 @@ export function checkPolicy(action: string, resource: any) {
                     title: '💡 Principle of Least Privilege',
                     content: (
                         <p>
-                            সবসময় minimum permission দাও। একটা microservice
-                            শুধু সেটাই access করতে পারবে যা তার কাজে দরকার।
+                            সবসময় minimum permission দিন। একটা microservice
+                            শুধু সেটাই access করতে পারবেন যা তার কাজে দরকার।
                             Database service account-এর শুধু SELECT permission,
                             না সব tables-এ full access। এটা breach হলে damage
                             কমে।
@@ -1163,7 +1163,7 @@ export function checkPolicy(action: string, resource: any) {
             subHeader: { index: '005', title: 'Encryption & TLS' },
             title: (
                 <span className='font-heading'>
-                    Encryption & TLS/mTLS — Data Protect করো
+                    Encryption & TLS/mTLS — Data Protect করুন
                 </span>
             ),
             blocks: [
@@ -1203,7 +1203,7 @@ export function checkPolicy(action: string, resource: any) {
                             <span className='text-emerald-400 font-semibold'>
                                 Fast — bulk data জন্য ideal
                             </span>,
-                            'Slow — key exchange জন্য use করো',
+                            'Slow — key exchange জন্য use করুন',
                         ],
                         [
                             'Algorithm',
@@ -1212,7 +1212,7 @@ export function checkPolicy(action: string, resource: any) {
                         ],
                         [
                             'Problem',
-                            'Key distribution — কীভাবে share করবে?',
+                            'Key distribution — কীভাবে share করবেন?',
                             'Computationally expensive',
                         ],
                         [
@@ -1508,7 +1508,7 @@ export function checkPolicy(action: string, resource: any) {
                             </p>
                             <p className='font-mono text-xs text-muted-foreground'>
                                 → Zero Trust Architecture-এর core component।
-                                Internal network-ও trust করো না।
+                                Internal network-ও trust করুন না।
                             </p>
                         </div>
                     ),
@@ -1536,8 +1536,8 @@ export function checkPolicy(action: string, resource: any) {
                             <strong className='text-foreground'>
                                 &quot;Never trust, always verify&quot;
                             </strong>{' '}
-                            — internal network-ও trust করো না। প্রতিটা request
-                            verify করো।
+                            — internal network-ও trust করুন না। প্রতিটা request
+                            verify করুন।
                         </p>
                     ),
                 },
@@ -1884,10 +1884,10 @@ export function checkPolicy(action: string, resource: any) {
                             </p>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
                                 {[
-                                    'প্রতিটা service request-এ identity verify করো (mTLS)',
+                                    'প্রতিটা service request-এ identity verify করুন (mTLS)',
                                     'Least privilege — minimum necessary access',
-                                    'Network segment করো — microservice isolation',
-                                    'সব traffic encrypt করো (internal ও external)',
+                                    'Network segment করুন — microservice isolation',
+                                    'সব traffic encrypt করুন (internal ও external)',
                                     'Continuous monitoring — anomaly detection',
                                     'Dynamic credentials — Vault secrets rotation',
                                     'Multi-Factor Authentication সব admin access-এ',
@@ -1914,14 +1914,14 @@ export function checkPolicy(action: string, resource: any) {
                     title: '🎯 Zero Trust in Interview',
                     content: (
                         <p>
-                            Interview-এ বলো:{' '}
+                            Interview-এ বলুন:{' '}
                             <strong>
                                 &quot;আমি assume করি network already
                                 compromised&quot;
                             </strong>{' '}
                             — এটা Zero Trust mindset। Internal service calls-এ
                             mTLS, JWT validation, এবং Vault-based credential
-                            rotation mention করলে senior-level approach দেখা
+                            rotation mention করলেন senior-level approach দেখা
                             যায়।
                         </p>
                     ),
@@ -1981,7 +1981,7 @@ export function checkPolicy(action: string, resource: any) {
                                 Git history-তে থাকলেও danger — secret
                                 rotate করতে হবে।{' '}
                                 <strong>
-                                    git-secrets বা truffleHog দিয়ে scan করো।
+                                    git-secrets বা truffleHog দিয়ে scan করুন।
                                 </strong>
                             </p>
                         </div>
@@ -2154,9 +2154,9 @@ async function getSecret(secretName: string): Promise<Record<string, string>> {
                         <p>
                             Git pre-commit hook-এ{' '}
                             <strong>git-secrets</strong> বা{' '}
-                            <strong>detect-secrets</strong> run করো। CI/CD
+                            <strong>detect-secrets</strong> run করুন। CI/CD
                             pipeline-এ <strong>TruffleHog</strong> বা{' '}
-                            <strong>GitLeaks</strong> add করো। GitHub Advanced
+                            <strong>GitLeaks</strong> add করুন। GitHub Advanced
                             Security automatically secret scan করে। একবার push
                             হলে history-তে থাকে — rotate করতে হবে।
                         </p>
@@ -2251,19 +2251,19 @@ async function getSecret(secretName: string): Promise<Record<string, string>> {
                             <div className='space-y-4'>
                                 {[
                                     {
-                                        q: 'তুমি API design করার সময় কোন security layer গুলো add করবে?',
+                                        q: 'আপনি API design করার সময় কোন security layer গুলো add করবেন?',
                                         a: 'API Gateway তে: TLS termination, rate limiting, JWT validation, WAF। Service level এ: mTLS, RBAC, input validation। DB level এ: encryption at rest, Vault credentials।',
                                     },
                                     {
-                                        q: 'User password কীভাবে store করবে?',
-                                        a: 'Never plaintext। bcrypt বা Argon2 দিয়ে hash করো (cost factor ≥ 12)। Salt automatically added। Rainbow table attack defend হয়। MD5/SHA-1 avoid করো।',
+                                        q: 'User password কীভাবে store করবেন?',
+                                        a: 'Never plaintext। bcrypt বা Argon2 দিয়ে hash করুন (cost factor ≥ 12)। Salt automatically added। Rainbow table attack defend হয়। MD5/SHA-1 avoid করুন।',
                                     },
                                     {
-                                        q: 'Microservices এ service-to-service auth কীভাবে করবে?',
+                                        q: 'Microservices এ service-to-service auth কীভাবে করবেন?',
                                         a: 'mTLS (mutual TLS) — service mesh (Istio) automatically handle করে। অথবা OAuth2 Client Credentials flow — service identity।',
                                     },
                                     {
-                                        q: 'Rate limiting কেন দরকার এবং কোথায় implement করবে?',
+                                        q: 'Rate limiting কেন দরকার এবং কোথায় implement করবেন?',
                                         a: 'Brute force, DDoS, credential stuffing prevent করতে। API Gateway-এ (per IP, per user)। Redis দিয়ে sliding window counter। 429 Too Many Requests।',
                                     },
                                 ].map((item, i) => (
@@ -2313,7 +2313,7 @@ async function getSecret(secretName: string): Promise<Record<string, string>> {
                             </p>
                             <p>
                                 <strong>5. Fail Secure:</strong> System fail
-                                হলে secure state-এ যাবে — deny by default।
+                                হলে secure state-এ যাবেন — deny by default।
                             </p>
                         </div>
                     ),
@@ -2460,7 +2460,7 @@ async function getSecret(secretName: string): Promise<Record<string, string>> {
                         text: 'শুধু payload',
                         isCorrect: false,
                         explanation:
-                            'শুধু payload signature করলে header tamper হতে পারে।',
+                            'শুধু payload signature করলেন header tamper হতে পারে।',
                     },
                     {
                         key: 'b',
@@ -2474,7 +2474,7 @@ async function getSecret(secretName: string): Promise<Record<string, string>> {
                         text: 'Header + Payload উভয়ই',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। HMAC_SHA256(base64(header) + "." + base64(payload), secret) — উভয়ই signature-এ include হয়। তাই header বা payload কোনোটা tamper করলে signature mismatch হবে।',
+                            'সঠিক। HMAC_SHA256(base64(header) + "." + base64(payload), secret) — উভয়ই signature-এ include হয়। তাই header বা payload কোনোটা tamper করলেন signature mismatch হবে।',
                     },
                     {
                         key: 'd',
@@ -2501,7 +2501,7 @@ async function getSecret(secretName: string): Promise<Record<string, string>> {
                         text: 'Server-side web apps এবং SPA (with PKCE)',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Authorization Code Flow web apps-এর জন্য — server-side code exchange secure। SPA-তে PKCE extension add করো (client secret নেই)। এটাই most secure flow।',
+                            'সঠিক। Authorization Code Flow web apps-এর জন্য — server-side code exchange secure। SPA-তে PKCE extension add করুন (client secret নেই)। এটাই most secure flow।',
                     },
                     {
                         key: 'c',
@@ -2593,14 +2593,14 @@ async function getSecret(secretName: string): Promise<Record<string, string>> {
                 options: [
                     {
                         key: 'a',
-                        text: 'সব traffic block করো',
+                        text: 'সব traffic block করুন',
                         isCorrect: false,
                         explanation:
                             'Zero Trust সব block করে না — verify করে তারপর allow।',
                     },
                     {
                         key: 'b',
-                        text: 'Internal network trust করো, external করো না',
+                        text: 'Internal network trust করুন, external করুন না',
                         isCorrect: false,
                         explanation:
                             'এটাই পুরনো perimeter security model। Zero Trust internal network-ও trust করে না।',
@@ -2610,11 +2610,11 @@ async function getSecret(secretName: string): Promise<Record<string, string>> {
                         text: 'Never trust, always verify — internal network ও trusted নয়',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Zero Trust assume করে network already compromised হতে পারে। প্রতিটা request verify করো — internal হলেও। mTLS, identity-aware proxy, least privilege — সব মিলে Zero Trust architecture।',
+                            'সঠিক। Zero Trust assume করে network already compromised হতে পারে। প্রতিটা request verify করুন — internal হলেও। mTLS, identity-aware proxy, least privilege — সব মিলে Zero Trust architecture।',
                     },
                     {
                         key: 'd',
-                        text: 'VPN use করো সবসময়',
+                        text: 'VPN use করুন সবসময়',
                         isCorrect: false,
                         explanation:
                             'VPN Zero Trust-এর পরিবর্তে ব্যবহার হয় না — VPN implicit trust দেয়।',
@@ -2677,7 +2677,7 @@ async function getSecret(secretName: string): Promise<Record<string, string>> {
                         text: '#3 (Injection)',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। OWASP 2021-এ Injection (#3) — SQL injection, NoSQL injection, LDAP injection সব include। Mitigation: parameterized queries / prepared statements। ORM use করো। Input validate করো।',
+                            'সঠিক। OWASP 2021-এ Injection (#3) — SQL injection, NoSQL injection, LDAP injection সব include। Mitigation: parameterized queries / prepared statements। ORM use করুন। Input validate করুন।',
                     },
                     {
                         key: 'd',
@@ -2696,7 +2696,7 @@ async function getSecret(secretName: string): Promise<Record<string, string>> {
                         text: 'localStorage',
                         isCorrect: false,
                         explanation:
-                            'localStorage JavaScript দিয়ে accessible — XSS attack-এ easily steal হয়। Avoid করো।',
+                            'localStorage JavaScript দিয়ে accessible — XSS attack-এ easily steal হয়। Avoid করুন।',
                     },
                     {
                         key: 'b',
@@ -2778,7 +2778,7 @@ async function getSecret(secretName: string): Promise<Record<string, string>> {
                         text: 'mTLS (Mutual TLS) — certificate-based identity',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Istio, Linkerd — service mesh automatically প্রতিটা service-এ sidecar proxy inject করে। mTLS automatically handle হয়। Service-A কি সত্যিই Order Service? Certificate verify করো। SPIFFE/SPIRE standard use হয় identity জন্য।',
+                            'সঠিক। Istio, Linkerd — service mesh automatically প্রতিটা service-এ sidecar proxy inject করে। mTLS automatically handle হয়। Service-A কি সত্যিই Order Service? Certificate verify করুন। SPIFFE/SPIRE standard use হয় identity জন্য।',
                     },
                     {
                         key: 'd',
@@ -2792,39 +2792,39 @@ async function getSecret(secretName: string): Promise<Record<string, string>> {
         ],
     },
     assignment: {
-        title: 'Secure API Gateway ডিজাইন করো',
+        title: 'Secure API Gateway ডিজাইন করুন',
         time: '৩-৪ ঘন্টা',
         difficulty: 'Advanced',
         tasks: [
             <span>
                 <strong>OAuth2 Integration:</strong> একটা web app-এ &quot;Login
-                with Google&quot; implement করো। Authorization Code Flow + PKCE
-                use করো। id_token verify করো। User session তৈরি করো।
+                with Google&quot; implement করুন। Authorization Code Flow + PKCE
+                use করুন। id_token verify করুন। User session তৈরি করুন।
             </span>,
             <span>
                 <strong>JWT Validation Middleware:</strong> Express/FastAPI-তে
-                authentication middleware লেখো। RS256 algorithm use করো।
-                Token expiry check করো। Role extract করো claims থেকে।
+                authentication middleware লিখুন। RS256 algorithm use করুন।
+                Token expiry check করুন। Role extract করুন claims থেকে।
             </span>,
             <span>
-                <strong>RBAC Implementation:</strong> তিনটা role define করো —
-                admin, user, readonly। requireRole() middleware লেখো।
-                Protected routes-এ apply করো। 403 responses handle করো।
+                <strong>RBAC Implementation:</strong> তিনটা role define করুন —
+                admin, user, readonly। requireRole() middleware লিখুন।
+                Protected routes-এ apply করুন। 403 responses handle করুন।
             </span>,
             <span>
                 <strong>Rate Limiting:</strong> Redis sliding window counter দিয়ে
-                rate limiting implement করো। Per-IP এবং per-user limits।
+                rate limiting implement করুন। Per-IP এবং per-user limits।
                 429 Too Many Requests response। Exponential backoff headers।
             </span>,
             <span>
                 <strong>Secrets Management:</strong> AWS Secrets Manager বা
-                HashiCorp Vault SDK দিয়ে DB credentials fetch করো।
-                Hardcoded secrets replace করো। Auto-rotation setup করো।
+                HashiCorp Vault SDK দিয়ে DB credentials fetch করুন।
+                Hardcoded secrets replace করুন। Auto-rotation setup করুন।
             </span>,
             <span>
                 <strong>mTLS Configuration:</strong> Two services-এর মধ্যে
-                mTLS configure করো। Self-signed certificates generate করো।
-                Node.js tls module বা nginx দিয়ে implement করো।
+                mTLS configure করুন। Self-signed certificates generate করুন।
+                Node.js tls module বা nginx দিয়ে implement করুন।
             </span>,
         ],
         deliverables: [
@@ -2839,29 +2839,29 @@ async function getSecret(secretName: string): Promise<Record<string, string>> {
         subtitle: 'Node.js + Keycloak + HashiCorp Vault',
         steps: [
             {
-                title: 'Keycloak Setup করো (Local OAuth2 Server)',
+                title: 'Keycloak Setup করুন (Local OAuth2 Server)',
                 description:
-                    'Docker দিয়ে Keycloak run করো। একটা Realm তৈরি করো। Client configure করো (client_id, redirect_uri)। Test user add করো।',
+                    'Docker দিয়ে Keycloak run করুন। একটা Realm তৈরি করুন। Client configure করুন (client_id, redirect_uri)। Test user add করুন।',
             },
             {
-                title: 'OAuth2 Authorization Code Flow Implement করো',
+                title: 'OAuth2 Authorization Code Flow Implement করুন',
                 description:
-                    'Express app-এ /auth/login route — Keycloak-এ redirect। /auth/callback — code exchange করো। id_token verify করো। Session store করো।',
+                    'Express app-এ /auth/login route — Keycloak-এ redirect। /auth/callback — code exchange করুন। id_token verify করুন। Session store করুন।',
             },
             {
-                title: 'JWT Middleware লেখো',
+                title: 'JWT Middleware লিখুন',
                 description:
-                    'Keycloak-এর public key fetch করো (JWKS endpoint)। jsonwebtoken দিয়ে verify করো। User info request-এ attach করো। Role-based route protection add করো।',
+                    'Keycloak-এর public key fetch করুন (JWKS endpoint)। jsonwebtoken দিয়ে verify করুন। User info request-এ attach করুন। Role-based route protection add করুন।',
             },
             {
-                title: 'HashiCorp Vault Setup করো',
+                title: 'HashiCorp Vault Setup করুন',
                 description:
-                    'Vault dev server start করো। Database secrets engine enable করো। Dynamic PostgreSQL credentials configure করো। Service policy তৈরি করো।',
+                    'Vault dev server start করুন। Database secrets engine enable করুন। Dynamic PostgreSQL credentials configure করুন। Service policy তৈরি করুন।',
             },
             {
-                title: 'Vault Dynamic Credentials Integrate করো',
+                title: 'Vault Dynamic Credentials Integrate করুন',
                 description:
-                    'App startup-এ Vault থেকে DB credentials fetch করো। Lease renewal timer set করো। Credentials expire হওয়ার আগে rotate করো। Connection pool rebuild করো।',
+                    'App startup-এ Vault থেকে DB credentials fetch করুন। Lease renewal timer set করুন। Credentials expire হওয়ার আগে rotate করুন। Connection pool rebuild করুন।',
             },
         ],
         codeBlock: {
@@ -3037,6 +3037,6 @@ app.delete('/users/:id',
 
 app.listen(3000, () => console.log('Secure API Gateway running on :3000'));`,
         },
-        tip: 'Keycloak local-এ run করে full OAuth2 flow practice করো। JWT decode করতে jwt.io use করো। Vault dev mode-এ dynamic credentials test করো — আসল system-এ যখন credentials automatically rotate হতে দেখবে, security design অনেক clear হয়ে যাবে।',
+        tip: 'Keycloak local-এ run করে full OAuth2 flow practice করুন। JWT decode করতে jwt.io use করুন। Vault dev mode-এ dynamic credentials test করুন — আসল system-এ যখন credentials automatically rotate হতে দেখবেন, security design অনেক clear হয়ে যাবেন।',
     },
 };

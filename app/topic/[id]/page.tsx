@@ -1,7 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { courseData } from "@/lib/course-data";
+import { courseData, type Topic } from "@/lib/course-data";
 import { TopicHeader } from "@/components/course/topic-header";
 import { InfoBox } from "@/components/course/info-box";
 import Link from "next/link";
@@ -60,7 +60,7 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
   }
 
   // Calculate Previous and Next topics dynamically
-  const allTopics = courseData.flatMap(p => p.topics);
+  const allTopics: Topic[] = courseData.flatMap(p => p.topics);
   const currentIdx = allTopics.findIndex(t => t.id === topicId);
   
   const prevTopic = currentIdx > 0 ? { id: allTopics[currentIdx - 1].id, title: allTopics[currentIdx - 1].title } : null;

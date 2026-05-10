@@ -295,7 +295,7 @@ export const dbShardingContent: TopicData = {
                                     </span>
                                 </h4>
                                 <p className='text-sm text-muted-foreground leading-relaxed'>
-                                    Read scaling (replicas থেকে read করো), High
+                                    Read scaling (replicas থেকে read করুন), High
                                     availability (Primary fail → Replica promote
                                     হয়), Read-heavy apps এর জন্য excellent।
                                 </p>
@@ -323,13 +323,13 @@ export const dbShardingContent: TopicData = {
                     rows: [
                         [
                             'Synchronous',
-                            'Primary AND all replicas acknowledge করলে write complete',
+                            'Primary AND all replicas acknowledge করলেন write complete',
                             'Strong consistency needed',
                             <span className='text-red-400'>Slow writes</span>,
                         ],
                         [
                             'Asynchronous',
-                            'Primary acknowledge করলেই write complete, replicas background এ sync',
+                            'Primary acknowledge করলেনই write complete, replicas background এ sync',
                             'High write throughput',
                             <span className='text-yellow-400'>
                                 Possible data lag
@@ -337,7 +337,7 @@ export const dbShardingContent: TopicData = {
                         ],
                         [
                             'Semi-sync',
-                            'কমপক্ষে ১টা replica acknowledge করলে complete',
+                            'কমপক্ষে ১টা replica acknowledge করলেন complete',
                             'Balance between both',
                             <span className='text-emerald-400 font-bold'>
                                 Good compromise
@@ -589,7 +589,7 @@ export const dbShardingContent: TopicData = {
                     content: (
                         <p>
                             user_id 1-1M → Shard 1, 1M-2M → Shard 2। কিন্তু
-                            নতুন users সবসময় Shard 2 এ যাবে। Shard 1 idle, Shard
+                            নতুন users সবসময় Shard 2 এ যাবেন। Shard 1 idle, Shard
                             2 overloaded — uneven distribution।
                         </p>
                     ),
@@ -615,7 +615,7 @@ export const dbShardingContent: TopicData = {
                     code: `import hashlib
 
 def get_shard(user_id: int, num_shards: int = 3) -> int:
-    # user_id hash করে shard number বের করো
+    # user_id hash করে shard number বের করুন
     hash_val = int(hashlib.md5(str(user_id).encode()).hexdigest(), 16)
     return hash_val % num_shards
 
@@ -766,7 +766,7 @@ print(ring.get_shard("user:67890"))   # → shard-1`,
                     title: 'Resharding Problem',
                     content: (
                         <p>
-                            ৩টা shard থেকে ৪টা shard এ move করলে data
+                            ৩টা shard থেকে ৪টা shard এ move করলেন data
                             redistribute করতে হবে। Application downtime
                             possible। Consistent hashing এই pain কমায়।
                         </p>
@@ -779,7 +779,7 @@ print(ring.get_shard("user:67890"))   # → shard-1`,
                     content: (
                         <p>
                             Shard key choose করা সবচেয়ে important decision।
-                            User-based query pattern analyze করো। user_id
+                            User-based query pattern analyze করুন। user_id
                             সাধারণত good shard key — queries mostly per-user।
                             Avoid sharding by যে field এ cross-shard query বেশি
                             হবে।
@@ -920,7 +920,7 @@ print(get_user(12346))   # User 12346 → Shard 1 (12346 % 3 = 1)`,
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.CONCEPT,
-                    title: 'Q3: Shard key কীভাবে select করবে?',
+                    title: 'Q3: Shard key কীভাবে select করবেন?',
                     content: (
                         <p>
                             <strong>উত্তর:</strong> Good shard key: High
@@ -1084,7 +1084,7 @@ print(get_user(12346))   # User 12346 → Shard 1 (12346 % 3 = 1)`,
                 options: [
                     {
                         key: 'A',
-                        text: 'Database slow হয়ে যাওয়া',
+                        text: 'Database slow হয়ে যানয়া',
                         isCorrect: false,
                         explanation:
                             'Database slow হওয়া আলাদা সমস্যা, replication lag নয়।',
@@ -1107,7 +1107,7 @@ print(get_user(12346))   # User 12346 → Shard 1 (12346 % 3 = 1)`,
                         text: 'Primary তে write হওয়ার পর Replica তে sync হতে delay',
                         isCorrect: true,
                         explanation:
-                            'Async replication এ Primary তে data লেখার পর Replica তে propagate হতে কিছু সময় লাগে। এই সময়ে replica থেকে read করলে stale data পাওয়া যেতে পারে।',
+                            'Async replication এ Primary তে data লেখার পর Replica তে propagate হতে কিছু সময় লাগে। এই সময়ে replica থেকে read করলেন stale data পানয়া যেতে পারে।',
                     },
                 ],
             },
@@ -1127,14 +1127,14 @@ print(get_user(12346))   # User 12346 → Shard 1 (12346 % 3 = 1)`,
                         text: 'user_id (post owner)',
                         isCorrect: true,
                         explanation:
-                            'user_id ভালো shard key কারণ: High cardinality, queries mostly "show me my posts" (same user_id), Even distribution possible। post_date এ নতুন posts সব same shard এ যাবে।',
+                            'user_id ভালো shard key কারণ: High cardinality, queries mostly "show me my posts" (same user_id), Even distribution possible। post_date এ নতুন posts সব same shard এ যাবেন।',
                     },
                     {
                         key: 'C',
                         text: 'post_date',
                         isCorrect: false,
                         explanation:
-                            'post_date দিয়ে shard করলে নতুন posts সব একই shard এ যাবে — hotspot।',
+                            'post_date দিয়ে shard করলেন নতুন posts সব একই shard এ যাবেন — hotspot।',
                     },
                     {
                         key: 'D',
@@ -1165,7 +1165,7 @@ print(get_user(12346))   # User 12346 → Shard 1 (12346 % 3 = 1)`,
                     },
                     {
                         key: 'C',
-                        text: 'নতুন shard add করলে minimal data movement — regular hash এ সব data move করতে হয়',
+                        text: 'নতুন shard add করলেন minimal data movement — regular hash এ সব data move করতে হয়',
                         isCorrect: true,
                         explanation:
                             'Regular hash (key % n) এ n বাড়লে প্রায় সব keys এর mapping বদলায়। Consistent hashing এ শুধু k/n portion এর data move হয়। Amazon DynamoDB, Cassandra এটা use করে।',
@@ -1262,7 +1262,7 @@ print(get_user(12346))   # User 12346 → Shard 1 (12346 % 3 = 1)`,
                         text: 'App mostly read-heavy, write কম, data একটা server এ fit করে',
                         isCorrect: true,
                         explanation:
-                            'Read-heavy app এ replicas থেকে reads distribute করলেই কাজ হয়। Storage যদি একটা server এ fit করে এবং write bottleneck না থাকে, sharding এর complexity নেওয়ার দরকার নেই।',
+                            'Read-heavy app এ replicas থেকে reads distribute করলেনই কাজ হয়। Storage যদি একটা server এ fit করে এবং write bottleneck না থাকে, sharding এর complexity নেওয়ার দরকার নেই।',
                     },
                     {
                         key: 'C',
@@ -1323,28 +1323,28 @@ print(get_user(12346))   # User 12346 → Shard 1 (12346 % 3 = 1)`,
         tasks: [
             <span key='1'>
                 <strong>Sharding Strategy Selection:</strong> নিচের scenarios
-                এর জন্য shard key এবং strategy choose করো: (ক) Twitter-like
-                app — 500M users, tweets store করবে (খ) E-commerce — orders
-                store করবে (গ) IoT sensor data — প্রতি second millions of
+                এর জন্য shard key এবং strategy choose করুন: (ক) Twitter-like
+                app — 500M users, tweets store করবেন (খ) E-commerce — orders
+                store করবেন (গ) IoT sensor data — প্রতি second millions of
                 readings।
             </span>,
             <span key='2'>
                 <strong>Consistent Hashing Simulate:</strong> উপরে দেওয়া
-                ConsistentHashRing Python code চালাও। 3টা shard add করো, 100টা
-                random user_id তে কোন shard gets কত% request count করো। 4th
-                shard add করার পর আবার count করো।
+                ConsistentHashRing Python code চালাও। 3টা shard add করুন, 100টা
+                random user_id তে কোন shard gets কত% request count করুন। 4th
+                shard add করার পর আবার count করুন।
             </span>,
             <span key='3'>
                 <strong>Diagram:</strong> একটা Instagram-like app এর complete
-                database architecture diagram বানাও: User profiles, Posts
+                database architecture diagram বানান: User profiles, Posts
                 metadata, Comments, Likes — কোনটা কীভাবে sharded? Replicas
                 কোথায়?
             </span>,
             <span key='4'>
                 <strong>Read/Write Splitting Code:</strong> উপরে দেওয়া Node.js
-                Read/Write splitting code extend করো: 3টা replica add করো,
-                write failure হলে retry করো, read failure হলে অন্য replica try
-                করো।
+                Read/Write splitting code extend করুন: 3টা replica add করুন,
+                write failure হলে retry করুন, read failure হলে অন্য replica try
+                করুন।
             </span>,
             <span key='5'>
                 <strong>Research:</strong> Discord কীভাবে trillions of messages
@@ -1365,31 +1365,31 @@ print(get_user(12346))   # User 12346 → Shard 1 (12346 % 3 = 1)`,
         subtitle: 'Shard Router Simulation',
         steps: [
             {
-                title: 'ShardRouter class বানাও',
+                title: 'ShardRouter class বানান',
                 description:
                     '৩টা virtual shard, hash-based routing, add_shard() method।',
             },
             {
-                title: 'Distribution test করো',
+                title: 'Distribution test করুন',
                 description:
-                    '১০,০০০ random user_ids দিয়ে কতটা per shard যাচ্ছে count করো। Even distribution হচ্ছে?',
+                    '১০,০০০ random user_ids দিয়ে কতটা per shard যাচ্ছে count করুন। Even distribution হচ্ছে?',
             },
             {
-                title: '4th shard add করো',
+                title: '4th shard add করুন',
                 description:
-                    'Regular hash vs Consistent hash — কতটা data move হলো? Compare করো।',
+                    'Regular hash vs Consistent hash — কতটা data move হলো? Compare করুন।',
             },
             {
-                title: 'In-memory storage add করো',
+                title: 'In-memory storage add করুন',
                 description:
-                    'প্রতিটা shard এর জন্য Python dict। set_user(), get_user() implement করো।',
+                    'প্রতিটা shard এর জন্য Python dict। set_user(), get_user() implement করুন।',
             },
             {
-                title: 'Cross-shard query simulate করো',
+                title: 'Cross-shard query simulate করুন',
                 description:
-                    '"সব users যাদের age > 25" query সব shards এ run করে results merge করো।',
+                    '"সব users যাদের age > 25" query সব shards এ run করে results merge করুন।',
             },
         ],
-        tip: 'Hash routing practically implement করবে। Consistent hashing এর power দেখবে — 4th shard add এ কত কম data move হলো। Cross-shard query এর complexity feel করবে।',
+        tip: 'Hash routing practically implement করবেন। Consistent hashing এর power দেখবেন — 4th shard add এ কত কম data move হলো। Cross-shard query এর complexity feel করবেন।',
     },
 };

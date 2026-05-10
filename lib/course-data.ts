@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
+    IconBrandAmazon,
+    IconBrandGoogleHome,
+    IconBrandWhatsapp,
     IconBrandX,
     IconBrandYoutube,
-    IconBrandWhatsapp,
-    IconBrandAmazon,
 } from '@tabler/icons-react';
 import {
     BarChart3,
@@ -16,9 +18,7 @@ import {
     Link,
     Lock,
     Mail,
-    MessageSquare,
     Network,
-    Play,
     Puzzle,
     Radar,
     RefreshCw,
@@ -27,12 +27,64 @@ import {
     Search,
     Server,
     ShieldAlert,
-    ShoppingCart,
     Waves,
     Workflow,
     Zap,
 } from 'lucide-react';
-export const courseData = [
+
+export interface Topic {
+    id: string;
+    title: string;
+    icon?: any;
+    tag?: string;
+    time?: string;
+    level?: string;
+    type?: string;
+    summary?: string;
+    details?: string;
+    useCases?: string[];
+    practice?: string[];
+    tools?: string[];
+}
+
+export interface CoursePhase {
+    id: string;
+    title: string;
+    duration: string;
+    topics: Topic[];
+}
+
+export const courseData: CoursePhase[] = [
+    {
+        id: 'phase-0',
+        title: 'Introduction - ভূমিকা ',
+        duration: '10 মিনিট',
+        topics: [
+            {
+                id: 'introduction',
+                title: 'Introduction of System Design',
+                icon: IconBrandGoogleHome,
+                tag: 'INTRODUCTION',
+                time: '৮-১০ মিনিট',
+                level: 'Beginner',
+                type: 'Theory',
+                summary:
+                    'সিস্টেম ডিজাইন কী, কেন শিখবেন এবং এর মূল ভিত্তিগুলো নিয়ে আলোচনা।',
+                details:
+                    'সিস্টেম ডিজাইনের প্রয়োজনীয়তা, স্ক্যালিং এর ধারণা এবং আধুনিক সফটওয়্যার আর্কিটেকচারের মূল উপাদানসমূহ।',
+                useCases: [
+                    'বড় অ্যাপ তৈরি: স্কেলেবিলিটির গুরুত্ব',
+                    'ইন্টারভিউ প্রস্তুতি: সিস্টেম ডিজাইন রাউন্ড',
+                    'স্কেলেবল সলিউশন: আর্কিটেকচার প্ল্যানিং',
+                ],
+                practice: [
+                    'সিস্টেম ডায়াগ্রাম আঁকা শিখুন',
+                    'রিয়েল-ওয়ার্ল্ড কেস স্টাডি এনালাইসিস',
+                    'বেসিক আর্কিটেকচার ডিজাইন',
+                ],
+            },
+        ],
+    },
     {
         id: 'phase-1',
         title: 'Foundations — ভিত্তি তৈরি',
@@ -47,18 +99,18 @@ export const courseData = [
                 level: 'Intermediate',
                 type: 'Theory & Practice',
                 summary:
-                    'Vertical vs Horizontal Scaling, এর পার্থক্য, কখন কোনটা ব্যবহার করবে।',
+                    'Vertical vs Horizontal Scaling, এর পার্থক্য, কখন কোনটা ব্যবহার করবেন।',
                 details:
                     'Vertical scaling (বড় মেশিন) vs Horizontal scaling (বেশি মেশিন)। Load balancer দিয়ে ট্র্যাফিক ভাগ করা। Stateless vs Stateful আর্কিটেকচার।',
                 useCases: [
-                    'Startup stage: vertical scaling शुरू করো',
+                    'Startup stage: vertical scaling শুরু করুন',
                     '১০ লক্ষ+ user হলে: horizontal scaling',
                     'Database bottleneck: vertical first',
                 ],
                 practice: [
-                    'একটি সিম্পল Node.js API বানাও',
-                    'Nginx দিয়ে load balance করো',
-                    'Multiple instances run করো',
+                    'একটি সিম্পল Node.js API বানান',
+                    'Nginx দিয়ে load balance করুন',
+                    'Multiple instances run করুন',
                 ],
             },
             {
@@ -89,7 +141,7 @@ export const courseData = [
                 level: 'Intermediate',
                 type: 'Theory & Labs',
                 summary:
-                    'SQL vs NoSQL, ACID properties, indexes, transactions — সবকিছু ক্লিয়ার করো।',
+                    'SQL vs NoSQL, ACID properties, indexes, transactions — সবকিছু ক্লিয়ার করুন।',
                 details:
                     'Relational vs Unstructured data। PostgreSQL, MongoDB, Redis এর পার্থক্য। Indexing এবং Query optimization এর গুরুত্ব।',
                 tools: ['PostgreSQL', 'MongoDB', 'Redis', 'Elasticsearch'],
@@ -152,7 +204,7 @@ export const courseData = [
                 level: 'Intermediate',
                 type: 'Traffic Management',
                 summary:
-                    'Traffic কীভাবে distribute করবে — algorithms, health checks, sticky sessions।',
+                    'Traffic কীভাবে distribute করবেন — algorithms, health checks, sticky sessions।',
                 details:
                     'Round Robin, Least Connections, IP Hash algorithms। L4 vs L7 balancing। Health checks এবং SSL termination।',
                 tools: ['Nginx', 'HAProxy', 'AWS ALB'],
@@ -253,7 +305,7 @@ export const courseData = [
                 level: 'Intermediate',
                 type: 'Architecture Strategy',
                 summary:
-                    'Monolith থেকে Microservices এ যাওয়ার পথ, trade-offs, service mesh।',
+                    'Monolith থেকে Microservices এ যানয়ার পথ, trade-offs, service mesh।',
                 details:
                     'Independent deployment, technology diversity, organization scaling। Service-to-service communication strategies।',
                 tools: ['Docker', 'Kubernetes', 'Istio'],
@@ -619,10 +671,5 @@ export const courseData = [
         ],
     },
 ];
-
-
-
-
-
 
 

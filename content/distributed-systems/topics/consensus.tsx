@@ -25,7 +25,7 @@ export const consensusContent: TopicData = {
                                 ৩টা server আছে — Server A, B, C। সবাই একই data
                                 রাখে। কিন্তু হঠাৎ network problem — A এবং B
                                 একটা value দেখছে, C আরেকটা। এখন কোনটা সত্য?
-                                কে decide করবে?
+                                কে decide করবেন?
                             </p>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
                                 এই সমস্যার নাম{' '}
@@ -68,7 +68,7 @@ export const consensusContent: TopicData = {
                     content: (
                         <div className='space-y-6'>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
-                                ধরো তুমি একটা bank এ কাজ করো। Account balance
+                                ধরুন আপনি একটা bank এ কাজ করুন। Account balance
                                 হলো ১০,০০০ টাকা। ৩টা server এই data replicate
                                 করে রাখে। এখন একসাথে দুটো transaction আসলো:
                             </p>
@@ -119,10 +119,10 @@ export const consensusContent: TopicData = {
                     content: (
                         <p className='text-muted-foreground leading-relaxed text-lg'>
                             Distributed Consensus এর classic problem। কয়েকজন
-                            general একটা city attack করবে — সবাইকে একসাথে
+                            general একটা city attack করবেন — সবাইকে একসাথে
                             attack বা retreat করতে হবে। কিন্তু messenger
                             unreliable, কিছু general traitor হতে পারে। কীভাবে
-                            সবাই agree করবে?
+                            সবাই agree করবেন?
                         </p>
                     ),
                 },
@@ -133,15 +133,15 @@ export const consensusContent: TopicData = {
                     content: (
                         <>
                             <strong>1. Fault Tolerance:</strong> কিছু nodes
-                            fail করলেও system চলতে থাকবে।
+                            fail করলেনও system চলতে থাকবেন।
                             <br />
                             <strong>2. Consistency:</strong> সব nodes একই data
-                            দেখবে একই সময়ে।
+                            দেখবেন একই সময়ে।
                             <br />
                             <br />
                             CAP Theorem মনে আছে? Distributed system এ
                             Consistency এবং Availability দুটো একসাথে fully
-                            পাওয়া যায় না। Consensus algorithms এই trade-off
+                            পানয়া যায় না। Consensus algorithms এই trade-off
                             manage করে।
                         </>
                     ),
@@ -177,7 +177,7 @@ export const consensusContent: TopicData = {
                                         <br />
                                         f = tolerable failures
                                         <br />
-                                        ৩ nodes → ১টা fail করলেও চলবে
+                                        ৩ nodes → ১টা fail করলেনও চলবে
                                     </p>
                                 </div>
                             </div>
@@ -201,7 +201,7 @@ export const consensusContent: TopicData = {
                         <p className='text-muted-foreground leading-relaxed mb-10 text-lg'>
                             Paxos (পুরনো algorithm) বোঝা খুব কঠিন ছিল। ২০১৪
                             সালে Stanford এর Diego Ongaro এবং John Ousterhout
-                            Raft design করলেন — same guarantees, কিন্তু অনেক
+                            Raft design করলেনন — same guarantees, কিন্তু অনেক
                             বেশি understandable।
                         </p>
                     ),
@@ -227,7 +227,7 @@ export const consensusContent: TopicData = {
                                 </h4>
                                 <p className='text-sm text-muted-foreground leading-relaxed'>
                                     Cluster এ একটাই Leader থাকে। Leader সব
-                                    writes handle করে। Leader fail করলে নতুন
+                                    writes handle করে। Leader fail করলেন নতুন
                                     election হয়।
                                 </p>
                             </div>
@@ -241,7 +241,7 @@ export const consensusContent: TopicData = {
                                 <p className='text-sm text-muted-foreground leading-relaxed'>
                                     Leader সব entries তার log এ লেখে। তারপর
                                     Followers কে replicate করে। Majority
-                                    acknowledge করলেই committed।
+                                    acknowledge করলেনই committed।
                                 </p>
                             </div>
                             <div className='p-8 border-r border-border bg-card/30'>
@@ -254,7 +254,7 @@ export const consensusContent: TopicData = {
                                 <p className='text-sm text-muted-foreground leading-relaxed'>
                                     Committed entries কখনো lost হয় না। New
                                     leader এর কাছে সব committed entries
-                                    থাকবেই। Strong guarantee।
+                                    থাকবেনই। Strong guarantee।
                                 </p>
                             </div>
                             <div className='p-8 bg-card/30'>
@@ -377,8 +377,8 @@ export const consensusContent: TopicData = {
                                 </h4>
                                 <p className='text-sm text-muted-foreground leading-relaxed'>
                                     Multiple servers এর মধ্যে lock coordinate
-                                    করো। একটাই server কোনো resource access
-                                    করবে।
+                                    করুন। একটাই server কোনো resource access
+                                    করবেন।
                                 </p>
                             </div>
                             <div className='p-8 border-b border-border bg-card/30'>
@@ -389,9 +389,9 @@ export const consensusContent: TopicData = {
                                     </span>
                                 </h4>
                                 <p className='text-sm text-muted-foreground leading-relaxed'>
-                                    সব services এর config ZooKeeper এ রাখো।
+                                    সব services এর config ZooKeeper এ রাখুন।
                                     Config change হলে সব services automatically
-                                    update পাবে।
+                                    update পাবেন।
                                 </p>
                             </div>
                             <div className='p-8 border-r border-border bg-card/30'>
@@ -585,7 +585,7 @@ const { Etcd3 } = require('etcd3');
 const client = new Etcd3({ hosts: 'localhost:2379' });
 
 async function processOrderWithLock(orderId) {
-    // Distributed lock — শুধু একটা server এই order process করবে
+    // Distributed lock — শুধু একটা server এই order process করবেন
     const lock = client.lock(\`order/\${orderId}\`);
 
     try {
@@ -711,12 +711,12 @@ Promise.all([
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.CONCEPT,
-                    title: '🎯 Q2: Quorum কী? ৩ nodes এ কতটা fail করলে চলবে?',
+                    title: '🎯 Q2: Quorum কী? ৩ nodes এ কতটা fail করলেন চলবে?',
                     content: (
                         <>
                             <strong>Answer:</strong> Quorum = majority = (N/2) +
-                            1। ৩ nodes এ quorum = 2। মানে ১টা fail করলেও
-                            চলবে। ৫ nodes এ quorum = 3, মানে ২টা fail করলেও
+                            1। ৩ nodes এ quorum = 2। মানে ১টা fail করলেনও
+                            চলবে। ৫ nodes এ quorum = 3, মানে ২টা fail করলেনও
                             চলবে। ফর্মুলা: N = 2f + 1, যেখানে f = tolerable
                             failures।
                         </>
@@ -739,7 +739,7 @@ Promise.all([
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.IMPORTANT,
-                    title: 'INTERVIEW এ এটা বলো',
+                    title: 'INTERVIEW এ এটা বলুন',
                     content: (
                         <>
                             &quot;Distributed system design এ আমি consensus এর
@@ -766,7 +766,7 @@ Promise.all([
             ],
             [
                 <span className='font-bold text-primary'>Quorum</span>,
-                'Majority (N/2 + 1) agree করলেই committed',
+                'Majority (N/2 + 1) agree করলেনই committed',
             ],
             [
                 <span className='font-bold text-primary'>
@@ -806,7 +806,7 @@ Promise.all([
                         text: 'Multiple nodes একটা single agreed value তে পৌঁছানো',
                         isCorrect: true,
                         explanation:
-                            'Consensus মানে agreement। Distributed system এ কিছু nodes fail করতে পারে, network partition হতে পারে — তবুও সব nodes একটা value এ agree করবে। এটাই fundamental challenge।',
+                            'Consensus মানে agreement। Distributed system এ কিছু nodes fail করতে পারে, network partition হতে পারে — তবুও সব nodes একটা value এ agree করবেন। এটাই fundamental challenge।',
                     },
                     {
                         key: 'C',
@@ -845,7 +845,7 @@ Promise.all([
                         text: '৩',
                         isCorrect: true,
                         explanation:
-                            'Quorum = (N/2) + 1 = (5/2) + 1 = 2.5 + 1 = 3.5 → floor = 3। ৫ nodes এ ৩টা agree করলেই quorum। মানে ২টা fail করলেও cluster চলবে।',
+                            'Quorum = (N/2) + 1 = (5/2) + 1 = 2.5 + 1 = 3.5 → floor = 3। ৫ nodes এ ৩টা agree করলেনই quorum। মানে ২টা fail করলেনও cluster চলবে।',
                     },
                     {
                         key: 'D',
@@ -937,7 +937,7 @@ Promise.all([
                     },
                     {
                         key: 'B',
-                        text: 'Network partition এ cluster দুই ভাগে ভাগ হয়ে দুটো leader elect করলে',
+                        text: 'Network partition এ cluster দুই ভাগে ভাগ হয়ে দুটো leader elect করলেন',
                         isCorrect: true,
                         explanation:
                             'Split Brain = একটা cluster দুটো ভাগে ভাগ হয়ে দুটো আলাদা leader। দুটো inconsistent decision নেয়। Raft quorum requirement দিয়ে এটা prevent করে — minority partition কোনো decision নিতে পারে না।',
@@ -1085,7 +1085,7 @@ Promise.all([
             },
             {
                 id: 10,
-                text: 'একটা ৩-node cluster এ কতটা node fail হলেও system available থাকবে?',
+                text: 'একটা ৩-node cluster এ কতটা node fail হলেও system available থাকবেন?',
                 options: [
                     {
                         key: 'A',
@@ -1126,26 +1126,26 @@ Promise.all([
             <span key='1'>
                 <strong>Quorum Calculation:</strong> নিচের cluster sizes এর
                 জন্য quorum, tolerable failures, এবং minimum odd nodes
-                calculate করো: ৩, ৫, ৭, ৯, ১১। Table আকারে লেখো।
+                calculate করুন: ৩, ৫, ৭, ৯, ১১। Table আকারে লিখুন।
             </span>,
             <span key='2'>
                 <strong>Raft Visualization:</strong> raft.github.io website এ
-                গিয়ে interactive Raft simulation দেখো। Leader fail করো, নতুন
-                election observe করো। কী দেখলে ৫ লাইনে লেখো।
+                গিয়ে interactive Raft simulation দেখুন। Leader fail করুন, নতুন
+                election observe করুন। কী দেখলে ৫ লাইনে লিখুন।
             </span>,
             <span key='3'>
                 <strong>Code Extension:</strong> দেওয়া Python Raft simulation
-                তে একটা <code>handle_leader_failure()</code> method যোগ করো
-                যেটা leader fail হলে নতুন election trigger করবে।
+                তে একটা <code>handle_leader_failure()</code> method যোগ করুন
+                যেটা leader fail হলে নতুন election trigger করবেন।
             </span>,
             <span key='4'>
                 <strong>Research:</strong> CockroachDB documentation পড়ো —
-                তারা কীভাবে Raft use করে। ৩-৪ লাইনে summary লেখো।
+                তারা কীভাবে Raft use করে। ৩-৪ লাইনে summary লিখুন।
             </span>,
             <span key='5'>
-                <strong>Comparison:</strong> তুমি যদি একটা payment system
-                design করো তাহলে etcd, Consul, বা ZooKeeper — কোনটা use করবে
-                এবং কেন? Justify করো।
+                <strong>Comparison:</strong> আপনি যদি একটা payment system
+                design করুন তাহলে etcd, Consul, বা ZooKeeper — কোনটা use করবেন
+                এবং কেন? Justify করুন।
             </span>,
         ],
         deliverables: [
@@ -1174,31 +1174,31 @@ Promise.all([
                 ),
             },
             {
-                title: 'Config values set করো',
+                title: 'Config values set করুন',
                 description: (
                     <>
                         <code>
                             docker exec etcd etcdctl put /config/db_host
                             &quot;localhost&quot;
                         </code>{' '}
-                        এবং আরো কিছু config set করো।
+                        এবং আরো কিছু config set করুন।
                     </>
                 ),
             },
             {
-                title: 'Python দিয়ে watch করো',
+                title: 'Python দিয়ে watch করুন',
                 description:
-                    'etcd3 Python library দিয়ে config changes watch করার script লেখো।',
+                    'etcd3 Python library দিয়ে config changes watch করার script লিখুন।',
             },
             {
-                title: 'Config change করো',
+                title: 'Config change করুন',
                 description:
-                    'etcdctl দিয়ে একটা config change করো — Python watcher automatically detect করবে কিনা দেখো।',
+                    'etcdctl দিয়ে একটা config change করুন — Python watcher automatically detect করবেন কিনা দেখুন।',
             },
             {
                 title: 'Bonus: 3-node cluster',
                 description:
-                    'docker-compose দিয়ে ৩-node etcd cluster চালাও। একটা node kill করো — cluster চলে কিনা দেখো।',
+                    'docker-compose দিয়ে ৩-node etcd cluster চালাও। একটা node kill করুন — cluster চলে কিনা দেখুন।',
             },
         ],
         codeBlock: {
@@ -1209,18 +1209,18 @@ import etcd3
 
 client = etcd3.client(host='localhost', port=2379)
 
-# Config set করো
+# Config set করুন
 client.put('/config/db_host', 'localhost')
 client.put('/config/db_port', '5432')
 client.put('/config/cache_ttl', '300')
 
 print("✅ Config values set করা হয়েছে")
 
-# সব config read করো
+# সব config read করুন
 for value, metadata in client.get_prefix('/config/'):
     print(f"Key: {metadata.key.decode()}, Value: {value.decode()}")
 
-# Watch করো — config change হলে automatically notify হবে
+# Watch করুন — config change হলে automatically notify হবে
 print("\\n👀 Watching for config changes...")
 
 events_iterator, cancel = client.watch_prefix('/config/')
@@ -1228,9 +1228,9 @@ for event in events_iterator:
     print(f"🔔 Config changed!")
     print(f"   Key: {event.key.decode()}")
     print(f"   New Value: {event.value.decode()}")
-    # এখানে app এর config reload করো
-    break  # Demo তে একটা event দেখেই বন্ধ করো`,
+    # এখানে app এর config reload করুন
+    break  # Demo তে একটা event দেখেই বন্ধ করুন`,
         },
-        tip: 'Theoretical না — actually দেখবে etcd কীভাবে distributed config store হিসেবে কাজ করে। Real Kubernetes cluster এর brain কীভাবে কাজ করে সেটা বুঝবে।',
+        tip: 'Theoretical না — actually দেখবেন etcd কীভাবে distributed config store হিসেবে কাজ করে। Real Kubernetes cluster এর brain কীভাবে কাজ করে সেটা বুঝবেন।',
     },
 };

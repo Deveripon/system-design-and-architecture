@@ -24,15 +24,15 @@ export const capContent: TopicData = {
                     content: (
                         <div className='space-y-6'>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
-                                তুমি একটা distributed system design করছো।
-                                Interview এ জিজ্ঞেস করলো — &quot;তোমার system এ
+                                আপনি একটা distributed system design করছো।
+                                Interview এ জিজ্ঞেস করলো — &quot;আপনার system এ
                                 network failure হলে কী হবে? User কি wrong data
-                                দেখবে নাকি error পাবে?&quot; — এই question এর
+                                দেখবেন নাকি error পাবেন?&quot; — এই question এর
                                 answer হলো CAP Theorem।
                             </p>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
                                 Cassandra vs MongoDB vs PostgreSQL কোনটা choose
-                                করবে — এই decision এর পেছনে CAP আছে।{' '}
+                                করবেন — এই decision এর পেছনে CAP আছে।{' '}
                                 <em className='text-foreground'>
                                     Senior engineer হতে হলে এই trade-off বুঝতেই
                                     হবে।
@@ -79,8 +79,8 @@ export const capContent: TopicData = {
                                 </h4>
                                 <p className='text-sm text-muted-foreground leading-relaxed'>
                                     সব nodes এ same time এ same data। Write করার
-                                    পর যেকোনো node থেকে read করলে latest value
-                                    পাওয়া যাবে। &quot;All nodes see the same
+                                    পর যেকোনো node থেকে read করলেন latest value
+                                    পানয়া যাবেন। &quot;All nodes see the same
                                     data simultaneously।&quot;
                                 </p>
                             </div>
@@ -90,9 +90,9 @@ export const capContent: TopicData = {
                                     A — Availability
                                 </h4>
                                 <p className='text-sm text-muted-foreground leading-relaxed'>
-                                    প্রতিটি request এর response আসবেই — error
+                                    প্রতিটি request এর response আসবেনই — error
                                     নয়, timeout নয়। কিছু nodes down থাকলেও
-                                    system respond করবে। তবে response টা stale
+                                    system respond করবেন। তবে response টা stale
                                     হতে পারে।
                                 </p>
                             </div>
@@ -134,10 +134,10 @@ export const capContent: TopicData = {
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.IMPORTANT,
-                    title: '🎯 Interview এ এটা বলো',
+                    title: '🎯 Interview এ এটা বলুন',
                     content: (
                         <p>
-                            &quot;CAP এ P সবসময় থাকবে কারণ network failure real
+                            &quot;CAP এ P সবসময় থাকবেন কারণ network failure real
                             world এ inevitable। তাই practical choice হলো CP বা
                             AP। Financial systems এ CP — wrong data
                             catastrophic। Social media তে AP — stale data কয়েক
@@ -264,12 +264,12 @@ export const capContent: TopicData = {
                         ],
                         [
                             'Causal',
-                            'Causally related operations ordered। Reply এর আগে post দেখা যাবে',
+                            'Causally related operations ordered। Reply এর আগে post দেখা যাবেন',
                             'Chat apps, Comments',
                         ],
                         [
                             'Read-your-writes',
-                            'তুমি নিজের write সবসময় দেখবে। অন্যরা হয়তো দেখবে না',
+                            'আপনি নিজের write সবসময় দেখবেন। অন্যরা হয়তো দেখবেন না',
                             'Instagram — নিজের post দেখা',
                         ],
                         [
@@ -285,7 +285,7 @@ export const capContent: TopicData = {
                     title: '💡 Eventual Consistency Example',
                     content: (
                         <p>
-                            DNS update করলে সারা বিশ্বে propagate হতে ২৪-৪৮
+                            DNS update করলেন সারা বিশ্বে propagate হতে ২৪-৪৮
                             ঘণ্টা লাগতে পারে। এই সময় কেউ old IP দেখছে, কেউ new
                             IP। এটাই Eventual Consistency।
                         </p>
@@ -298,13 +298,13 @@ export const capContent: TopicData = {
                     code: `-- Cassandra তে per-query consistency level configure করা যায়!
 -- এটাই practical CAP flexibility
 
--- QUORUM: majority nodes (N/2+1) agree করলে success
+-- QUORUM: majority nodes (N/2+1) agree করলেন success
 -- 3 nodes থাকলে QUORUM = 2 nodes agree করতে হবে
 INSERT INTO accounts (id, balance)
 VALUES (uuid(), 10000)
 USING CONSISTENCY QUORUM;   -- Strong-ish, balanced
 
--- ONE: শুধু একটা node respond করলেই success (fastest)
+-- ONE: শুধু একটা node respond করলেনই success (fastest)
 SELECT * FROM user_activity WHERE user_id = 101
 CONSISTENCY ONE;            -- Fast, eventually consistent
 
@@ -342,7 +342,7 @@ CONSISTENCY ALL;            -- Critical financial op`,
                             vailability vs <strong>C</strong>onsistency;{' '}
                             <strong>E</strong>lse (normal এ) <strong>L</strong>
                             atency vs <strong>C</strong>onsistency। যত বেশি
-                            nodes এ replicate করবে, তত বেশি consistent কিন্তু তত
+                            nodes এ replicate করবেন, তত বেশি consistent কিন্তু তত
                             বেশি latency।
                         </p>
                     ),
@@ -405,7 +405,7 @@ CONSISTENCY ALL;            -- Critical financial op`,
             subHeader: { index: '006', title: 'Real World Examples' },
             title: (
                 <span className='font-heading'>
-                    বড় কোম্পানিগুলো কীভাবে করেছে
+                    বড় কোম্পানিগুলো কীভাবে করেছেনে
                 </span>
             ),
             blocks: [
@@ -419,10 +419,10 @@ CONSISTENCY ALL;            -- Critical financial op`,
                                     DynamoDB — AP by Design
                                 </h3>
                                 <p className='text-muted-foreground leading-relaxed'>
-                                    Amazonconsciously AP choose করেছে।
+                                    Amazonconsciously AP choose করেছেনে।
                                     &quot;Always available&quot; guarantee।
                                     Werner Vogels (Amazon CTO): &quot;Network
-                                    partition হলে তোমাকে পুরোনো cart দেখাবো
+                                    partition হলে আপনাকে পুরোনো cart দেখাবো
                                     কিন্তু cart lock করবো না।&quot; Availability
                                     থেকে Consistency বেশি important — cart lock
                                     হলে sale হারাবে। তবে checkout এ CP enforce
@@ -622,7 +622,7 @@ asyncio.run(demo())`,
         rows: [
             [
                 <span className='font-bold text-primary'>CAP Theorem</span>,
-                'C + A + P একসাথে impossible। P সবসময় থাকে, তাই CP বা AP choose করো',
+                'C + A + P একসাথে impossible। P সবসময় থাকে, তাই CP বা AP choose করুন',
             ],
             [
                 <span className='font-bold text-primary'>CP Systems</span>,
@@ -648,7 +648,7 @@ asyncio.run(demo())`,
             ],
             [
                 <span className='font-bold text-primary'>Split-brain</span>,
-                'Partition এ দুটো leaders — Quorum দিয়ে prevent করো',
+                'Partition এ দুটো leaders — Quorum দিয়ে prevent করুন',
             ],
         ],
     },
@@ -708,7 +708,7 @@ asyncio.run(demo())`,
             },
             {
                 id: 3,
-                text: 'Bank account balance update এর জন্য কোন consistency model choose করবে?',
+                text: 'Bank account balance update এর জন্য কোন consistency model choose করবেন?',
                 options: [
                     {
                         key: 'A',
@@ -727,7 +727,7 @@ asyncio.run(demo())`,
                     },
                     {
                         key: 'D',
-                        text: 'Strong Consistency — সবাই সবসময় correct balance দেখবে',
+                        text: 'Strong Consistency — সবাই সবসময় correct balance দেখবেন',
                         isCorrect: true,
                         explanation:
                             'Financial systems এ Strong Consistency mandatory। Double-spending prevent করতে সব nodes এ latest balance দেখাতে হবে।',
@@ -820,7 +820,7 @@ asyncio.run(demo())`,
                 options: [
                     {
                         key: 'A',
-                        text: 'শুধু একটা node respond করলেই হবে',
+                        text: 'শুধু একটা node respond করলেনই হবে',
                         isCorrect: false,
                     },
                     {
@@ -830,7 +830,7 @@ asyncio.run(demo())`,
                     },
                     {
                         key: 'C',
-                        text: 'যেকোনো দুটো node respond করলেই হবে',
+                        text: 'যেকোনো দুটো node respond করলেনই হবে',
                         isCorrect: false,
                     },
                     {
@@ -848,19 +848,19 @@ asyncio.run(demo())`,
                 options: [
                     {
                         key: 'A',
-                        text: 'তুমি নিজের write সবসময় দেখবে, অন্যরা হয়তো দেখবে না',
+                        text: 'আপনি নিজের write সবসময় দেখবেন, অন্যরা হয়তো দেখবেন না',
                         isCorrect: true,
                         explanation:
-                            'তুমি post করলে নিজের feed এ সাথে সাথে দেখবে। কিন্তু friends হয়তো কয়েক seconds পরে দেখবে। Instagram, Twitter এই model follow করে।',
+                            'আপনি post করলেন নিজের feed এ সাথে সাথে দেখবেন। কিন্তু friends হয়তো কয়েক seconds পরে দেখবেন। Instagram, Twitter এই model follow করে।',
                     },
                     {
                         key: 'B',
-                        text: 'সবাই সবার write সবসময় দেখবে',
+                        text: 'সবাই সবার write সবসময় দেখবেন',
                         isCorrect: false,
                     },
                     {
                         key: 'C',
-                        text: 'Write এর আগে read করা যাবে না',
+                        text: 'Write এর আগে read করা যাবেন না',
                         isCorrect: false,
                     },
                     {
@@ -930,31 +930,31 @@ asyncio.run(demo())`,
                 databases (Redis, MongoDB, DynamoDB, Cassandra, CockroachDB) এর
                 official documentation পড়ো। প্রতিটির CAP classification,
                 default consistency level, tuning options table আকারে document
-                করো।
+                করুন।
             </span>,
             <span key='2'>
                 <strong>Scenario Decision Exercise:</strong> নিচের ৫টি systems
-                এর জন্য CP নাকি AP choose করবে এবং কেন লেখো: (ক) bKash mobile
+                এর জন্য CP নাকি AP choose করবেন এবং কেন লিখুন: (ক) bKash mobile
                 payment (খ) Facebook post like count (গ) Online exam seat
                 booking (ঘ) Live cricket score update (ঙ) Hospital patient
                 records।
             </span>,
             <span key='3'>
                 <strong>Eventual Consistency Simulator:</strong> Python বা
-                Node.js দিয়ে ৩-node distributed key-value store তৈরি করো। Write
-                করলে local এ save হবে, background এ peers এ sync হবে (random
-                delay)। Last-Write-Wins implement করো।
+                Node.js দিয়ে ৩-node distributed key-value store তৈরি করুন। Write
+                করলেন local এ save হবে, background এ peers এ sync হবে (random
+                delay)। Last-Write-Wins implement করুন।
             </span>,
             <span key='4'>
                 <strong>Cassandra Consistency Test:</strong> Docker এ Cassandra
-                run করো। ONE, QUORUM, ALL consistency level এ same query এর
-                response time measure করো। Latency vs Consistency trade-off
+                run করুন। ONE, QUORUM, ALL consistency level এ same query এর
+                response time measure করুন। Latency vs Consistency trade-off
                 চার্ট আকারে দেখাও।
             </span>,
             <span key='5'>
                 <strong>Phase 1 Reflection:</strong> Scalability, Networking,
                 Databases, CAP — এই ৪টা topic থেকে সবচেয়ে important ৫টা concept
-                বাছো এবং real-world scenario দিয়ে explain করো। নিজের ভাষায়।
+                বাছো এবং real-world scenario দিয়ে explain করুন। নিজের ভাষায়।
             </span>,
         ],
         deliverables: [
@@ -972,15 +972,15 @@ asyncio.run(demo())`,
             {
                 title: 'Server Setup',
                 description:
-                    '৩টা Node.js server (Port 3001, 3002, 3003) তৈরি করো।',
+                    '৩টা Node.js server (Port 3001, 3002, 3003) তৈরি করুন।',
             },
             {
                 title: 'Consistency Level API',
-                description: 'PUT /key?consistency=QUORUM implement করো।',
+                description: 'PUT /key?consistency=QUORUM implement করুন।',
             },
             {
                 title: 'Partition Simulate',
-                description: 'একটা node disconnect করে CP vs AP behavior দেখো।',
+                description: 'একটা node disconnect করে CP vs AP behavior দেখুন।',
             },
         ],
         codeBlock: {
@@ -999,12 +999,12 @@ asyncio.run(demo())`,
   res.json({ ok: true, acks: acks + 1 });
 });`,
         },
-        tip: 'Actually measure করে দেখো ONE vs ALL এ latency কতটা difference হয়। এটাই trade-off।',
+        tip: 'Actually measure করে দেখুন ONE vs ALL এ latency কতটা difference হয়। এটাই trade-off।',
     },
     phaseComplete: {
         title: 'Phase 1 — Foundations Complete!',
         description:
-            'তুমি System Design Mastery Course এর Phase 1 সম্পূর্ণ করেছো। চারটি fundamental topic এ solid foundation তৈরি হয়েছে।',
+            'আপনি System Design Mastery Course এর Phase 1 সম্পূর্ণ করেছেনো। চারটি fundamental topic এ solid foundation তৈরি হয়েছে।',
         topics: [
             { title: 'Topic 1: Scalability', id: 'scalability' },
             { title: 'Topic 2: Networking', id: 'networking' },

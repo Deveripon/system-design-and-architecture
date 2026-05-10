@@ -769,7 +769,7 @@ export const twitterContent: TopicData = {
                             <span className='font-mono text-foreground'>
                                 Fan-out on Write (Push)
                             </span>,
-                            'Tweet করলেই সব followers-এর cache update',
+                            'Tweet করলেনই সব followers-এর cache update',
                             <span className='text-red-400 font-semibold'>
                                 High (150M writes)
                             </span>,
@@ -782,7 +782,7 @@ export const twitterContent: TopicData = {
                             <span className='font-mono text-foreground'>
                                 Fan-out on Read (Pull)
                             </span>,
-                            'Timeline load করলে following-দের tweets pull',
+                            'Timeline load করলেন following-দের tweets pull',
                             <span className='text-emerald-400 font-semibold'>
                                 Low
                             </span>,
@@ -916,13 +916,13 @@ export const twitterContent: TopicData = {
     # Step 2: Celebrity following list check
     celebrities = cache.smembers(f"following_celebrities:{user_id}")
 
-    # Step 3: Celebrity tweets আলাদাভাবে fetch করো
+    # Step 3: Celebrity tweets আলাদাভাবে fetch করুন
     celebrity_tweets = []
     for celeb_id in celebrities:
         tweets = await db.get_recent_tweets(celeb_id, limit=5)
         celebrity_tweets.extend(tweets)
 
-    # Step 4: Merge করো, sort by timestamp
+    # Step 4: Merge করুন, sort by timestamp
     all_tweet_ids = cached + [t.id for t in celebrity_tweets]
     all_tweet_ids.sort(key=lambda x: x.created_at, reverse=True)
 
@@ -951,7 +951,7 @@ export const twitterContent: TopicData = {
                                 150 million cache writes
                             </strong>{' '}
                             দরকার হয়। এটা milliseconds-এ করা impossible। Twitter
-                            এই problem solve করেছে hybrid approach দিয়ে।
+                            এই problem solve করেছেনে hybrid approach দিয়ে।
                         </p>
                     ),
                 },
@@ -961,11 +961,11 @@ export const twitterContent: TopicData = {
                     title: '⚠️ Thundering Herd Problem',
                     content: (
                         <p>
-                            একজন celebrity tweet করলে লক্ষ লক্ষ users একসাথে
+                            একজন celebrity tweet করলেন লক্ষ লক্ষ users একসাথে
                             timeline refresh করে। প্রতিটা request database-এ hit
-                            করলে server crash হবে।{' '}
+                            করলেন server crash হবে।{' '}
                             <strong>Solution:</strong> Celebrity tweets কে আলাদা
-                            করো — read time-এ pull করো, write time-এ push করো
+                            করুন — read time-এ pull করুন, write time-এ push করুন
                             না।
                         </p>
                     ),
@@ -1132,7 +1132,7 @@ export const twitterContent: TopicData = {
                     content: (
                         <p>
                             Tweets-এ <strong>created_at</strong> দিয়ে partition
-                            করো Cassandra-তে।{' '}
+                            করুন Cassandra-তে।{' '}
                             <strong>Time-series data</strong> — নতুন tweets
                             সবসময় write, পুরনো tweets rarely read। Cassandra-র
                             time-based partitioning perfect fit।
@@ -1214,7 +1214,7 @@ LTRIM timeline:user123 0 799   -- Keep last 800 tweets only`,
                                             <strong className='text-foreground'>
                                                 Async Fanout via Kafka:
                                             </strong>{' '}
-                                            Tweet POST করলে immediately return।
+                                            Tweet POST করলেন immediately return।
                                             Background-এ Kafka workers fanout
                                             করে। User experience fast রাখে।
                                         </>
@@ -1300,19 +1300,19 @@ LTRIM timeline:user123 0 799   -- Keep last 800 tweets only`,
                             <p>
                                 Twitter real-time notifications-এর জন্য{' '}
                                 <strong>WebSocket</strong> use করে। User app
-                                open করলে server-এর সাথে persistent connection
+                                open করলেন server-এর সাথে persistent connection
                                 maintain হয়।
                             </p>
                             <p>
-                                কেউ follow করলে, like করলে, reply করলে —
+                                কেউ follow করলেন, like করলেন, reply করলেন —
                                 Notification Service Kafka থেকে event consume
                                 করে WebSocket দিয়ে push করে।
                             </p>
                             <p>
                                 <strong>Trending Topics:</strong> Redis Sorted
-                                Set-এ hashtag counts রাখো। ZINCRBY দিয়ে
-                                increment করো। ZREVRANGE দিয়ে top 10 trending
-                                পাও। Sliding window (last 1 hour) use করো।
+                                Set-এ hashtag counts রাখুন। ZINCRBY দিয়ে
+                                increment করুন। ZREVRANGE দিয়ে top 10 trending
+                                পান। Sliding window (last 1 hour) use করুন।
                             </p>
                         </div>
                     ),
@@ -1327,7 +1327,7 @@ import time
 r = redis.Redis()
 
 def record_hashtag(hashtag: str):
-    """Tweet post হলে hashtag count increment করো"""
+    """Tweet post হলে hashtag count increment করুন"""
     current_hour = int(time.time() // 3600)  # sliding window key
     key = f"trending:{current_hour}"
 
@@ -1477,21 +1477,21 @@ def like_tweet_atomic(tweet_id: str):
                         <div className='space-y-2'>
                             <p>
                                 <strong>1)</strong> সবসময় fanout problem
-                                দিয়ে শুরু করো — interviewer এটা expect করে।
+                                দিয়ে শুরু করুন — interviewer এটা expect করে।
                             </p>
                             <p>
                                 <strong>2)</strong> &ldquo;Why not fan-out on
                                 write for everyone?&rdquo; — celebrity problem
-                                explain করো।
+                                explain করুন।
                             </p>
                             <p>
                                 <strong>3)</strong> Database choices justify
-                                করো: Cassandra = immutable time-series,
+                                করুন: Cassandra = immutable time-series,
                                 Redis = speed, Elasticsearch = search।
                             </p>
                             <p>
                                 <strong>4)</strong> Eventual consistency
-                                explicitly mention করো — Twitter-এ strong
+                                explicitly mention করুন — Twitter-এ strong
                                 consistency দরকার নেই।
                             </p>
                             <p>
@@ -1571,28 +1571,28 @@ def like_tweet_atomic(tweet_id: str):
         questions: [
             {
                 id: 1,
-                text: 'Elon Musk (150M followers) tweet করলে "Fanout on Write" approach-এ কতটা writes হবে?',
+                text: 'Elon Musk (150M followers) tweet করলেন "Fanout on Write" approach-এ কতটা writes হবে?',
                 options: [
                     {
                         key: 'a',
                         text: '1 write (শুধু tweet save)',
                         isCorrect: false,
                         explanation:
-                            'Fan-out on write মানে প্রতিটা follower-এর timeline cache update করো।',
+                            'Fan-out on write মানে প্রতিটা follower-এর timeline cache update করুন।',
                     },
                     {
                         key: 'b',
                         text: '1000 writes',
                         isCorrect: false,
                         explanation:
-                            'এটা অনেক কম। Celebrity-র ক্ষেত্রে followers সংখ্যা দেখো।',
+                            'এটা অনেক কম। Celebrity-র ক্ষেত্রে followers সংখ্যা দেখুন।',
                     },
                     {
                         key: 'c',
                         text: '150 million writes',
                         isCorrect: true,
                         explanation:
-                            'সঠিক উত্তর। Fan-out on write মানে প্রতিটা follower-এর timeline cache update করো। 150M followers → 150M cache writes। এটাই "celebrity problem" বা "thundering herd" — তাই Twitter hybrid approach use করে।',
+                            'সঠিক উত্তর। Fan-out on write মানে প্রতিটা follower-এর timeline cache update করুন। 150M followers → 150M cache writes। এটাই "celebrity problem" বা "thundering herd" — তাই Twitter hybrid approach use করে।',
                     },
                     {
                         key: 'd',
@@ -1646,7 +1646,7 @@ def like_tweet_atomic(tweet_id: str):
                         text: 'List (LPUSH + LTRIM)',
                         isCorrect: true,
                         explanation:
-                            'সঠিক উত্তর। Redis List-এ LPUSH দিয়ে নতুন tweet সামনে add করো, LTRIM দিয়ে last 800 রাখো। Ordered by insertion time — timeline-এর জন্য perfect। LRANGE দিয়ে pagination করা যায়।',
+                            'সঠিক উত্তর। Redis List-এ LPUSH দিয়ে নতুন tweet সামনে add করুন, LTRIM দিয়ে last 800 রাখুন। Ordered by insertion time — timeline-এর জন্য perfect। LRANGE দিয়ে pagination করা যায়।',
                     },
                     {
                         key: 'b',
@@ -1748,7 +1748,7 @@ def like_tweet_atomic(tweet_id: str):
                         text: 'MySQL table',
                         isCorrect: false,
                         explanation:
-                            'MySQL follow graph-এর জন্য efficient নয় — billions of edges handle করতে পারবে না।',
+                            'MySQL follow graph-এর জন্য efficient নয় — billions of edges handle করতে পারবেন না।',
                     },
                     {
                         key: 'b',
@@ -1762,27 +1762,27 @@ def like_tweet_atomic(tweet_id: str):
                         text: 'Redis Sorted Set / Graph DB',
                         isCorrect: true,
                         explanation:
-                            'সঠিক উত্তর। Follow graph = social graph। Redis Sorted Set-এ user_id → follower_ids store করো। Follower count, mutual follows efficiently query করা যায়। Large scale-এ Neo4j বা FlockDB (Twitter\'s own graph DB) use হয়।',
+                            'সঠিক উত্তর। Follow graph = social graph। Redis Sorted Set-এ user_id → follower_ids store করুন। Follower count, mutual follows efficiently query করা যায়। Large scale-এ Neo4j বা FlockDB (Twitter\'s own graph DB) use হয়।',
                     },
                     {
                         key: 'd',
                         text: 'Array in memory',
                         isCorrect: false,
                         explanation:
-                            'Memory-তে array persistent নয় — server restart-এ সব হারিয়ে যাবে।',
+                            'Memory-তে array persistent নয় — server restart-এ সব হারিয়ে যাবেন।',
                     },
                 ],
             },
             {
                 id: 7,
-                text: 'Tweet image/video কোথায় store করবে?',
+                text: 'Tweet image/video কোথায় store করবেন?',
                 options: [
                     {
                         key: 'a',
                         text: 'Amazon S3 + CloudFront CDN',
                         isCorrect: true,
                         explanation:
-                            'সঠিক উত্তর। Binary files (images, videos) object storage-এ রাখো। S3 reliable, cheap, scalable। CDN (CloudFront) globally distribute করে — user-এর কাছের edge server থেকে fast delivery। Database-এ BLOB = terrible idea for scale।',
+                            'সঠিক উত্তর। Binary files (images, videos) object storage-এ রাখুন। S3 reliable, cheap, scalable। CDN (CloudFront) globally distribute করে — user-এর কাছের edge server থেকে fast delivery। Database-এ BLOB = terrible idea for scale।',
                     },
                     {
                         key: 'b',
@@ -1796,31 +1796,31 @@ def like_tweet_atomic(tweet_id: str):
                         text: 'API Server local disk',
                         isCorrect: false,
                         explanation:
-                            'Local disk single point of failure — server crash হলে সব media হারিয়ে যাবে।',
+                            'Local disk single point of failure — server crash হলে সব media হারিয়ে যাবেন।',
                     },
                     {
                         key: 'd',
                         text: 'Redis cache',
                         isCorrect: false,
                         explanation:
-                            'Redis memory-based — large media files store করলে expensive এবং volatile।',
+                            'Redis memory-based — large media files store করলেন expensive এবং volatile।',
                     },
                 ],
             },
             {
                 id: 8,
-                text: 'Real-time Trending Topics (#Trending) কীভাবে implement করবে?',
+                text: 'Real-time Trending Topics (#Trending) কীভাবে implement করবেন?',
                 options: [
                     {
                         key: 'a',
-                        text: 'প্রতি second DB scan করো',
+                        text: 'প্রতি second DB scan করুন',
                         isCorrect: false,
                         explanation:
                             'প্রতি second full DB scan করা অত্যন্ত expensive এবং impractical।',
                     },
                     {
                         key: 'b',
-                        text: 'User vote করবে',
+                        text: 'User vote করবেন',
                         isCorrect: false,
                         explanation:
                             'User voting trending algorithm-এর সঠিক approach নয়।',
@@ -1837,17 +1837,17 @@ def like_tweet_atomic(tweet_id: str):
                         text: 'Redis Sorted Set + sliding window count',
                         isCorrect: true,
                         explanation:
-                            'সঠিক উত্তর। Redis Sorted Set-এ hashtag → last 1 hour count রাখো। নতুন tweet → ZINCRBY করো। ZREVRANGE দিয়ে top trending পাও। Sliding window (last 1 hour) দিয়ে stale trends avoid করো।',
+                            'সঠিক উত্তর। Redis Sorted Set-এ hashtag → last 1 hour count রাখুন। নতুন tweet → ZINCRBY করুন। ZREVRANGE দিয়ে top trending পান। Sliding window (last 1 hour) দিয়ে stale trends avoid করুন।',
                     },
                 ],
             },
             {
                 id: 9,
-                text: 'Twitter-এর Like count millions হলে race condition prevent করবে কীভাবে?',
+                text: 'Twitter-এর Like count millions হলে race condition prevent করবেন কীভাবে?',
                 options: [
                     {
                         key: 'a',
-                        text: 'Single thread-এ সব process করো',
+                        text: 'Single thread-এ সব process করুন',
                         isCorrect: false,
                         explanation:
                             'Single thread bottleneck তৈরি করে — scale করা যায় না।',
@@ -1861,14 +1861,14 @@ def like_tweet_atomic(tweet_id: str):
                     },
                     {
                         key: 'c',
-                        text: 'DB transaction lock করো',
+                        text: 'DB transaction lock করুন',
                         isCorrect: false,
                         explanation:
                             'DB lock expensive এবং slow — high concurrency-তে bottleneck।',
                     },
                     {
                         key: 'd',
-                        text: 'Like count approximate রাখো',
+                        text: 'Like count approximate রাখুন',
                         isCorrect: false,
                         explanation:
                             'Approximate count acceptable হতে পারে কিন্তু Redis INCR exact এবং atomic — better solution।',
@@ -1914,38 +1914,38 @@ def like_tweet_atomic(tweet_id: str):
 
     // ─── Assignment ───
     assignment: {
-        title: 'Twitter Feed System ডিজাইন করো',
+        title: 'Twitter Feed System ডিজাইন করুন',
         time: '৪-৫ ঘন্টা',
         difficulty: 'Advanced',
         tasks: [
             <span key='1'>
                 <strong>Full Architecture Diagram:</strong> Excalidraw বা
-                draw.io-তে Twitter-এর complete system diagram আঁকো। Include:
+                draw.io-তে Twitter-এর complete system diagram আঁকুন। Include:
                 Client, API Gateway, Tweet Service, Fanout Service, Timeline
                 Service, Kafka, Cassandra (Tweet DB), Redis (Timeline Cache),
                 Elasticsearch, S3+CDN। Arrows দিয়ে data flow দেখাও।
             </span>,
             <span key='2'>
-                <strong>Fanout Comparison:</strong> একটা table বানাও —
+                <strong>Fanout Comparison:</strong> একটা table বানান —
                 Fan-out on Write vs Fan-out on Read। প্রতিটার জন্য: Write
                 cost, Read latency, Storage cost, Celebrity problem, Normal
-                user experience। তুমি কোনটা choose করতে এবং কেন?
+                user experience। আপনি কোনটা choose করতে এবং কেন?
             </span>,
             <span key='3'>
                 <strong>Data Model Design:</strong> Tweet, User, এবং Follow
-                tables-এর schema লেখো (Cassandra format)। Partition key,
-                clustering key কী হবে explain করো।
+                tables-এর schema লিখুন (Cassandra format)। Partition key,
+                clustering key কী হবে explain করুন।
             </span>,
             <span key='4'>
                 <strong>Trending Hashtags Algorithm:</strong> Redis Sorted
                 Set ব্যবহার করে &ldquo;last 1 hour trending hashtags&rdquo;
-                কীভাবে implement করবে pseudo-code লেখো।
+                কীভাবে implement করবেন pseudo-code লিখুন।
             </span>,
             <span key='5'>
                 <strong>Scaling Question:</strong> Twitter-এ World Cup final
                 চলছে — প্রতি second 100,000 tweets হচ্ছে #WorldCupFinal
-                নিয়ে। তোমার system কীভাবে এই sudden spike handle করবে?
-                ৩-৫ লাইন লেখো।
+                নিয়ে। আপনার system কীভাবে এই sudden spike handle করবেন?
+                ৩-৫ লাইন লিখুন।
             </span>,
         ],
         deliverables: [
@@ -1962,29 +1962,29 @@ def like_tweet_atomic(tweet_id: str):
         subtitle: 'Fanout + Redis + Cassandra',
         steps: [
             {
-                title: 'Redis Timeline Cache Setup করো',
+                title: 'Redis Timeline Cache Setup করুন',
                 description:
-                    'Docker দিয়ে Redis চালাও। Python redis client দিয়ে timeline:user_id key-এ LPUSH করো। LTRIM দিয়ে last 800 tweets রাখো।',
+                    'Docker দিয়ে Redis চালাও। Python redis client দিয়ে timeline:user_id key-এ LPUSH করুন। LTRIM দিয়ে last 800 tweets রাখুন।',
             },
             {
-                title: 'Fanout Service লেখো',
+                title: 'Fanout Service লিখুন',
                 description:
-                    'Python function লেখো যেটা followers list নিয়ে hybrid fanout করে। <10K followers → Redis push, ≥10K → Kafka queue।',
+                    'Python function লিখুন যেটা followers list নিয়ে hybrid fanout করে। <10K followers → Redis push, ≥10K → Kafka queue।',
             },
             {
-                title: 'Timeline Read Path Implement করো',
+                title: 'Timeline Read Path Implement করুন',
                 description:
-                    'get_home_timeline() function লেখো। Redis cache থেকে regular timeline পড়ো। Celebrity list থেকে আলাদাভাবে fetch করো। Merge করে sort করো।',
+                    'get_home_timeline() function লিখুন। Redis cache থেকে regular timeline পড়ো। Celebrity list থেকে আলাদাভাবে fetch করুন। Merge করে sort করুন।',
             },
             {
-                title: 'Trending Hashtags যোগ করো',
+                title: 'Trending Hashtags যোগ করুন',
                 description:
-                    'ZINCRBY দিয়ে hashtag counts update করো। ZREVRANGE দিয়ে top 10 trending return করো। Sliding window (per hour key) implement করো।',
+                    'ZINCRBY দিয়ে hashtag counts update করুন। ZREVRANGE দিয়ে top 10 trending return করুন। Sliding window (per hour key) implement করুন।',
             },
             {
-                title: 'Load Test করো',
+                title: 'Load Test করুন',
                 description:
-                    'locust বা wrk দিয়ে timeline endpoint-এ load দাও। Cache miss vs cache hit latency compare করো। Celebrity vs normal user fanout time measure করো।',
+                    'locust বা wrk দিয়ে timeline endpoint-এ load দিন। Cache miss vs cache hit latency compare করুন। Celebrity vs normal user fanout time measure করুন।',
             },
         ],
         codeBlock: {
@@ -2119,14 +2119,14 @@ if __name__ == "__main__":
         },
         tip: (
             <span>
-                Fanout theory নয় — practically দেখবে Redis List-এ timeline
+                Fanout theory নয় — practically দেখবেন Redis List-এ timeline
                 কীভাবে build হয়, celebrity vs normal user-এর fanout path
                 কীভাবে আলাদা হয়, এবং sliding window trending কীভাবে কাজ
                 করে। এই patterns interview-এ{' '}
                 <strong className='text-foreground'>
                     senior engineer level
                 </strong>{' '}
-                discussion-এ কাজে আসবে।
+                discussion-এ কাজে আসবেন।
             </span>
         ),
     },

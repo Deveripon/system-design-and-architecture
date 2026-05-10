@@ -77,8 +77,8 @@ export const cloudArchContent: TopicData = {
                                     </p>
                                     <ul className='space-y-2'>
                                         {[
-                                            'Minutes-এ server spin up করো',
-                                            'Traffic বাড়লে auto-scale করো',
+                                            'Minutes-এ server spin up করুন',
+                                            'Traffic বাড়লে auto-scale করুন',
                                             'AWS manages hardware failures',
                                             'Pay only what you use (OpEx)',
                                             '20+ global regions available',
@@ -108,14 +108,14 @@ export const cloudArchContent: TopicData = {
                         <div className='space-y-3'>
                             <p>
                                 <strong>IaaS (Infrastructure as a Service):</strong>{' '}
-                                Raw infrastructure ভাড়া দেয়। তুমি OS, runtime,
-                                application সব manage করো। Example:{' '}
+                                Raw infrastructure ভাড়া দেয়। আপনি OS, runtime,
+                                application সব manage করুন। Example:{' '}
                                 <strong>AWS EC2, GCP Compute Engine, Azure VM</strong>।
                                 সবচেয়ে বেশি control, সবচেয়ে বেশি responsibility।
                             </p>
                             <p>
                                 <strong>PaaS (Platform as a Service):</strong>{' '}
-                                Platform দেয় — তুমি শুধু code deploy করো।
+                                Platform দেয় — আপনি শুধু code deploy করুন।
                                 OS, runtime, scaling সব managed। Example:{' '}
                                 <strong>
                                     AWS Elastic Beanstalk, Heroku, Google App Engine
@@ -134,7 +134,7 @@ export const cloudArchContent: TopicData = {
                 },
                 {
                     type: CONTENT_TYPES.COMPARE_TABLE,
-                    headers: ['Model', 'তুমি manage করো', 'Provider manage করে', 'Example'],
+                    headers: ['Model', 'আপনি manage করুন', 'Provider manage করে', 'Example'],
                     rows: [
                         [
                             <span className='font-mono font-bold text-primary'>
@@ -156,7 +156,7 @@ export const cloudArchContent: TopicData = {
                             <span className='font-mono font-bold text-emerald-400'>
                                 SaaS
                             </span>,
-                            'শুধু use করো',
+                            'শুধু use করুন',
                             'সব কিছু',
                             'Gmail, Slack',
                         ],
@@ -178,7 +178,7 @@ export const cloudArchContent: TopicData = {
                     content: (
                         <p className='text-muted-foreground leading-relaxed text-lg'>
                             AWS-এ ২০০+ services আছে। System design-এর জন্য মূল
-                            services জানলেই চলে। প্রতিটা service একটা specific
+                            services জানলেনই চলে। প্রতিটা service একটা specific
                             problem solve করে।
                         </p>
                     ),
@@ -741,9 +741,9 @@ export const cloudArchContent: TopicData = {
                                 <strong className='text-foreground'>
                                     Serverless
                                 </strong>{' '}
-                                মানে server নেই এমন না — মানে তুমি server manage
-                                করো না। AWS Lambda হলো সবচেয়ে popular FaaS
-                                (Function as a Service)। তুমি শুধু function লেখো,
+                                মানে server নেই এমন না — মানে আপনি server manage
+                                করুন না। AWS Lambda হলো সবচেয়ে popular FaaS
+                                (Function as a Service)। আপনি শুধু function লিখুন,
                                 AWS execution, scaling, patching সব করে।
                             </p>
                             <div className='grid grid-cols-1 md:grid-cols-3 gap-3'>
@@ -757,7 +757,7 @@ export const cloudArchContent: TopicData = {
                                     {
                                         icon: '💰',
                                         title: 'Pay-per-use',
-                                        desc: 'Function run করলে তখনই charge। Idle থাকলে কোনো cost নেই। 1M free invocations/month',
+                                        desc: 'Function run করলেন তখনই charge। Idle থাকলে কোনো cost নেই। 1M free invocations/month',
                                         color: 'border-emerald-500/30 text-emerald-400',
                                     },
                                     {
@@ -808,7 +808,7 @@ def lambda_handler(event, context):
     table = dynamodb.Table('users')
 
     if http_method == 'POST' and path == '/users':
-        # User create করো
+        # User create করুন
         user_id = body.get('user_id')
         name = body.get('name')
 
@@ -825,7 +825,7 @@ def lambda_handler(event, context):
         }
 
     elif http_method == 'GET' and path.startswith('/users/'):
-        # User fetch করো
+        # User fetch করুন
         user_id = path.split('/')[-1]
         response = table.get_item(Key={'user_id': user_id})
         user = response.get('Item')
@@ -951,7 +951,7 @@ def lambda_handler(event, context):
                         <div className='space-y-4'>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
                                 Manual clicks দিয়ে AWS console-এ infrastructure
-                                তৈরি করলে{' '}
+                                তৈরি করলেন{' '}
                                 <strong className='text-foreground'>
                                     reproducibility নেই
                                 </strong>
@@ -959,7 +959,7 @@ def lambda_handler(event, context):
                                 <strong className='text-foreground'>
                                     Terraform
                                 </strong>{' '}
-                                দিয়ে infrastructure code হিসেবে define করলে এই
+                                দিয়ে infrastructure code হিসেবে define করলেন এই
                                 সব সমস্যা solve হয়।
                             </p>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
@@ -970,7 +970,7 @@ def lambda_handler(event, context):
                                     <ul className='space-y-1.5 text-sm text-muted-foreground'>
                                         {[
                                             'Staging ≠ Production (drift)',
-                                            'কে কী change করেছে — জানা নেই',
+                                            'কে কী change করেছেনে — জানা নেই',
                                             'Disaster recovery কঠিন',
                                             'New region setup = manual redo',
                                             'Security misconfiguration সহজ',
@@ -1121,7 +1121,7 @@ resource "aws_db_instance" "postgres" {
   tags = { Name = "\${var.project_name}-postgres" }
 }
 
-# Output: RDS endpoint (app config-এ use করো)
+# Output: RDS endpoint (app config-এ use করুন)
 output "db_endpoint" {
   value     = aws_db_instance.postgres.endpoint
   sensitive = true
@@ -1141,7 +1141,7 @@ output "db_endpoint" {
                             </p>
                             <p>
                                 <strong>Production solution:</strong> S3 backend
-                                use করো। State S3-এ store হয়, DynamoDB-তে locking
+                                use করুন। State S3-এ store হয়, DynamoDB-তে locking
                                 থাকে যেন দুজন একসাথে apply না করতে পারে:
                             </p>
                             <pre className='bg-background border border-border rounded p-3 text-xs font-mono text-muted-foreground mt-2'>
@@ -1534,7 +1534,7 @@ output "db_endpoint" {
                             <p>
                                 <strong>Latency Trade-off:</strong> Cross-region
                                 replication-এ{' '}
-                                <strong>asynchronous replication</strong> করলে
+                                <strong>asynchronous replication</strong> করলেন
                                 RPO (Recovery Point Objective) কয়েক সেকেন্ড।
                                 Synchronous হলে write latency বাড়ে।
                             </p>
@@ -1625,7 +1625,7 @@ output "db_endpoint" {
                                     {
                                         label: 'Target Tracking',
                                         color: 'text-emerald-400 border-emerald-500/20',
-                                        desc: 'CPU 60% target রাখো। Traffic বাড়লে instance add, কমলে remove। Simplest approach।',
+                                        desc: 'CPU 60% target রাখুন। Traffic বাড়লে instance add, কমলে remove। Simplest approach।',
                                     },
                                     {
                                         label: 'Scheduled Scaling',
@@ -1726,12 +1726,12 @@ resource "aws_cloudwatch_metric_alarm" "high_cpu" {
                         <div className='space-y-2'>
                             <p>
                                 <strong>AWS Cost Explorer</strong> দিয়ে daily/monthly
-                                spend visualize করো। Service-wise breakdown দেখো —
+                                spend visualize করুন। Service-wise breakdown দেখুন —
                                 কোন service সবচেয়ে বেশি charge করছে।
                             </p>
                             <p>
-                                <strong>AWS Budgets:</strong> Monthly budget set করো।
-                                80% বা 100% reach করলে email/SMS alert। Surprise bill
+                                <strong>AWS Budgets:</strong> Monthly budget set করুন।
+                                80% বা 100% reach করলেন email/SMS alert। Surprise bill
                                 এড়ানোর সবচেয়ে সহজ উপায়।
                             </p>
                             <p>
@@ -1741,8 +1741,8 @@ resource "aws_cloudwatch_metric_alarm" "high_cpu" {
                             </p>
                             <p>
                                 <strong>Quick wins:</strong> S3 Intelligent-Tiering
-                                on, unused EBS volumes delete করো, old snapshots clean
-                                করো, NAT Gateway traffic optimize করো।
+                                on, unused EBS volumes delete করুন, old snapshots clean
+                                করুন, NAT Gateway traffic optimize করুন।
                             </p>
                         </div>
                     ),
@@ -1775,19 +1775,19 @@ resource "aws_cloudwatch_metric_alarm" "high_cpu" {
                             number: '01',
                             title: 'Circuit Breaker Pattern',
                             description:
-                                'Downstream service fail হলে বারবার retry করলে cascade failure হয়। Circuit Breaker failure count track করে। Threshold পার হলে circuit "open" করে — সাথে সাথে fallback return করে। Timeout পর "half-open" state-এ test করে। Service recover হলে circuit "closed" করে।',
+                                'Downstream service fail হলে বারবার retry করলেন cascade failure হয়। Circuit Breaker failure count track করে। Threshold পার হলে circuit "open" করে — সাথে সাথে fallback return করে। Timeout পর "half-open" state-এ test করে। Service recover হলে circuit "closed" করে।',
                         },
                         {
                             number: '02',
                             title: 'Retry with Exponential Backoff',
                             description:
-                                'Transient failure-এ (network hiccup, throttling) retry করো। কিন্তু immediate retry আবার overwhelm করতে পারে। Exponential backoff: 1s, 2s, 4s, 8s... + jitter (random delay) যেন সব clients একসাথে retry না করে।',
+                                'Transient failure-এ (network hiccup, throttling) retry করুন। কিন্তু immediate retry আবার overwhelm করতে পারে। Exponential backoff: 1s, 2s, 4s, 8s... + jitter (random delay) যেন সব clients একসাথে retry না করে।',
                         },
                         {
                             number: '03',
                             title: 'Bulkhead Pattern',
                             description:
-                                'Ship-এর bulkhead যেমন hull breach isolate করে, software bulkhead resource pool isolate করে। Payment service-এর thread pool আলাদা রাখো যেন user service slow হলে payment affect না হয়। AWS-এ: separate Lambda concurrency limits, separate SQS queues।',
+                                'Ship-এর bulkhead যেমন hull breach isolate করে, software bulkhead resource pool isolate করে। Payment service-এর thread pool আলাদা রাখুন যেন user service slow হলে payment affect না হয়। AWS-এ: separate Lambda concurrency limits, separate SQS queues।',
                         },
                         {
                             number: '04',
@@ -1931,8 +1931,8 @@ spec:
       configMap:
         name: envoy-config
 
-# Istio তোমার সব pods-এ automatically এই sidecar inject করে
-# তোমার app code change করতে হয় না!`,
+# Istio আপনার সব pods-এ automatically এই sidecar inject করে
+# আপনার app code change করতে হয় না!`,
                 },
             ],
         },
@@ -1949,9 +1949,9 @@ spec:
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <p className='text-muted-foreground leading-relaxed text-lg'>
-                            System design interview-এ cloud নিয়ে জিজ্ঞেস করলে
+                            System design interview-এ cloud নিয়ে জিজ্ঞেস করলেন
                             সঠিক service choose করাটা important। কোন situation-এ
-                            কোন AWS service use করবে — এটা clearly বলতে পারলে
+                            কোন AWS service use করবেন — এটা clearly বলতে পারলেন
                             interviewer impress হবে।
                         </p>
                     ),
@@ -2065,7 +2065,7 @@ spec:
                                     {
                                         scenario: 'Multi-region disaster recovery',
                                         solution:
-                                            'Route53 health check + failover routing। Primary region down → automatic DNS failover to secondary। RDS read replica promote করো। RPO: minutes, RTO: minutes।',
+                                            'Route53 health check + failover routing। Primary region down → automatic DNS failover to secondary। RDS read replica promote করুন। RPO: minutes, RTO: minutes।',
                                         services: ['Route53', 'RDS', 'S3 Replication'],
                                         color: 'border-primary/20 text-primary',
                                     },
@@ -2101,8 +2101,8 @@ spec:
                     content: (
                         <div className='space-y-2'>
                             <p>
-                                <strong>1) Service choice justify করো:</strong>{' '}
-                                শুধু &quot;S3 use করব&quot; বলো না — বলো
+                                <strong>1) Service choice justify করুন:</strong>{' '}
+                                শুধু &quot;S3 use করব&quot; বলুন না — বলুন
                                 &quot;Object storage-এর জন্য S3 use করব কারণ
                                 unlimited scale, 11 nine durability, এবং CloudFront
                                 integration।&quot;
@@ -2115,12 +2115,12 @@ spec:
                             </p>
                             <p>
                                 <strong>3) Cost awareness দেখাও:</strong>{' '}
-                                On-demand vs Reserved instance বলো। Spot instance
-                                কখন viable সেটা বলো। Cost-conscious architect
+                                On-demand vs Reserved instance বলুন। Spot instance
+                                কখন viable সেটা বলুন। Cost-conscious architect
                                 valuable।
                             </p>
                             <p>
-                                <strong>4) Security layer mention করো:</strong>{' '}
+                                <strong>4) Security layer mention করুন:</strong>{' '}
                                 IAM roles for services, VPC private subnets for
                                 databases, KMS encryption at rest, WAF for API
                                 protection।
@@ -2128,8 +2128,8 @@ spec:
                             <p>
                                 <strong>5) Avoid cloud-specific lock-in concern:</strong>{' '}
                                 Interviewer জিজ্ঞেস করতে পারে vendor lock-in নিয়ে।
-                                বলো: abstraction layer (Terraform, Kubernetes) use
-                                করলে migration easier।
+                                বলুন: abstraction layer (Terraform, Kubernetes) use
+                                করলেন migration easier।
                             </p>
                         </div>
                     ),
@@ -2167,7 +2167,7 @@ spec:
                 </span>,
                 'Infrastructure = code, reproducible, version controlled',
                 'Terraform + S3 state backend',
-                'terraform plan/apply workflow জানো',
+                'terraform plan/apply workflow জানেন',
             ],
             [
                 <span className='font-bold text-orange-400 font-mono'>
@@ -2206,7 +2206,7 @@ spec:
                         text: 'IaaS = raw infrastructure ভাড়া, PaaS = platform managed (OS/runtime provider-এ)',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। IaaS (EC2): তুমি OS, runtime, app সব manage করো — শুধু hardware virtualized। PaaS (Heroku, Beanstalk): তুমি শুধু app code deploy করো, বাকি সব provider manage করে। IaaS = বেশি control কিন্তু বেশি responsibility। PaaS = কম control কিন্তু productivity বেশি।',
+                            'সঠিক। IaaS (EC2): আপনি OS, runtime, app সব manage করুন — শুধু hardware virtualized। PaaS (Heroku, Beanstalk): আপনি শুধু app code deploy করুন, বাকি সব provider manage করে। IaaS = বেশি control কিন্তু বেশি responsibility। PaaS = কম control কিন্তু productivity বেশি।',
                     },
                     {
                         key: 'b',
@@ -2281,7 +2281,7 @@ spec:
                         text: 'Current infrastructure এর snapshot — Terraform যা manage করছে তার record',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। terraform.tfstate file-এ current infrastructure-এর সব resource-এর record থাকে। terraform apply করার পর state update হয়। Terraform পরবর্তী plan-এ state vs desired config compare করে কী change করতে হবে বের করে। S3 backend-এ store করলে team collaboration safe।',
+                            'সঠিক। terraform.tfstate file-এ current infrastructure-এর সব resource-এর record থাকে। terraform apply করার পর state update হয়। Terraform পরবর্তী plan-এ state vs desired config compare করে কী change করতে হবে বের করে। S3 backend-এ store করলেন team collaboration safe।',
                     },
                     {
                         key: 'c',
@@ -2339,17 +2339,17 @@ spec:
                 options: [
                     {
                         key: 'a',
-                        text: 'শুধু manually admin trigger করলে',
+                        text: 'শুধু manually admin trigger করলেন',
                         isCorrect: false,
                         explanation:
                             'Auto scaling মানেই automatic — manual trigger optional।',
                     },
                     {
                         key: 'b',
-                        text: 'CPU/memory metrics threshold অতিক্রম করলে বা scheduled time-এ',
+                        text: 'CPU/memory metrics threshold অতিক্রম করলেন বা scheduled time-এ',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Target Tracking: CPU 60% target এ রাখো — বেশি হলে scale out, কমলে scale in। Step Scaling: threshold অনুযায়ী graduated response। Scheduled: office hour-এ বেশি instance, রাতে কম। CloudWatch metrics (CPU, memory, custom) দিয়ে trigger হয়।',
+                            'সঠিক। Target Tracking: CPU 60% target এ রাখুন — বেশি হলে scale out, কমলে scale in। Step Scaling: threshold অনুযায়ী graduated response। Scheduled: office hour-এ বেশি instance, রাতে কম। CloudWatch metrics (CPU, memory, custom) দিয়ে trigger হয়।',
                     },
                     {
                         key: 'c',
@@ -2417,7 +2417,7 @@ spec:
                         text: 'AWS এর unused capacity ব্যবহার করে — interrupt হতে পারে (2-min notice)',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। AWS এর unused EC2 capacity spot market-এ বেচে। Demand বাড়লে AWS 2-minute notice দিয়ে instance terminate করতে পারে। তাই ৭০-৯০% সস্তা। Fault-tolerant workloads-এ ideal: ML training, batch processing, video rendering, Big Data। Stateless, checkpoint-able workloads-এ use করো।',
+                            'সঠিক। AWS এর unused EC2 capacity spot market-এ বেচে। Demand বাড়লে AWS 2-minute notice দিয়ে instance terminate করতে পারে। তাই ৭০-৯০% সস্তা। Fault-tolerant workloads-এ ideal: ML training, batch processing, video rendering, Big Data। Stateless, checkpoint-able workloads-এ use করুন।',
                     },
                     {
                         key: 'c',
@@ -2457,7 +2457,7 @@ spec:
                         text: 'Edge location-এ content cache করে — user-এর কাছে থেকে serve করে',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। CDN (CloudFront) globally ৪৫০+ edge location-এ content cache করে। User request closest edge-এ যায় — origin server hit করতে হয় না। Latency কমে, origin load কমে। Images, JS, CSS, videos — সব cacheable। Cache-Control headers দিয়ে TTL control করো।',
+                            'সঠিক। CDN (CloudFront) globally ৪৫০+ edge location-এ content cache করে। User request closest edge-এ যায় — origin server hit করতে হয় না। Latency কমে, origin load কমে। Images, JS, CSS, videos — সব cacheable। Cache-Control headers দিয়ে TTL control করুন।',
                     },
                     {
                         key: 'd',
@@ -2515,10 +2515,10 @@ spec:
                     },
                     {
                         key: 'b',
-                        text: 'Virtual Private Cloud — AWS-এ তোমার isolated private network',
+                        text: 'Virtual Private Cloud — AWS-এ আপনার isolated private network',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। VPC = AWS-এর মধ্যে তোমার নিজের isolated network। তুমি IP range (CIDR) define করো, subnets (public/private) তৈরি করো, routing rules set করো। Public subnet: internet accessible (EC2, ALB)। Private subnet: internet থেকে hidden (RDS, ElastiCache)। Security Groups = instance-level firewall।',
+                            'সঠিক। VPC = AWS-এর মধ্যে আপনার নিজের isolated network। আপনি IP range (CIDR) define করুন, subnets (public/private) তৈরি করুন, routing rules set করুন। Public subnet: internet accessible (EC2, ALB)। Private subnet: internet থেকে hidden (RDS, ElastiCache)। Security Groups = instance-level firewall।',
                     },
                     {
                         key: 'c',
@@ -2539,38 +2539,38 @@ spec:
         ],
     },
     assignment: {
-        title: 'AWS Multi-tier Architecture ডিজাইন করো',
+        title: 'AWS Multi-tier Architecture ডিজাইন করুন',
         time: '৪-৫ ঘন্টা',
         difficulty: 'Advanced',
         tasks: [
             <span>
                 <strong>VPC Design:</strong> একটা production-grade VPC design
-                করো। Public subnets (2 AZ)-এ ALB + EC2 Auto Scaling Group।
+                করুন। Public subnets (2 AZ)-এ ALB + EC2 Auto Scaling Group।
                 Private subnets (2 AZ)-এ RDS Multi-AZ + ElastiCache। Internet
                 Gateway, NAT Gateway (private subnets-এর outbound), Security
-                Groups সব include করো।
+                Groups সব include করুন।
             </span>,
             <span>
                 <strong>Full Stack Architecture:</strong> EC2 + RDS PostgreSQL +
                 ElastiCache Redis + S3 (static assets) + CloudFront (CDN) দিয়ে
-                একটা e-commerce-এর architecture diagram আঁকো। প্রতিটা
-                component-এর role এবং connection explain করো।
+                একটা e-commerce-এর architecture diagram আঁকুন। প্রতিটা
+                component-এর role এবং connection explain করুন।
             </span>,
             <span>
                 <strong>Terraform Code:</strong> উপরের architecture-এর Terraform
-                code লেখো। কমপক্ষে: VPC, subnets, security groups, EC2 launch
-                template, RDS instance। S3 backend দিয়ে state manage করো।
+                code লিখুন। কমপক্ষে: VPC, subnets, security groups, EC2 launch
+                template, RDS instance। S3 backend দিয়ে state manage করুন।
             </span>,
             <span>
                 <strong>Auto Scaling Policy:</strong> Target tracking policy
-                define করো (CPU 60% target)। Scheduled scaling: weekday 9am-6pm
+                define করুন (CPU 60% target)। Scheduled scaling: weekday 9am-6pm
                 higher capacity। CloudWatch alarm: CPU 80%+ হলে SNS notification।
             </span>,
             <span>
                 <strong>Cost Estimation:</strong> AWS Pricing Calculator use করে
-                এই architecture-এর monthly cost estimate করো। On-Demand vs
-                Reserved (1-year) cost compare করো। Spot instances কোথায় use
-                করা যায় suggest করো।
+                এই architecture-এর monthly cost estimate করুন। On-Demand vs
+                Reserved (1-year) cost compare করুন। Spot instances কোথায় use
+                করা যায় suggest করুন।
             </span>,
         ],
         deliverables: [
@@ -2585,29 +2585,29 @@ spec:
         subtitle: 'Terraform + AWS (EC2, RDS, S3, CloudFront)',
         steps: [
             {
-                title: 'Terraform Install + AWS Configure করো',
+                title: 'Terraform Install + AWS Configure করুন',
                 description:
-                    'Terraform install করো (terraform.io/downloads)। AWS CLI install করো। aws configure দিয়ে access key + region set করো। terraform version দিয়ে verify করো।',
+                    'Terraform install করুন (terraform.io/downloads)। AWS CLI install করুন। aws configure দিয়ে access key + region set করুন। terraform version দিয়ে verify করুন।',
             },
             {
-                title: 'VPC + Networking Terraform Code লেখো',
+                title: 'VPC + Networking Terraform Code লিখুন',
                 description:
-                    'main.tf-এ provider + VPC + subnets + internet gateway + route tables define করো। terraform init → terraform plan → terraform apply করো। AWS console-এ VPC দেখো।',
+                    'main.tf-এ provider + VPC + subnets + internet gateway + route tables define করুন। terraform init → terraform plan → terraform apply করুন। AWS console-এ VPC দেখুন।',
             },
             {
-                title: 'EC2 Auto Scaling Group Add করো',
+                title: 'EC2 Auto Scaling Group Add করুন',
                 description:
-                    'launch_template + autoscaling_group resource add করো। user_data script-এ simple web server (nginx) install করো। terraform apply করলে EC2 instance চলে কিনা check করো।',
+                    'launch_template + autoscaling_group resource add করুন। user_data script-এ simple web server (nginx) install করুন। terraform apply করলেন EC2 instance চলে কিনা check করুন।',
             },
             {
-                title: 'RDS PostgreSQL Add করো',
+                title: 'RDS PostgreSQL Add করুন',
                 description:
-                    'aws_db_subnet_group + aws_db_instance resource define করো। Private subnet-এ রাখো। Security group শুধু EC2 থেকে 5432 port allow করো। terraform apply করো।',
+                    'aws_db_subnet_group + aws_db_instance resource define করুন। Private subnet-এ রাখুন। Security group শুধু EC2 থেকে 5432 port allow করুন। terraform apply করুন।',
             },
             {
-                title: 'S3 + CloudFront Static Hosting Setup করো',
+                title: 'S3 + CloudFront Static Hosting Setup করুন',
                 description:
-                    'S3 bucket create করো (website hosting enable)। CloudFront distribution create করো (S3 origin)। একটা HTML file upload করো। CloudFront URL দিয়ে access করো।',
+                    'S3 bucket create করুন (website hosting enable)। CloudFront distribution create করুন (S3 origin)। একটা HTML file upload করুন। CloudFront URL দিয়ে access করুন।',
             },
         ],
         codeBlock: {
@@ -2768,6 +2768,6 @@ data "aws_availability_zones" "az" {
   state = "available"
 }`,
         },
-        tip: 'Terraform দিয়ে infrastructure manage করলে সবচেয়ে বড় সুবিধা হলো terraform destroy দিয়ে সব মুছে ফেলা যায় — AWS bill এড়ানো যায়। Practice শেষ হলে অবশ্যই terraform destroy করো।',
+        tip: 'Terraform দিয়ে infrastructure manage করলেন সবচেয়ে বড় সুবিধা হলো terraform destroy দিয়ে সব মুছে ফেলা যায় — AWS bill এড়ানো যায়। Practice শেষ হলে অবশ্যই terraform destroy করুন।',
     },
 };

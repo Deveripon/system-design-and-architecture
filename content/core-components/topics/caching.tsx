@@ -25,9 +25,9 @@ export const cachingContent: TopicData = {
                     content: (
                         <div className='space-y-6'>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
-                                ধরো তুমি প্রতিদিন অফিসে যাও। রাস্তায় একটা
-                                দোকান আছে যেখান থেকে চা কিনো। তুমি কি প্রতিদিন
-                                দোকানদারকে নতুন করে বলো &quot;আমি চা খাই, চিনি
+                                ধরুন আপনি প্রতিদিন অফিসে যান। রাস্তায় একটা
+                                দোকান আছে যেখান থেকে চা কিনো। আপনি কি প্রতিদিন
+                                দোকানদারকে নতুন করে বলুন &quot;আমি চা খাই, চিনি
                                 কম দিও&quot;? না — সে মনে রাখে। এটাই{' '}
                                 <strong className='text-foreground'>Cache</strong>{' '}
                                 — frequently used data কে database এর বদলে
@@ -68,7 +68,7 @@ export const cachingContent: TopicData = {
                                 Cache ছাড়া কী হয়?
                             </h3>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
-                                ধরো একটা news website। প্রতি second এ ১০,০০০
+                                ধরুন একটা news website। প্রতি second এ ১০,০০০
                                 user &quot;আজকের top news&quot; দেখতে চাইছে।
                                 Cache ছাড়া = ১০,০০০ database queries প্রতি
                                 second। Database crash। Site down।
@@ -166,7 +166,7 @@ export const cachingContent: TopicData = {
                                 </h4>
                                 <p className='text-sm text-muted-foreground leading-relaxed'>
                                     DB scale করা কঠিন এবং ব্যয়বহুল। Cache
-                                    layer add করলে DB এর load{' '}
+                                    layer add করলেন DB এর load{' '}
                                     <span className='text-emerald-400 font-bold'>
                                         ৯০%+ কমে
                                     </span>{' '}
@@ -181,9 +181,9 @@ export const cachingContent: TopicData = {
                                 </h4>
                                 <p className='text-sm text-muted-foreground leading-relaxed'>
                                     Database down হলেও cache থেকে serve করা
-                                    যায়। User হয়তো একটু পুরনো data দেখবে, কিন্তু{' '}
+                                    যায়। User হয়তো একটু পুরনো data দেখবেন, কিন্তু{' '}
                                     <span className='text-emerald-400 font-bold'>
-                                        site up থাকবে
+                                        site up থাকবেন
                                     </span>
                                     ।
                                 </p>
@@ -194,7 +194,7 @@ export const cachingContent: TopicData = {
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.IMPORTANT,
-                    title: 'Real Numbers — বিশ্বাস না হলে এগুলো দেখো',
+                    title: 'Real Numbers — বিশ্বাস না হলে এগুলো দেখুন',
                     content: (
                         <ul className='space-y-2 text-sm leading-relaxed'>
                             <li>
@@ -241,8 +241,8 @@ export const cachingContent: TopicData = {
                                         CACHE HIT ✅
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed mb-4'>
-                                        Request আসলো → Cache check করো → Data
-                                        পাওয়া গেলো → সাথে সাথে return করো।
+                                        Request আসলো → Cache check করুন → Data
+                                        পানয়া গেলো → সাথে সাথে return করুন।
                                         Database touch করার দরকারই নেই।
                                     </p>
                                     <p className='text-xs font-mono text-emerald-400'>
@@ -255,9 +255,9 @@ export const cachingContent: TopicData = {
                                         CACHE MISS ❌
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed mb-4'>
-                                        Request আসলো → Cache check করো → Data
+                                        Request আসলো → Cache check করুন → Data
                                         নেই → Database থেকে আনো → Cache এ
-                                        রাখো → Return করো।
+                                        রাখুন → Return করুন।
                                     </p>
                                     <p className='text-xs font-mono text-red-400'>
                                         Response time: 100-500ms (DB query)
@@ -284,14 +284,14 @@ export const cachingContent: TopicData = {
                 },
                 {
                     type: CONTENT_TYPES.COMPARE_TABLE,
-                    headers: ['Policy', 'নাম', 'কীভাবে কাজ করে', 'কখন ব্যবহার করো'],
+                    headers: ['Policy', 'নাম', 'কীভাবে কাজ করে', 'কখন ব্যবহার করুন'],
                     rows: [
                         [
                             <span className='font-bold text-primary font-mono'>
                                 LRU
                             </span>,
                             'Least Recently Used',
-                            'সবচেয়ে পুরনো সময়ে access হওয়া item বাদ দাও',
+                            'সবচেয়ে পুরনো সময়ে access হওয়া item বাদ দিন',
                             <span className='text-emerald-400'>
                                 সবচেয়ে common — general purpose
                             </span>,
@@ -301,7 +301,7 @@ export const cachingContent: TopicData = {
                                 LFU
                             </span>,
                             'Least Frequently Used',
-                            'সবচেয়ে কম বার access হওয়া item বাদ দাও',
+                            'সবচেয়ে কম বার access হওয়া item বাদ দিন',
                             'যখন popularity matter করে',
                         ],
                         [
@@ -309,7 +309,7 @@ export const cachingContent: TopicData = {
                                 TTL
                             </span>,
                             'Time To Live',
-                            'নির্দিষ্ট সময় পর automatically expire করো',
+                            'নির্দিষ্ট সময় পর automatically expire করুন',
                             'News, session, rate limiting',
                         ],
                         [
@@ -317,7 +317,7 @@ export const cachingContent: TopicData = {
                                 FIFO
                             </span>,
                             'First In First Out',
-                            'যেটা আগে এসেছে সেটা আগে বাদ দাও',
+                            'যেটা আগে এসেছে সেটা আগে বাদ দিন',
                             'Simple queue-like caching',
                         ],
                     ],
@@ -352,7 +352,7 @@ export const cachingContent: TopicData = {
                                 <p className='text-muted-foreground leading-relaxed text-lg mb-4'>
                                     Application নিজেই cache manage করে। Read
                                     করার সময়: cache check → miss হলে DB থেকে
-                                    আনো → cache এ রাখো → return করো। এটাই সবচেয়ে
+                                    আনো → cache এ রাখুন → return করুন। এটাই সবচেয়ে
                                     popular pattern। Redis সাথে এই pattern সবচেয়ে
                                     বেশি দেখা যায়।
                                 </p>
@@ -391,7 +391,7 @@ export const cachingContent: TopicData = {
                                 </h3>
                                 <p className='text-muted-foreground leading-relaxed text-lg'>
                                     Data write করার সময় cache এবং database
-                                    দুটোতেই একসাথে write করো। Cache সবসময় DB
+                                    দুটোতেই একসাথে write করুন। Cache সবসময় DB
                                     এর সাথে sync থাকে। Write একটু slow কিন্তু
                                     data always consistent। Banking, payment
                                     system এর জন্য ideal।
@@ -407,8 +407,8 @@ export const cachingContent: TopicData = {
                                     Write-Behind (Write-Back)
                                 </h3>
                                 <p className='text-muted-foreground leading-relaxed text-lg'>
-                                    Cache এ write করো, DB তে পরে (asynchronously)
-                                    write করো। Write অনেক fast। কিন্তু cache
+                                    Cache এ write করুন, DB তে পরে (asynchronously)
+                                    write করুন। Write অনেক fast। কিন্তু cache
                                     crash হলে data loss হতে পারে। High-write
                                     throughput apps এর জন্য — gaming scores,
                                     analytics counters।
@@ -437,10 +437,10 @@ export const cachingContent: TopicData = {
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.TIP,
-                    title: 'কোনটা কখন ব্যবহার করবে?',
+                    title: 'কোনটা কখন ব্যবহার করবেন?',
                     content: (
                         <>
-                            Interview এ বলো:{' '}
+                            Interview এ বলুন:{' '}
                             <strong>Cache-Aside সবচেয়ে flexible</strong> —
                             read-heavy apps এর জন্য best। Write consistency
                             দরকার হলে Write-Through। Speed critical হলে
@@ -659,7 +659,7 @@ export const cachingContent: TopicData = {
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
                                         নির্দিষ্ট interval এ (যেমন প্রতি ৫
                                         মিনিটে) পুরো memory এর snapshot disk
-                                        এ save করো। Fast restart। কিন্তু last
+                                        এ save করুন। Fast restart। কিন্তু last
                                         snapshot এর পর এর data হারাতে পারে।{' '}
                                         <span className='text-yellow-400'>
                                             Default Redis behavior।
@@ -672,9 +672,9 @@ export const cachingContent: TopicData = {
                                         AOF — Append Only File
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
-                                        প্রতিটা write operation log এ রাখো।
+                                        প্রতিটা write operation log এ রাখুন।
                                         Crash হলে log replay করে data recover
-                                        করো। More durable কিন্তু file বড় হয়।{' '}
+                                        করুন। More durable কিন্তু file বড় হয়।{' '}
                                         <span className='text-emerald-400'>
                                             Critical data এর জন্য best।
                                         </span>
@@ -734,7 +734,7 @@ export const cachingContent: TopicData = {
                             </span>,
                         ],
                         [
-                            'কখন ব্যবহার করো',
+                            'কখন ব্যবহার করুন',
                             <span className='text-emerald-400 font-bold'>
                                 Almost always — more features
                             </span>,
@@ -761,8 +761,8 @@ export const cachingContent: TopicData = {
                         <p className='text-muted-foreground leading-relaxed text-lg'>
                             Redis এর basic operations থেকে শুরু করে production-ready
                             Cache-Aside pattern এবং Rate Limiting পর্যন্ত — এই
-                            তিনটা code snippet তোমার interview এবং real project
-                            দুটোতেই কাজে আসবে।
+                            তিনটা code snippet আপনার interview এবং real project
+                            দুটোতেই কাজে আসবেন।
                         </p>
                     ),
                 },
@@ -846,7 +846,7 @@ class CacheService {
   // Generic cache-aside method
   async getOrSet(key, fetchFn, ttl = this.defaultTTL) {
     try {
-      // 1. Cache check করো
+      // 1. Cache check করুন
       const cached = await client.get(key);
       if (cached) {
         console.log(\`Cache HIT: \${key}\`);
@@ -857,12 +857,12 @@ class CacheService {
       console.log(\`Cache MISS: \${key} — fetching from DB\`);
       const data = await fetchFn();
 
-      // 3. Cache এ রাখো
+      // 3. Cache এ রাখুন
       await client.setEx(key, ttl, JSON.stringify(data));
 
       return data;
     } catch (err) {
-      // Cache fail হলেও app চলবে — DB থেকে directly serve করো
+      // Cache fail হলেও app চলবে — DB থেকে directly serve করুন
       console.error('Cache error:', err);
       return fetchFn();
     }
@@ -901,11 +901,11 @@ app.get('/api/users/:id', async (req, res) => {
   res.json(user);
 });
 
-// Write হলে cache invalidate করো
+// Write হলে cache invalidate করুন
 app.put('/api/users/:id', async (req, res) => {
   const { id } = req.params;
   await db.query('UPDATE users SET ? WHERE id = ?', [req.body, id]);
-  await cache.invalidate(\`user:\${id}\`);  // Stale cache মুছে দাও
+  await cache.invalidate(\`user:\${id}\`);  // Stale cache মুছে দিন
   res.json({ success: true });
 });`,
                 },
@@ -948,7 +948,7 @@ const rateLimitMiddleware = (limit = 100, window = 60) => {
     const userId = req.user?.id || req.ip;
     const { allowed, remaining } = await rateLimiter(userId, limit, window);
 
-    // Standard rate limit headers set করো
+    // Standard rate limit headers set করুন
     res.setHeader('X-RateLimit-Limit', limit);
     res.setHeader('X-RateLimit-Remaining', remaining);
 
@@ -963,7 +963,7 @@ const rateLimitMiddleware = (limit = 100, window = 60) => {
   };
 };
 
-// Route এ apply করো
+// Route এ apply করুন
 app.use('/api/', rateLimitMiddleware(100, 60));  // 100 req/min
 app.use('/api/auth/', rateLimitMiddleware(5, 60));  // Login: 5 req/min`,
                 },
@@ -1066,7 +1066,7 @@ app.use('/api/auth/', rateLimitMiddleware(5, 60));  // Login: 5 req/min`,
                             <ul className='space-y-1 ml-4'>
                                 <li>
                                     <strong>Mutex/Lock:</strong> প্রথম request
-                                    DB থেকে আনবে, বাকিরা wait করবে।
+                                    DB থেকে আনবে, বাকিরা wait করবেন।
                                 </li>
                                 <li>
                                     <strong>Probabilistic Early Expiration:</strong>{' '}
@@ -1074,8 +1074,8 @@ app.use('/api/auth/', rateLimitMiddleware(5, 60));  // Login: 5 req/min`,
                                 </li>
                                 <li>
                                     <strong>Stale-While-Revalidate:</strong>{' '}
-                                    Expired data serve করো, background এ
-                                    refresh করো।
+                                    Expired data serve করুন, background এ
+                                    refresh করুন।
                                 </li>
                             </ul>
                         </div>
@@ -1099,7 +1099,7 @@ app.use('/api/auth/', rateLimitMiddleware(5, 60));  // Login: 5 req/min`,
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.CONCEPT,
-                    title: 'Q1: Cache Invalidation কীভাবে করবে?',
+                    title: 'Q1: Cache Invalidation কীভাবে করবেন?',
                     content: (
                         <div className='space-y-2 text-sm leading-relaxed'>
                             <p className='font-bold text-foreground'>
@@ -1113,7 +1113,7 @@ app.use('/api/auth/', rateLimitMiddleware(5, 60));  // Login: 5 req/min`,
                                 </li>
                                 <li>
                                     <strong>Event-driven:</strong> Data update
-                                    হলে সাথে সাথে cache delete করো। Strong
+                                    হলে সাথে সাথে cache delete করুন। Strong
                                     consistency কিন্তু extra code।
                                 </li>
                                 <li>
@@ -1123,7 +1123,7 @@ app.use('/api/auth/', rateLimitMiddleware(5, 60));  // Login: 5 req/min`,
                                 </li>
                             </ul>
                             <p className='text-muted-foreground italic mt-2'>
-                                Interview তে বলো: &quot;Use case ভেদে TTL +
+                                Interview তে বলুন: &quot;Use case ভেদে TTL +
                                 event-driven combination ব্যবহার করবো।&quot;
                             </p>
                         </div>
@@ -1149,12 +1149,12 @@ app.use('/api/auth/', rateLimitMiddleware(5, 60));  // Login: 5 req/min`,
                                     ✅ Better eviction policy (LRU → LFU)
                                 </li>
                                 <li>
-                                    ✅ Cache key design উন্নত করো — coarse
+                                    ✅ Cache key design উন্নত করুন — coarse
                                     grained keys
                                 </li>
                                 <li>
-                                    ✅ Hot data pre-warm করো (app start এ
-                                    popular data load করো)
+                                    ✅ Hot data pre-warm করুন (app start এ
+                                    popular data load করুন)
                                 </li>
                             </ul>
                         </div>
@@ -1249,7 +1249,7 @@ app.use('/api/auth/', rateLimitMiddleware(5, 60));  // Login: 5 req/min`,
             ],
             [
                 <span className='font-bold text-primary'>Cache Hit</span>,
-                'Cache এ data পাওয়া গেছে — DB তে যেতে হয়নি',
+                'Cache এ data পানয়া গেছে — DB তে যেতে হয়নি',
             ],
             [
                 <span className='font-bold text-primary'>LRU</span>,
@@ -1292,14 +1292,14 @@ app.use('/api/auth/', rateLimitMiddleware(5, 60));  // Login: 5 req/min`,
                         text: 'Cache এ data নেই, DB থেকে আনতে হবে',
                         isCorrect: false,
                         explanation:
-                            'এটা Cache Miss এর definition। Cache Miss মানে cache এ data না পাওয়া।',
+                            'এটা Cache Miss এর definition। Cache Miss মানে cache এ data না পানয়া।',
                     },
                     {
                         key: 'B',
-                        text: 'Cache এ data পাওয়া গেছে, DB তে যেতে হয়নি',
+                        text: 'Cache এ data পানয়া গেছে, DB তে যেতে হয়নি',
                         isCorrect: true,
                         explanation:
-                            'Cache Hit মানে request করা data cache এ পাওয়া গেছে। Database query করার দরকার নেই — এটাই caching এর লক্ষ্য।',
+                            'Cache Hit মানে request করা data cache এ পানয়া গেছে। Database query করার দরকার নেই — এটাই caching এর লক্ষ্য।',
                     },
                     {
                         key: 'C',
@@ -1310,7 +1310,7 @@ app.use('/api/auth/', rateLimitMiddleware(5, 60));  // Login: 5 req/min`,
                     },
                     {
                         key: 'D',
-                        text: 'Cache server crash করেছে',
+                        text: 'Cache server crash করেছেনে',
                         isCorrect: false,
                         explanation: 'Cache crash এর সাথে Cache Hit এর কোনো সম্পর্ক নেই।',
                     },
@@ -1393,7 +1393,7 @@ app.use('/api/auth/', rateLimitMiddleware(5, 60));  // Login: 5 req/min`,
                         text: 'String',
                         isCorrect: false,
                         explanation:
-                            'String দিয়ে leaderboard বানালে sorting manually করতে হবে — অনেক কঠিন।',
+                            'String দিয়ে leaderboard বানালেন sorting manually করতে হবে — অনেক কঠিন।',
                     },
                     {
                         key: 'B',
@@ -1414,7 +1414,7 @@ app.use('/api/auth/', rateLimitMiddleware(5, 60));  // Login: 5 req/min`,
                         text: 'Sorted Set',
                         isCorrect: true,
                         explanation:
-                            'Redis Sorted Set (ZSET) automatically score অনুযায়ী sorted রাখে। ZADD দিয়ে score update, ZREVRANGE দিয়ে top N পাও — O(log N) complexity।',
+                            'Redis Sorted Set (ZSET) automatically score অনুযায়ী sorted রাখে। ZADD দিয়ে score update, ZREVRANGE দিয়ে top N পান — O(log N) complexity।',
                     },
                 ],
             },
@@ -1502,7 +1502,7 @@ app.use('/api/auth/', rateLimitMiddleware(5, 60));  // Login: 5 req/min`,
                         text: 'Key কে permanent করে',
                         isCorrect: false,
                         explanation:
-                            'TTL expire time set করে — permanent করে না। Permanent key এর জন্য TTL set না করলেই হয়।',
+                            'TTL expire time set করে — permanent করে না। Permanent key এর জন্য TTL set না করলেনই হয়।',
                     },
                     {
                         key: 'C',
@@ -1595,7 +1595,7 @@ app.use('/api/auth/', rateLimitMiddleware(5, 60));  // Login: 5 req/min`,
                         text: 'Cache-Aside with long TTL',
                         isCorrect: false,
                         explanation:
-                            'Long TTL মানে stale data বেশিক্ষণ থাকবে। Banking এ এটা dangerous — user ভুল balance দেখতে পারে।',
+                            'Long TTL মানে stale data বেশিক্ষণ থাকবেন। Banking এ এটা dangerous — user ভুল balance দেখতে পারে।',
                     },
                     {
                         key: 'B',
@@ -1616,7 +1616,7 @@ app.use('/api/auth/', rateLimitMiddleware(5, 60));  // Login: 5 req/min`,
                         text: 'No caching needed',
                         isCorrect: false,
                         explanation:
-                            'Caching না করলে performance অনেক কমে যাবে। সঠিক strategy ব্যবহার করে banking এও cache করা যায়।',
+                            'Caching না করলেন performance অনেক কমে যাবেন। সঠিক strategy ব্যবহার করে banking এও cache করা যায়।',
                     },
                 ],
             },
@@ -1633,7 +1633,7 @@ app.use('/api/auth/', rateLimitMiddleware(5, 60));  // Login: 5 req/min`,
         tasks: [
             <span key='1'>
                 <strong>Strategy Selection:</strong> নিচের ৩টা scenario তে
-                কোন caching strategy ব্যবহার করবে এবং কেন explain করো: (ক)
+                কোন caching strategy ব্যবহার করবেন এবং কেন explain করুন: (ক)
                 একটি news website এর homepage যেখানে content প্রতি ৫ মিনিটে
                 update হয় (খ) একটি banking app এর account balance page (গ) একটি
                 social media app এর user profile যেখানে user নিজেই তার profile
@@ -1641,30 +1641,30 @@ app.use('/api/auth/', rateLimitMiddleware(5, 60));  // Login: 5 req/min`,
             </span>,
             <span key='2'>
                 <strong>Redis CLI Exploration:</strong> Local machine এ Redis
-                install করো (redis.io/docs/getting-started)। CLI তে এই
-                operations গুলো করো: (ক) একটি user profile Hash তৈরি করো (খ)
-                একটি leaderboard Sorted Set তৈরি করো ৫ জন player দিয়ে (গ)
-                TTL সহ একটি OTP cache করো এবং expire হতে দেখো।
+                install করুন (redis.io/docs/getting-started)। CLI তে এই
+                operations গুলো করুন: (ক) একটি user profile Hash তৈরি করুন (খ)
+                একটি leaderboard Sorted Set তৈরি করুন ৫ জন player দিয়ে (গ)
+                TTL সহ একটি OTP cache করুন এবং expire হতে দেখুন।
             </span>,
             <span key='3'>
                 <strong>Code Writing:</strong> Node.js বা Python ব্যবহার করে
-                একটি simple Cache-Aside implementation লেখো। Requirements: (ক)
+                একটি simple Cache-Aside implementation লিখুন। Requirements: (ক)
                 getUser(id) function — Redis থেকে check, miss হলে mock DB থেকে
                 আনো (খ) updateUser(id, data) — DB update এবং cache invalidate
-                করো (গ) Cache hit/miss log করো।
+                করুন (গ) Cache hit/miss log করুন।
             </span>,
             <span key='4'>
                 <strong>Eviction Policy Analysis:</strong> LRU, LFU, এবং TTL
-                — তিনটা policy এর জন্য নিচের scenario তে কোনটা best হবে বলো
-                এবং কারণ দাও: একটি e-commerce site এর product catalog cache।
+                — তিনটা policy এর জন্য নিচের scenario তে কোনটা best হবে বলুন
+                এবং কারণ দিন: একটি e-commerce site এর product catalog cache।
                 Products rarely update হয় কিন্তু popular products বেশি access
                 হয়।
             </span>,
             <span key='5'>
-                <strong>Research Task:</strong> Google করে বের করো — (ক)
+                <strong>Research Task:</strong> Google করে বের করুন — (ক)
                 Facebook Memcached architecture কীভাবে কাজ করে? (খ) Redis
                 Cluster কী এবং কীভাবে শত শত GB data cache করা যায়? ৫-৭ লাইনে
-                লেখো।
+                লিখুন।
             </span>,
         ],
         deliverables: [
@@ -1686,34 +1686,34 @@ app.use('/api/auth/', rateLimitMiddleware(5, 60));  // Login: 5 req/min`,
         subtitle: 'Redis Cache-Aside with Node.js',
         steps: [
             {
-                title: 'Redis install করো',
+                title: 'Redis install করুন',
                 description:
-                    'Docker দিয়ে: docker run -d -p 6379:6379 redis:alpine। অথবা redis.io থেকে directly install করো। redis-cli ping দিয়ে PONG পাওয়া মানে ready।',
+                    'Docker দিয়ে: docker run -d -p 6379:6379 redis:alpine। অথবা redis.io থেকে directly install করুন। redis-cli ping দিয়ে PONG পানয়া মানে ready।',
             },
             {
-                title: 'Node.js project setup করো',
+                title: 'Node.js project setup করুন',
                 description:
-                    'npm init -y && npm install redis express। একটা simple Express server বানাও যেখানে /api/users/:id route আছে।',
+                    'npm init -y && npm install redis express। একটা simple Express server বানান যেখানে /api/users/:id route আছে।',
             },
             {
-                title: 'Mock database তৈরি করো',
+                title: 'Mock database তৈরি করুন',
                 description:
-                    'Real DB ছাড়াই test করার জন্য একটা in-memory object তৈরি করো যেখানে ১০ জন user এর data আছে। 200ms delay add করো simulate করতে।',
+                    'Real DB ছাড়াই test করার জন্য একটা in-memory object তৈরি করুন যেখানে ১০ জন user এর data আছে। 200ms delay add করুন simulate করতে।',
             },
             {
-                title: 'Cache-Aside logic implement করো',
+                title: 'Cache-Aside logic implement করুন',
                 description:
-                    'Redis GET দিয়ে check করো → miss হলে mock DB থেকে আনো → Redis SET দিয়ে cache করো (TTL: 60s) → return করো। Console.log দিয়ে hit/miss log করো।',
+                    'Redis GET দিয়ে check করুন → miss হলে mock DB থেকে আনো → Redis SET দিয়ে cache করুন (TTL: 60s) → return করুন। Console.log দিয়ে hit/miss log করুন।',
             },
             {
-                title: 'Test করো',
+                title: 'Test করুন',
                 description:
-                    'Browser বা Postman দিয়ে same user ID তে দুইবার request করো। প্রথমবার ~200ms (DB), দ্বিতীয়বার ~2ms (Cache HIT) — পার্থক্যটা নিজে দেখো।',
+                    'Browser বা Postman দিয়ে same user ID তে দুইবার request করুন। প্রথমবার ~200ms (DB), দ্বিতীয়বার ~2ms (Cache HIT) — পার্থক্যটা নিজে দেখুন।',
             },
             {
-                title: 'Cache invalidation যোগ করো',
+                title: 'Cache invalidation যোগ করুন',
                 description:
-                    'PUT /api/users/:id route বানাও। Update হলে cache delete করো। তারপর আবার GET করলে fresh data আসে কিনা দেখো।',
+                    'PUT /api/users/:id route বানান। Update হলে cache delete করুন। তারপর আবার GET করলেন fresh data আসে কিনা দেখুন।',
             },
         ],
         codeBlock: {
@@ -1758,7 +1758,7 @@ app.get('/api/users/:id', async (req, res) => {
 
   if (!user) return res.status(404).json({ error: 'User not found' });
 
-  // 3. Cache করো (60 seconds TTL)
+  // 3. Cache করুন (60 seconds TTL)
   await redis.setEx(cacheKey, 60, JSON.stringify(user));
 
   res.json({ source: 'database', data: user });
@@ -1773,7 +1773,7 @@ app.put('/api/users/:id', async (req, res) => {
     mockDB[id] = { ...mockDB[id], ...req.body };
   }
 
-  // Cache invalidate করো
+  // Cache invalidate করুন
   await redis.del(\`user:\${id}\`);
   console.log(\`🗑️  Cache invalidated: user:\${id}\`);
 
@@ -1782,6 +1782,6 @@ app.put('/api/users/:id', async (req, res) => {
 
 app.listen(3000, () => console.log('Server running on http://localhost:3000'));`,
         },
-        tip: 'প্রথম request এ "Cache MISS" দেখবে এবং ~200ms লাগবে। Same ID তে দ্বিতীয় request করলে "Cache HIT" দেখবে এবং ~2ms লাগবে। এই পার্থক্যটাই caching এর real power — শুধু theory না, নিজে দেখো।',
+        tip: 'প্রথম request এ "Cache MISS" দেখবেন এবং ~200ms লাগবে। Same ID তে দ্বিতীয় request করলেন "Cache HIT" দেখবেন এবং ~2ms লাগবে। এই পার্থক্যটাই caching এর real power — শুধু theory না, নিজে দেখুন।',
     },
 };

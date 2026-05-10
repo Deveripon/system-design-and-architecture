@@ -20,21 +20,21 @@ export const messageQueuesContent: TopicData = {
                     content: (
                         <div className='space-y-6'>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
-                                ধরো তুমি Swiggy তে খাবার order দিলে। তৎক্ষণাৎ
-                                screen এ আসে &quot;Order Confirmed!&quot; — তুমি
+                                ধরুন আপনি Swiggy তে খাবার order দিলে। তৎক্ষণাৎ
+                                screen এ আসে &quot;Order Confirmed!&quot; — আপনি
                                 phone রেখে দিলে। কিন্তু পেছনে কী হচ্ছে? Restaurant
                                 কে notification গেলো, delivery partner assign হলো,
                                 payment process হলো, invoice তৈরি হলো। এই সব কাজ
-                                তোমার জন্য wait করছে না।
+                                আপনার জন্য wait করছে না।
                             </p>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
                                 এটাই{' '}
                                 <strong className='text-foreground'>
                                     Async Messaging
                                 </strong>
-                                । Sync মানে — তুমি কাজ দিলে, সে শেষ করলে, তারপর
-                                next step। Async মানে — তুমি কাজ দিলে, সে নিজের
-                                সময়ে করবে, তুমি এগিয়ে যাও।
+                                । Sync মানে — আপনি কাজ দিলে, সে শেষ করলেন, তারপর
+                                next step। Async মানে — আপনি কাজ দিলে, সে নিজের
+                                সময়ে করবেন, আপনি এগিয়ে যান।
                             </p>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-0 border border-border'>
                                 <div className='p-8 border-r border-border bg-card/30'>
@@ -46,7 +46,7 @@ export const messageQueuesContent: TopicData = {
                                         </span>
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
-                                        Order দাও → Email পাঠাও (wait) → SMS পাঠাও
+                                        Order দিন → Email পাঠাও (wait) → SMS পাঠাও
                                         (wait) → Inventory update (wait) → Response।
                                         সব শেষ না হওয়া পর্যন্ত user আটকে।
                                     </p>
@@ -60,7 +60,7 @@ export const messageQueuesContent: TopicData = {
                                         </span>
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
-                                        Order দাও → Queue তে message রাখো →
+                                        Order দিন → Queue তে message রাখুন →
                                         &quot;Order Confirmed!&quot; return। Background
                                         এ Email, SMS, Inventory সব parallel হয়।
                                     </p>
@@ -119,8 +119,8 @@ export const messageQueuesContent: TopicData = {
                                 </h4>
                                 <p className='text-sm text-muted-foreground leading-relaxed'>
                                     Service B down হলেও Service A চলতে পারে।
-                                    Message queue তে জমা থাকবে, B উঠলে process
-                                    করবে। Services একে অপরের উপর directly
+                                    Message queue তে জমা থাকবেন, B উঠলে process
+                                    করবেন। Services একে অপরের উপর directly
                                     depend করে না।
                                 </p>
                             </div>
@@ -139,7 +139,7 @@ export const messageQueuesContent: TopicData = {
                                     3. RETRY LOGIC
                                 </h4>
                                 <p className='text-sm text-muted-foreground leading-relaxed'>
-                                    Consumer fail করলে message queue তে থাকে।
+                                    Consumer fail করলেন message queue তে থাকে।
                                     Retry করা যায় — data loss নেই। Email service
                                     crash হলেও email টা পরে পাঠানো সম্ভব।
                                 </p>
@@ -243,11 +243,11 @@ export const messageQueuesContent: TopicData = {
                                                 Consumer A
                                             </span>
                                             <span className='text-muted-foreground text-xs italic'>
-                                                (শুধু একজন পাবে)
+                                                (শুধু একজন পাবেন)
                                             </span>
                                         </div>
                                         <div className='ml-[calc(theme(spacing.6)+theme(spacing.3)+80px+theme(spacing.3)+20px)] text-xs text-muted-foreground/60'>
-                                            Consumer B, C — পাবে না
+                                            Consumer B, C — পাবেন না
                                         </div>
                                     </div>
                                     <p className='mt-4 text-xs text-muted-foreground/70'>
@@ -371,7 +371,7 @@ export const messageQueuesContent: TopicData = {
                             </li>
                             <li>
                                 <strong>Replication Factor</strong> — প্রতিটা
-                                partition কতটা broker এ copy থাকবে (fault
+                                partition কতটা broker এ copy থাকবেন (fault
                                 tolerance)।
                             </li>
                         </ul>
@@ -492,7 +492,7 @@ export const messageQueuesContent: TopicData = {
                         <ul className='space-y-2 text-sm leading-relaxed'>
                             <li>
                                 <strong>Exchange</strong> — Message কোন queue তে
-                                যাবে তা decide করে। Types: Direct, Topic,
+                                যাবেন তা decide করে। Types: Direct, Topic,
                                 Fanout, Headers।
                             </li>
                             <li>
@@ -505,12 +505,12 @@ export const messageQueuesContent: TopicData = {
                             </li>
                             <li>
                                 <strong>ACK (Acknowledgment)</strong> — Consumer
-                                message সফলভাবে process করলে broker কে জানায় →
+                                message সফলভাবে process করলেন broker কে জানায় →
                                 broker message delete করে।
                             </li>
                             <li>
                                 <strong>NACK + DLQ (Dead Letter Queue)</strong>{' '}
-                                — Consumer fail করলে NACK পাঠায় → বারবার fail
+                                — Consumer fail করলেন NACK পাঠায় → বারবার fail
                                 হলে message Dead Letter Queue তে যায়।
                             </li>
                         </ul>
@@ -576,7 +576,7 @@ export const messageQueuesContent: TopicData = {
             subHeader: { index: '006', title: 'Code Examples' },
             title: (
                 <span className='font-heading'>
-                    Code Examples — হাতে-কলমে দেখো
+                    Code Examples — হাতে-কলমে দেখুন
                 </span>
             ),
             blocks: [
@@ -608,7 +608,7 @@ def place_order(order_id, user_id, items):
         "items": items,
         "status": "placed"
     }
-    # topic: "order_placed" এ message publish করো
+    # topic: "order_placed" এ message publish করুন
     producer.send('order_placed', value=event)
     producer.flush()
     print(f"✅ Order {order_id} event published to Kafka")
@@ -686,7 +686,7 @@ async function startWorker() {
       console.log("✅ Image processed successfully");
     } catch (error) {
       console.error("❌ Failed:", error.message);
-      channel.nack(msg, false, false); // ❌ fail → requeue: false → DLQ তে যাবে
+      channel.nack(msg, false, false); // ❌ fail → requeue: false → DLQ তে যাবেন
     }
   });
 }
@@ -711,10 +711,10 @@ async function setupDLQ() {
   const connection = await amqp.connect('amqp://localhost');
   const channel = await connection.createChannel();
 
-  // 1. Dead Letter Exchange তৈরি করো
+  // 1. Dead Letter Exchange তৈরি করুন
   await channel.assertExchange('dlx_exchange', 'direct', { durable: true });
 
-  // 2. Dead Letter Queue তৈরি করো
+  // 2. Dead Letter Queue তৈরি করুন
   await channel.assertQueue('dead_letter_queue', { durable: true });
   await channel.bindQueue('dead_letter_queue', 'dlx_exchange', 'failed');
 
@@ -722,7 +722,7 @@ async function setupDLQ() {
   await channel.assertQueue('image_resize', {
     durable: true,
     arguments: {
-      'x-dead-letter-exchange': 'dlx_exchange',  // fail হলে এখানে যাবে
+      'x-dead-letter-exchange': 'dlx_exchange',  // fail হলে এখানে যাবেন
       'x-dead-letter-routing-key': 'failed',
       'x-message-ttl': 30000,                    // 30 sec এর মধ্যে process না হলে DLQ
     }
@@ -818,7 +818,7 @@ setupDLQ();`,
                             <li>
                                 <strong>Kafka বেছে নাও</strong> যখন — real-time
                                 analytics, event replay দরকার, millions of
-                                events/sec, multiple teams same data consume করবে।
+                                events/sec, multiple teams same data consume করবেন।
                             </li>
                             <li>
                                 <strong>RabbitMQ বেছে নাও</strong> যখন — complex
@@ -845,7 +845,7 @@ setupDLQ();`,
             subHeader: { index: '008', title: 'Interview Prep' },
             title: (
                 <span className='font-heading'>
-                    Interview Prep — এই প্রশ্নগুলো আসবেই
+                    Interview Prep — এই প্রশ্নগুলো আসবেনই
                 </span>
             ),
             blocks: [
@@ -858,11 +858,11 @@ setupDLQ();`,
                             <li>
                                 <strong>At-Least-Once</strong> — Message কমপক্ষে
                                 একবার deliver হবে। Consumer crash করে re-process
-                                করলে duplicate হতে পারে। Default behavior।
+                                করলেন duplicate হতে পারে। Default behavior।
                             </li>
                             <li>
-                                <strong>At-Most-Once</strong> — Message হয়তো পাবে,
-                                হয়তো পাবে না। Data loss সম্ভব।
+                                <strong>At-Most-Once</strong> — Message হয়তো পাবেন,
+                                হয়তো পাবেন না। Data loss সম্ভব।
                             </li>
                             <li>
                                 <strong>Exactly-Once</strong> — Message exactly
@@ -888,7 +888,7 @@ setupDLQ();`,
                     content: (
                         <ul className='space-y-2 text-sm leading-relaxed'>
                             <li>
-                                একটা Topic কে N টা Partition এ ভাগ করলে N টা
+                                একটা Topic কে N টা Partition এ ভাগ করলেন N টা
                                 Consumer Group member parallel এ পড়তে পারে।
                             </li>
                             <li>
@@ -901,7 +901,7 @@ setupDLQ();`,
                             </li>
                             <li className='text-muted-foreground'>
                                 Rule: Consumer Group এ Consumer সংখ্যা ≤ Partition
-                                সংখ্যা। বেশি consumer থাকলে idle থাকবে।
+                                সংখ্যা। বেশি consumer থাকলে idle থাকবেন।
                             </li>
                         </ul>
                     ),
@@ -913,7 +913,7 @@ setupDLQ();`,
                     content: (
                         <div className='space-y-3 text-sm leading-relaxed'>
                             <div>
-                                <strong>Direct API Call ব্যবহার করো</strong> যখন:
+                                <strong>Direct API Call ব্যবহার করুন</strong> যখন:
                                 <ul className='mt-1 space-y-0.5 ml-4 text-muted-foreground'>
                                     <li>— Immediate response দরকার (payment confirmation)</li>
                                     <li>— Strong consistency দরকার</li>
@@ -921,7 +921,7 @@ setupDLQ();`,
                                 </ul>
                             </div>
                             <div>
-                                <strong>Message Queue ব্যবহার করো</strong> যখন:
+                                <strong>Message Queue ব্যবহার করুন</strong> যখন:
                                 <ul className='mt-1 space-y-0.5 ml-4 text-muted-foreground'>
                                     <li>— Result immediately দরকার নেই (email, notification)</li>
                                     <li>— Service গুলো independent থাকুক</li>
@@ -1019,7 +1019,7 @@ setupDLQ();`,
                         text: 'Code লেখা সহজ হয়',
                         isCorrect: false,
                         explanation:
-                            'আসলে Message Queue add করলে complexity বাড়ে।',
+                            'আসলে Message Queue add করলেন complexity বাড়ে।',
                     },
                     {
                         key: 'D',
@@ -1067,7 +1067,7 @@ setupDLQ();`,
                 options: [
                     {
                         key: 'A',
-                        text: 'Consumer সফলভাবে process করলে broker কে জানায় — broker message delete করে',
+                        text: 'Consumer সফলভাবে process করলেন broker কে জানায় — broker message delete করে',
                         isCorrect: true,
                         explanation:
                             'ACK (Acknowledgment) হলো consumer এর confirmation। ACK ছাড়া broker মনে করে message এখনও process হয়নি।',
@@ -1124,7 +1124,7 @@ setupDLQ();`,
                         text: 'Consumer পুরানো offset থেকে আবার consume করতে পারে',
                         isCorrect: true,
                         explanation:
-                            'Kafka message disk এ retain করে। Consumer offset reset করলে পুরনো message থেকে আবার পড়া যায়। এটাই Kafka এর unique power।',
+                            'Kafka message disk এ retain করে। Consumer offset reset করলেন পুরনো message থেকে আবার পড়া যায়। এটাই Kafka এর unique power।',
                     },
                 ],
             },
@@ -1158,7 +1158,7 @@ setupDLQ();`,
                         text: 'Message শুধু একবার পাঠানো যায়',
                         isCorrect: false,
                         explanation:
-                            'Pub/Sub এ একই message multiple subscribers পাবে।',
+                            'Pub/Sub এ একই message multiple subscribers পাবেন।',
                     },
                 ],
             },
@@ -1269,28 +1269,28 @@ setupDLQ();`,
                 options: [
                     {
                         key: 'A',
-                        text: 'Synchronously একে একে সব করো — user wait করুক',
+                        text: 'Synchronously একে একে সব করুন — user wait করুক',
                         isCorrect: false,
                         explanation:
-                            'Synchronous করলে user অনেকক্ষণ wait করবে। Email/SMS slow হলে order response delayed হবে।',
+                            'Synchronous করলেন user অনেকক্ষণ wait করবেন। Email/SMS slow হলে order response delayed হবে।',
                     },
                     {
                         key: 'B',
-                        text: 'Queue তে event publish করো, সব service async parallel process করুক',
+                        text: 'Queue তে event publish করুন, সব service async parallel process করুক',
                         isCorrect: true,
                         explanation:
                             'Queue event publish → user তৎক্ষণাৎ confirmation পায়। Email, SMS, Inventory parallel background এ হয়। Fast, decoupled, fault-tolerant।',
                     },
                     {
                         key: 'C',
-                        text: 'শুধু email পাঠাও, বাকি skip করো',
+                        text: 'শুধু email পাঠাও, বাকি skip করুন',
                         isCorrect: false,
                         explanation:
-                            'সব service দরকার। Skip করলে business logic ভাঙবে।',
+                            'সব service দরকার। Skip করলেন business logic ভাঙবে।',
                     },
                     {
                         key: 'D',
-                        text: 'Cron job দিয়ে ৫ মিনিট পর পর process করো',
+                        text: 'Cron job দিয়ে ৫ মিনিট পর পর process করুন',
                         isCorrect: false,
                         explanation:
                             'Cron দিয়ে ৫ মিনিট delay হবে — user এর real-time experience খারাপ হবে।',
@@ -1310,7 +1310,7 @@ setupDLQ();`,
                     },
                     {
                         key: 'B',
-                        text: 'Queue তে সর্বোচ্চ ১টা message রাখতে পারবে',
+                        text: 'Queue তে সর্বোচ্চ ১টা message রাখতে পারবেন',
                         isCorrect: false,
                         explanation:
                             'prefetch queue size limit করে না, worker এর concurrent processing limit করে।',
@@ -1320,7 +1320,7 @@ setupDLQ();`,
                         text: 'Worker একটা message process করে ACK দেয়, তারপর পরেরটা নেয়',
                         isCorrect: true,
                         explanation:
-                            'prefetch(1) মানে worker একসাথে শুধু ১টা unacked message রাখতে পারবে। Process → ACK → তারপর নতুনটা। এতে fair dispatch নিশ্চিত হয়।',
+                            'prefetch(1) মানে worker একসাথে শুধু ১টা unacked message রাখতে পারবেন। Process → ACK → তারপর নতুনটা। এতে fair dispatch নিশ্চিত হয়।',
                     },
                     {
                         key: 'D',
@@ -1340,7 +1340,7 @@ setupDLQ();`,
         tasks: [
             <span key='1'>
                 <strong>Scenario Analysis:</strong> নিচের ৩টা system এর জন্য
-                বলো Kafka নাকি RabbitMQ উপযুক্ত এবং কেন: (ক) একটি ride-sharing
+                বলুন Kafka নাকি RabbitMQ উপযুক্ত এবং কেন: (ক) একটি ride-sharing
                 app এর real-time location tracking ও trip analytics (খ) একটি
                 e-commerce এর image resize background job — ছবি upload হলে
                 thumbnail তৈরি করা (গ) একটি news site যেখানে article publish
@@ -1348,27 +1348,27 @@ setupDLQ();`,
                 হবে।
             </span>,
             <span key='2'>
-                <strong>Kafka vs RabbitMQ Decision:</strong> তোমার team একটা
+                <strong>Kafka vs RabbitMQ Decision:</strong> আপনার team একটা
                 food delivery app বানাচ্ছে। Order placed event থেকে: Email,
                 SMS, Inventory, Driver notification, Analytics — সব হবে।
-                তুমি কোনটা বেছে নেবে? কেন? ৫-৭ লাইনে justify করো।
+                আপনি কোনটা বেছে নেবে? কেন? ৫-৭ লাইনে justify করুন।
             </span>,
             <span key='3'>
                 <strong>Flow Diagram:</strong> Excalidraw বা draw.io দিয়ে Food
-                Delivery async order flow diagram আঁকো: User → Order Service →
+                Delivery async order flow diagram আঁকুন: User → Order Service →
                 Message Queue → [Email Worker | SMS Worker | Inventory Worker |
-                Driver Service]। প্রতিটা arrow তে কী হচ্ছে label দাও।
+                Driver Service]। প্রতিটা arrow তে কী হচ্ছে label দিন।
             </span>,
             <span key='4'>
                 <strong>Code Practice:</strong> উপরের RabbitMQ worker code
-                পড়ো এবং modify করো — prefetch(1) কে prefetch(3) করলে কী
-                পরিবর্তন হবে? Consumer একটা fail করলে কী হবে? Code comment
-                আকারে explain করো।
+                পড়ো এবং modify করুন — prefetch(1) কে prefetch(3) করলেন কী
+                পরিবর্তন হবে? Consumer একটা fail করলেন কী হবে? Code comment
+                আকারে explain করুন।
             </span>,
             <span key='5'>
-                <strong>Research:</strong> Uber এর Kafka use case research করো।
+                <strong>Research:</strong> Uber এর Kafka use case research করুন।
                 তারা কীভাবে Kafka ব্যবহার করে, কতটা data process করে, কোন
-                problem solve করেছে — ৪-৫ লাইনে লেখো।
+                problem solve করেছেনে — ৪-৫ লাইনে লিখুন।
             </span>,
         ],
         deliverables: [
@@ -1386,32 +1386,32 @@ setupDLQ();`,
             {
                 title: 'RabbitMQ Docker এ চালাও',
                 description:
-                    'docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management দিয়ে RabbitMQ start করো। Management UI পাবে localhost:15672 এ (guest/guest)।',
+                    'docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management দিয়ে RabbitMQ start করুন। Management UI পাবেন localhost:15672 এ (guest/guest)।',
             },
             {
-                title: 'Order API বানাও',
+                title: 'Order API বানান',
                 description:
-                    'Express.js দিয়ে POST /order endpoint তৈরি করো। Order receive করলে RabbitMQ queue তে message publish করবে এবং তৎক্ষণাৎ { status: "Order Confirmed!" } return করবে।',
+                    'Express.js দিয়ে POST /order endpoint তৈরি করুন। Order receive করলেন RabbitMQ queue তে message publish করবেন এবং তৎক্ষণাৎ { status: "Order Confirmed!" } return করবেন।',
             },
             {
-                title: '৩টা Worker তৈরি করো',
+                title: '৩টা Worker তৈরি করুন',
                 description:
-                    'তিনটা আলাদা worker process: email-worker.js, sms-worker.js, inventory-worker.js। প্রতিটা queue থেকে message নেবে, কাজ করবে (console.log), ACK দেবে।',
+                    'তিনটা আলাদা worker process: email-worker.js, sms-worker.js, inventory-worker.js। প্রতিটা queue থেকে message নেবে, কাজ করবেন (console.log), ACK দেবে।',
             },
             {
-                title: 'System Test করো',
+                title: 'System Test করুন',
                 description:
-                    'Postman বা curl দিয়ে POST /order call করো। দেখো তিনটা worker terminal এ একসাথে message process করছে কিনা। Order response instant আসছে কিনা।',
+                    'Postman বা curl দিয়ে POST /order call করুন। দেখুন তিনটা worker terminal এ একসাথে message process করছে কিনা। Order response instant আসছে কিনা।',
             },
             {
-                title: 'Failure Test করো',
+                title: 'Failure Test করুন',
                 description:
-                    'email-worker বন্ধ করো, Order দাও, আবার email-worker চালাও। দেখো queue তে জমে থাকা message automatically process হচ্ছে কিনা — এটাই async এর power।',
+                    'email-worker বন্ধ করুন, Order দিন, আবার email-worker চালাও। দেখুন queue তে জমে থাকা message automatically process হচ্ছে কিনা — এটাই async এর power।',
             },
             {
-                title: 'Management UI দেখো',
+                title: 'Management UI দেখুন',
                 description:
-                    'localhost:15672 এ লগইন করো। Queue statistics, message rates, consumer count সব visualize করো। একটা worker বন্ধ রেখে message পাঠাও — queue তে বাড়তে দেখবে।',
+                    'localhost:15672 এ লগইন করুন। Queue statistics, message rates, consumer count সব visualize করুন। একটা worker বন্ধ রেখে message পাঠাও — queue তে বাড়তে দেখবেন।',
             },
         ],
         codeBlock: {
@@ -1440,14 +1440,14 @@ app.post('/order', async (req, res) => {
     timestamp: new Date().toISOString()
   };
 
-  // Queue তে message রাখো — async, non-blocking
+  // Queue তে message রাখুন — async, non-blocking
   channel.sendToQueue(
     'order_queue',
     Buffer.from(JSON.stringify(order)),
     { persistent: true }
   );
 
-  // User কে তৎক্ষণাৎ response দাও — processing wait করো না
+  // User কে তৎক্ষণাৎ response দিন — processing wait করুন না
   res.json({
     status: 'Order Confirmed! ✅',
     orderId: order.id,
@@ -1459,6 +1459,6 @@ connectRabbitMQ().then(() => {
   app.listen(3000, () => console.log('🚀 Order Service running on :3000'));
 });`,
         },
-        tip: 'Failure test টা সবচেয়ে important — একটা worker বন্ধ করো, ১০টা order দাও, তারপর worker চালাও। দেখবে সব order automatically process হবে। এটাই Message Queue এর real power — data loss নেই, service down হলেও কাজ আটকায় না।',
+        tip: 'Failure test টা সবচেয়ে important — একটা worker বন্ধ করুন, ১০টা order দিন, তারপর worker চালাও। দেখবেন সব order automatically process হবে। এটাই Message Queue এর real power — data loss নেই, service down হলেও কাজ আটকায় না।',
     },
 };

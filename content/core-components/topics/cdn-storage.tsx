@@ -20,12 +20,12 @@ export const cdnStorageContent: TopicData = {
                     content: (
                         <div className='space-y-6'>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
-                                ধরো তুমি ঢাকায় বসে Netflix এ একটা movie দেখছো।
+                                ধরুন আপনি ঢাকায় বসে Netflix এ একটা movie দেখছো।
                                 সেই movie র file কি USA এর server থেকে আসছে? না!
-                                Netflix CDN এর মাধ্যমে সেই file টা তোমার
+                                Netflix CDN এর মাধ্যমে সেই file টা আপনার
                                 কাছাকাছি একটা server এ (হয়তো Singapore বা
-                                Mumbai তে) cache করে রাখে। তুমি সেখান থেকেই
-                                পাচ্ছো —{' '}
+                                Mumbai তে) cache করে রাখে। আপনি সেখান থেকেই
+                                পাচ্ছেন —{' '}
                                 <strong className='text-foreground'>
                                     ১০x faster
                                 </strong>
@@ -183,7 +183,7 @@ export const cdnStorageContent: TopicData = {
                                 CDN Cache Control
                             </h3>
                             <p className='text-muted-foreground leading-relaxed text-lg mb-4'>
-                                কতক্ষণ CDN এ cache থাকবে সেটা{' '}
+                                কতক্ষণ CDN এ cache থাকবেন সেটা{' '}
                                 <strong className='text-foreground'>
                                     Cache-Control header
                                 </strong>{' '}
@@ -196,19 +196,19 @@ export const cdnStorageContent: TopicData = {
                     type: CONTENT_TYPES.CODE_BLOCK,
                     language: 'http',
                     filename: 'cache-control.txt',
-                    code: `# Static assets — দীর্ঘ সময় cache করো
+                    code: `# Static assets — দীর্ঘ সময় cache করুন
 Cache-Control: public, max-age=31536000, immutable
-# ১ বছর cache (হ্যাশ-based filename use করো)
+# ১ বছর cache (হ্যাশ-based filename use করুন)
 
 # HTML pages — কম সময়
 Cache-Control: public, max-age=3600
 # ১ ঘণ্টা cache
 
-# Private (user-specific) — CDN cache করবে না
+# Private (user-specific) — CDN cache করবেন না
 Cache-Control: private, no-cache
-# Browser cache করতে পারে, CDN পারবে না
+# Browser cache করতে পারে, CDN পারবেন না
 
-# Never cache করো না
+# Never cache করুন না
 Cache-Control: no-store
 # Real-time data, sensitive information`,
                 },
@@ -278,7 +278,7 @@ Cache-Control: no-store
                     content: (
                         <p className='text-muted-foreground leading-relaxed text-lg'>
                             S3 (Simple Storage Service) হলো AWS এর object
-                            storage। File upload করো, একটা URL পাও — ব্যস।
+                            storage। File upload করুন, একটা URL পান — ব্যস।
                             Database এর মতো complex না, শুধু key-value:{' '}
                             <strong className='text-foreground'>
                                 key = file path, value = file content
@@ -323,7 +323,7 @@ Cache-Control: no-store
                                     <h4 className='font-bold text-foreground mb-4 flex items-center gap-3 font-mono uppercase tracking-widest text-[10px]'>
                                         <span className='w-1.5 h-1.5 bg-emerald-500' />
                                         <span className='text-emerald-400'>
-                                            ✅ S3 ব্যবহার করো
+                                            ✅ S3 ব্যবহার করুন
                                         </span>
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
@@ -337,12 +337,12 @@ Cache-Control: no-store
                                     <h4 className='font-bold text-foreground mb-4 flex items-center gap-3 font-mono uppercase tracking-widest text-[10px]'>
                                         <span className='w-1.5 h-1.5 bg-red-500' />
                                         <span className='text-red-400'>
-                                            ❌ S3 ব্যবহার করো না
+                                            ❌ S3 ব্যবহার করুন না
                                         </span>
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
                                         Frequently updated structured data
-                                        (database use করো), Real-time queries
+                                        (database use করুন), Real-time queries
                                         needed, Strong consistency needed, File
                                         system operations (rename, move costly)।
                                     </p>
@@ -415,7 +415,7 @@ Cache-Control: no-store
                     title: 'Cost Saving Tip — Lifecycle Policy',
                     content: (
                         <p>
-                            S3 Lifecycle Policy দিয়ে auto-transition করো: প্রথম
+                            S3 Lifecycle Policy দিয়ে auto-transition করুন: প্রথম
                             ৩০ দিন Standard, ৩০-৯০ দিন S3-IA, ৯০+ দিন Glacier।
                             এতে automatically cost কমে। Instagram এই approach এ
                             petabytes of photos manage করে।
@@ -434,8 +434,8 @@ Cache-Control: no-store
                     content: (
                         <p className='text-muted-foreground leading-relaxed text-lg'>
                             CloudFront হলো AWS এর CDN। S3 এর সাথে perfectly
-                            integrate হয়। S3 bucket কে origin set করো,
-                            CloudFront globally distribute করবে।
+                            integrate হয়। S3 bucket কে origin set করুন,
+                            CloudFront globally distribute করবেন।
                         </p>
                     ),
                 },
@@ -522,7 +522,7 @@ Cache-Control: no-store
                             </p>
                             <p>
                                 <strong>Lambda@Edge:</strong> CDN edge এ code
-                                run করো — geolocation, A/B testing, auth।
+                                run করুন — geolocation, A/B testing, auth।
                             </p>
                             <p>
                                 <strong>Signed URLs:</strong> Private content এ
@@ -550,7 +550,7 @@ Cache-Control: no-store
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <p className='text-muted-foreground leading-relaxed text-lg'>
-                            একটা social media app এ user photo upload করলে
+                            একটা social media app এ user photo upload করলেন
                             কীভাবে S3 + CloudFront কাজ করে:
                         </p>
                     ),
@@ -656,7 +656,7 @@ Cache-Control: no-store
                     title: 'Presigned URL — কেন Important?',
                     content: (
                         <p>
-                            User file upload করলে API server এর bandwidth waste
+                            User file upload করলেন API server এর bandwidth waste
                             হবে। Presigned URL দিলে user সরাসরি S3 তে upload
                             করে। API server শুধু temporary signed URL generate
                             করে — নিজে file handle করে না।{' '}
@@ -776,7 +776,7 @@ app.post('/api/upload-url', async (req, res) => {
   const publicUrl = \`https://cdn.myapp.com/\${key}\`;
 
   res.json({ uploadUrl, publicUrl, key });
-  // Frontend: PUT uploadUrl সরাসরি, তারপর publicUrl save করো
+  // Frontend: PUT uploadUrl সরাসরি, তারপর publicUrl save করুন
 });`,
                 },
             ],
@@ -791,7 +791,7 @@ app.post('/api/upload-url', async (req, res) => {
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.CONCEPT,
-                    title: 'Q1: CDN ব্যবহার না করলে কী হবে?',
+                    title: 'Q1: CDN ব্যবহার না করলেন কী হবে?',
                     content: (
                         <p>
                             <strong>উত্তর:</strong> Global users কে origin
@@ -805,14 +805,14 @@ app.post('/api/upload-url', async (req, res) => {
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.CONCEPT,
-                    title: 'Q2: CDN Cache Invalidation কীভাবে করবে?',
+                    title: 'Q2: CDN Cache Invalidation কীভাবে করবেন?',
                     content: (
                         <p>
                             <strong>উত্তর:</strong> ৩টা approach: (১) Versioned
                             filenames — logo.v2.png (সবচেয়ে reliable)। (২)
                             CloudFront Invalidation API — নির্দিষ্ট paths
-                            invalidate করো (কিছুটা delay)। (৩) Short TTL —
-                            frequent updates এর files এ কম TTL দাও।
+                            invalidate করুন (কিছুটা delay)। (৩) Short TTL —
+                            frequent updates এর files এ কম TTL দিন।
                         </p>
                     ),
                 },
@@ -835,7 +835,7 @@ app.post('/api/upload-url', async (req, res) => {
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.CONCEPT,
-                    title: 'Q4: Presigned URL কেন ব্যবহার করবে?',
+                    title: 'Q4: Presigned URL কেন ব্যবহার করবেন?',
                     content: (
                         <p>
                             <strong>উত্তর:</strong> File upload এ API server কে
@@ -860,7 +860,7 @@ app.post('/api/upload-url', async (req, res) => {
                 <span className='font-bold text-primary'>
                     Object Storage (S3)
                 </span>,
-                'Files/images/videos store করো — unlimited, cheap, durable',
+                'Files/images/videos store করুন — unlimited, cheap, durable',
             ],
             [
                 <span className='font-bold text-primary'>CloudFront</span>,
@@ -872,7 +872,7 @@ app.post('/api/upload-url', async (req, res) => {
             ],
             [
                 <span className='font-bold text-primary'>Cache-Control</span>,
-                'CDN কতক্ষণ cache রাখবে সেটা control করো',
+                'CDN কতক্ষণ cache রাখবে সেটা control করুন',
             ],
             [
                 <span className='font-bold text-primary'>S3 Lifecycle</span>,
@@ -902,7 +902,7 @@ app.post('/api/upload-url', async (req, res) => {
                         text: 'Users এর কাছাকাছি edge server থেকে content serve হয় — latency কমে',
                         isCorrect: true,
                         explanation:
-                            'CDN এর মূল কাজ হলো geographically distributed edge servers এ content cache করা। ঢাকার user Singapore PoP থেকে content পাবে (~35ms), USA origin থেকে নয় (~250ms)।',
+                            'CDN এর মূল কাজ হলো geographically distributed edge servers এ content cache করা। ঢাকার user Singapore PoP থেকে content পাবেন (~35ms), USA origin থেকে নয় (~250ms)।',
                     },
                     {
                         key: 'C',
@@ -929,7 +929,7 @@ app.post('/api/upload-url', async (req, res) => {
                         text: 'User profile data (name, email, age)',
                         isCorrect: false,
                         explanation:
-                            'Structured data এর জন্য relational database ব্যবহার করো।',
+                            'Structured data এর জন্য relational database ব্যবহার করুন।',
                     },
                     {
                         key: 'B',
@@ -950,7 +950,7 @@ app.post('/api/upload-url', async (req, res) => {
                         text: 'Session data',
                         isCorrect: false,
                         explanation:
-                            'Session data এর জন্য Redis বা database ব্যবহার করো।',
+                            'Session data এর জন্য Redis বা database ব্যবহার করুন।',
                     },
                 ],
             },
@@ -960,21 +960,21 @@ app.post('/api/upload-url', async (req, res) => {
                 options: [
                     {
                         key: 'A',
-                        text: '১ বছর (31,536,000 seconds) CDN এ cache থাকবে',
+                        text: '১ বছর (31,536,000 seconds) CDN এ cache থাকবেন',
                         isCorrect: true,
                         explanation:
-                            'max-age value seconds এ। 31,536,000 = 365 days = 1 year। Static assets (CSS, JS, images) এ এটা common — কিন্তু তখন file এর নামে hash দিতে হয় (app.abc123.js) যাতে update করলে নতুন URL হয়।',
+                            'max-age value seconds এ। 31,536,000 = 365 days = 1 year। Static assets (CSS, JS, images) এ এটা common — কিন্তু তখন file এর নামে hash দিতে হয় (app.abc123.js) যাতে update করলেন নতুন URL হয়।',
                     },
                     {
                         key: 'B',
-                        text: '৩১ দিন cache থাকবে',
+                        text: '৩১ দিন cache থাকবেন',
                         isCorrect: false,
                         explanation:
                             '৩১ দিন = 2,678,400 seconds — 31,536,000 নয়।',
                     },
                     {
                         key: 'C',
-                        text: '৩১ মিলিয়ন requests serve করবে',
+                        text: '৩১ মিলিয়ন requests serve করবেন',
                         isCorrect: false,
                         explanation:
                             'max-age time এর সাথে related, request count এর সাথে নয়।',
@@ -1030,7 +1030,7 @@ app.post('/api/upload-url', async (req, res) => {
                         text: 'Frequently accessed images',
                         isCorrect: false,
                         explanation:
-                            'Frequently accessed files এর জন্য S3 Standard ব্যবহার করো।',
+                            'Frequently accessed files এর জন্য S3 Standard ব্যবহার করুন।',
                     },
                     {
                         key: 'B',
@@ -1044,41 +1044,41 @@ app.post('/api/upload-url', async (req, res) => {
                         text: 'Real-time video streaming',
                         isCorrect: false,
                         explanation:
-                            'Real-time streaming এর জন্য S3 Standard + CloudFront ব্যবহার করো।',
+                            'Real-time streaming এর জন্য S3 Standard + CloudFront ব্যবহার করুন।',
                     },
                     {
                         key: 'D',
                         text: 'Session storage',
                         isCorrect: false,
                         explanation:
-                            'Session storage এর জন্য Redis ব্যবহার করো।',
+                            'Session storage এর জন্য Redis ব্যবহার করুন।',
                     },
                 ],
             },
             {
                 id: 6,
-                text: 'CDN এ cache করা content update করতে হলে কী করবে?',
+                text: 'CDN এ cache করা content update করতে হলে কী করবেন?',
                 options: [
                     {
                         key: 'A',
-                        text: 'CDN server restart করবে',
+                        text: 'CDN server restart করবেন',
                         isCorrect: false,
                         explanation:
-                            'CDN server restart করা সম্ভব নয় এবং তা করলে সব users affected হবে।',
+                            'CDN server restart করা সম্ভব নয় এবং তা করলেন সব users affected হবে।',
                     },
                     {
                         key: 'B',
                         text: 'কিছু করতে হবে না, auto update হয়',
                         isCorrect: false,
                         explanation:
-                            'TTL expire না হলে CDN পুরানো content serve করতেই থাকবে।',
+                            'TTL expire না হলে CDN পুরানো content serve করতেই থাকবেন।',
                     },
                     {
                         key: 'C',
-                        text: 'Cache invalidation করবে অথবা নতুন filename/version use করবে',
+                        text: 'Cache invalidation করবেন অথবা নতুন filename/version use করবেন',
                         isCorrect: true,
                         explanation:
-                            'Cache invalidation approach: CloudFront Invalidation API দিয়ে specific paths purge করো। অথবা file এ version/hash add করো (logo.v2.png) — নতুন URL মানে CDN এ নতুন entry।',
+                            'Cache invalidation approach: CloudFront Invalidation API দিয়ে specific paths purge করুন। অথবা file এ version/hash add করুন (logo.v2.png) — নতুন URL মানে CDN এ নতুন entry।',
                     },
                     {
                         key: 'D',
@@ -1102,21 +1102,21 @@ app.post('/api/upload-url', async (req, res) => {
                     },
                     {
                         key: 'B',
-                        text: 'Single server এ সব videos রাখো',
+                        text: 'Single server এ সব videos রাখুন',
                         isCorrect: false,
                         explanation:
-                            'Single server global users কে fast serve করতে পারবে না এবং single point of failure।',
+                            'Single server global users কে fast serve করতে পারবেন না এবং single point of failure।',
                     },
                     {
                         key: 'C',
-                        text: 'Database এ video store করো',
+                        text: 'Database এ video store করুন',
                         isCorrect: false,
                         explanation:
                             'Database এ binary large objects (BLOB) store করা terrible idea — expensive, slow, unscalable।',
                     },
                     {
                         key: 'D',
-                        text: 'FTP server use করো',
+                        text: 'FTP server use করুন',
                         isCorrect: false,
                         explanation:
                             'FTP server modern scalable video streaming এর জন্য উপযুক্ত নয়।',
@@ -1149,16 +1149,16 @@ app.post('/api/upload-url', async (req, res) => {
                     },
                     {
                         key: 'D',
-                        text: 'Browser cache করতে পারবে কিন্তু CDN/proxy cache করবে না',
+                        text: 'Browser cache করতে পারবেন কিন্তু CDN/proxy cache করবেন না',
                         isCorrect: true,
                         explanation:
-                            'private মানে শুধু end-user এর browser cache করতে পারবে। CDN বা shared proxy cache করবে না। User-specific content (dashboard, account info) এর জন্য use করো।',
+                            'private মানে শুধু end-user এর browser cache করতে পারবেন। CDN বা shared proxy cache করবেন না। User-specific content (dashboard, account info) এর জন্য use করুন।',
                     },
                 ],
             },
             {
                 id: 9,
-                text: 'S3 Lifecycle Policy কেন ব্যবহার করবে?',
+                text: 'S3 Lifecycle Policy কেন ব্যবহার করবেন?',
                 options: [
                     {
                         key: 'A',
@@ -1186,7 +1186,7 @@ app.post('/api/upload-url', async (req, res) => {
                         text: 'Files backup করতে',
                         isCorrect: false,
                         explanation:
-                            'Backup এর জন্য S3 Cross-Region Replication বা Versioning ব্যবহার করো।',
+                            'Backup এর জন্য S3 Cross-Region Replication বা Versioning ব্যবহার করুন।',
                     },
                 ],
             },
@@ -1233,30 +1233,30 @@ app.post('/api/upload-url', async (req, res) => {
         tasks: [
             <span key='1'>
                 <strong>CDN Strategy Design:</strong> একটা Bangladeshi news
-                portal design করো যেখানে content ঢাকা থেকে publish হয় কিন্তু
+                portal design করুন যেখানে content ঢাকা থেকে publish হয় কিন্তু
                 global audience (USA, UK, Middle East) আছে। CDN PoP selection,
-                cache TTL, invalidation strategy — সব explain করো।
+                cache TTL, invalidation strategy — সব explain করুন।
             </span>,
             <span key='2'>
-                <strong>AWS S3 Explore করো:</strong> AWS Free Tier account
-                বানাও। একটা S3 bucket create করো। একটা image upload করো। Public
-                access দাও। Browser থেকে URL দিয়ে access করো। Screenshot নাও।
+                <strong>AWS S3 Explore করুন:</strong> AWS Free Tier account
+                বানান। একটা S3 bucket create করুন। একটা image upload করুন। Public
+                access দিন। Browser থেকে URL দিয়ে access করুন। Screenshot নাও।
             </span>,
             <span key='3'>
                 <strong>Cache-Control Headers:</strong> নিচের resources এর জন্য
-                সঠিক Cache-Control header লেখো: (ক) React app এর CSS bundle
+                সঠিক Cache-Control header লিখুন: (ক) React app এর CSS bundle
                 (hash filename আছে) (খ) News article HTML page (গ) User
                 dashboard (private) (ঘ) API response (JSON)।
             </span>,
             <span key='4'>
                 <strong>Architecture Diagram:</strong> E-commerce site এর media
-                architecture diagram বানাও: User product image upload → Resize →
-                CDN serve। S3, Lambda, CloudFront সব include করো।
+                architecture diagram বানান: User product image upload → Resize →
+                CDN serve। S3, Lambda, CloudFront সব include করুন।
             </span>,
             <span key='5'>
                 <strong>Cost Calculation:</strong> AWS S3 pricing calculator
-                ব্যবহার করো। ১০০ GB storage + ১ TB data transfer per month এ
-                monthly cost কত? Standard vs Glacier compare করো।
+                ব্যবহার করুন। ১০০ GB storage + ১ TB data transfer per month এ
+                monthly cost কত? Standard vs Glacier compare করুন।
             </span>,
         ],
         deliverables: [
@@ -1276,12 +1276,12 @@ app.post('/api/upload-url', async (req, res) => {
             {
                 title: 'AWS Setup',
                 description:
-                    'S3 bucket create করো। IAM user create করো (S3 access only)। Credentials local এ configure করো।',
+                    'S3 bucket create করুন। IAM user create করুন (S3 access only)। Credentials local এ configure করুন।',
             },
             {
                 title: 'Presigned URL API',
                 description:
-                    'POST /api/upload → presigned URL return করবে। Frontend সরাসরি S3 তে PUT করবে।',
+                    'POST /api/upload → presigned URL return করবেন। Frontend সরাসরি S3 তে PUT করবেন।',
             },
             {
                 title: 'Simple Frontend',
@@ -1291,20 +1291,20 @@ app.post('/api/upload-url', async (req, res) => {
             {
                 title: 'CloudFront Setup (Optional)',
                 description:
-                    'S3 bucket কে CloudFront origin set করো। CDN URL দিয়ে same image access করো।',
+                    'S3 bucket কে CloudFront origin set করুন। CDN URL দিয়ে same image access করুন।',
             },
             {
-                title: 'Direct vs CDN Compare করো',
+                title: 'Direct vs CDN Compare করুন',
                 description:
-                    'S3 direct URL এবং CloudFront URL — browser Dev Tools Network tab এ response time compare করো।',
+                    'S3 direct URL এবং CloudFront URL — browser Dev Tools Network tab এ response time compare করুন।',
             },
         ],
-        tip: 'AWS S3 practically use করবে। Presigned URL এর power বুঝবে। CDN এর latency difference নিজে measure করবে। Portfolio এ "AWS S3 + CloudFront integration" লিখতে পারবে।',
+        tip: 'AWS S3 practically use করবেন। Presigned URL এর power বুঝবেন। CDN এর latency difference নিজে measure করবেন। Portfolio এ "AWS S3 + CloudFront integration" লিখতে পারবেন।',
     },
     phaseComplete: {
         title: 'Phase 2 সম্পন্ন!',
         description:
-            'তুমি System Design Mastery Course এর Phase 2 — Core Components সম্পন্ন করেছো! ৬টা critical topic master করেছো যেগুলো প্রতিটা large-scale system এ use হয়।',
+            'আপনি System Design Mastery Course এর Phase 2 — Core Components সম্পন্ন করেছেনো! ৬টা critical topic master করেছেনো যেগুলো প্রতিটা large-scale system এ use হয়।',
         topics: [
             { title: 'Caching Strategy & Redis', id: 'caching' },
             { title: 'Load Balancing (L4/L7)', id: 'load-balancing' },

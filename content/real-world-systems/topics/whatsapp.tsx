@@ -30,8 +30,8 @@ export const whatsappContent: TopicData = {
                                 <strong className='text-foreground'>
                                     real-time delivery
                                 </strong>{' '}
-                                — message পাঠানো সাথে সাথে receiver পাবে, এমনকি
-                                receiver offline থাকলেও পরে পাবে।
+                                — message পাঠানো সাথে সাথে receiver পাবেন, এমনকি
+                                receiver offline থাকলেও পরে পাবেন।
                             </p>
 
                             {/* Architecture Overview Diagram */}
@@ -769,7 +769,7 @@ export const whatsappContent: TopicData = {
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
-                                    App open করলে Chat Server-এ persistent
+                                    App open করলেন Chat Server-এ persistent
                                     WebSocket connection establish হয়। Redis-এ
                                     user_id → server_id mapping save হয়।
                                 </span>
@@ -799,7 +799,7 @@ export const whatsappContent: TopicData = {
                                 <span className='text-muted-foreground'>
                                     Redis check করে User B কোন server-এ। Same
                                     server হলে direct push। Different server হলে
-                                    Kafka-তে route করো।
+                                    Kafka-তে route করুন।
                                 </span>
                             ),
                         },
@@ -924,7 +924,7 @@ connections = {}
 async def handle_connection(websocket, path):
     user_id = await authenticate(websocket)
 
-    # Connection register করো
+    # Connection register করুন
     connections[user_id] = websocket
     await redis.set(f"user:{user_id}:server", SERVER_ID)
     await redis.set(f"user:{user_id}:online", "true")
@@ -946,10 +946,10 @@ async def handle_connection(websocket, path):
 async def send_message(sender_id, receiver_id, content):
     msg_id = generate_unique_id()
 
-    # 1. DB-তে persist করো আগে
+    # 1. DB-তে persist করুন আগে
     await db.save_message(msg_id, sender_id, receiver_id, content)
 
-    # 2. Receiver কোন server-এ? Redis check করো
+    # 2. Receiver কোন server-এ? Redis check করুন
     receiver_server = await redis.get(f"user:{receiver_id}:server")
 
     if receiver_server == SERVER_ID:
@@ -958,7 +958,7 @@ async def send_message(sender_id, receiver_id, content):
         if ws:
             await ws.send(json.dumps({"msg_id": msg_id, "content": content}))
     else:
-        # Different server → Kafka-তে route করো
+        # Different server → Kafka-তে route করুন
         await kafka.publish(f"chat:{receiver_server}", {
             "receiver_id": receiver_id, "msg_id": msg_id
         })`,
@@ -974,7 +974,7 @@ async def send_message(sender_id, receiver_id, content):
                             Client প্রতি 30 sec ping পাঠায়, server pong দেয়।
                             Redis-এ user online key refresh হয়। 60 sec কোনো
                             response না পেলে connection dead — user
-                            &quot;offline&quot; mark করো।
+                            &quot;offline&quot; mark করুন।
                         </p>
                     ),
                 },
@@ -1022,7 +1022,7 @@ async def send_message(sender_id, receiver_id, content):
                                 🔵 (blue tick)
                             </span>,
                             'Read',
-                            'Receiver message open করলে',
+                            'Receiver message open করলেন',
                         ],
                     ],
                 },
@@ -1120,8 +1120,8 @@ CREATE TABLE message_receipts (
                             1000 member group-এ 1 message →{' '}
                             <strong>999 users-এ deliver</strong> করতে হবে।
                             Fan-out problem! Solution: Message DB-তে{' '}
-                            <strong>1 copy</strong> রাখো, per-user read status
-                            track করো। Message copy করো না — pointer রাখো।
+                            <strong>1 copy</strong> রাখুন, per-user read status
+                            track করুন। Message copy করুন না — pointer রাখুন।
                         </p>
                     ),
                 },
@@ -1601,27 +1601,27 @@ CREATE TABLE message_receipts (
                     content: (
                         <div className='space-y-2'>
                             <p>
-                                <strong>1)</strong> সবার আগে বলো:{' '}
+                                <strong>1)</strong> সবার আগে বলুন:{' '}
                                 <strong>
                                     &quot;WebSocket দরকার real-time-এর জন্য,
-                                    HTTP polling কাজ করবে না।&quot;
+                                    HTTP polling কাজ করবেন না।&quot;
                                 </strong>
                             </p>
                             <p>
                                 <strong>2)</strong> Cross-server routing explain
-                                করো: Redis (user → server mapping) + Kafka
+                                করুন: Redis (user → server mapping) + Kafka
                                 (message routing)।
                             </p>
                             <p>
                                 <strong>3)</strong> Group chat fanout problem
-                                mention করো: 1 message copy + receipts table।
+                                mention করুন: 1 message copy + receipts table।
                             </p>
                             <p>
                                 <strong>4)</strong> Offline delivery: Cassandra
                                 persist + online হলে push।
                             </p>
                             <p>
-                                <strong>5)</strong> Erlang mention করলে bonus
+                                <strong>5)</strong> Erlang mention করলেন bonus
                                 points — massive concurrent connections।
                             </p>
                         </div>
@@ -1736,14 +1736,14 @@ CREATE TABLE message_receipts (
                     },
                     {
                         key: 'b',
-                        text: 'Kafka/Message Queue দিয়ে route করো',
+                        text: 'Kafka/Message Queue দিয়ে route করুন',
                         isCorrect: true,
                         explanation:
                             'সঠিক। Kafka topic per server। Server 1 → Kafka topic "server-5" → Server 5 consume করে → User B-কে push। এই pub/sub pattern দিয়ে cross-server messaging হয়।',
                     },
                     {
                         key: 'c',
-                        text: 'Database write করো, Server 5 poll করবে',
+                        text: 'Database write করুন, Server 5 poll করবেন',
                         isCorrect: false,
                         explanation: 'DB polling আবার latency সমস্যা তৈরি করে।',
                     },
@@ -1758,14 +1758,14 @@ CREATE TABLE message_receipts (
             },
             {
                 id: 3,
-                text: "User-এর online/offline status কোথায় store করবে?",
+                text: "User-এর online/offline status কোথায় store করবেন?",
                 options: [
                     {
                         key: 'a',
                         text: 'Redis (with TTL)',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Redis in-memory, millisecond read। TTL set করো — user disconnect হলে TTL expire হলে automatically "offline"। Heartbeat: every 30 sec Redis key refresh করো।',
+                            'সঠিক। Redis in-memory, millisecond read। TTL set করুন — user disconnect হলে TTL expire হলে automatically "offline"। Heartbeat: every 30 sec Redis key refresh করুন।',
                     },
                     {
                         key: 'b',
@@ -1791,17 +1791,17 @@ CREATE TABLE message_receipts (
             },
             {
                 id: 4,
-                text: 'User offline থাকলে তাকে message deliver করবে কীভাবে?',
+                text: 'User offline থাকলে তাকে message deliver করবেন কীভাবে?',
                 options: [
                     {
                         key: 'a',
-                        text: 'Message drop করে দাও',
+                        text: 'Message drop করে দিন',
                         isCorrect: false,
                         explanation: 'Message loss কখনো acceptable নয়।',
                     },
                     {
                         key: 'b',
-                        text: 'Sender-কে error দাও',
+                        text: 'Sender-কে error দিন',
                         isCorrect: false,
                         explanation:
                             'Error দেওয়া user experience নষ্ট করে।',
@@ -1823,7 +1823,7 @@ CREATE TABLE message_receipts (
             },
             {
                 id: 5,
-                text: '1000 member group chat-এ message store কীভাবে করবে?',
+                text: '1000 member group chat-এ message store কীভাবে করবেন?',
                 options: [
                     {
                         key: 'a',
@@ -1841,10 +1841,10 @@ CREATE TABLE message_receipts (
                     },
                     {
                         key: 'c',
-                        text: 'Broadcast করো, store করো না',
+                        text: 'Broadcast করুন, store করুন না',
                         isCorrect: false,
                         explanation:
-                            'Store না করলে offline users message পাবে না।',
+                            'Store না করলেন offline users message পাবেন না।',
                     },
                     {
                         key: 'd',
@@ -1891,7 +1891,7 @@ CREATE TABLE message_receipts (
             },
             {
                 id: 7,
-                text: 'WhatsApp কোন programming language-এ Chat Servers build করেছিল?',
+                text: 'WhatsApp কোন programming language-এ Chat Servers build করেছেনিল?',
                 options: [
                     {
                         key: 'a',
@@ -2019,38 +2019,38 @@ CREATE TABLE message_receipts (
         ],
     },
     assignment: {
-        title: 'Real-time Chat System ডিজাইন করো',
+        title: 'Real-time Chat System ডিজাইন করুন',
         time: '৪-৫ ঘন্টা',
         difficulty: 'Intermediate',
         tasks: [
             <span>
                 <strong>Architecture Diagram:</strong> WhatsApp-এর complete
-                system diagram আঁকো। User A → Chat Server 1 → Kafka → Chat
+                system diagram আঁকুন। User A → Chat Server 1 → Kafka → Chat
                 Server 2 → User B (online path) AND User C (offline path: DB
                 store → online হলে deliver)। WebSocket connections দেখাও।
             </span>,
             <span>
                 <strong>Message Schema:</strong> Cassandra-তে 1-to-1 chat এবং
-                group chat-এর জন্য message schema design করো। Partition key ও
-                clustering key specify করো এবং কেন সেটা chose করলে explain
-                করো।
+                group chat-এর জন্য message schema design করুন। Partition key ও
+                clustering key specify করুন এবং কেন সেটা chose করলেন explain
+                করুন।
             </span>,
             <span>
                 <strong>Delivery Status Flow:</strong> &quot;✓ ✓✓ 🔵&quot; —
                 তিনটা status-এর জন্য exactly কোন event-এ কী হয়, flow diagram
-                বানাও।
+                বানান।
             </span>,
             <span>
                 <strong>Group Chat Calculation:</strong> 1000 member group-এ 1
                 message। (ক) &quot;1000 copies&quot; approach-এ storage কত? (খ)
                 &quot;1 copy + receipts&quot; approach-এ storage কত? প্রতি
-                message 1KB ধরো।
+                message 1KB ধরুন।
             </span>,
             <span>
                 <strong>Presence System Design:</strong> User online/offline
-                detection কীভাবে করবে? Heartbeat interval কত রাখবে? User
-                disconnect হলে কখন &quot;offline&quot; mark করবে? Redis TTL
-                কীভাবে use করবে explain করো।
+                detection কীভাবে করবেন? Heartbeat interval কত রাখবে? User
+                disconnect হলে কখন &quot;offline&quot; mark করবেন? Redis TTL
+                কীভাবে use করবেন explain করুন।
             </span>,
         ],
         deliverables: [
@@ -2067,27 +2067,27 @@ CREATE TABLE message_receipts (
             {
                 title: 'WebSocket Chat Server Setup',
                 description:
-                    'Python asyncio + websockets দিয়ে basic chat server। connections dict-এ user_id → websocket map করো।',
+                    'Python asyncio + websockets দিয়ে basic chat server। connections dict-এ user_id → websocket map করুন।',
             },
             {
                 title: 'Redis Integration',
                 description:
-                    'User online status Redis-এ store করো (TTL: 60s)। User-server mapping রাখো। Heartbeat প্রতি 30 sec refresh করো।',
+                    'User online status Redis-এ store করুন (TTL: 60s)। User-server mapping রাখুন। Heartbeat প্রতি 30 sec refresh করুন।',
             },
             {
                 title: 'Message Persistence',
                 description:
-                    'Send করার আগে Cassandra-তে message save করো। chat_id partition key, TIMEUUID clustering key use করো।',
+                    'Send করার আগে Cassandra-তে message save করুন। chat_id partition key, TIMEUUID clustering key use করুন।',
             },
             {
                 title: 'Cross-server Routing',
                 description:
-                    'Kafka producer/consumer setup। Different server-এ থাকা user-এর জন্য Kafka topic-এ publish করো।',
+                    'Kafka producer/consumer setup। Different server-এ থাকা user-এর জন্য Kafka topic-এ publish করুন।',
             },
             {
                 title: 'Delivery Receipt System',
                 description:
-                    'Message deliver হলে sender-কে ✓✓ notification পাঠাও। Read হলে 🔵 update করো। message_receipts table update করো।',
+                    'Message deliver হলে sender-কে ✓✓ notification পাঠাও। Read হলে 🔵 update করুন। message_receipts table update করুন।',
             },
         ],
         codeBlock: {
@@ -2248,6 +2248,6 @@ start_server = websockets.serve(handle_connection, "0.0.0.0", 8765)
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()`,
         },
-        tip: 'এই implementation-এ Cassandra এবং Kafka stub করা আছে। Real project-এ cassandra-driver এবং confluent-kafka-python library use করো। Redis TTL heartbeat mechanism টা সবচেয়ে important — এটাই online presence-এর core।',
+        tip: 'এই implementation-এ Cassandra এবং Kafka stub করা আছে। Real project-এ cassandra-driver এবং confluent-kafka-python library use করুন। Redis TTL heartbeat mechanism টা সবচেয়ে important — এটাই online presence-এর core।',
     },
 };

@@ -22,10 +22,10 @@ export const resilienceContent: TopicData = {
                     content: (
                         <div className='space-y-6'>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
-                                তোমার e-commerce app এ Payment service কাজ করছে
+                                আপনার e-commerce app এ Payment service কাজ করছে
                                 না। কিন্তু Payment service down থাকলেই কি পুরো
                                 app down হওয়া উচিত? User কি product browse করতে
-                                পারবে না?
+                                পারবেন না?
                             </p>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
                                 Distributed system এ{' '}
@@ -73,7 +73,7 @@ export const resilienceContent: TopicData = {
             subHeader: { index: '002', title: 'Circuit Breaker States' },
             title: (
                 <span className='font-heading'>
-                    তিনটা State — বুঝে রাখো
+                    তিনটা State — বুঝে রাখুন
                 </span>
             ),
             blocks: [
@@ -200,12 +200,12 @@ export const resilienceContent: TopicData = {
                     content: (
                         <>
                             <h3 className='text-xl font-bold mb-4'>
-                                1. Retry Pattern — Transient Failure Handle করো
+                                1. Retry Pattern — Transient Failure Handle করুন
                             </h3>
                             <p className='text-muted-foreground leading-relaxed mb-6 text-lg'>
                                 Network blip, temporary overload — এই ধরনের
-                                transient failure এ একবার fail করলেই দিয়ে দেওয়া
-                                ঠিক না। কয়েকবার try করো।
+                                transient failure এ একবার fail করলেনই দিয়ে দেওয়া
+                                ঠিক না। কয়েকবার try করুন।
                             </p>
                         </>
                     ),
@@ -216,11 +216,11 @@ export const resilienceContent: TopicData = {
                     title: 'Retry Storm Problem',
                     content: (
                         <p>
-                            সব clients একসাথে retry করলে failing service এ আরো
+                            সব clients একসাথে retry করলেন failing service এ আরো
                             বেশি load পড়ে। সমাধান:{' '}
                             <strong>Exponential Backoff + Jitter</strong> —
                             প্রতিটা retry তে wait time বাড়াও (100ms → 200ms →
-                            400ms) এবং random jitter যোগ করো।
+                            400ms) এবং random jitter যোগ করুন।
                         </p>
                     ),
                 },
@@ -229,11 +229,11 @@ export const resilienceContent: TopicData = {
                     content: (
                         <>
                             <h3 className='text-xl font-bold mt-12 mb-4'>
-                                2. Bulkhead Pattern — Isolate করো
+                                2. Bulkhead Pattern — Isolate করুন
                             </h3>
                             <p className='text-muted-foreground leading-relaxed mb-6 text-lg'>
                                 জাহাজের watertight compartment এর মতো। Thread
-                                pools, connection pools কে isolate করো। Payment
+                                pools, connection pools কে isolate করুন। Payment
                                 thread pool full হলেও Search pool available
                                 থাকে।
                             </p>
@@ -274,11 +274,11 @@ export const resilienceContent: TopicData = {
                     content: (
                         <>
                             <h3 className='text-xl font-bold mt-12 mb-4'>
-                                3. Timeout Pattern — Forever Block করো না
+                                3. Timeout Pattern — Forever Block করুন না
                             </h3>
                             <p className='text-muted-foreground leading-relaxed mb-6 text-lg'>
-                                Service response এর জন্য কতক্ষণ wait করবে
-                                define করো। ৩০ seconds thread block করা
+                                Service response এর জন্য কতক্ষণ wait করবেন
+                                define করুন। ৩০ seconds thread block করা
                                 catastrophic। Typical values: ৫০০ms–২০০০ms।
                                 SLA এর ৩x হওয়া উচিত।
                             </p>
@@ -286,7 +286,7 @@ export const resilienceContent: TopicData = {
                                 4. Fallback Pattern — Graceful Degradation
                             </h3>
                             <p className='text-muted-foreground leading-relaxed mb-6 text-lg'>
-                                Service fail করলে alternative response দাও।
+                                Service fail করলেন alternative response দিন।
                                 Recommendation service down? Popular products
                                 দেখাও। Search down? Cached results দেখাও।
                                 এটাই graceful degradation।
@@ -462,8 +462,8 @@ const result = await retryWithBackoff(async () => {
                         <p className='text-muted-foreground leading-relaxed mb-8 text-lg'>
                             Real world এ Circuit Breaker manually implement করতে
                             হয় না — battle-tested libraries ও tools আছে।
-                            নিচের table দেখো কোন language/platform এ কোনটা
-                            ব্যবহার করবে।
+                            নিচের table দেখুন কোন language/platform এ কোনটা
+                            ব্যবহার করবেন।
                         </p>
                     ),
                 },
@@ -537,20 +537,20 @@ const result = await retryWithBackoff(async () => {
                     content: (
                         <p>
                             <strong>Retry:</strong> Transient failure এ কয়েকবার
-                            try করো। Short-term optimism।
+                            try করুন। Short-term optimism।
                             <br />
                             <strong>Circuit Breaker:</strong> Ongoing failure
                             detect করে fast fail দেয়। Long-term protection।
                             <br />
                             <strong>Best practice:</strong> দুটো একসাথে ব্যবহার
-                            করো — Retry + Circuit Breaker।
+                            করুন — Retry + Circuit Breaker।
                         </p>
                     ),
                 },
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.CONCEPT,
-                    title: 'Q2: Cascading Failure কীভাবে prevent করবে?',
+                    title: 'Q2: Cascading Failure কীভাবে prevent করবেন?',
                     content: (
                         <p>
                             একটা service failure অন্য services কে block করে
@@ -565,7 +565,7 @@ const result = await retryWithBackoff(async () => {
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.CONCEPT,
-                    title: 'Q3: Fallback এর real example দাও',
+                    title: 'Q3: Fallback এর real example দিন',
                     content: (
                         <p>
                             Spotify recommendation down → Most popular songs।
@@ -579,7 +579,7 @@ const result = await retryWithBackoff(async () => {
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.IMPORTANT,
-                    title: 'Interview এ এটা বলো',
+                    title: 'Interview এ এটা বলুন',
                     content: (
                         <>
                             &quot;Resilience pattern গুলো layered — Timeout দিয়ে
@@ -605,7 +605,7 @@ const result = await retryWithBackoff(async () => {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <p className='text-muted-foreground leading-relaxed mb-8 text-lg'>
-                            Istio Service Mesh ব্যবহার করলে application code
+                            Istio Service Mesh ব্যবহার করলেন application code
                             change ছাড়াই infrastructure level এ Circuit Breaker
                             configure করা যায়। Kubernetes এ DestinationRule YAML
                             এ লিখলেই হয়।
@@ -645,7 +645,7 @@ spec:
                         <>
                             Application code change লাগে না। যেকোনো language এ
                             লেখা service এ কাজ করে। Kubernetes এ YAML deploy
-                            করলেই হয়।{' '}
+                            করলেনই হয়।{' '}
                             <strong>Language-agnostic circuit breaking।</strong>
                         </>
                     ),
@@ -664,7 +664,7 @@ spec:
                 <span className='font-bold text-primary'>
                     CLOSED → OPEN
                 </span>,
-                'Failure threshold exceed করলে',
+                'Failure threshold exceed করলেন',
             ],
             [
                 <span className='font-bold text-primary'>
@@ -684,11 +684,11 @@ spec:
             ],
             [
                 <span className='font-bold text-primary'>Timeout</span>,
-                'Forever wait করো না — ৫০০ms–২s',
+                'Forever wait করুন না — ৫০০ms–২s',
             ],
             [
                 <span className='font-bold text-primary'>Fallback</span>,
-                'Graceful degradation — কিছু দাও, কিছু না থেকে',
+                'Graceful degradation — কিছু দিন, কিছু না থেকে',
             ],
         ],
     },
@@ -703,14 +703,14 @@ spec:
                         text: 'Requests queue করে রাখে',
                         isCorrect: false,
                         explanation:
-                            'OPEN state এ queue করা হয় না — এটা করলে memory exhaust হবে এবং cascade আরো খারাপ হবে।',
+                            'OPEN state এ queue করা হয় না — এটা করলেন memory exhaust হবে এবং cascade আরো খারাপ হবে।',
                     },
                     {
                         key: 'B',
                         text: 'Requests ৫ বার retry করে',
                         isCorrect: false,
                         explanation:
-                            'OPEN state এ retry করা হয় না — service already broken, retry করলে আরো চাপ পড়বে।',
+                            'OPEN state এ retry করা হয় না — service already broken, retry করলেন আরো চাপ পড়বে।',
                     },
                     {
                         key: 'C',
@@ -792,7 +792,7 @@ spec:
                         text: 'জাহাজের watertight compartment — একটা flood হলে বাকিগুলো safe',
                         isCorrect: true,
                         explanation:
-                            'সঠিক! Bulkhead এর নাম জাহাজের watertight compartment থেকে। Thread pools isolate করো — Payment pool full হলেও Search pool available থাকে। Failure isolation।',
+                            'সঠিক! Bulkhead এর নাম জাহাজের watertight compartment থেকে। Thread pools isolate করুন — Payment pool full হলেও Search pool available থাকে। Failure isolation।',
                     },
                 ],
             },
@@ -802,10 +802,10 @@ spec:
                 options: [
                     {
                         key: 'A',
-                        text: 'সব clients একসাথে retry করলে failing service আরো overload হয় — Backoff+Jitter এটা prevent করে',
+                        text: 'সব clients একসাথে retry করলেন failing service আরো overload হয় — Backoff+Jitter এটা prevent করে',
                         isCorrect: true,
                         explanation:
-                            'সঠিক! Thundering Herd / Retry Storm: সব clients একসাথে retry → failing service আরো চাপে পড়ে। Exponential Backoff: wait বাড়াও (100→200→400ms)। Jitter: random delay যোগ করো। Load spread হয়।',
+                            'সঠিক! Thundering Herd / Retry Storm: সব clients একসাথে retry → failing service আরো চাপে পড়ে। Exponential Backoff: wait বাড়াও (100→200→400ms)। Jitter: random delay যোগ করুন। Load spread হয়।',
                     },
                     {
                         key: 'B',
@@ -853,7 +853,7 @@ spec:
                         text: 'Limited probe requests allow — success হলে CLOSED, fail হলে OPEN',
                         isCorrect: true,
                         explanation:
-                            'সঠিক! HALF-OPEN = probe state। Recovery timeout পরে কিছু test requests allow হয়। Service recover করেছে? Success → CLOSED। এখনো fail? → OPEN আবার।',
+                            'সঠিক! HALF-OPEN = probe state। Recovery timeout পরে কিছু test requests allow হয়। Service recover করেছেনে? Success → CLOSED। এখনো fail? → OPEN আবার।',
                     },
                     {
                         key: 'D',
@@ -907,14 +907,14 @@ spec:
                         text: 'Unlimited',
                         isCorrect: false,
                         explanation:
-                            'Unlimited timeout মানে forever block — thread exhaust হবে, resources waste হবে। এটা করা যাবে না।',
+                            'Unlimited timeout মানে forever block — thread exhaust হবে, resources waste হবে। এটা করা যাবেন না।',
                     },
                     {
                         key: 'B',
                         text: '৫ minutes',
                         isCorrect: false,
                         explanation:
-                            '৫ minutes অনেক বেশি — user অপেক্ষা করবে না এবং threads block থাকবে।',
+                            '৫ minutes অনেক বেশি — user অপেক্ষা করবেন না এবং threads block থাকবেন।',
                     },
                     {
                         key: 'C',
@@ -928,7 +928,7 @@ spec:
                         text: 'P99 latency এর ৩-৫x — usually ৫০০ms–২০০০ms',
                         isCorrect: true,
                         explanation:
-                            'সঠিক! Timeout অনেক বেশি → threads block, resources waste। অনেক কম → unnecessary failures। Best practice: P99 latency measure করো, তার ৩-৫x set করো। Critical paths: ৫০০ms। Non-critical: ২০০০ms।',
+                            'সঠিক! Timeout অনেক বেশি → threads block, resources waste। অনেক কম → unnecessary failures। Best practice: P99 latency measure করুন, তার ৩-৫x set করুন। Critical paths: ৫০০ms। Non-critical: ২০০০ms।',
                     },
                 ],
             },
@@ -938,10 +938,10 @@ spec:
                 options: [
                     {
                         key: 'A',
-                        text: 'Application code change ছাড়াই infrastructure level এ circuit breaking পাওয়া যায়',
+                        text: 'Application code change ছাড়াই infrastructure level এ circuit breaking পানয়া যায়',
                         isCorrect: true,
                         explanation:
-                            'সঠিক! Istio (Service Mesh) infrastructure level এ circuit breaking করে। প্রতিটা service এ library import না করেও পাওয়া যায়। DestinationRule YAML এ configure করো। Language-agnostic।',
+                            'সঠিক! Istio (Service Mesh) infrastructure level এ circuit breaking করে। প্রতিটা service এ library import না করেও পানয়া যায়। DestinationRule YAML এ configure করুন। Language-agnostic।',
                     },
                     {
                         key: 'B',
@@ -1002,7 +1002,7 @@ spec:
             },
             {
                 id: 10,
-                text: 'তুমি একটা microservices app বানাচ্ছো। Payment service কে call করতে গিয়ে timeout হলে user কে কী দেওয়া উচিত?',
+                text: 'আপনি একটা microservices app বানাচ্ছো। Payment service কে call করতে গিয়ে timeout হলে user কে কী দেওয়া উচিত?',
                 options: [
                     {
                         key: 'A',
@@ -1013,24 +1013,24 @@ spec:
                     },
                     {
                         key: 'B',
-                        text: 'Friendly message: "Payment being processed, we\'ll notify you" — order pending রাখো',
+                        text: 'Friendly message: "Payment being processed, we\'ll notify you" — order pending রাখুন',
                         isCorrect: true,
                         explanation:
-                            'সঠিক! Fallback Pattern + Graceful Degradation। Payment timeout হলে order pending রাখো, async process করো, user কে notify করো। User experience maintain করো।',
+                            'সঠিক! Fallback Pattern + Graceful Degradation। Payment timeout হলে order pending রাখুন, async process করুন, user কে notify করুন। User experience maintain করুন।',
                     },
                     {
                         key: 'C',
                         text: 'User কে ৩০ seconds wait করাও',
                         isCorrect: false,
                         explanation:
-                            '৩০ seconds wait করানো — user চলে যাবে। Timeout define করো এবং fast fail দিয়ে fallback response দাও।',
+                            '৩০ seconds wait করানো — user চলে যাবেন। Timeout define করুন এবং fast fail দিয়ে fallback response দিন।',
                     },
                     {
                         key: 'D',
-                        text: 'Database এ rollback করো সব কিছু',
+                        text: 'Database এ rollback করুন সব কিছু',
                         isCorrect: false,
                         explanation:
-                            'Rollback করলে order হারিয়ে যাবে — এটা user এর জন্য আরো খারাপ। Pending state রেখে পরে process করা ভালো।',
+                            'Rollback করলেন order হারিয়ে যাবেন — এটা user এর জন্য আরো খারাপ। Pending state রেখে পরে process করা ভালো।',
                     },
                 ],
             },
@@ -1043,34 +1043,34 @@ spec:
         tasks: [
             <span key='1'>
                 <strong>State Diagram:</strong> একটা ride-sharing app (যেমন
-                Pathao) এর জন্য Circuit Breaker design করো। কোন services এ CB
-                লাগাবে? Threshold কত হবে? Fallback কী হবে? সব লেখো — Driver
+                Pathao) এর জন্য Circuit Breaker design করুন। কোন services এ CB
+                লাগাবে? Threshold কত হবে? Fallback কী হবে? সব লিখুন — Driver
                 location service, Payment service, Notification service প্রতিটার
                 জন্য আলাদা করে।
             </span>,
             <span key='2'>
                 <strong>Code Fix:</strong> উপরের Python CircuitBreaker code
                 পড়ো। যদি service intermittently fail করে (প্রতি ২য় call fail)
-                তাহলে কি CB কখনো OPEN হবে? কেন বা কেন না explain করো।
-                Threshold কীভাবে কাজ করে বুঝিয়ে লেখো।
+                তাহলে কি CB কখনো OPEN হবে? কেন বা কেন না explain করুন।
+                Threshold কীভাবে কাজ করে বুঝিয়ে লিখুন।
             </span>,
             <span key='3'>
-                <strong>Resilience Audit:</strong> তোমার পরিচিত বা কাজ করা
+                <strong>Resilience Audit:</strong> আপনার পরিচিত বা কাজ করা
                 কোনো project এ কতটা resilience pattern আছে? (Timeout আছে? Retry
-                আছে? Fallback আছে? Circuit Breaker আছে?) ৫ লাইনে বর্ণনা করো
-                এবং কী improve করা যায় suggest করো।
+                আছে? Fallback আছে? Circuit Breaker আছে?) ৫ লাইনে বর্ণনা করুন
+                এবং কী improve করা যায় suggest করুন।
             </span>,
             <span key='4'>
                 <strong>Comparison:</strong> Resilience4j এবং Istio Circuit
-                Breaker — দুটোর approach এর পার্থক্য লেখো। কোন situation এ
+                Breaker — দুটোর approach এর পার্থক্য লিখুন। কোন situation এ
                 কোনটা নেবে? (hint: small team vs platform team, monolith vs
                 K8s)।
             </span>,
             <span key='5'>
                 <strong>Bonus Code:</strong> দেওয়া{' '}
                 <code>retryWithBackoff</code> function এ একটা{' '}
-                <code>shouldRetry(error)</code> callback যোগ করো — শুধু network
-                errors এ retry করবে, 4xx business errors এ retry করবে না।
+                <code>shouldRetry(error)</code> callback যোগ করুন — শুধু network
+                errors এ retry করবেন, 4xx business errors এ retry করবেন না।
             </span>,
         ],
         deliverables: [
@@ -1090,29 +1090,29 @@ spec:
         subtitle: 'Resilient Microservice Demo (Python)',
         steps: [
             {
-                title: 'Flaky Service বানাও',
+                title: 'Flaky Service বানান',
                 description:
-                    'একটা FastAPI endpoint যেটা random ৫০% time 500 error দেয়। Real unreliable service simulate করবে।',
+                    'একটা FastAPI endpoint যেটা random ৫০% time 500 error দেয়। Real unreliable service simulate করবেন।',
             },
             {
-                title: 'Retry logic যোগ করো',
+                title: 'Retry logic যোগ করুন',
                 description:
-                    'Exponential backoff সহ retry wrapper লেখো। ৩ attempts, 100ms base delay। উপরের retryWithBackoff এর Python version।',
+                    'Exponential backoff সহ retry wrapper লিখুন। ৩ attempts, 100ms base delay। উপরের retryWithBackoff এর Python version।',
             },
             {
-                title: 'Circuit Breaker wrap করো',
+                title: 'Circuit Breaker wrap করুন',
                 description:
-                    'উপরের CircuitBreaker class ব্যবহার করো। ৫ failures → OPEN, ১০s পর HALF-OPEN। State transitions console এ log করো।',
+                    'উপরের CircuitBreaker class ব্যবহার করুন। ৫ failures → OPEN, ১০s পর HALF-OPEN। State transitions console এ log করুন।',
             },
             {
-                title: 'Fallback implement করো',
+                title: 'Fallback implement করুন',
                 description:
                     'Service OPEN state এ cached/static response দেবে। User experience maintain হবে — "Payment processing, check back later"।',
             },
             {
-                title: 'Test করো',
+                title: 'Test করুন',
                 description:
-                    '১০০টা requests পাঠাও। Success rate দেখো। Circuit state transitions log করো — CLOSED → OPEN → HALF-OPEN → CLOSED চক্র দেখো।',
+                    '১০০টা requests পাঠাও। Success rate দেখুন। Circuit state transitions log করুন — CLOSED → OPEN → HALF-OPEN → CLOSED চক্র দেখুন।',
             },
         ],
         codeBlock: {
@@ -1148,7 +1148,7 @@ async def charge_payment(amount: float):
     result = cb.call(make_payment, fallback=fallback_response)
     return result
 
-# Test: 100 requests পাঠাও, circuit state দেখো
+# Test: 100 requests পাঠাও, circuit state দেখুন
 import asyncio
 
 async def run_test():
@@ -1159,6 +1159,6 @@ async def run_test():
 
 asyncio.run(run_test())`,
         },
-        tip: 'Theory নয় — actually দেখবে OPEN state fast fail কীভাবে কাজ করে, retry storm কীভাবে prevent হয়, এবং fallback user কে কীভাবে protect করে। Circuit state CLOSED → OPEN → HALF-OPEN → CLOSED এই পুরো চক্র নিজে চোখে দেখো।',
+        tip: 'Theory নয় — actually দেখবেন OPEN state fast fail কীভাবে কাজ করে, retry storm কীভাবে prevent হয়, এবং fallback user কে কীভাবে protect করে। Circuit state CLOSED → OPEN → HALF-OPEN → CLOSED এই পুরো চক্র নিজে চোখে দেখুন।',
     },
 };

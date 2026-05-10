@@ -22,7 +22,7 @@ export const throttlingContent: TopicData = {
                     content: (
                         <div className='space-y-6'>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
-                                তোমার API তে একজন user প্রতি second এ ১০,০০০
+                                আপনার API তে একজন user প্রতি second এ ১০,০০০
                                 request পাঠাচ্ছে। হয় DDoS attack, নাহয় তার
                                 buggy code এ infinite loop। Server overload —
                                 অন্য সব users blocked।
@@ -32,7 +32,7 @@ export const throttlingContent: TopicData = {
                                     Rate Limiting
                                 </strong>{' '}
                                 হলো সমাধান — একটা user বা client কতটা request
-                                করতে পারবে সেটা restrict করো। এটা ছাড়া কোনো
+                                করতে পারবেন সেটা restrict করুন। এটা ছাড়া কোনো
                                 production API চালানো উচিত না।
                             </p>
                         </div>
@@ -48,7 +48,7 @@ export const throttlingContent: TopicData = {
                             window তে max request count। Limit exceed → reject।
                             <br />
                             <strong>Throttling:</strong> Request reject না করে
-                            slow করো বা queue করো — more graceful।
+                            slow করুন বা queue করুন — more graceful।
                         </p>
                     ),
                 },
@@ -67,7 +67,7 @@ export const throttlingContent: TopicData = {
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
                                         Brute force attacks রোধ। Login এ ৫ বার
-                                        fail → block। DDoS mitigation করো।
+                                        fail → block। DDoS mitigation করুন।
                                     </p>
                                 </div>
                                 <div className='p-8 border-b border-border bg-card/30'>
@@ -86,8 +86,8 @@ export const throttlingContent: TopicData = {
                                         FAIRNESS
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
-                                        একজন user সব resources নিতে পারবে না।
-                                        সব users fair share পাবে।
+                                        একজন user সব resources নিতে পারবেন না।
+                                        সব users fair share পাবেন।
                                     </p>
                                 </div>
                                 <div className='p-8 bg-card/30'>
@@ -175,7 +175,7 @@ export const throttlingContent: TopicData = {
                                         Sliding Window
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed mb-3'>
-                                        প্রতিটা request এর timestamp রাখো।
+                                        প্রতিটা request এর timestamp রাখুন।
                                         Window এর বাইরেরগুলো drop। যেকোনো
                                         moment এ last N minutes check।
                                     </p>
@@ -206,12 +206,12 @@ export const throttlingContent: TopicData = {
                         <p className='text-lg leading-relaxed'>
                             Rate: 10 tokens/sec, Capacity: 20। User ২ seconds
                             idle থাকলে ২০ tokens জমে। একসাথে ২০ requests করতে
-                            পারবে (burst)। এরপর rate limit শুরু। Token না
+                            পারবেন (burst)। এরপর rate limit শুরু। Token না
                             থাকলে{' '}
                             <strong className='text-foreground'>
                                 429 Too Many Requests
                             </strong>{' '}
-                            return করো।
+                            return করুন।
                         </p>
                     ),
                 },
@@ -236,7 +236,7 @@ export const throttlingContent: TopicData = {
             subHeader: { index: '003', title: 'Distributed Rate Limiting' },
             title: (
                 <span className='font-heading'>
-                    Multiple Servers এ কীভাবে করবে?
+                    Multiple Servers এ কীভাবে করবেন?
                 </span>
             ),
             blocks: [
@@ -247,7 +247,7 @@ export const throttlingContent: TopicData = {
                             <p className='text-muted-foreground leading-relaxed text-lg'>
                                 Single server এ in-memory counter সহজ। কিন্তু
                                 ১০টা API server থাকলে? প্রতিটার আলাদা counter
-                                থাকলে user ১০x request করতে পারবে। সমাধান:{' '}
+                                থাকলে user ১০x request করতে পারবেন। সমাধান:{' '}
                                 <strong className='text-foreground'>
                                     Shared Redis counter।
                                 </strong>
@@ -304,8 +304,8 @@ export const throttlingContent: TopicData = {
                             </code>{' '}
                             — atomic, sub-millisecond।
                             <br />
-                            প্রথমবার INCR করলে key নেই → value 1 তৈরি হয়।
-                            তারপর EXPIRE দিয়ে TTL set করো। Race condition নেই
+                            প্রথমবার INCR করলেন key নেই → value 1 তৈরি হয়।
+                            তারপর EXPIRE দিয়ে TTL set করুন। Race condition নেই
                             কারণ INCR atomic।
                         </>
                     ),
@@ -561,7 +561,7 @@ app.use('/api/', rateLimit(100, 60000));       // 100 per min`,
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.CONCEPT,
                     title:
-                        'Q1: "Design a Rate Limiter" — কীভাবে approach করবে?',
+                        'Q1: "Design a Rate Limiter" — কীভাবে approach করবেন?',
                     content: (
                         <p>
                             <strong>1)</strong> Requirements clarify: per user?
@@ -579,7 +579,7 @@ app.use('/api/', rateLimit(100, 60000));       // 100 per min`,
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.CONCEPT,
                     title:
-                        'Q2: Fixed Window এর boundary problem কী? কীভাবে solve করবে?',
+                        'Q2: Fixed Window এর boundary problem কী? কীভাবে solve করবেন?',
                     content: (
                         <p>
                             Window শেষে ও শুরুতে burst possible। User ২ seconds
@@ -608,7 +608,7 @@ app.use('/api/', rateLimit(100, 60000));       // 100 per min`,
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.IMPORTANT,
-                    title: 'Interview এ এটা বলো',
+                    title: 'Interview এ এটা বলুন',
                     content: (
                         <>
                             &quot;আমি Token Bucket algorithm ব্যবহার করবো কারণ
@@ -647,7 +647,7 @@ app.use('/api/', rateLimit(100, 60000));       // 100 per min`,
                     type: CONTENT_TYPES.CODE_BLOCK,
                     language: 'nginx',
                     filename: 'nginx_rate_limit.conf',
-                    code: `# Rate limit zones define করো (http block এ)
+                    code: `# Rate limit zones define করুন (http block এ)
 http {
     # Zone 1: login endpoint — per IP, 5 req/5min
     limit_req_zone $binary_remote_addr zone=login:10m rate=1r/m;
@@ -699,10 +699,10 @@ http {
                     content: (
                         <p>
                             <strong>burst</strong> মানে temporary spike allow।
-                            burst=20 মানে extra ২০টা request queue এ রাখা যাবে।{' '}
+                            burst=20 মানে extra ২০টা request queue এ রাখা যাবেন।{' '}
                             <strong>nodelay</strong> মানে burst requests queue
-                            না করে immediately process করো। Login এ burst কম
-                            রাখো, general API তে বেশি রাখো।
+                            না করে immediately process করুন। Login এ burst কম
+                            রাখুন, general API তে বেশি রাখুন।
                         </p>
                     ),
                 },
@@ -772,7 +772,7 @@ http {
                     content: (
                         <p>
                             <strong>1)</strong> X-API-Key header থেকে tier
-                            identify করো (JWT claim বা DB lookup)।{' '}
+                            identify করুন (JWT claim বা DB lookup)।{' '}
                             <strong>2)</strong> Redis key:{' '}
                             <code>rate_limit:{'{'}api_key{'}'}</code> →{' '}
                             tier-specific limit apply।{' '}
@@ -790,7 +790,7 @@ http {
         rows: [
             [
                 <span className='font-bold text-primary'>Rate Limiting</span>,
-                'Time window এ max request — reject exceed করলে',
+                'Time window এ max request — reject exceed করলেন',
             ],
             [
                 <span className='font-bold text-primary'>Token Bucket</span>,
@@ -838,7 +838,7 @@ http {
                         text: 'Idle time এ জমা হওয়া tokens একসাথে use করে temporarily high rate এ request করা',
                         isCorrect: true,
                         explanation:
-                            'Token Bucket এর beauty: user কিছুক্ষণ request না করলে tokens জমে যায়। পরে একসাথে সেই tokens use করে burst করতে পারে। Rate: 10/sec, Capacity: 20 → user 2 seconds idle থাকলে 20 tokens, একসাথে 20 requests করতে পারবে।',
+                            'Token Bucket এর beauty: user কিছুক্ষণ request না করলেন tokens জমে যায়। পরে একসাথে সেই tokens use করে burst করতে পারে। Rate: 10/sec, Capacity: 20 → user 2 seconds idle থাকলে 20 tokens, একসাথে 20 requests করতে পারবেন।',
                     },
                     {
                         key: 'C',
@@ -899,7 +899,7 @@ http {
                         text: '429 Too Many Requests',
                         isCorrect: true,
                         explanation:
-                            '429 Too Many Requests হলো RFC 6585 standard। সাথে Retry-After header দাও। 403 মানে permission denied, 503 মানে service down — দুটোই ভুল context।',
+                            '429 Too Many Requests হলো RFC 6585 standard। সাথে Retry-After header দিন। 403 মানে permission denied, 503 মানে service down — দুটোই ভুল context।',
                     },
                     {
                         key: 'B',
@@ -974,11 +974,11 @@ http {
                         text: 'Per IP + Per user account: ৫ attempts/5 minutes — brute force prevent করতে',
                         isCorrect: true,
                         explanation:
-                            'Login এ strict limit দরকার। Per IP এবং Per account — দুটোই। কেউ VPN change করলেও per-account limit কাজ করবে। Failed attempts এ exponential backoff apply করো।',
+                            'Login এ strict limit দরকার। Per IP এবং Per account — দুটোই। কেউ VPN change করলেনও per-account limit কাজ করবেন। Failed attempts এ exponential backoff apply করুন।',
                     },
                     {
                         key: 'C',
-                        text: '১০০০ req/min allow করো',
+                        text: '১০০০ req/min allow করুন',
                         isCorrect: false,
                         explanation:
                             '১০০০ req/min login এ অনেক বেশি — brute force attack এ সহায়ক।',
@@ -1032,10 +1032,10 @@ http {
                 options: [
                     {
                         key: 'A',
-                        text: 'Client কে জানায় কত seconds পরে retry করলে rate limit reset হবে',
+                        text: 'Client কে জানায় কত seconds পরে retry করলেন rate limit reset হবে',
                         isCorrect: true,
                         explanation:
-                            'Retry-After: 30 মানে ৩০ seconds পরে retry করো। Good clients এটা respect করে thundering herd prevent হয়। GitHub, Stripe, Twitter সবাই এটা use করে। Best practice: সবসময় 429 এর সাথে দাও।',
+                            'Retry-After: 30 মানে ৩০ seconds পরে retry করুন। Good clients এটা respect করে thundering herd prevent হয়। GitHub, Stripe, Twitter সবাই এটা use করে। Best practice: সবসময় 429 এর সাথে দিন।',
                     },
                     {
                         key: 'B',
@@ -1069,7 +1069,7 @@ http {
                         text: 'Database layer',
                         isCorrect: false,
                         explanation:
-                            'Database তে rate limiting করলে excess traffic ইতিমধ্যে backend এ পৌঁছে যায়।',
+                            'Database তে rate limiting করলেন excess traffic ইতিমধ্যে backend এ পৌঁছে যায়।',
                     },
                     {
                         key: 'B',
@@ -1083,7 +1083,7 @@ http {
                         text: 'API Gateway বা Load Balancer — সব traffic এর entry point এ',
                         isCorrect: true,
                         explanation:
-                            'API Gateway তে করলে excess traffic backend পর্যন্ত পৌঁছায় না। Centralized policy। প্রতিটা service এ duplicate code নেই। Kong, AWS API Gateway, Nginx — সবই এটা support করে।',
+                            'API Gateway তে করলেন excess traffic backend পর্যন্ত পৌঁছায় না। Centralized policy। প্রতিটা service এ duplicate code নেই। Kong, AWS API Gateway, Nginx — সবই এটা support করে।',
                     },
                     {
                         key: 'D',
@@ -1130,7 +1130,7 @@ http {
             },
             {
                 id: 10,
-                text: 'তোমার API তে Free (১০০/day) ও Paid (১০,০০০/day) tier আছে। কীভাবে implement করবে?',
+                text: 'আপনার API তে Free (১০০/day) ও Paid (১০,০০০/day) tier আছে। কীভাবে implement করবেন?',
                 options: [
                     {
                         key: 'A',
@@ -1148,10 +1148,10 @@ http {
                     },
                     {
                         key: 'C',
-                        text: 'প্রতিটা request এ database check করো',
+                        text: 'প্রতিটা request এ database check করুন',
                         isCorrect: false,
                         explanation:
-                            'প্রতিটা request এ DB hit করলে performance problem হবে — Redis cache ব্যবহার করো।',
+                            'প্রতিটা request এ DB hit করলেন performance problem হবে — Redis cache ব্যবহার করুন।',
                     },
                     {
                         key: 'D',
@@ -1173,28 +1173,28 @@ http {
                 <strong>Algorithm Comparison Table:</strong> Token Bucket, Leaky
                 Bucket, Fixed Window, Sliding Window — ৪টার জন্য Memory usage,
                 Burst support, Accuracy, Complexity, Best use case তুলনামূলক
-                table বানাও।
+                table বানান।
             </span>,
             <span key='2'>
-                <strong>API Design:</strong> একটা Weather API design করো। Free:
+                <strong>API Design:</strong> একটা Weather API design করুন। Free:
                 ১০০ req/day, Basic ($9): ১০,০০০ req/day, Premium ($99):
                 unlimited। Rate limit headers ও error response format design
-                করো।
+                করুন।
             </span>,
             <span key='3'>
                 <strong>Code Challenge:</strong> দেওয়া TokenBucket class এ{' '}
-                <code>get_wait_time()</code> method যোগ করো যেটা পরবর্তী request
+                <code>get_wait_time()</code> method যোগ করুন যেটা পরবর্তী request
                 করতে কত seconds অপেক্ষা করতে হবে সেটা return করে।
             </span>,
             <span key='4'>
                 <strong>Real API Exploration:</strong> GitHub Personal Access
-                Token নিয়ে curl করো। X-RateLimit headers observe করো।
+                Token নিয়ে curl করুন। X-RateLimit headers observe করুন।
                 Unauthenticated (৬০/hr) vs Authenticated (৫০০০/hr) compare
-                করো।
+                করুন।
             </span>,
             <span key='5'>
                 <strong>Nginx Config:</strong> /api/login endpoint এ 5 req/5min
-                rate limit দাও —{' '}
+                rate limit দিন —{' '}
                 <code>limit_req_zone</code> এবং <code>limit_req</code> directive
                 ব্যবহার করে।
             </span>,
@@ -1226,24 +1226,24 @@ http {
                 ),
             },
             {
-                title: 'FastAPI + Redis rate limiter লেখো',
+                title: 'FastAPI + Redis rate limiter লিখুন',
                 description:
-                    'Sliding Window algorithm দিয়ে Redis based rate limiter implement করো।',
+                    'Sliding Window algorithm দিয়ে Redis based rate limiter implement করুন।',
             },
             {
-                title: 'Tiered limits যোগ করো',
+                title: 'Tiered limits যোগ করুন',
                 description:
                     'X-API-Key header দিয়ে tier determine। Free: ১০/min, Paid: ১০০/min, Admin: unlimited।',
             },
             {
-                title: 'Proper headers add করো',
+                title: 'Proper headers add করুন',
                 description:
                     'X-RateLimit-Limit, Remaining, Reset, এবং Retry-After সব responses এ।',
             },
             {
-                title: 'Rapid fire test করো',
+                title: 'Rapid fire test করুন',
                 description:
-                    'Python loop দিয়ে ৫০টা requests পাঠাও। কোনটায় 429 আসে note করো।',
+                    'Python loop দিয়ে ৫০টা requests পাঠাও। কোনটায় 429 আসে note করুন।',
             },
         ],
         codeBlock: {
@@ -1315,6 +1315,6 @@ async def get_data():
 #                      headers={"X-API-Key": "free_test"})
 #     print(f"{i+1}: {r.status_code} remaining={r.headers.get('X-RateLimit-Remaining')}")`,
         },
-        tip: 'Token Bucket burst behavior practically দেখবে। Redis atomic counter কীভাবে race condition prevent করে বুঝবে। Production API এর rate limiting headers নিজে লিখবে। Free tier এ ১০টার বেশি request পাঠালে 429 দেখবে — এটাই real rate limiting!',
+        tip: 'Token Bucket burst behavior practically দেখবেন। Redis atomic counter কীভাবে race condition prevent করে বুঝবেন। Production API এর rate limiting headers নিজে লিখবে। Free tier এ ১০টার বেশি request পাঠালে 429 দেখবেন — এটাই real rate limiting!',
     },
 };

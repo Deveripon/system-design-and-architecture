@@ -36,8 +36,8 @@ export const deploymentPatternsContent: TopicData = {
                                 একজন junior developer production-এ code deploy
                                 করতে চায়। সে যা করে:{' '}
                                 <strong className='text-foreground'>
-                                    server বন্ধ করো → নতুন code দাও → server চালু
-                                    করো
+                                    server বন্ধ করুন → নতুন code দিন → server চালু
+                                    করুন
                                 </strong>
                                 । এই সময়টায় হাজারো user error দেখে।
                                 Production-এ এটা অগ্রহণযোগ্য।
@@ -101,7 +101,7 @@ export const deploymentPatternsContent: TopicData = {
                                     borderColor: 'border-yellow-400/30',
                                     bgColor: 'bg-yellow-400/5',
                                     title: 'Big Bang Release',
-                                    desc: 'একবারে সব features deploy করলে কোনো bug কোথা থেকে এলো বোঝা কঠিন। ছোট ছোট releases best practice।',
+                                    desc: 'একবারে সব features deploy করলেন কোনো bug কোথা থেকে এলো বোঝা কঠিন। ছোট ছোট releases best practice।',
                                 },
                                 {
                                     num: '04',
@@ -147,14 +147,14 @@ export const deploymentPatternsContent: TopicData = {
                                     <span className='text-emerald-400 font-mono mt-0.5'>✓</span>
                                     <span>
                                         <strong>Zero Downtime</strong> — users
-                                        কোনো interruption ছাড়াই service পাবে
+                                        কোনো interruption ছাড়াই service পাবেন
                                     </span>
                                 </li>
                                 <li className='flex items-start gap-2'>
                                     <span className='text-emerald-400 font-mono mt-0.5'>✓</span>
                                     <span>
                                         <strong>Instant Rollback</strong> — bug
-                                        পেলে মুহূর্তে আগের version-এ ফিরে যাওয়া
+                                        পেলে মুহূর্তে আগের version-এ ফিরে যানয়া
                                     </span>
                                 </li>
                                 <li className='flex items-start gap-2'>
@@ -183,7 +183,7 @@ export const deploymentPatternsContent: TopicData = {
             subHeader: { index: '002', title: 'Blue-Green Deployment' },
             title: (
                 <span className='font-heading'>
-                    Blue-Green Deployment — দুটো Environment রাখো
+                    Blue-Green Deployment — দুটো Environment রাখুন
                 </span>
             ),
             blocks: [
@@ -374,7 +374,7 @@ spec:
         ports:
         - containerPort: 8080
 ---
-# Service — Traffic কোথায় যাবে সেটা নিয়ন্ত্রণ করে
+# Service — Traffic কোথায় যাবেন সেটা নিয়ন্ত্রণ করে
 apiVersion: v1
 kind: Service
 metadata:
@@ -382,8 +382,8 @@ metadata:
 spec:
   selector:
     app: myapp
-    version: blue   # ← শুধু এই একটা line change করলেই switch!
-    # version: green  ← Green-এ switch করতে এটা uncomment করো
+    version: blue   # ← শুধু এই একটা line change করলেনই switch!
+    # version: green  ← Green-এ switch করতে এটা uncomment করুন
   ports:
   - port: 80
     targetPort: 8080`,
@@ -398,8 +398,8 @@ spec:
                             <strong className='font-mono'>
                                 version: blue
                             </strong>{' '}
-                            ফিরিয়ে দাও। Blue environment এখনো চালু আছে। Traffic
-                            মুহূর্তে ফিরে যাবে।{' '}
+                            ফিরিয়ে দিন। Blue environment এখনো চালু আছে। Traffic
+                            মুহূর্তে ফিরে যাবেন।{' '}
                             <strong>Rollback time: seconds।</strong> কোনো
                             re-deploy দরকার নেই।
                         </p>
@@ -418,7 +418,7 @@ spec:
                             </p>
                             <p>
                                 <strong>Database Migration Complexity:</strong>{' '}
-                                v1 এবং v2 একই database use করলে schema migration
+                                v1 এবং v2 একই database use করলেন schema migration
                                 সাবধানে করতে হয়। v1 compatible migration
                                 আগে, তারপর switch, তারপর cleanup।
                             </p>
@@ -593,21 +593,21 @@ spec:
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
-                                    ১টা canary pod deploy করো। মাত্র ৫% users
-                                    নতুন version দেখবে। Error rate, latency,
-                                    business metrics monitor করো।
+                                    ১টা canary pod deploy করুন। মাত্র ৫% users
+                                    নতুন version দেখবেন। Error rate, latency,
+                                    business metrics monitor করুন।
                                 </span>
                             ),
                         },
                         {
                             title: (
                                 <span className='font-mono text-yellow-400'>
-                                    Step 2 — Monitor করো (৩০ মিনিট - ১ ঘন্টা)
+                                    Step 2 — Monitor করুন (৩০ মিনিট - ১ ঘন্টা)
                                 </span>
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
-                                    Prometheus/Grafana-তে error rate দেখো।
+                                    Prometheus/Grafana-তে error rate দেখুন।
                                     Baseline-এর চেয়ে বেশি হলে automatic rollback।
                                     সব ঠিক থাকলে পরের step।
                                 </span>
@@ -649,7 +649,7 @@ spec:
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
-                                    সব pods নতুন version-এ। Old pods সরিয়ে দাও।
+                                    সব pods নতুন version-এ। Old pods সরিয়ে দিন।
                                     Deployment সম্পন্ন — কোনো downtime ছাড়া।
                                 </span>
                             ),
@@ -677,7 +677,7 @@ spec:
             subHeader: { index: '004', title: 'Rolling Update' },
             title: (
                 <span className='font-heading'>
-                    Rolling Update — একটা একটা করে Replace করো
+                    Rolling Update — একটা একটা করে Replace করুন
                 </span>
             ),
             blocks: [
@@ -813,7 +813,7 @@ spec:
     spec:
       containers:
       - name: app
-        image: myapp:v2.0.0    # ← শুধু এটা পরিবর্তন করলেই rolling update শুরু
+        image: myapp:v2.0.0    # ← শুধু এটা পরিবর্তন করলেনই rolling update শুরু
         readinessProbe:         # নতুন pod ready না হলে পুরনো pod নামাবে না
           httpGet:
             path: /healthz
@@ -861,7 +861,7 @@ spec:
             subHeader: { index: '005', title: 'Feature Flags' },
             title: (
                 <span className='font-heading'>
-                    Feature Flags — Code Deploy করো, Feature আলাদা রাখো
+                    Feature Flags — Code Deploy করুন, Feature আলাদা রাখুন
                 </span>
             ),
             blocks: [
@@ -873,9 +873,9 @@ spec:
                                 Feature Flag (বা Feature Toggle) হলো code-এর মধ্যে
                                 একটা on/off switch।{' '}
                                 <strong className='text-foreground'>
-                                    New feature code production-এ deploy করো
+                                    New feature code production-এ deploy করুন
                                 </strong>
-                                , কিন্তু flag off রাখো। যখন চাও তখন flag on করো।
+                                , কিন্তু flag off রাখুন। যখন চাও তখন flag on করুন।
                                 Deployment আর Release আলাদা।
                             </p>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
@@ -884,10 +884,10 @@ spec:
                                         পুরনো উপায় (Without Flags)
                                     </p>
                                     <div className='space-y-1 text-sm text-muted-foreground font-mono'>
-                                        <div>1. Feature develop করো</div>
-                                        <div>2. কয়েক সপ্তাহ branch-এ রাখো</div>
+                                        <div>1. Feature develop করুন</div>
+                                        <div>2. কয়েক সপ্তাহ branch-এ রাখুন</div>
                                         <div>3. বড় merge = conflicts 😱</div>
-                                        <div>4. Deploy করলেই সবাই দেখে</div>
+                                        <div>4. Deploy করলেনই সবাই দেখে</div>
                                         <div className='text-red-400'>5. Bug = পুরো rollback</div>
                                     </div>
                                 </div>
@@ -896,10 +896,10 @@ spec:
                                         Feature Flags দিয়ে
                                     </p>
                                     <div className='space-y-1 text-sm text-muted-foreground font-mono'>
-                                        <div>1. Feature develop করো</div>
+                                        <div>1. Feature develop করুন</div>
                                         <div>2. Flag off দিয়ে main-এ merge</div>
                                         <div>3. Deploy (flag off = hidden)</div>
-                                        <div>4. ৫% users-এ flag on করো</div>
+                                        <div>4. ৫% users-এ flag on করুন</div>
                                         <div className='text-emerald-400'>5. Problem = flag off! ✓</div>
                                     </div>
                                 </div>
@@ -915,7 +915,7 @@ spec:
 interface FeatureFlag {
     name: string;
     enabled: boolean;
-    rolloutPercentage: number;   // 0-100: কতজন user দেখবে
+    rolloutPercentage: number;   // 0-100: কতজন user দেখবেন
     allowedUserIds?: string[];   // Specific users (beta testers)
     allowedGroups?: string[];    // User groups ('premium', 'internal')
 }
@@ -929,7 +929,7 @@ class FeatureFlagService {
             ['new-checkout-flow', {
                 name: 'new-checkout-flow',
                 enabled: true,
-                rolloutPercentage: 5,       // মাত্র ৫% users দেখবে
+                rolloutPercentage: 5,       // মাত্র ৫% users দেখবেন
                 allowedUserIds: ['user_beta_001', 'user_beta_002'],
             }],
             ['ai-recommendations', {
@@ -945,7 +945,7 @@ class FeatureFlagService {
         ]);
     }
 
-    // User-এর জন্য flag enabled কিনা check করো
+    // User-এর জন্য flag enabled কিনা check করুন
     isEnabled(flagName: string, userId: string): boolean {
         const flag = this.flags.get(flagName);
         if (!flag || !flag.enabled) return false;
@@ -958,7 +958,7 @@ class FeatureFlagService {
         return bucket < flag.rolloutPercentage;
     }
 
-    // User ID থেকে consistent 0-100 bucket বের করো
+    // User ID থেকে consistent 0-100 bucket বের করুন
     private getUserBucket(userId: string): number {
         let hash = 0;
         for (const char of userId) {
@@ -967,7 +967,7 @@ class FeatureFlagService {
         return hash;
     }
 
-    // Runtime-এ flag update করো (deploy ছাড়াই!)
+    // Runtime-এ flag update করুন (deploy ছাড়াই!)
     updateFlag(flagName: string, updates: Partial<FeatureFlag>): void {
         const existing = this.flags.get(flagName);
         if (existing) {
@@ -1000,8 +1000,8 @@ async function handleCheckout(userId: string, cart: Cart) {
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
-                                    নতুন feature code production-এ deploy করো।
-                                    Flag off থাকায় কোনো user দেখবে না। Code live
+                                    নতুন feature code production-এ deploy করুন।
+                                    Flag off থাকায় কোনো user দেখবেন না। Code live
                                     কিন্তু hidden।
                                 </span>
                             ),
@@ -1009,12 +1009,12 @@ async function handleCheckout(userId: string, cart: Cart) {
                         {
                             title: (
                                 <span className='font-mono text-yellow-400'>
-                                    Verify — Internal Team Test করো
+                                    Verify — Internal Team Test করুন
                                 </span>
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
-                                    Team-এর specific user IDs-এ flag on করো।
+                                    Team-এর specific user IDs-এ flag on করুন।
                                     Production-এ real environment-এ test।
                                     কোনো bug থাকলে এখনই ধরা পড়বে।
                                 </span>
@@ -1028,22 +1028,22 @@ async function handleCheckout(userId: string, cart: Cart) {
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
-                                    Rollout percentage ৫% করো। Real users-এর
-                                    ছোট একটা group দেখবে। Metrics দেখো।
+                                    Rollout percentage ৫% করুন। Real users-এর
+                                    ছোট একটা group দেখবেন। Metrics দেখুন।
                                 </span>
                             ),
                         },
                         {
                             title: (
                                 <span className='font-mono text-orange-400'>
-                                    Monitor — Business Metrics দেখো
+                                    Monitor — Business Metrics দেখুন
                                 </span>
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
                                     Conversion rate, error rate, session
                                     duration — সব metric flag group vs control
-                                    group-এ compare করো।
+                                    group-এ compare করুন।
                                 </span>
                             ),
                         },
@@ -1055,8 +1055,8 @@ async function handleCheckout(userId: string, cart: Cart) {
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
-                                    সব ঠিক থাকলে ১০০%-এ নিয়ে যাও। পরে পুরনো
-                                    code path সরিয়ে flag cleanup করো।
+                                    সব ঠিক থাকলে ১০০%-এ নিয়ে যান। পরে পুরনো
+                                    code path সরিয়ে flag cleanup করুন।
                                 </span>
                             ),
                         },
@@ -1073,7 +1073,7 @@ async function handleCheckout(userId: string, cart: Cart) {
                                 &quot;Deploy&quot; এবং &quot;Release&quot; এক
                                 জিনিস না।
                             </strong>{' '}
-                            Deploy = code server-এ যাওয়া। Release = users-এর কাছে
+                            Deploy = code server-এ যানয়া। Release = users-এর কাছে
                             feature পৌঁছানো। Feature flags এই দুটোকে সম্পূর্ণ
                             আলাদা করে দেয়। Facebook, Google-এর মতো কোম্পানি
                             প্রতিদিন deploy করে কিন্তু release আলাদাভাবে control
@@ -1154,7 +1154,7 @@ async function handleCheckout(userId: string, cart: Cart) {
                                     scenario: 'E-commerce checkout redesign',
                                     pattern: 'Canary + Feature Flags',
                                     color: 'text-yellow-400',
-                                    reason: 'High business risk। ৫% দিয়ে শুরু, conversion rate monitor করো। Flag দিয়ে instant rollback।',
+                                    reason: 'High business risk। ৫% দিয়ে শুরু, conversion rate monitor করুন। Flag দিয়ে instant rollback।',
                                 },
                                 {
                                     scenario: 'Critical security patch',
@@ -1166,13 +1166,13 @@ async function handleCheckout(userId: string, cart: Cart) {
                                     scenario: 'Database schema migration',
                                     pattern: 'Blue-Green',
                                     color: 'text-blue-400',
-                                    reason: 'Atomic switch দরকার। Old version-কে compatible রাখো। Problem হলে selector বদলে instant rollback।',
+                                    reason: 'Atomic switch দরকার। Old version-কে compatible রাখুন। Problem হলে selector বদলে instant rollback।',
                                 },
                                 {
                                     scenario: 'New AI feature (beta)',
                                     pattern: 'Feature Flags',
                                     color: 'text-purple-400',
-                                    reason: 'Deploy now, release later। Internal team-এ test, তারপর ধীরে ধীরে rollout। A/B test করো।',
+                                    reason: 'Deploy now, release later। Internal team-এ test, তারপর ধীরে ধীরে rollout। A/B test করুন।',
                                 },
                             ].map((item, i) => (
                                 <div key={i} className='flex gap-4 items-start p-3 bg-muted/20 border border-border rounded-lg'>
@@ -1195,7 +1195,7 @@ async function handleCheckout(userId: string, cart: Cart) {
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.WARNING,
-                    title: '⚠️ Feature Flag Tech Debt — পুরনো Flags পরিষ্কার করো',
+                    title: '⚠️ Feature Flag Tech Debt — পুরনো Flags পরিষ্কার করুন',
                     content: (
                         <p>
                             Feature flags শক্তিশালী কিন্তু বিপজ্জনকও।
@@ -1203,7 +1203,7 @@ async function handleCheckout(userId: string, cart: Cart) {
                             Netflix-এর একটা incident হয়েছিল stale flag-এর কারণে
                             যেটা ৩ বছর ধরে ছিল।{' '}
                             <strong>
-                                Flag lifecycle manage করো — create, rollout,
+                                Flag lifecycle manage করুন — create, rollout,
                                 cleanup।
                             </strong>{' '}
                             একটা flag maximum ৩ মাসের বেশি রাখা উচিত না।
@@ -1281,8 +1281,8 @@ async function handleCheckout(userId: string, cart: Cart) {
                                             Blue-Green deployment
                                         </strong>{' '}
                                         recommend করবো। দুটো identical environment
-                                        থাকবে। New version Green-এ deploy হবে, Blue
-                                        live থাকবে। Test pass হলে Load Balancer-এর
+                                        থাকবেন। New version Green-এ deploy হবে, Blue
+                                        live থাকবেন। Test pass হলে Load Balancer-এর
                                         selector Green-এ switch। Bug হলে Blue-তে
                                         instant rollback। Database migration-এর জন্য
                                         backward-compatible schema change আগে apply করবো।&quot;
@@ -1295,12 +1295,12 @@ async function handleCheckout(userId: string, cart: Cart) {
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.TIP,
-                    title: '💡 সবসময় Rollback Strategy উল্লেখ করো',
+                    title: '💡 সবসময় Rollback Strategy উল্লেখ করুন',
                     content: (
                         <div className='space-y-2'>
                             <p>
-                                Interview-এ deployment propose করলে সাথে সাথে
-                                rollback plan বলো:{' '}
+                                Interview-এ deployment propose করলেন সাথে সাথে
+                                rollback plan বলুন:{' '}
                                 <strong>
                                     &quot;এবং যদি কোনো issue হয় তাহলে...&quot;
                                 </strong>
@@ -1341,7 +1341,7 @@ async function handleCheckout(userId: string, cart: Cart) {
                                         borderColor: 'border-red-500/30',
                                         bgColor: 'bg-red-500/5',
                                         details: [
-                                            'Spinnaker CI/CD platform নিজেরা তৈরি করেছে',
+                                            'Spinnaker CI/CD platform নিজেরা তৈরি করেছেনে',
                                             'Red/Black deployment (Blue-Green-এর variant)',
                                             'Automated canary analysis (ACA) — metrics-based auto rollback',
                                             'Chaos Engineering (Chaos Monkey) — production-এ জোর করে failure inject',
@@ -1354,7 +1354,7 @@ async function handleCheckout(userId: string, cart: Cart) {
                                         bgColor: 'bg-blue-500/5',
                                         details: [
                                             'Production Traffic Split — Gmail, Search-এ canary',
-                                            'Borg → Kubernetes (নিজেরাই তৈরি করেছে)',
+                                            'Borg → Kubernetes (নিজেরাই তৈরি করেছেনে)',
                                             'SRE team defines SLO → deployment blocked যদি SLO miss করে',
                                             'Launch checklists — feature flag-এর strict governance',
                                         ],
@@ -1424,7 +1424,7 @@ async function handleCheckout(userId: string, cart: Cart) {
                         text: 'Load balancer routing পরিবর্তন করে (selector switch)',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Blue-Green-এ Load Balancer বা Kubernetes Service selector পরিবর্তন করলেই traffic switch হয়। Blue থেকে Green-এ যেতে seconds লাগে। Blue environment standby-তে থাকে rollback-এর জন্য।',
+                            'সঠিক। Blue-Green-এ Load Balancer বা Kubernetes Service selector পরিবর্তন করলেনই traffic switch হয়। Blue থেকে Green-এ যেতে seconds লাগে। Blue environment standby-তে থাকে rollback-এর জন্য।',
                     },
                     {
                         key: 'c',
@@ -1499,7 +1499,7 @@ async function handleCheckout(userId: string, cart: Cart) {
                         text: 'কোনো pod down না করে update করতে হবে — zero downtime guarantee',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। maxUnavailable = 0 মানে rolling update-এর সময় কোনো pod unavailable রাখা যাবে না। নতুন pod ready হলে তবেই পুরনো pod নামবে। এটা zero downtime নিশ্চিত করে। Tradeoff: maxSurge থাকতে হবে extra capacity-র জন্য।',
+                            'সঠিক। maxUnavailable = 0 মানে rolling update-এর সময় কোনো pod unavailable রাখা যাবেন না। নতুন pod ready হলে তবেই পুরনো pod নামবে। এটা zero downtime নিশ্চিত করে। Tradeoff: maxSurge থাকতে হবে extra capacity-র জন্য।',
                     },
                     {
                         key: 'd',
@@ -1526,7 +1526,7 @@ async function handleCheckout(userId: string, cart: Cart) {
                         text: 'Deployment থেকে release আলাদা করা যায়',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Feature flags-এর সবচেয়ে বড় insight হলো "Deploy" ≠ "Release"। Code production-এ deploy করা যায় (flag off), users দেখবে না। যখন চাও তখন flag on করে release করো। Instant rollback, A/B testing, gradual rollout — সবকিছু deploy ছাড়াই।',
+                            'সঠিক। Feature flags-এর সবচেয়ে বড় insight হলো "Deploy" ≠ "Release"। Code production-এ deploy করা যায় (flag off), users দেখবেন না। যখন চাও তখন flag on করে release করুন। Instant rollback, A/B testing, gradual rollout — সবকিছু deploy ছাড়াই।',
                     },
                     {
                         key: 'c',
@@ -1635,7 +1635,7 @@ async function handleCheckout(userId: string, cart: Cart) {
                         text: 'Rolling update',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Rolling update Kubernetes-এ built-in। শুধু image tag পরিবর্তন করো, বাকিটা Kubernetes করে। maxUnavailable: 0 দিলে zero downtime। Extra infrastructure দরকার নেই, complex configuration নেই। Simplest zero-downtime option।',
+                            'সঠিক। Rolling update Kubernetes-এ built-in। শুধু image tag পরিবর্তন করুন, বাকিটা Kubernetes করে। maxUnavailable: 0 দিলে zero downtime। Extra infrastructure দরকার নেই, complex configuration নেই। Simplest zero-downtime option।',
                     },
                     {
                         key: 'd',
@@ -1703,7 +1703,7 @@ async function handleCheckout(userId: string, cart: Cart) {
                         text: 'Service selector পরিবর্তন করে',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Kubernetes Service-এ selector field আছে। Blue deployment-এ selector: version: blue। Switch করতে শুধু selector: version: green করো। Kubernetes তাৎক্ষণিকভাবে traffic route পরিবর্তন করে। kubectl patch service app-service -p \'{"spec":{"selector":{"version":"green"}}}\'।',
+                            'সঠিক। Kubernetes Service-এ selector field আছে। Blue deployment-এ selector: version: blue। Switch করতে শুধু selector: version: green করুন। Kubernetes তাৎক্ষণিকভাবে traffic route পরিবর্তন করে। kubectl patch service app-service -p \'{"spec":{"selector":{"version":"green"}}}\'।',
                     },
                     {
                         key: 'd',
@@ -1727,14 +1727,14 @@ async function handleCheckout(userId: string, cart: Cart) {
                     },
                     {
                         key: 'b',
-                        text: 'কোনো engineer manually trigger করলে',
+                        text: 'কোনো engineer manually trigger করলেন',
                         isCorrect: false,
                         explanation:
                             'Manual rollback possible কিন্তু automatic rollback-ই modern approach।',
                     },
                     {
                         key: 'c',
-                        text: 'Error rate threshold exceed করলে (যেমন baseline-এর চেয়ে ২× বেশি error)',
+                        text: 'Error rate threshold exceed করলেন (যেমন baseline-এর চেয়ে ২× বেশি error)',
                         isCorrect: true,
                         explanation:
                             'সঠিক। Argo Rollouts, Flagger-এর মতো tools metrics monitor করে। Error rate, latency, business metrics-এর জন্য threshold define করা হয়। Canary-র error rate baseline-এর চেয়ে বেশি হলে automatic rollback — percentage 0-এ নামিয়ে দেয়। Human intervention ছাড়াই safe।',
@@ -1744,40 +1744,40 @@ async function handleCheckout(userId: string, cart: Cart) {
                         text: 'নতুন version deploy হলে',
                         isCorrect: false,
                         explanation:
-                            'নতুন deployment trigger করলে নতুন canary cycle শুরু হয়।',
+                            'নতুন deployment trigger করলেন নতুন canary cycle শুরু হয়।',
                     },
                 ],
             },
         ],
     },
     assignment: {
-        title: 'Zero-Downtime Deployment Pipeline Design করো',
+        title: 'Zero-Downtime Deployment Pipeline Design করুন',
         time: '৩-৪ ঘন্টা',
         difficulty: 'Intermediate',
         tasks: [
             <span>
                 <strong>Blue-Green Kubernetes Setup:</strong> একটা simple web
-                app-এর জন্য Blue এবং Green deployment YAML লেখো। Service
-                selector দিয়ে traffic switch করো। Blue → Green → Blue rollback
-                test করো। Kubectl commands document করো।
+                app-এর জন্য Blue এবং Green deployment YAML লিখুন। Service
+                selector দিয়ে traffic switch করুন। Blue → Green → Blue rollback
+                test করুন। Kubectl commands document করুন।
             </span>,
             <span>
                 <strong>Canary with Nginx:</strong> Nginx upstream-এ দুটো
-                backend configure করো (stable: 95%, canary: 5%)। Nginx
-                configuration লেখো। Apache Bench (ab) দিয়ে ১০০০ request পাঠাও,
-                কতটা canary-তে গেল দেখো।
+                backend configure করুন (stable: 95%, canary: 5%)। Nginx
+                configuration লিখুন। Apache Bench (ab) দিয়ে ১০০০ request পাঠাও,
+                কতটা canary-তে গেল দেখুন।
             </span>,
             <span>
                 <strong>Feature Flag Implementation:</strong> TypeScript/Python-এ
-                simple feature flag service বানাও। User ID দিয়ে consistent
-                bucketing implement করো (hash function)। ৩টা flag তৈরি করো:
-                একটা off, একটা 5%, একটা 100%। Test করো।
+                simple feature flag service বানান। User ID দিয়ে consistent
+                bucketing implement করুন (hash function)। ৩টা flag তৈরি করুন:
+                একটা off, একটা 5%, একটা 100%। Test করুন।
             </span>,
             <span>
                 <strong>Monitoring Integration:</strong> Canary deployment-এ
-                Prometheus metrics add করো। Error rate counter এবং request
-                latency histogram। ৫% error rate threshold-এ alert define করো।
-                Grafana dashboard তৈরি করো।
+                Prometheus metrics add করুন। Error rate counter এবং request
+                latency histogram। ৫% error rate threshold-এ alert define করুন।
+                Grafana dashboard তৈরি করুন।
             </span>,
         ],
         deliverables: [
@@ -1792,29 +1792,29 @@ async function handleCheckout(userId: string, cart: Cart) {
         subtitle: 'Kubernetes + Nginx Ingress + Prometheus',
         steps: [
             {
-                title: 'Local Kubernetes Cluster Setup করো',
+                title: 'Local Kubernetes Cluster Setup করুন',
                 description:
-                    'minikube বা kind দিয়ে local cluster তৈরি করো। kubectl install করো। একটা simple Node.js/Python app Docker image বানাও — v1 এবং v2 (v2-তে response-এ "v2" mention করো)।',
+                    'minikube বা kind দিয়ে local cluster তৈরি করুন। kubectl install করুন। একটা simple Node.js/Python app Docker image বানান — v1 এবং v2 (v2-তে response-এ "v2" mention করুন)।',
             },
             {
-                title: 'Blue-Green Deployment Deploy করো',
+                title: 'Blue-Green Deployment Deploy করুন',
                 description:
-                    'blue-deployment.yaml এবং green-deployment.yaml apply করো। app-service.yaml দিয়ে Service তৈরি করো (initially selector: version: blue)। kubectl port-forward দিয়ে test করো — Blue serve করছে কিনা।',
+                    'blue-deployment.yaml এবং green-deployment.yaml apply করুন। app-service.yaml দিয়ে Service তৈরি করুন (initially selector: version: blue)। kubectl port-forward দিয়ে test করুন — Blue serve করছে কিনা।',
             },
             {
-                title: 'Traffic Switch করো (Blue → Green)',
+                title: 'Traffic Switch করুন (Blue → Green)',
                 description:
-                    'kubectl patch command দিয়ে Service selector green-এ switch করো। আবার test — এখন Green serve করছে। Blue pod এখনো চালু আছে কিনা confirm করো।',
+                    'kubectl patch command দিয়ে Service selector green-এ switch করুন। আবার test — এখন Green serve করছে। Blue pod এখনো চালু আছে কিনা confirm করুন।',
             },
             {
-                title: 'Canary Setup করো',
+                title: 'Canary Setup করুন',
                 description:
-                    'stable-deployment.yaml (3 replicas v1) এবং canary-deployment.yaml (1 replica v2) deploy করো। একই Service label-এ দুটোই match করবে। 100টা curl request পাঠাও — roughly 25% canary-তে যাবে।',
+                    'stable-deployment.yaml (3 replicas v1) এবং canary-deployment.yaml (1 replica v2) deploy করুন। একই Service label-এ দুটোই match করবেন। 100টা curl request পাঠাও — roughly 25% canary-তে যাবেন।',
             },
             {
-                title: 'Prometheus Metrics যোগ করো',
+                title: 'Prometheus Metrics যোগ করুন',
                 description:
-                    'App-এ /metrics endpoint যোগ করো। http_requests_total counter এবং http_request_duration_seconds histogram। Prometheus-এ scrape config করো। Error rate query লেখো।',
+                    'App-এ /metrics endpoint যোগ করুন। http_requests_total counter এবং http_request_duration_seconds histogram। Prometheus-এ scrape config করুন। Error rate query লিখুন।',
             },
         ],
         codeBlock: {
@@ -1826,12 +1826,12 @@ async function handleCheckout(userId: string, cart: Cart) {
 NAMESPACE="default"
 SERVICE="app-service"
 
-# Current version check করো
+# Current version check করুন
 current=$(kubectl get service $SERVICE -n $NAMESPACE \
   -o jsonpath='{.spec.selector.version}')
 echo "Current active: $current"
 
-# Switch করো
+# Switch করুন
 if [ "$current" == "blue" ]; then
     new_version="green"
 else
@@ -1859,6 +1859,6 @@ done
 
 echo "Switch complete! Rollback: run this script again."`,
         },
-        tip: 'Blue-Green switch শুধু একটা YAML field পরিবর্তন — এটা practically করে দেখলে পুরো concept clear হয়ে যায়। minikube-তে করতে পারলে production Kubernetes-এও same principle কাজ করবে।',
+        tip: 'Blue-Green switch শুধু একটা YAML field পরিবর্তন — এটা practically করে দেখলে পুরো concept clear হয়ে যায়। minikube-তে করতে পারলেন production Kubernetes-এও same principle কাজ করবেন।',
     },
 };

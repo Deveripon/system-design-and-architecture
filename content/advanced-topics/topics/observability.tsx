@@ -39,11 +39,11 @@ export const observabilityContent: TopicData = {
                                 </span>
                             </div>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
-                                কল্পনা করো রাত ৩টা। হঠাৎ PagerDuty alert:{' '}
+                                কল্পনা করুন রাত ৩টা। হঠাৎ PagerDuty alert:{' '}
                                 <strong className='text-foreground'>
                                     Payment service down
                                 </strong>
-                                । Users transaction করতে পারছে না। তোমার কাছে দুটো
+                                । Users transaction করতে পারছে না। আপনার কাছে দুটো
                                 option:
                             </p>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-4'>
@@ -53,8 +53,8 @@ export const observabilityContent: TopicData = {
                                     </p>
                                     <ul className='space-y-2'>
                                         {[
-                                            'কোন service fail করেছে জানো না',
-                                            'SSH করে manually log grep করো',
+                                            'কোন service fail করেছেনে জানেন না',
+                                            'SSH করে manually log grep করুন',
                                             'কোন machine-এ সমস্যা বুঝতে ঘণ্টার পর ঘণ্টা',
                                             '"আমার machine-এ তো কাজ করে!"',
                                             'MTTR (Mean Time To Recovery) = ঘণ্টা',
@@ -77,8 +77,8 @@ export const observabilityContent: TopicData = {
                                     </p>
                                     <ul className='space-y-2'>
                                         {[
-                                            'Dashboard এ দেখো: payment-svc error rate 45%',
-                                            'Trace ID দিয়ে exact failed request খোঁজো',
+                                            'Dashboard এ দেখুন: payment-svc error rate 45%',
+                                            'Trace ID দিয়ে exact failed request খুঁজুন',
                                             'DB connection pool exhausted — log-এ স্পষ্ট',
                                             'Grafana: latency spike ঠিক কখন শুরু হয়েছে',
                                             'Root cause 5 মিনিটে: DB slow query',
@@ -109,9 +109,9 @@ export const observabilityContent: TopicData = {
                             internal state বোঝা external outputs থেকে।{' '}
                             <strong>Monitoring</strong> বলে{' '}
                             <em>&quot;কী হচ্ছে&quot;</em>, Observability বলে{' '}
-                            <em>&quot;কেন হচ্ছে&quot;</em>। তুমি যদি system-এর
+                            <em>&quot;কেন হচ্ছে&quot;</em>। আপনি যদি system-এর
                             যেকোনো অজানা প্রশ্নের উত্তর data দিয়ে বের করতে
-                            পারো — সেই system observable। এটা achieve করতে
+                            পারেন — সেই system observable। এটা achieve করতে
                             দরকার ৩টা pillar:{' '}
                             <strong>Metrics, Logs, এবং Traces</strong>।
                         </p>
@@ -1042,8 +1042,8 @@ groups:
                             <p>
                                 <strong>SLA (Service Level Agreement):</strong>{' '}
                                 External contract with customers। যেমন: আমরা
-                                99.5% guarantee করি। Miss করলে refund/penalty।
-                                SLO &gt; SLA — buffer রাখো।
+                                99.5% guarantee করি। Miss করলেন refund/penalty।
+                                SLO &gt; SLA — buffer রাখুন।
                             </p>
                         </div>
                     ),
@@ -1059,7 +1059,7 @@ groups:
             subHeader: { index: '005', title: 'Jaeger — Distributed Tracing' },
             title: (
                 <span className='font-heading'>
-                    Distributed Tracing — Jaeger দিয়ে Request Journey Track করো
+                    Distributed Tracing — Jaeger দিয়ে Request Journey Track করুন
                 </span>
             ),
             blocks: [
@@ -1375,8 +1375,8 @@ def get_trace_headers() -> dict:
                         <p>
                             <strong>OpenTelemetry (OTel)</strong> হলো
                             vendor-neutral observability framework। এটা CNCF
-                            project। একবার instrument করো, যেকোনো backend-এ
-                            export করো — Jaeger, Zipkin, Datadog, New Relic।
+                            project। একবার instrument করুন, যেকোনো backend-এ
+                            export করুন — Jaeger, Zipkin, Datadog, New Relic।
                             Trace ID HTTP header{' '}
                             <code className='font-mono text-xs bg-muted/50 px-1 rounded'>
                                 traceparent
@@ -1799,9 +1799,9 @@ def process_payment(user_id: str, amount: float, request_id: str):
                                 <strong>Log Cardinality সমস্যা:</strong> User ID,
                                 Order ID, Trace ID — এগুলো log field হিসেবে
                                 ঠিক আছে। কিন্তু IP address বা timestamp কে
-                                field key বানালে Elasticsearch-এর mapping
+                                field key বানালেন Elasticsearch-এর mapping
                                 explosion হয়। High cardinality fields value-এ
-                                রাখো, key-তে নয়।
+                                রাখুন, key-তে নয়।
                             </p>
                             <p>
                                 <strong>Log Levels:</strong> Production-এ{' '}
@@ -1812,12 +1812,12 @@ def process_payment(user_id: str, amount: float, request_id: str):
                                 <code className='font-mono text-xs bg-muted/50 px-1 rounded'>
                                     WARN
                                 </code>{' '}
-                                রাখো।{' '}
+                                রাখুন।{' '}
                                 <code className='font-mono text-xs bg-muted/50 px-1 rounded'>
                                     DEBUG
                                 </code>{' '}
                                 log production-এ enable থাকলে storage cost
-                                ১০x বাড়তে পারে। Sampling strategy use করো।
+                                ১০x বাড়তে পারে। Sampling strategy use করুন।
                             </p>
                         </div>
                     ),
@@ -1994,10 +1994,10 @@ app.listen(3000);`,
                             <code className='font-mono text-xs bg-muted/50 px-1 rounded'>
                                 trace_id
                             </code>{' '}
-                            include করলে Kibana-তে log দেখতে দেখতে সরাসরি
+                            include করলেন Kibana-তে log দেখতে দেখতে সরাসরি
                             Jaeger-এ trace jump করা যায়। Grafana-তে latency
-                            spike দেখলে সেই exact timestamp-এর trace খোঁজো —
-                            কোন span সবচেয়ে বেশি সময় নিয়েছে বোঝা যাবে।
+                            spike দেখলে সেই exact timestamp-এর trace খুঁজুন —
+                            কোন span সবচেয়ে বেশি সময় নিয়েছে বোঝা যাবেন।
                             এটাই observability-র real power।
                         </p>
                     ),
@@ -2033,7 +2033,7 @@ app.listen(3000);`,
                             'M3 (custom)',
                             'ELK Stack',
                             'Jaeger (created by Uber)',
-                            'Jaeger open-sourced করেছে Uber',
+                            'Jaeger open-sourced করেছেনে Uber',
                         ],
                         [
                             <span className='text-primary font-semibold'>Google</span>,
@@ -2064,15 +2064,15 @@ app.listen(3000);`,
                         {
                             title: (
                                 <span className='font-mono text-primary'>
-                                    Interview Question: &quot;System কীভাবে monitor করবে?&quot;
+                                    Interview Question: &quot;System কীভাবে monitor করবেন?&quot;
                                 </span>
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
-                                    সবার আগে বলো: &quot;Observability এর ৩টা pillar
+                                    সবার আগে বলুন: &quot;Observability এর ৩টা pillar
                                     দিয়ে approach করবো — Metrics, Logs, Traces।&quot;
-                                    তারপর প্রতিটা layer explain করো। এই structure
-                                    দেখলে interviewer বুঝবে তুমি production experience
+                                    তারপর প্রতিটা layer explain করুন। এই structure
+                                    দেখলে interviewer বুঝবেন আপনি production experience
                                     আছে।
                                 </span>
                             ),
@@ -2080,15 +2080,15 @@ app.listen(3000);`,
                         {
                             title: (
                                 <span className='font-mono text-emerald-400'>
-                                    Metrics প্রথমে — &quot;কী হচ্ছে&quot; জানো
+                                    Metrics প্রথমে — &quot;কী হচ্ছে&quot; জানেন
                                 </span>
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
-                                    Prometheus + Grafana। Key metrics mention করো:
+                                    Prometheus + Grafana। Key metrics mention করুন:
                                     error rate, P99 latency, RPS, CPU/memory। Golden
                                     Signals: Latency, Traffic, Errors, Saturation
-                                    (LETS) বলো — Google SRE book থেকে।
+                                    (LETS) বলুন — Google SRE book থেকে।
                                 </span>
                             ),
                         },
@@ -2101,22 +2101,22 @@ app.listen(3000);`,
                             description: (
                                 <span className='text-muted-foreground'>
                                     ELK Stack। Structured logging (JSON) এর গুরুত্ব
-                                    explain করো। Correlation ID দিয়ে request trace
-                                    করার কথা বলো।
+                                    explain করুন। Correlation ID দিয়ে request trace
+                                    করার কথা বলুন।
                                 </span>
                             ),
                         },
                         {
                             title: (
                                 <span className='font-mono text-purple-400'>
-                                    Traces দিয়ে &quot;কোথায় হচ্ছে&quot; নির্দিষ্ট করো
+                                    Traces দিয়ে &quot;কোথায় হচ্ছে&quot; নির্দিষ্ট করুন
                                 </span>
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
                                     Jaeger + OpenTelemetry। Distributed system-এ
                                     কোন service bottleneck সেটা trace waterfall দিয়ে
-                                    দেখা যায়। P99 latency অনেক বেশি হলে trace দেখো।
+                                    দেখা যায়। P99 latency অনেক বেশি হলে trace দেখুন।
                                 </span>
                             ),
                         },
@@ -2129,7 +2129,7 @@ app.listen(3000);`,
                             description: (
                                 <span className='text-muted-foreground'>
                                     Alert on symptoms, not causes। &quot;Error rate &gt; 5%&quot;
-                                    alert করো, &quot;CPU &gt; 80%&quot; নয়। CPU high হওয়া
+                                    alert করুন, &quot;CPU &gt; 80%&quot; নয়। CPU high হওয়া
                                     মানে user impact নেই, কিন্তু error rate high মানে
                                     users ক্ষতিগ্রস্ত।
                                 </span>
@@ -2145,8 +2145,8 @@ app.listen(3000);`,
                         <div className='space-y-2'>
                             <p>
                                 <strong>Alert on symptoms, not causes:</strong>{' '}
-                                &quot;Payment error rate &gt; 5%&quot; alert করো।
-                                &quot;DB CPU &gt; 90%&quot; alert করো না — DB CPU
+                                &quot;Payment error rate &gt; 5%&quot; alert করুন।
+                                &quot;DB CPU &gt; 90%&quot; alert করুন না — DB CPU
                                 high হতে পারে কিন্তু users affect না হতেও পারে।
                             </p>
                             <p>
@@ -2156,14 +2156,14 @@ app.listen(3000);`,
                                 হবে।
                             </p>
                             <p>
-                                <strong>Error Budget:</strong> SLO miss করলে
+                                <strong>Error Budget:</strong> SLO miss করলেন
                                 alert। যেমন: 99.9% availability = month-এ
                                 মাত্র ৪৩ মিনিট downtime budget। এই budget শেষ
-                                হলে feature deployment বন্ধ করো।
+                                হলে feature deployment বন্ধ করুন।
                             </p>
                             <p>
                                 <strong>Runbook link:</strong> প্রতিটা alert-এ
-                                runbook link রাখো। রাত ৩টায় alert পেলে কী
+                                runbook link রাখুন। রাত ৩টায় alert পেলে কী
                                 করতে হবে — step-by-step documented।
                             </p>
                         </div>
@@ -2384,7 +2384,7 @@ app.listen(3000);`,
                         text: 'Distributed tracing',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Jaeger distributed tracing system — Uber তৈরি করেছে, পরে open-source। Microservices-এ একটা request কোন service-এ কতক্ষণ, কোথায় error হয়েছে — trace waterfall দিয়ে দেখা যায়।',
+                            'সঠিক। Jaeger distributed tracing system — Uber তৈরি করেছেনে, পরে open-source। Microservices-এ একটা request কোন service-এ কতক্ষণ, কোথায় error হয়েছে — trace waterfall দিয়ে দেখা যায়।',
                     },
                     {
                         key: 'd',
@@ -2451,7 +2451,7 @@ app.listen(3000);`,
                         text: 'Service restart এ',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Counter শুধু বাড়ে, কমে না। Service restart হলে 0 থেকে শুরু হয়। এজন্য PromQL-এ rate() বা increase() function use করো — restart handle করে। http_requests_total deploy-এর পর reset হয়ে যায়।',
+                            'সঠিক। Counter শুধু বাড়ে, কমে না। Service restart হলে 0 থেকে শুরু হয়। এজন্য PromQL-এ rate() বা increase() function use করুন — restart handle করে। http_requests_total deploy-এর পর reset হয়ে যায়।',
                     },
                     {
                         key: 'd',
@@ -2485,7 +2485,7 @@ app.listen(3000);`,
                         text: 'Vendor-neutral observability framework',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। OpenTelemetry (OTel) হলো CNCF-এর vendor-neutral standard। Metrics, Logs, Traces তিনটার জন্যই SDK আছে। একবার instrument করলে Jaeger, Zipkin, Datadog, New Relic — যেকোনো backend-এ export করা যায়।',
+                            'সঠিক। OpenTelemetry (OTel) হলো CNCF-এর vendor-neutral standard। Metrics, Logs, Traces তিনটার জন্যই SDK আছে। একবার instrument করলেন Jaeger, Zipkin, Datadog, New Relic — যেকোনো backend-এ export করা যায়।',
                     },
                     {
                         key: 'd',
@@ -2546,7 +2546,7 @@ app.listen(3000);`,
                         text: 'SLO internal target, SLA external contract with customers',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। SLO = team-এর internal goal (যেমন 99.9% availability)। SLA = customer-এর সাথে contract (যেমন 99.5% guarantee)। SLO > SLA রাখো — buffer দরকার। SLO miss করলে শুধু team জানে, SLA miss করলে customer penalty claim করতে পারে।',
+                            'সঠিক। SLO = team-এর internal goal (যেমন 99.9% availability)। SLA = customer-এর সাথে contract (যেমন 99.5% guarantee)। SLO > SLA রাখুন — buffer দরকার। SLO miss করলেন শুধু team জানে, SLA miss করলেন customer penalty claim করতে পারে।',
                     },
                     {
                         key: 'c',
@@ -2602,38 +2602,38 @@ app.listen(3000);`,
     },
 
     assignment: {
-        title: 'Observability Stack Setup করো',
+        title: 'Observability Stack Setup করুন',
         time: '৩-৪ ঘন্টা',
         difficulty: 'Advanced',
         tasks: [
             <span>
                 <strong>Prometheus + Grafana Setup:</strong> Docker Compose দিয়ে
-                Prometheus এবং Grafana চালু করো। একটা simple Node.js/Python
+                Prometheus এবং Grafana চালু করুন। একটা simple Node.js/Python
                 service-এ prom-client/prometheus_client দিয়ে custom Counter এবং
-                Histogram metric expose করো। Grafana-তে error rate এবং P99 latency
-                dashboard বানাও।
+                Histogram metric expose করুন। Grafana-তে error rate এবং P99 latency
+                dashboard বানান।
             </span>,
             <span>
                 <strong>Structured Logging:</strong> Python বা Node.js-এ JSON
-                structured logger লেখো। প্রতিটা log entry-তে timestamp, level,
-                service, correlation_id, এবং custom fields থাকবে। Error
-                scenario-তে error_type এবং stack trace include করো।
+                structured logger লিখুন। প্রতিটা log entry-তে timestamp, level,
+                service, correlation_id, এবং custom fields থাকবেন। Error
+                scenario-তে error_type এবং stack trace include করুন।
             </span>,
             <span>
                 <strong>Jaeger Tracing with OpenTelemetry:</strong> Docker-এ
-                Jaeger চালু করো। FastAPI বা Express app-এ OpenTelemetry SDK
-                integrate করো। দুটো service-এর মধ্যে HTTP call-এ trace context
-                propagate করো। Jaeger UI-তে trace waterfall দেখো।
+                Jaeger চালু করুন। FastAPI বা Express app-এ OpenTelemetry SDK
+                integrate করুন। দুটো service-এর মধ্যে HTTP call-এ trace context
+                propagate করুন। Jaeger UI-তে trace waterfall দেখুন।
             </span>,
             <span>
-                <strong>Alert Rule লেখো:</strong> Prometheus alert rule তৈরি
-                করো: (ক) Error rate &gt; 5% for 2 minutes, (খ) P99 latency &gt;
-                500ms for 5 minutes। AlertManager-এ Slack webhook configure করো।
+                <strong>Alert Rule লিখুন:</strong> Prometheus alert rule তৈরি
+                করুন: (ক) Error rate &gt; 5% for 2 minutes, (খ) P99 latency &gt;
+                500ms for 5 minutes। AlertManager-এ Slack webhook configure করুন।
             </span>,
             <span>
                 <strong>SLO Dashboard:</strong> একটা service-এর জন্য SLO
-                define করো (99.9% availability, P99 &lt; 200ms)। Grafana-তে
-                current SLI vs SLO target compare করার dashboard বানাও।
+                define করুন (99.9% availability, P99 &lt; 200ms)। Grafana-তে
+                current SLI vs SLO target compare করার dashboard বানান।
             </span>,
         ],
         deliverables: [
@@ -2649,29 +2649,29 @@ app.listen(3000);`,
         subtitle: 'Docker Compose + Node.js + OpenTelemetry',
         steps: [
             {
-                title: 'Docker Compose Stack চালু করো',
+                title: 'Docker Compose Stack চালু করুন',
                 description:
-                    'Prometheus (port 9090), Grafana (port 3000), Jaeger (port 16686) সহ complete observability stack Docker Compose-এ define করো।',
+                    'Prometheus (port 9090), Grafana (port 3000), Jaeger (port 16686) সহ complete observability stack Docker Compose-এ define করুন।',
             },
             {
-                title: 'Node.js Service Instrument করো',
+                title: 'Node.js Service Instrument করুন',
                 description:
-                    'prom-client দিয়ে /metrics endpoint তৈরি করো। Counter, Histogram add করো। OpenTelemetry SDK setup করো Jaeger exporter সহ।',
+                    'prom-client দিয়ে /metrics endpoint তৈরি করুন। Counter, Histogram add করুন। OpenTelemetry SDK setup করুন Jaeger exporter সহ।',
             },
             {
-                title: 'Prometheus Scrape Config লেখো',
+                title: 'Prometheus Scrape Config লিখুন',
                 description:
-                    'prometheus.yml-এ scrape_configs-এ service endpoint add করো। Prometheus UI-তে targets up কিনা verify করো।',
+                    'prometheus.yml-এ scrape_configs-এ service endpoint add করুন। Prometheus UI-তে targets up কিনা verify করুন।',
             },
             {
-                title: 'Grafana Dashboard বানাও',
+                title: 'Grafana Dashboard বানান',
                 description:
-                    'Prometheus data source add করো। Error rate, P99 latency, RPS — তিনটা panel সহ dashboard বানাও।',
+                    'Prometheus data source add করুন। Error rate, P99 latency, RPS — তিনটা panel সহ dashboard বানান।',
             },
             {
-                title: 'Trace Context দুটো Service এ Propagate করো',
+                title: 'Trace Context দুটো Service এ Propagate করুন',
                 description:
-                    'Service A থেকে Service B-কে HTTP call করো। OpenTelemetry inject/extract করো। Jaeger UI-তে দুটো service-এর span একই trace-এ দেখো।',
+                    'Service A থেকে Service B-কে HTTP call করুন। OpenTelemetry inject/extract করুন। Jaeger UI-তে দুটো service-এর span একই trace-এ দেখুন।',
             },
         ],
         codeBlock: {
@@ -2739,6 +2739,6 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']`,
         },
-        tip: 'Jaeger UI (localhost:16686) এ গিয়ে "Find Traces" এ service select করো। প্রথমবার trace দেখলে বুঝবে কেন distributed tracing এত powerful — কোন service slow সেটা one glance-এ স্পষ্ট।',
+        tip: 'Jaeger UI (localhost:16686) এ গিয়ে "Find Traces" এ service select করুন। প্রথমবার trace দেখলে বুঝবেন কেন distributed tracing এত powerful — কোন service slow সেটা one glance-এ স্পষ্ট।',
     },
 };

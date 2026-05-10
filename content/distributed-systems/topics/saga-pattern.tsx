@@ -46,7 +46,7 @@ export const sagaPatternContent: TopicData = {
                     content: (
                         <p>
                             2PC একটা coordinator দিয়ে সব services কে lock করে।
-                            কিন্তু distributed system এ: coordinator fail করলে
+                            কিন্তু distributed system এ: coordinator fail করলেন
                             সব services locked। High latency। Microservices এ
                             impractical। এজন্যই <strong>Saga Pattern</strong> এর
                             জন্ম।
@@ -62,7 +62,7 @@ export const sagaPatternContent: TopicData = {
                             <strong>Saga Pattern</strong> হলো একটা sequence of
                             local transactions। প্রতিটা local transaction তার
                             নিজের database update করে এবং একটা event/message
-                            publish করে। কোনো step fail করলে পূর্ববর্তী steps এর
+                            publish করে। কোনো step fail করলেন পূর্ববর্তী steps এর
                             effects undo করার জন্য{' '}
                             <strong>compensating transactions</strong> চালানো
                             হয়।
@@ -84,8 +84,8 @@ export const sagaPatternContent: TopicData = {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <p className='text-muted-foreground leading-relaxed text-lg'>
-                            একটা e-commerce order flow দেখো। সব ঠিক চললে easy।
-                            কিন্তু মাঝপথে fail করলে কী হয়?
+                            একটা e-commerce order flow দেখুন। সব ঠিক চললে easy।
+                            কিন্তু মাঝপথে fail করলেন কী হয়?
                         </p>
                     ),
                 },
@@ -450,7 +450,7 @@ export const sagaPatternContent: TopicData = {
             subHeader: { index: '005', title: 'Compensating Transactions' },
             title: (
                 <span className='font-heading'>
-                    Failure হলে কীভাবে Rollback করবে?
+                    Failure হলে কীভাবে Rollback করবেন?
                 </span>
             ),
             blocks: [
@@ -474,14 +474,14 @@ export const sagaPatternContent: TopicData = {
                         {
                             title: (
                                 <span className='font-mono text-emerald-400'>
-                                    T1 — Order Service: Order Create করো
+                                    T1 — Order Service: Order Create করুন
                                 </span>
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
                                     Compensation:{' '}
                                     <span className='text-yellow-400'>
-                                        Order Cancel করো (order status =
+                                        Order Cancel করুন (order status =
                                         CANCELLED)
                                     </span>
                                 </span>
@@ -490,14 +490,14 @@ export const sagaPatternContent: TopicData = {
                         {
                             title: (
                                 <span className='font-mono text-emerald-400'>
-                                    T2 — Payment Service: Payment Charge করো
+                                    T2 — Payment Service: Payment Charge করুন
                                 </span>
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
                                     Compensation:{' '}
                                     <span className='text-yellow-400'>
-                                        Refund করো (full amount return)
+                                        Refund করুন (full amount return)
                                     </span>
                                 </span>
                             ),
@@ -533,7 +533,7 @@ export const sagaPatternContent: TopicData = {
                         {
                             title: (
                                 <span className='font-mono text-yellow-400'>
-                                    C1 — Order Service: Order Cancel করো
+                                    C1 — Order Service: Order Cancel করুন
                                 </span>
                             ),
                             description: (
@@ -557,8 +557,8 @@ export const sagaPatternContent: TopicData = {
                             Compensating transactions{' '}
                             <strong>idempotent</strong> হতে হবে। মানে একই
                             operation বারবার চালালেও same result। Network
-                            failure তে retry করলে double refund হওয়া চলবে না।
-                            Unique transaction ID ব্যবহার করো।
+                            failure তে retry করলেন double refund হওয়া চলবে না।
+                            Unique transaction ID ব্যবহার করুন।
                         </p>
                     ),
                 },
@@ -777,7 +777,7 @@ bus.emit('order.start', { orderId: 'nostock-002', userId: 'u2', productId: 'p2',
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
                                         Ride request saga: request → driver
                                         matching → payment pre-auth → GPS
-                                        tracking। Cancel করলে compensation —
+                                        tracking। Cancel করলেন compensation —
                                         pre-auth release।
                                     </p>
                                 </div>
@@ -788,7 +788,7 @@ bus.emit('order.start', { orderId: 'nostock-002', userId: 'u2', productId: 'p2',
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
                                         Travel booking: flight + hotel + car
-                                        rental। একটা fail করলে অন্যগুলো
+                                        rental। একটা fail করলেন অন্যগুলো
                                         compensate। Complex multi-service saga।
                                     </p>
                                 </div>
@@ -885,7 +885,7 @@ bus.emit('order.start', { orderId: 'nostock-002', userId: 'u2', productId: 'p2',
                             Network failure তে messages retry হয়। একই
                             compensation দুইবার execute হতে পারে। Payment refund
                             দুইবার হলে double refund। প্রতিটা operation এ unique
-                            ID track করো — already processed হলে skip করো।
+                            ID track করুন — already processed হলে skip করুন।
                         </p>
                     ),
                 },
@@ -987,10 +987,10 @@ bus.emit('order.start', { orderId: 'nostock-002', userId: 'u2', productId: 'p2',
                 options: [
                     {
                         key: 'A',
-                        text: 'Saga step fail করলে পূর্ববর্তী steps এর effects undo করার transaction',
+                        text: 'Saga step fail করলেন পূর্ববর্তী steps এর effects undo করার transaction',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Payment charge হয়েছে কিন্তু inventory নেই? Compensating transaction: refund করো। Order created কিন্তু payment failed? Cancel order করো। Compensations backward চলে — latest first।',
+                            'সঠিক। Payment charge হয়েছে কিন্তু inventory নেই? Compensating transaction: refund করুন। Order created কিন্তু payment failed? Cancel order করুন। Compensations backward চলে — latest first।',
                     },
                     {
                         key: 'B',
@@ -1139,10 +1139,10 @@ bus.emit('order.start', { orderId: 'nostock-002', userId: 'u2', productId: 'p2',
                     },
                     {
                         key: 'D',
-                        text: 'Network failure তে retry করলে same compensation দুইবার execute হতে পারে — double refund রোধ করতে',
+                        text: 'Network failure তে retry করলেন same compensation দুইবার execute হতে পারে — double refund রোধ করতে',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Message retry হলে compensation দুইবার চলতে পারে। Refund দুইবার → double money। Idempotency: unique transaction ID check করো — already refunded? Skip। এটাই Saga এর critical requirement।',
+                            'সঠিক। Message retry হলে compensation দুইবার চলতে পারে। Refund দুইবার → double money। Idempotency: unique transaction ID check করুন — already refunded? Skip। এটাই Saga এর critical requirement।',
                     },
                 ],
             },
@@ -1152,10 +1152,10 @@ bus.emit('order.start', { orderId: 'nostock-002', userId: 'u2', productId: 'p2',
                 options: [
                     {
                         key: 'A',
-                        text: 'Coordinator fail করলে সব services indefinitely locked থাকে — availability নষ্ট হয়',
+                        text: 'Coordinator fail করলেন সব services indefinitely locked থাকে — availability নষ্ট হয়',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। 2PC: Phase 1 = coordinator সব participants কে prepare বলে (lock)। Phase 2 = commit/rollback। Coordinator crash করলে participants locked — কেউ আগাতে পারে না। Microservices এ high latency, blocking — impractical।',
+                            'সঠিক। 2PC: Phase 1 = coordinator সব participants কে prepare বলে (lock)। Phase 2 = commit/rollback। Coordinator crash করলেন participants locked — কেউ আগাতে পারে না। Microservices এ high latency, blocking — impractical।',
                     },
                     {
                         key: 'B',
@@ -1194,7 +1194,7 @@ bus.emit('order.start', { orderId: 'nostock-002', userId: 'u2', productId: 'p2',
                         text: 'Durable workflow orchestration — Saga orchestration code হিসেবে লেখা যায়, automatic state persistence',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Temporal durable workflow engine। Saga টা regular code হিসেবে লেখো — Temporal automatically state persist করে। Crash হলেও resume করে যেখানে ছিল। Uber, Netflix, Hashicorp use করে।',
+                            'সঠিক। Temporal durable workflow engine। Saga টা regular code হিসেবে লিখুন — Temporal automatically state persist করে। Crash হলেও resume করে যেখানে ছিল। Uber, Netflix, Hashicorp use করে।',
                     },
                     {
                         key: 'C',
@@ -1212,7 +1212,7 @@ bus.emit('order.start', { orderId: 'nostock-002', userId: 'u2', productId: 'p2',
             },
             {
                 id: 9,
-                text: 'একটা ride-sharing app এ user ride cancel করলে কোন compensation হবে?',
+                text: 'একটা ride-sharing app এ user ride cancel করলেন কোন compensation হবে?',
                 options: [
                     {
                         key: 'A',
@@ -1261,17 +1261,17 @@ bus.emit('order.start', { orderId: 'nostock-002', userId: 'u2', productId: 'p2',
                     },
                     {
                         key: 'C',
-                        text: 'No saga — monolith use করো',
+                        text: 'No saga — monolith use করুন',
                         isCorrect: false,
                         explanation:
-                            'Complex microservices এ monolith ফিরে যাওয়া সমাধান নয়।',
+                            'Complex microservices এ monolith ফিরে যানয়া সমাধান নয়।',
                     },
                     {
                         key: 'D',
-                        text: 'Orchestration — complex flow, visibility, compensation management সহজ। Temporal বা AWS Step Functions use করো',
+                        text: 'Orchestration — complex flow, visibility, compensation management সহজ। Temporal বা AWS Step Functions use করুন',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। ১০+ steps, complex compensation logic — Orchestration best। Choreography তে event spaghetti হয়ে যাবে কে কোথায় listen করছে বোঝা মুশকিল। Orchestration এ central orchestrator পুরো flow জানে।',
+                            'সঠিক। ১০+ steps, complex compensation logic — Orchestration best। Choreography তে event spaghetti হয়ে যাবেন কে কোথায় listen করছে বোঝা মুশকিল। Orchestration এ central orchestrator পুরো flow জানে।',
                     },
                 ],
             },
@@ -1283,30 +1283,30 @@ bus.emit('order.start', { orderId: 'nostock-002', userId: 'u2', productId: 'p2',
         difficulty: 'Junior Level',
         tasks: [
             <span key='1'>
-                <strong>Saga Design:</strong> একটা travel booking app design করো
+                <strong>Saga Design:</strong> একটা travel booking app design করুন
                 (flight + hotel + car)। প্রতিটা booking step এর জন্য transaction
-                এবং compensating transaction লেখো। কোন approach নেবে —
+                এবং compensating transaction লিখুন। কোন approach নেবে —
                 Choreography নাকি Orchestration? কেন?
             </span>,
             <span key='2'>
-                <strong>Failure Scenarios:</strong> তোমার travel booking saga তে
-                ৩টা failure scenario নিয়ে কাজ করো। প্রতিটায় কোন compensations
-                চলবে এবং কোন order এ — সেটা step-by-step লেখো।
+                <strong>Failure Scenarios:</strong> আপনার travel booking saga তে
+                ৩টা failure scenario নিয়ে কাজ করুন। প্রতিটায় কোন compensations
+                চলবে এবং কোন order এ — সেটা step-by-step লিখুন।
             </span>,
             <span key='3'>
                 <strong>Code Analysis:</strong> দেওয়া Python Orchestrator code
                 পড়ো। যদি <code>_refund_payment()</code> নিজেই fail করে তাহলে কী
-                হবে? এই problem টা কীভাবে handle করবে?
+                হবে? এই problem টা কীভাবে handle করবেন?
             </span>,
             <span key='4'>
                 <strong>Idempotency Implementation:</strong> দেওয়া Node.js
-                choreography code তে payment refund handler টা idempotent করো —
-                same paymentId তে দুইবার call হলে দ্বিতীয়বার skip করবে।
+                choreography code তে payment refund handler টা idempotent করুন —
+                same paymentId তে দুইবার call হলে দ্বিতীয়বার skip করবেন।
             </span>,
             <span key='5'>
                 <strong>Tool Comparison:</strong> AWS Step Functions এবং
                 Temporal.io — দুটোর documentation পড়ো। কোনটা কোন use case এ
-                better? ৫-৭ লাইনে comparison লেখো।
+                better? ৫-৭ লাইনে comparison লিখুন।
             </span>,
         ],
         deliverables: [
@@ -1322,34 +1322,34 @@ bus.emit('order.start', { orderId: 'nostock-002', userId: 'u2', productId: 'p2',
         subtitle: 'Complete Order Saga — Python FastAPI',
         steps: [
             {
-                title: '৩টা Mock Service বানাও',
+                title: '৩টা Mock Service বানান',
                 description:
                     'Order Service (:8000), Payment Service (:8001), Inventory Service (:8002) — প্রতিটায় success/fail endpoints।',
             },
             {
-                title: 'Saga Orchestrator লেখো',
+                title: 'Saga Orchestrator লিখুন',
                 description:
                     'Python class যেটা HTTP calls করে steps execute করে এবং failure তে compensations চালায়।',
             },
             {
-                title: 'State Tracking যোগ করো',
+                title: 'State Tracking যোগ করুন',
                 description:
-                    'Saga state (STARTED → STEP1 → STEP2 → COMPLETED / COMPENSATED) SQLite বা in-memory dict এ track করো।',
+                    'Saga state (STARTED → STEP1 → STEP2 → COMPLETED / COMPENSATED) SQLite বা in-memory dict এ track করুন।',
             },
             {
-                title: 'Happy Path Test করো',
+                title: 'Happy Path Test করুন',
                 description:
-                    'সব services সফলভাবে কাজ করলে COMPLETED state দেখো।',
+                    'সব services সফলভাবে কাজ করলেন COMPLETED state দেখুন।',
             },
             {
-                title: 'Failure Test করো',
+                title: 'Failure Test করুন',
                 description:
-                    'Inventory service fail করাও। Automatic compensation দেখো — payment refund, order cancel।',
+                    'Inventory service fail করাও। Automatic compensation দেখুন — payment refund, order cancel।',
             },
             {
                 title: 'Bonus: Idempotency',
                 description:
-                    'Same saga_id দুইবার submit করো — দ্বিতীয়বার same result return করে কিনা দেখো।',
+                    'Same saga_id দুইবার submit করুন — দ্বিতীয়বার same result return করে কিনা দেখুন।',
             },
         ],
         codeBlock: {
@@ -1397,12 +1397,12 @@ async def start_order_saga(user_id: str, product_id: str, amount: float):
         saga_store[saga_id]["state"] = "COMPLETED"
         return {"saga_id": saga_id, "status": "COMPLETED", "order_id": order_id}`,
         },
-        tip: 'Saga theory নয় — practically দেখবে distributed transaction কীভাবে works করে, compensation কীভাবে চলে, এবং partial failure কীভাবে handle হয়। এটাই senior engineer level system design।',
+        tip: 'Saga theory নয় — practically দেখবেন distributed transaction কীভাবে works করে, compensation কীভাবে চলে, এবং partial failure কীভাবে handle হয়। এটাই senior engineer level system design।',
     },
     phaseComplete: {
         title: 'Phase 3 — Distributed Systems Complete!',
         description:
-            'তুমি System Design Mastery Course এর Phase 3 সম্পূর্ণ করেছো। Distributed Systems এর ৬টি core topic এ solid foundation তৈরি হয়েছে।',
+            'আপনি System Design Mastery Course এর Phase 3 সম্পূর্ণ করেছেনো। Distributed Systems এর ৬টি core topic এ solid foundation তৈরি হয়েছে।',
         topics: [
             { title: 'Topic 1: Microservices', id: 'microservices' },
             {

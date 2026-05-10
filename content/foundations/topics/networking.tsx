@@ -28,10 +28,10 @@ export const networkingContent: TopicData = {
                     content: (
                         <div className='space-y-6'>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
-                                তুমি একটা API লিখলে। Production এ গিয়ে হঠাৎ
+                                আপনি একটা API লিখলে। Production এ গিয়ে হঠাৎ
                                 slow হয়ে গেলো। Logs দেখলে কিছু বুঝছো না।
                                 Problem কোথায়? — Network layer এ। Networking না
-                                জানলে এই debug করা impossible।
+                                জানলেন এই debug করা impossible।
                             </p>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
                                 System Design interview এ &quot;Design
@@ -52,8 +52,8 @@ export const networkingContent: TopicData = {
                     content: (
                         <p>
                             <strong>Networking</strong> হলো computers এর মধ্যে
-                            data exchange করার system। তুমি যখন{' '}
-                            <code>google.com</code> type করো — DNS lookup, TCP
+                            data exchange করার system। আপনি যখন{' '}
+                            <code>google.com</code> type করুন — DNS lookup, TCP
                             connection, HTTP request, TLS encryption — সব
                             মিলিয়ে মাত্র ১০০ms এ response আসে। এই পুরো journey
                             টাই networking।
@@ -100,7 +100,7 @@ export const networkingContent: TopicData = {
                 {
                     type: 'info-box',
                     variant: 'tip',
-                    title: 'INTERVIEW এ মনে রাখো',
+                    title: 'INTERVIEW এ মনে রাখুন',
                     content: (
                         <p>
                             System Design এ সবচেয়ে বেশি Layer 4 (TCP/UDP) এবং
@@ -150,8 +150,8 @@ export const networkingContent: TopicData = {
                                 UDP — Fire and Forget
                             </h3>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
-                                UDP তে কোনো handshake নেই। Data পাঠিয়ে দাও —
-                                পৌঁছালো কিনা দেখো না। Overhead কম, তাই speed
+                                UDP তে কোনো handshake নেই। Data পাঠিয়ে দিন —
+                                পৌঁছালো কিনা দেখুন না। Overhead কম, তাই speed
                                 বেশি। Real-time applications এর জন্য perfect।
                             </p>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-0 border border-border mt-8'>
@@ -160,7 +160,7 @@ export const networkingContent: TopicData = {
                                         <span className='w-1.5 h-1.5 bg-blue-500' />
                                         USE CASE{' '}
                                         <span className='text-emerald-400'>
-                                            ✅ TCP use করো যখন
+                                            ✅ TCP use করুন যখন
                                         </span>
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
@@ -174,7 +174,7 @@ export const networkingContent: TopicData = {
                                         <span className='w-1.5 h-1.5 bg-blue-500' />
                                         USE CASE{' '}
                                         <span className='text-emerald-400'>
-                                            ✅ UDP use করো যখন
+                                            ✅ UDP use করুন যখন
                                         </span>
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
@@ -274,7 +274,7 @@ udpServer.bind(4000);`,
                                 DNS — Internet এর Phone Book
                             </h3>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
-                                তুমি <code>facebook.com</code> type করো — কিন্তু
+                                আপনি <code>facebook.com</code> type করুন — কিন্তু
                                 computer বোঝে IP address। DNS এই translation
                                 করে। DNS lookup সবসময় cache থেকে শুরু হয়।
                             </p>
@@ -450,7 +450,7 @@ server {
             subHeader: { index: '006', title: 'Real World Examples' },
             title: (
                 <span className='font-heading uppercase'>
-                    বড় কোম্পানিগুলো কীভাবে করেছে
+                    বড় কোম্পানিগুলো কীভাবে করেছেনে
                 </span>
             ),
             blocks: [
@@ -480,7 +480,7 @@ server {
                                 <p className='text-muted-foreground leading-relaxed italic'>
                                     Game position updates UDP তে পাঠায় — প্রতি
                                     60ms এ। কিছু packet miss হলেও problem নেই,
-                                    পরের frame এ নতুন position আসবে। কিন্তু
+                                    পরের frame এ নতুন position আসবেন। কিন্তু
                                     in-game purchase TCP তে — এখানে reliability
                                     দরকার।{' '}
                                     <strong>
@@ -540,7 +540,7 @@ server.listen(3000);
             subHeader: { index: '007', title: 'Tools Comparison' },
             title: (
                 <span className='font-heading uppercase'>
-                    Networking Tools — কোনটা কখন ব্যবহার করবে
+                    Networking Tools — কোনটা কখন ব্যবহার করবেন
                 </span>
             ),
             blocks: [
@@ -601,7 +601,7 @@ server.listen(3000);
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.IMPORTANT,
-                    title: '🎯 Interview এ এটা বলো',
+                    title: '🎯 Interview এ এটা বলুন',
                     content: (
                         <p>
                             &quot;Real-time features এর জন্য WebSocket use করবো।
@@ -965,28 +965,28 @@ server.listen(3000);
         tasks: [
             <span key='1'>
                 <strong>HTTP Headers Analysis:</strong> Browser DevTools (F12 →
-                Network tab) খোলো। তোমার পছন্দের ৩টা website visit করো। প্রতিটির
-                জন্য note করো — HTTP version কত? Server header কি? Cache-Control
+                Network tab) খোলো। আপনার পছন্দের ৩টা website visit করুন। প্রতিটির
+                জন্য note করুন — HTTP version কত? Server header কি? Cache-Control
                 কি বলছে? কোনো WebSocket connection আছে? Screenshot সহ report
-                লেখো।
+                লিখুন।
             </span>,
             <span key='2'>
                 <strong>DNS Lookup Practice:</strong> Terminal এ{' '}
                 <code>nslookup google.com</code> এবং{' '}
-                <code>dig google.com +trace</code> command run করো। Output
-                বিশ্লেষণ করো — কোন nameserver use হলো? A record, CNAME record
-                চেনো। TTL value কত? ৩টা আলাদা domain এ চেষ্টা করো।
+                <code>dig google.com +trace</code> command run করুন। Output
+                বিশ্লেষণ করুন — কোন nameserver use হলো? A record, CNAME record
+                চেনো। TTL value কত? ৩টা আলাদা domain এ চেষ্টা করুন।
             </span>,
             <span key='3'>
                 <strong>Protocol Scenario Design:</strong> একটা live cricket
-                score app design করো। লেখো — score update real-time পাঠাতে
+                score app design করুন। লিখুন — score update real-time পাঠাতে
                 WebSocket নাকি HTTP polling? Player statistics API এ TCP নাকি
                 UDP? Video highlights CDN থেকে নাকি origin? প্রতিটি decision
-                justify করো।
+                justify করুন।
             </span>,
             <span key='4'>
                 <strong>TCP vs UDP Decision Table:</strong> নিচের ৫টি use case
-                এর জন্য TCP বা UDP choose করো এবং কারণ লেখো: (ক) Gmail পাঠানো
+                এর জন্য TCP বা UDP choose করুন এবং কারণ লিখুন: (ক) Gmail পাঠানো
                 (খ) YouTube Live stream দেখা (গ) bKash mobile banking (ঘ) Online
                 PUBG game (ঙ) ৫GB file download।
             </span>,
@@ -997,7 +997,7 @@ server.listen(3000);
                     {'{time_starttransfer}'}s\nTotal: %{'{time_total}'}s\n&quot;
                     -o /dev/null -s https://google.com
                 </code>{' '}
-                run করো। ৫টা আলাদা site measure করো এবং CDN আছে কিনা অনুমান করো।
+                run করুন। ৫টা আলাদা site measure করুন এবং CDN আছে কিনা অনুমান করুন।
             </span>,
         ],
         deliverables: [
@@ -1015,32 +1015,32 @@ server.listen(3000);
             {
                 title: 'Node.js WebSocket Server — দুটো instance',
                 description:
-                    'ws library দিয়ে port 3001 এবং 3002 তে দুটো server বানাও। Message এলে সব connected clients এ broadcast করবে।',
+                    'ws library দিয়ে port 3001 এবং 3002 তে দুটো server বানান। Message এলে সব connected clients এ broadcast করবেন।',
             },
             {
                 title: 'Nginx IP Hash — WebSocket Sticky Session',
                 description:
-                    'WebSocket এ sticky session দরকার। ip_hash algorithm configure করো — একই client সবসময় একই server এ যাবে।',
+                    'WebSocket এ sticky session দরকার। ip_hash algorithm configure করুন — একই client সবসময় একই server এ যাবেন।',
             },
             {
-                title: 'HTML Client বানাও',
+                title: 'HTML Client বানান',
                 description:
-                    'Browser এ WebSocket connect করবে। Chat input এবং message display। কোন server handle করছে সেটা দেখাও।',
+                    'Browser এ WebSocket connect করবেন। Chat input এবং message display। কোন server handle করছে সেটা দেখাও।',
             },
             {
-                title: 'Docker Compose দিয়ে Run করো',
+                title: 'Docker Compose দিয়ে Run করুন',
                 description:
                     '২টা Node.js service + ১টা Nginx service। docker-compose up দিলেই সব চলবে।',
             },
             {
-                title: 'DevTools এ WebSocket দেখো',
+                title: 'DevTools এ WebSocket দেখুন',
                 description:
-                    'F12 → Network → WS filter। WebSocket frames দেখো। HTTP Upgrade header observe করো।',
+                    'F12 → Network → WS filter। WebSocket frames দেখুন। HTTP Upgrade header observe করুন।',
             },
             {
-                title: 'Bonus — একটা server kill করো',
+                title: 'Bonus — একটা server kill করুন',
                 description:
-                    'docker stop দিয়ে একটা server বন্ধ করো। IP Hash এর কারণে কি ঘটে? Reconnect কি হয়?',
+                    'docker stop দিয়ে একটা server বন্ধ করুন। IP Hash এর কারণে কি ঘটে? Reconnect কি হয়?',
             },
         ],
         codeBlock: {
@@ -1062,7 +1062,7 @@ wss.on('connection', (ws) => {
   ws.send(JSON.stringify({ type: 'info', server: NAME }));
 
   ws.on('message', (msg) => {
-    // সব clients এ broadcast করো
+    // সব clients এ broadcast করুন
     clients.forEach((c) => {
       if (c.readyState === WebSocket.OPEN)
         c.send(JSON.stringify({ type: 'msg', text: \`\${msg}\`, from: NAME }));
@@ -1075,9 +1075,9 @@ server.listen(PORT, () => console.log(\`\${NAME} on :\${PORT}\`));`,
         },
         tip: (
             <>
-                DevTools এ WebSocket connection দেখবে কীভাবে HTTP থেকে upgrade
-                হয়। IP Hash কেন WebSocket এ দরকার সেটা practically বুঝবে। একটা
-                server kill করলে কী ঘটে — এটাই real production challenge।
+                DevTools এ WebSocket connection দেখবেন কীভাবে HTTP থেকে upgrade
+                হয়। IP Hash কেন WebSocket এ দরকার সেটা practically বুঝবেন। একটা
+                server kill করলেন কী ঘটে — এটাই real production challenge।
             </>
         ),
     },

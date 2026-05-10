@@ -3,6 +3,7 @@ import { capContent } from './foundations/topics/cap';
 import { databasesContent } from './foundations/topics/databases';
 import { networkingContent } from './foundations/topics/networking';
 import { scalabilityContent } from './foundations/topics/scalability';
+import { introductionContent } from './foundations/topics/introduction';
 import { cachingContent } from './core-components/topics/caching';
 import { loadBalancingContent } from './core-components/topics/load-balancing';
 import { messageQueuesContent } from './core-components/topics/message-queues';
@@ -30,6 +31,7 @@ import { cqrsEventSourcingContent } from './advanced-topics/topics/cqrs-event-so
 import { deploymentPatternsContent } from './advanced-topics/topics/deployment-patterns';
 
 export const contentMap: Record<string, TopicData> = {
+    introduction: introductionContent,
     scalability: scalabilityContent,
     networking: networkingContent,
     databases: databasesContent,

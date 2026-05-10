@@ -63,8 +63,8 @@ export const tinyurlContent: TopicData = {
                     title: '📌 Core Problem',
                     content: (
                         <p>
-                            একটা long URL নিয়ে একটা unique short code generate করো। সেই code দিয়ে
-                            request আসলে original URL-এ redirect করো। এটাকে{' '}
+                            একটা long URL নিয়ে একটা unique short code generate করুন। সেই code দিয়ে
+                            request আসলে original URL-এ redirect করুন। এটাকে{' '}
                             <strong>URL Redirection Service</strong> বলে।
                         </p>
                     ),
@@ -88,11 +88,11 @@ export const tinyurlContent: TopicData = {
                                 </p>
                                 <ul className='space-y-2'>
                                     {[
-                                        'Long URL দিলে short URL generate করবে',
-                                        'Short URL click করলে original URL-এ redirect হবে',
-                                        'User custom alias দিতে পারবে (optional)',
-                                        'URL expiration time set করা যাবে',
-                                        'Analytics: কতবার click হলো দেখা যাবে',
+                                        'Long URL দিলে short URL generate করবেন',
+                                        'Short URL click করলেন original URL-এ redirect হবে',
+                                        'User custom alias দিতে পারবেন (optional)',
+                                        'URL expiration time set করা যাবেন',
+                                        'Analytics: কতবার click হলো দেখা যাবেন',
                                     ].map((item, i) => (
                                         <li
                                             key={i}
@@ -111,7 +111,7 @@ export const tinyurlContent: TopicData = {
                                     {[
                                         'High availability — 99.9% uptime',
                                         'Low latency redirect — 100ms এর কম',
-                                        'Scalable — 100M+ URLs handle করবে',
+                                        'Scalable — 100M+ URLs handle করবেন',
                                         'Short URL predictable না হওয়া (security)',
                                         'Durability — URL কখনো হারাবে না',
                                     ].map((item, i) => (
@@ -133,8 +133,8 @@ export const tinyurlContent: TopicData = {
                     title: '💡 Interview Tip',
                     content: (
                         <p>
-                            Interview-তে সবার আগে Functional vs Non-functional requirements পরিষ্কার করো।
-                            এটা দেখায় যে তুমি problem systematically ভাবো।
+                            Interview-তে সবার আগে Functional vs Non-functional requirements পরিষ্কার করুন।
+                            এটা দেখায় যে আপনি problem systematically ভাবুন।
                         </p>
                     ),
                 },
@@ -151,7 +151,7 @@ export const tinyurlContent: TopicData = {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <p className='text-muted-foreground leading-relaxed text-lg'>
-                            System design-এ numbers জানা দরকার। এটা না জানলে সঠিক architecture করা যায় না।
+                            System design-এ numbers জানা দরকার। এটা না জানলেন সঠিক architecture করা যায় না।
                         </p>
                     ),
                 },
@@ -368,13 +368,13 @@ export const tinyurlContent: TopicData = {
                     rows: [
                         [
                             'Random String',
-                            '6 random chars generate করো',
+                            '6 random chars generate করুন',
                             'Collision check দরকার, DB round trip',
                             <span className='text-yellow-400 font-medium'>মাঝামাঝি</span>,
                         ],
                         [
                             'MD5/SHA256 Hash',
-                            'URL hash করো, first 7 chars নাও',
+                            'URL hash করুন, first 7 chars নাও',
                             'Collision possible, predictable',
                             <span className='text-red-400'>সাধারণত না</span>,
                         ],
@@ -411,7 +411,7 @@ export const tinyurlContent: TopicData = {
 BASE62 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 def encode_base62(num: int) -> str:
-    """Auto-increment ID কে Base62 string এ convert করো"""
+    """Auto-increment ID কে Base62 string এ convert করুন"""
     if num == 0:
         return BASE62[0]
     result = ""
@@ -422,16 +422,16 @@ def encode_base62(num: int) -> str:
 
 # Example: ID 125 → "0000020", ID 3521614606208 → "abcdefg"
 def create_short_url(long_url: str, db, cache) -> str:
-    # 1. DB-তে save করো, auto-increment ID পাও
+    # 1. DB-তে save করুন, auto-increment ID পান
     url_id = db.insert({"long_url": long_url, "created_at": now()})
 
-    # 2. ID কে Base62 encode করো
+    # 2. ID কে Base62 encode করুন
     short_code = encode_base62(url_id)
 
-    # 3. DB update করো short_code দিয়ে
+    # 3. DB update করুন short_code দিয়ে
     db.update(url_id, {"short_code": short_code})
 
-    # 4. Cache-এ রাখো future reads এর জন্য
+    # 4. Cache-এ রাখুন future reads এর জন্য
     cache.set(short_code, long_url, ttl=86400)
 
     return f"https://tinyurl.com/{short_code}"`,
@@ -470,7 +470,7 @@ def create_short_url(long_url: str, db, cache) -> str:
                     title: '⚠️ Decision',
                     content: (
                         <p>
-                            Analytics চাইলে <strong>302</strong> use করো — প্রতিটা click track হবে।
+                            Analytics চাইলে <strong>302</strong> use করুন — প্রতিটা click track হবে।
                             Server load কমাতে চাইলে <strong>301</strong> — browser cache করে রাখবে।
                             TinyURL analytics offer করে তাই 302।
                         </p>
@@ -555,8 +555,8 @@ CREATE TABLE url_clicks (
                     title: '💡 Cache Strategy',
                     content: (
                         <p>
-                            <strong>Redis</strong> use করো hot URLs cache করতে। Top 20% URLs = 80%
-                            traffic (Pareto principle)। Redis এ TTL set করো, LRU eviction policy।
+                            <strong>Redis</strong> use করুন hot URLs cache করতে। Top 20% URLs = 80%
+                            traffic (Pareto principle)। Redis এ TTL set করুন, LRU eviction policy।
                             Cache hit rate 80%+ হওয়া উচিত।
                         </p>
                     ),
@@ -589,11 +589,11 @@ CREATE TABLE url_clicks (
                                     },
                                     {
                                         type: 'con',
-                                        text: 'Cache invalidation কঠিন। URL expire করলে cache-ও clear করতে হবে। Stale data risk আছে।',
+                                        text: 'Cache invalidation কঠিন। URL expire করলেন cache-ও clear করতে হবে। Stale data risk আছে।',
                                     },
                                     {
                                         type: 'pro',
-                                        text: 'Database read replicas দিয়ে read scale করা যায়। Write শুধু master-এ যাবে।',
+                                        text: 'Database read replicas দিয়ে read scale করা যায়। Write শুধু master-এ যাবেন।',
                                     },
                                     {
                                         type: 'con',
@@ -659,7 +659,7 @@ CREATE TABLE url_clicks (
                     content: (
                         <p>
                             URL shortener এ <strong>Eventual Consistency</strong> acceptable। নতুন URL
-                            তৈরি হলে 1-2 second পরে সব regions এ পাওয়া গেলেই হবে। Strong consistency
+                            তৈরি হলে 1-2 second পরে সব regions এ পানয়া গেলেই হবে। Strong consistency
                             এর জন্য performance sacrifice করা worth না।
                         </p>
                     ),
@@ -764,12 +764,12 @@ CREATE TABLE url_clicks (
                         {
                             title: (
                                 <span className='font-mono text-primary'>
-                                    Requirements Clarify করো আগে
+                                    Requirements Clarify করুন আগে
                                 </span>
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
-                                    Directly design এ না গিয়ে জিজ্ঞেস করো — custom alias দরকার?
+                                    Directly design এ না গিয়ে জিজ্ঞেস করুন — custom alias দরকার?
                                     analytics চাই? expiration দরকার? কত users? এটাই interviewer দেখতে চায়।
                                 </span>
                             ),
@@ -783,14 +783,14 @@ CREATE TABLE url_clicks (
                             description: (
                                 <span className='text-muted-foreground'>
                                     100M daily URLs, 100:1 read/write ratio, 115K reads/sec — এই numbers
-                                    মুখস্থ রাখো এবং calculation করে দেখাও।
+                                    মুখস্থ রাখুন এবং calculation করে দেখাও।
                                 </span>
                             ),
                         },
                         {
                             title: (
                                 <span className='font-mono text-primary'>
-                                    Base62 vs Hash — পার্থক্য জানো
+                                    Base62 vs Hash — পার্থক্য জানেন
                                 </span>
                             ),
                             description: (
@@ -803,7 +803,7 @@ CREATE TABLE url_clicks (
                         {
                             title: (
                                 <span className='font-mono text-primary'>
-                                    301 vs 302 Trade-off বলো
+                                    301 vs 302 Trade-off বলুন
                                 </span>
                             ),
                             description: (
@@ -816,7 +816,7 @@ CREATE TABLE url_clicks (
                         {
                             title: (
                                 <span className='font-mono text-emerald-400'>
-                                    Cache + DB Architecture বলো
+                                    Cache + DB Architecture বলুন
                                 </span>
                             ),
                             description: (
@@ -860,15 +860,15 @@ CREATE TABLE url_clicks (
                     content: (
                         <div className='space-y-1 text-sm'>
                             <p>
-                                <strong>Mention করো:</strong> Eventual consistency acceptable কারণ URL
+                                <strong>Mention করুন:</strong> Eventual consistency acceptable কারণ URL
                                 shortener তে 1-2s lag কোনো problem না।
                             </p>
                             <p>
-                                <strong>Mention করো:</strong> Analytics async হওয়া উচিত (Kafka) —
+                                <strong>Mention করুন:</strong> Analytics async হওয়া উচিত (Kafka) —
                                 redirect path block করা উচিত না।
                             </p>
                             <p>
-                                <strong>Mention করো:</strong> Sharding strategy — short_code এর first
+                                <strong>Mention করুন:</strong> Sharding strategy — short_code এর first
                                 char দিয়ে shard করা যায়।
                             </p>
                         </div>
@@ -953,7 +953,7 @@ CREATE TABLE url_clicks (
                         key: 'a',
                         text: '62 million',
                         isCorrect: false,
-                        explanation: '62 million অনেক কম — এতে URL শেষ হয়ে যাবে।',
+                        explanation: '62 million অনেক কম — এতে URL শেষ হয়ে যাবেন।',
                     },
                     {
                         key: 'b',
@@ -978,7 +978,7 @@ CREATE TABLE url_clicks (
             },
             {
                 id: 3,
-                text: 'Analytics track করতে চাইলে 301 নাকি 302 redirect use করবে?',
+                text: 'Analytics track করতে চাইলে 301 নাকি 302 redirect use করবেন?',
                 options: [
                     {
                         key: 'a',
@@ -1040,7 +1040,7 @@ CREATE TABLE url_clicks (
             },
             {
                 id: 5,
-                text: 'URL Shortener এ database কোনটা সবচেয়ে বেশি scale করতে পারবে?',
+                text: 'URL Shortener এ database কোনটা সবচেয়ে বেশি scale করতে পারবেন?',
                 options: [
                     {
                         key: 'a',
@@ -1090,7 +1090,7 @@ CREATE TABLE url_clicks (
                         text: 'Database Master (single)',
                         isCorrect: true,
                         explanation:
-                            'সঠিক উত্তর। Single Database Master down হলে writes বন্ধ হয়ে যাবে। Solution: Master-Slave replication + automatic failover (using tools like Orchestrator বা AWS RDS Multi-AZ)। API servers stateless তাই SPOF না।',
+                            'সঠিক উত্তর। Single Database Master down হলে writes বন্ধ হয়ে যাবেন। Solution: Master-Slave replication + automatic failover (using tools like Orchestrator বা AWS RDS Multi-AZ)। API servers stateless তাই SPOF না।',
                     },
                     {
                         key: 'd',
@@ -1102,14 +1102,14 @@ CREATE TABLE url_clicks (
             },
             {
                 id: 7,
-                text: 'Custom alias feature-এ race condition কীভাবে prevent করবে?',
+                text: 'Custom alias feature-এ race condition কীভাবে prevent করবেন?',
                 options: [
                     {
                         key: 'a',
                         text: 'Database UNIQUE constraint + transaction',
                         isCorrect: true,
                         explanation:
-                            'সঠিক উত্তর। Application level check safe না — দুটো request একই সময়ে check করলে দুটোই "not exists" দেখবে। Database UNIQUE constraint atomic — শুধুমাত্র একটা insert succeed করবে, অন্যটা error পাবে। এটাই correct approach।',
+                            'সঠিক উত্তর। Application level check safe না — দুটো request একই সময়ে check করলেন দুটোই "not exists" দেখবেন। Database UNIQUE constraint atomic — শুধুমাত্র একটা insert succeed করবেন, অন্যটা error পাবেন। এটাই correct approach।',
                     },
                     {
                         key: 'b',
@@ -1125,7 +1125,7 @@ CREATE TABLE url_clicks (
                     },
                     {
                         key: 'd',
-                        text: 'Single threaded server use করো',
+                        text: 'Single threaded server use করুন',
                         isCorrect: false,
                         explanation: 'Single threaded server scale করা যায় না।',
                     },
@@ -1137,19 +1137,19 @@ CREATE TABLE url_clicks (
                 options: [
                     {
                         key: 'a',
-                        text: 'Every request-এ DB query করো',
+                        text: 'Every request-এ DB query করুন',
                         isCorrect: false,
-                        explanation: 'Every request এ DB query করলে latency বাড়বে।',
+                        explanation: 'Every request এ DB query করলেন latency বাড়বে।',
                     },
                     {
                         key: 'b',
-                        text: 'Cron job প্রতি second-এ run করো',
+                        text: 'Cron job প্রতি second-এ run করুন',
                         isCorrect: false,
                         explanation: 'প্রতি second এ cron job database এ load বাড়াবে।',
                     },
                     {
                         key: 'c',
-                        text: 'User manually delete করবে',
+                        text: 'User manually delete করবেন',
                         isCorrect: false,
                         explanation: 'User manually delete করা reliable নয়।',
                     },
@@ -1158,13 +1158,13 @@ CREATE TABLE url_clicks (
                         text: 'Redis TTL + background cleanup job',
                         isCorrect: true,
                         explanation:
-                            'সঠিক উত্তর। Redis TTL set করলে cache automatically expire হবে। DB তে expires_at column থাকবে। Background job (daily/hourly) expired URLs delete করবে। Every request-এ expiry check করলে latency বাড়বে।',
+                            'সঠিক উত্তর। Redis TTL set করলেন cache automatically expire হবে। DB তে expires_at column থাকবেন। Background job (daily/hourly) expired URLs delete করবেন। Every request-এ expiry check করলেন latency বাড়বে।',
                     },
                 ],
             },
             {
                 id: 9,
-                text: 'প্রতিদিন 100M URL create করলে 1 বছরে storage কত লাগবে (প্রতি URL ~500 bytes)?',
+                text: 'প্রতিদিন 100M URL create করলেন 1 বছরে storage কত লাগবে (প্রতি URL ~500 bytes)?',
                 options: [
                     {
                         key: 'a',
@@ -1195,7 +1195,7 @@ CREATE TABLE url_clicks (
             },
             {
                 id: 10,
-                text: 'URL Shortener design-এ Consistency vs Availability — কোনটা prioritize করবে?',
+                text: 'URL Shortener design-এ Consistency vs Availability — কোনটা prioritize করবেন?',
                 options: [
                     {
                         key: 'a',
@@ -1214,7 +1214,7 @@ CREATE TABLE url_clicks (
                         text: 'Availability + Eventual Consistency',
                         isCorrect: true,
                         explanation:
-                            'সঠিক উত্তর। URL Shortener-এ 1-2 second lag acceptable। নতুন URL সব regions-এ instantly propagate না হলেও চলে। Availability বেশি important — system down থাকলে সব redirects fail করবে। Eventual consistency দিয়ে performance + availability দুটোই পাওয়া যায়।',
+                            'সঠিক উত্তর। URL Shortener-এ 1-2 second lag acceptable। নতুন URL সব regions-এ instantly propagate না হলেও চলে। Availability বেশি important — system down থাকলে সব redirects fail করবেন। Eventual consistency দিয়ে performance + availability দুটোই পানয়া যায়।',
                     },
                     {
                         key: 'd',
@@ -1227,31 +1227,31 @@ CREATE TABLE url_clicks (
         ],
     },
     assignment: {
-        title: 'URL Shortener সিস্টেম তৈরি করো',
+        title: 'URL Shortener সিস্টেম তৈরি করুন',
         time: '৩-৪ ঘন্টা',
         difficulty: 'Intermediate',
         tasks: [
             <span key='1'>
                 <strong>System Diagram:</strong> Excalidraw বা draw.io তে URL Shortener-এর complete
-                architecture diagram আঁকো। Include করো: Client → Load Balancer → API Servers → Cache
-                (Redis) → Database (Master + Replica)। প্রতিটা component-এ label দাও।
+                architecture diagram আঁকুন। Include করুন: Client → Load Balancer → API Servers → Cache
+                (Redis) → Database (Master + Replica)। প্রতিটা component-এ label দিন।
             </span>,
             <span key='2'>
-                <strong>Estimation Exercise:</strong> যদি তোমার system প্রতিদিন 500M URL create করে
+                <strong>Estimation Exercise:</strong> যদি আপনার system প্রতিদিন 500M URL create করে
                 (Twitter scale), তাহলে: (ক) writes/sec কত? (খ) reads/sec কত (1000:1 ratio)? (গ) 5 বছরে
                 storage কত (প্রতি URL 1KB)?
             </span>,
             <span key='3'>
-                <strong>Code এ Base62:</strong> Python বা JavaScript-এ Base62 encode/decode function লেখো।
-                Test করো: encode(125) কত দেয়? decode সেটা আবার 125 দেয় কিনা।
+                <strong>Code এ Base62:</strong> Python বা JavaScript-এ Base62 encode/decode function লিখুন।
+                Test করুন: encode(125) কত দেয়? decode সেটা আবার 125 দেয় কিনা।
             </span>,
             <span key='4'>
-                <strong>Trade-off Analysis:</strong> তুমি কি MySQL নাকি Cassandra choose করবে যদি: (ক)
-                শুধু 1M users, (খ) 1 billion users? প্রতিটার জন্য reason দাও।
+                <strong>Trade-off Analysis:</strong> আপনি কি MySQL নাকি Cassandra choose করবেন যদি: (ক)
+                শুধু 1M users, (খ) 1 billion users? প্রতিটার জন্য reason দিন।
             </span>,
             <span key='5'>
-                <strong>Cache Strategy:</strong> Redis-এ URL cache করলে TTL কত রাখবে এবং কেন? যদি URL
-                expire হয়ে যায়, cache invalidate করার process describe করো।
+                <strong>Cache Strategy:</strong> Redis-এ URL cache করলেন TTL কত রাখবে এবং কেন? যদি URL
+                expire হয়ে যায়, cache invalidate করার process describe করুন।
             </span>,
         ],
         deliverables: [
@@ -1266,29 +1266,29 @@ CREATE TABLE url_clicks (
         subtitle: 'Base62 + Redis + Node.js',
         steps: [
             {
-                title: 'Project Setup করো',
+                title: 'Project Setup করুন',
                 description:
-                    'Node.js project initialize করো। Dependencies install করো: express, redis, uuid। MongoDB বা SQLite use করো persistent storage এর জন্য।',
+                    'Node.js project initialize করুন। Dependencies install করুন: express, redis, uuid। MongoDB বা SQLite use করুন persistent storage এর জন্য।',
             },
             {
-                title: 'Base62 Encoder লেখো',
+                title: 'Base62 Encoder লিখুন',
                 description:
-                    'encode(num) এবং decode(str) function লেখো। Test করো: encode(1) → "0000001", decode("0000001") → 1। Edge cases handle করো।',
+                    'encode(num) এবং decode(str) function লিখুন। Test করুন: encode(1) → "0000001", decode("0000001") → 1। Edge cases handle করুন।',
             },
             {
-                title: 'Redis Cache Setup করো',
+                title: 'Redis Cache Setup করুন',
                 description:
-                    'Redis connect করো। short_code → long_url mapping cache করো TTL=86400 (1 day) দিয়ে। Cache miss হলে DB থেকে fetch করো।',
+                    'Redis connect করুন। short_code → long_url mapping cache করুন TTL=86400 (1 day) দিয়ে। Cache miss হলে DB থেকে fetch করুন।',
             },
             {
-                title: 'API Endpoints বানাও',
+                title: 'API Endpoints বানান',
                 description:
-                    'POST /shorten (long_url নিয়ে short_url return করে) এবং GET /:shortCode (redirect করে) endpoints implement করো।',
+                    'POST /shorten (long_url নিয়ে short_url return করে) এবং GET /:shortCode (redirect করে) endpoints implement করুন।',
             },
             {
-                title: 'Test ও Benchmark করো',
+                title: 'Test ও Benchmark করুন',
                 description:
-                    'curl বা Postman দিয়ে test করো। Cache hit vs miss latency compare করো। 1000 requests এ average response time measure করো।',
+                    'curl বা Postman দিয়ে test করুন। Cache hit vs miss latency compare করুন। 1000 requests এ average response time measure করুন।',
             },
         ],
         codeBlock: {
@@ -1385,6 +1385,6 @@ function trackClick(shortCode) {
 
 app.listen(3000, () => console.log('TinyURL server running on port 3000'));`,
         },
-        tip: 'Redis cache hit এবং DB fallback latency compare করো। Cache hit 1-2ms, DB fallback 10-50ms হওয়া উচিত। এটাই 100:1 read/write ratio এর power — cache দিয়েই 99%+ traffic handle করা যায়।',
+        tip: 'Redis cache hit এবং DB fallback latency compare করুন। Cache hit 1-2ms, DB fallback 10-50ms হওয়া উচিত। এটাই 100:1 read/write ratio এর power — cache দিয়েই 99%+ traffic handle করা যায়।',
     },
 };

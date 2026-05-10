@@ -23,9 +23,9 @@ export const apiDesignContent: TopicData = {
                         <div className='space-y-6'>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
                                 API (Application Programming Interface) হলো দুটো
-                                system এর মধ্যে communication এর চুক্তি। ধরো
-                                একটা restaurant এর menu — তুমি menu দেখে order
-                                করো, kitchen কীভাবে বানায় সেটা তোমাকে জানতে
+                                system এর মধ্যে communication এর চুক্তি। ধরুন
+                                একটা restaurant এর menu — আপনি menu দেখে order
+                                করুন, kitchen কীভাবে বানায় সেটা আপনাকে জানতে
                                 হয় না। API ও ঠিক তাই — client কী চাইতে পারে
                                 এবং server কী দেবে সেটা define করে।
                             </p>
@@ -317,7 +317,7 @@ export const apiDesignContent: TopicData = {
                     title: 'REST Design Rules',
                     content: (
                         <p>
-                            Nouns use করো, verbs না:{' '}
+                            Nouns use করুন, verbs না:{' '}
                             <code className='font-mono text-sm bg-card px-1.5 py-0.5 border border-border text-blue-400'>
                                 /users
                             </code>{' '}
@@ -325,7 +325,7 @@ export const apiDesignContent: TopicData = {
                             <code className='font-mono text-sm bg-card px-1.5 py-0.5 border border-border text-blue-400'>
                                 /getUsers
                             </code>{' '}
-                            খারাপ। Plural use করো:{' '}
+                            খারাপ। Plural use করুন:{' '}
                             <code className='font-mono text-sm bg-card px-1.5 py-0.5 border border-border text-blue-400'>
                                 /users
                             </code>
@@ -341,7 +341,7 @@ export const apiDesignContent: TopicData = {
                             <code className='font-mono text-sm bg-card px-1.5 py-0.5 border border-border text-blue-400'>
                                 /api/v1/users
                             </code>
-                            । HTTP status codes সঠিকভাবে use করো।
+                            । HTTP status codes সঠিকভাবে use করুন।
                         </p>
                     ),
                 },
@@ -360,7 +360,7 @@ export const apiDesignContent: TopicData = {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <p className='text-muted-foreground leading-relaxed mb-10 text-lg'>
-                            Facebook তৈরি করেছে। Client exactly যেটুকু data
+                            Facebook তৈরি করেছেনে। Client exactly যেটুকু data
                             চায় সেটুকুই request করতে পারে — over-fetching বা
                             under-fetching নেই। একটা endpoint, flexible queries।
                         </p>
@@ -398,7 +398,7 @@ export const apiDesignContent: TopicData = {
                                             '{ user(id: 123) { name avatar posts { title } } }'
                                         }
                                     </code>{' '}
-                                    — শুধু name, avatar, এবং post titles আসবে।
+                                    — শুধু name, avatar, এবং post titles আসবেন।
                                     একটা request এ সব।
                                 </p>
                             </div>
@@ -460,7 +460,7 @@ mutation UpdateProfile($name: String!, $bio: String) {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <p className='text-muted-foreground leading-relaxed mb-10 text-lg'>
-                            Google তৈরি করেছে। Protocol Buffers (protobuf) দিয়ে
+                            Google তৈরি করেছেনে। Protocol Buffers (protobuf) দিয়ে
                             data serialize করে — JSON এর চেয়ে ৫-১০x faster।
                             Strongly typed, code generation, bidirectional
                             streaming। Microservices internal communication এর
@@ -582,7 +582,7 @@ message UserResponse {
                     content: (
                         <p className='text-muted-foreground leading-relaxed mb-10 text-lg'>
                             Microservices architecture এ ৫০টা service আছে।
-                            Client কি ৫০টা আলাদা URL জানবে? না।{' '}
+                            Client কি ৫০টা আলাদা URL জানবেন? না।{' '}
                             <strong className='text-foreground'>
                                 API Gateway
                             </strong>{' '}
@@ -820,7 +820,7 @@ message UserResponse {
                             <strong>Authentication:</strong> JWT token verify
                             করে, backend services কে auth চিন্তা করতে হয় না।{' '}
                             <strong>Rate Limiting:</strong> প্রতি user/IP কতটা
-                            request করতে পারবে limit করে।{' '}
+                            request করতে পারবেন limit করে।{' '}
                             <strong>Request Transformation:</strong>{' '}
                             Request/response format modify করতে পারে।{' '}
                             <strong>Circuit Breaking:</strong> Backend service
@@ -928,7 +928,7 @@ app.use('/api/', apiLimiter);`,
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.CONCEPT,
-                    title: 'Q1: REST vs GraphQL কখন ব্যবহার করবে?',
+                    title: 'Q1: REST vs GraphQL কখন ব্যবহার করবেন?',
                     content: (
                         <p>
                             <strong>উত্তর:</strong> &quot;Better&quot; নির্ভর
@@ -936,14 +936,14 @@ app.use('/api/', apiLimiter);`,
                             caching important। GraphQL — complex data
                             requirements, mobile app (bandwidth sensitive),
                             multiple clients different data চাই। Interview এ
-                            দুটোর trade-off বলো।
+                            দুটোর trade-off বলুন।
                         </p>
                     ),
                 },
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.CONCEPT,
-                    title: 'Q2: Rate Limiting কীভাবে implement করবে?',
+                    title: 'Q2: Rate Limiting কীভাবে implement করবেন?',
                     content: (
                         <p>
                             <strong>উত্তর:</strong> Token Bucket বা Sliding
@@ -954,7 +954,7 @@ app.use('/api/', apiLimiter);`,
                             </code>{' '}
                             + RedisStore। Limit exceed হলে 429 Too Many Requests
                             return করি, Retry-After header সহ। API Gateway
-                            level এ (Kong/AWS) করলে service কে বিরক্ত করতে হয়
+                            level এ (Kong/AWS) করলেন service কে বিরক্ত করতে হয়
                             না।
                         </p>
                     ),
@@ -962,7 +962,7 @@ app.use('/api/', apiLimiter);`,
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.CONCEPT,
-                    title: 'Q3: API versioning কীভাবে করবে?',
+                    title: 'Q3: API versioning কীভাবে করবেন?',
                     content: (
                         <p>
                             <strong>উত্তর:</strong> ৩টা approach: URL
@@ -1007,7 +1007,7 @@ app.use('/api/', apiLimiter);`,
             ],
             [
                 <span className='font-bold text-primary'>Rate Limiting</span>,
-                'Abuse prevent করো, 429 Too Many Requests দাও',
+                'Abuse prevent করুন, 429 Too Many Requests দিন',
             ],
             [
                 <span className='font-bold text-primary'>Status Codes</span>,
@@ -1025,7 +1025,7 @@ app.use('/api/', apiLimiter);`,
         questions: [
             {
                 id: 1,
-                text: 'REST API তে নতুন resource create করতে কোন HTTP method use করবে?',
+                text: 'REST API তে নতুন resource create করতে কোন HTTP method use করবেন?',
                 options: [
                     {
                         key: 'A',
@@ -1118,7 +1118,7 @@ app.use('/api/', apiLimiter);`,
                     },
                     {
                         key: 'D',
-                        text: '401 = unauthenticated (login করোনি), 403 = unauthorized (login করেছো কিন্তু permission নেই)',
+                        text: '401 = unauthenticated (login করুননি), 403 = unauthorized (login করেছেনো কিন্তু permission নেই)',
                         isCorrect: true,
                         explanation:
                             'সঠিক উত্তর: D — 401: Token নেই বা invalid। "Who are you?" 403: Token valid কিন্তু এই resource access করার permission নেই। "I know you, but you can\'t enter here."',
@@ -1256,7 +1256,7 @@ app.use('/api/', apiLimiter);`,
                         text: 'REST এ URL এ verbs নয়, nouns use করা উচিত। সঠিক: GET /users',
                         isCorrect: true,
                         explanation:
-                            'সঠিক উত্তর: D — REST best practice হলো URL এ nouns (resources): /users, /products, /orders। Action/verb টা HTTP method দিয়ে express করো: GET (read), POST (create), DELETE (remove)।',
+                            'সঠিক উত্তর: D — REST best practice হলো URL এ nouns (resources): /users, /products, /orders। Action/verb টা HTTP method দিয়ে express করুন: GET (read), POST (create), DELETE (remove)।',
                     },
                 ],
             },
@@ -1317,7 +1317,7 @@ app.use('/api/', apiLimiter);`,
                         text: 'GraphQL — client exactly needed data request করতে পারে, bandwidth save হয়',
                         isCorrect: true,
                         explanation:
-                            'সঠিক উত্তর: C — Mobile এ bandwidth valuable। GraphQL এ client শুধু দরকারী fields request করে — over-fetching নেই। আর একটা query তে nested data পাওয়া যায় — multiple round trips নেই।',
+                            'সঠিক উত্তর: C — Mobile এ bandwidth valuable। GraphQL এ client শুধু দরকারী fields request করে — over-fetching নেই। আর একটা query তে nested data পানয়া যায় — multiple round trips নেই।',
                     },
                     {
                         key: 'D',
@@ -1370,35 +1370,35 @@ app.use('/api/', apiLimiter);`,
         difficulty: 'Junior Level',
         tasks: [
             <span key='1'>
-                <strong>API Design করো:</strong> একটা Blog platform এর REST API
-                design করো। Endpoints define করো: posts (CRUD), comments (CRUD),
+                <strong>API Design করুন:</strong> একটা Blog platform এর REST API
+                design করুন। Endpoints define করুন: posts (CRUD), comments (CRUD),
                 users (CRUD), likes। Proper HTTP methods, status codes, URL
-                structure use করো।
+                structure use করুন।
             </span>,
             <span key='2'>
                 <strong>REST vs GraphQL Analysis:</strong> Instagram এর
                 &quot;User Profile&quot; page এ দরকার: username, avatar, posts
                 count, followers count, latest 9 posts (thumbnail only)। REST এ
-                কতটা API call লাগবে? GraphQL এ কীভাবে একটাতেই হবে? লেখো।
+                কতটা API call লাগবে? GraphQL এ কীভাবে একটাতেই হবে? লিখুন।
             </span>,
             <span key='3'>
                 <strong>Status Code Practice:</strong> নিচের ৮টা scenario তে
-                সঠিক HTTP status code বলো: (ক) Login successful (খ) Wrong
-                password (গ) Admin-only page, regular user access করলে (ঘ)
+                সঠিক HTTP status code বলুন: (ক) Login successful (খ) Wrong
+                password (গ) Admin-only page, regular user access করলেন (ঘ)
                 Product ID 9999 নেই (ঙ) Server database connection failed (চ)
                 New order created (ছ) Rate limit exceeded (জ) Request body এ
                 required field নেই।
             </span>,
             <span key='4'>
                 <strong>API Gateway Design:</strong> একটা E-commerce এর API
-                Gateway design করো। কোন routes কোন service এ যাবে? Auth কোথায়
-                check হবে? Rate limit কীভাবে apply হবে? Diagram বানাও।
+                Gateway design করুন। কোন routes কোন service এ যাবেন? Auth কোথায়
+                check হবে? Rate limit কীভাবে apply হবে? Diagram বানান।
             </span>,
             <span key='5'>
                 <strong>Code:</strong> উপরে দেওয়া Express.js REST API starter
-                code extend করো: DELETE endpoint add করো, input validation add
-                করো (name minimum 2 chars, valid email), proper error messages
-                return করো।
+                code extend করুন: DELETE endpoint add করুন, input validation add
+                করুন (name minimum 2 chars, valid email), proper error messages
+                return করুন।
             </span>,
         ],
         deliverables: [
@@ -1418,7 +1418,7 @@ app.use('/api/', apiLimiter);`,
         subtitle: 'Full REST API with Auth & Rate Limiting',
         steps: [
             {
-                title: 'Setup করো',
+                title: 'Setup করুন',
                 description: (
                     <>
                         <code className='font-mono text-xs bg-card px-1.5 py-0.5 border border-border text-blue-400'>
@@ -1436,19 +1436,19 @@ app.use('/api/', apiLimiter);`,
             {
                 title: 'Protected Todo CRUD',
                 description:
-                    'GET/POST/PATCH/DELETE /todos — JWT middleware দিয়ে protect করো। শুধু owner তার নিজের todos দেখতে পারবে।',
+                    'GET/POST/PATCH/DELETE /todos — JWT middleware দিয়ে protect করুন। শুধু owner তার নিজের todos দেখতে পারবেন।',
             },
             {
-                title: 'Rate Limiting যোগ করো',
+                title: 'Rate Limiting যোগ করুন',
                 description:
                     'Login endpoint এ 5 requests per minute limit। General API তে 100 requests per 15 minutes।',
             },
             {
-                title: 'Postman দিয়ে test করো',
+                title: 'Postman দিয়ে test করুন',
                 description:
-                    'সব endpoints test করো। Rate limit test করো — ৬ বার rapid login করো।',
+                    'সব endpoints test করুন। Rate limit test করুন — ৬ বার rapid login করুন।',
             },
         ],
-        tip: 'JWT authentication implement করবে। REST best practices follow করবে। Rate limiting practically দেখবে। এটা portfolio তে রাখার মতো project।',
+        tip: 'JWT authentication implement করবেন। REST best practices follow করবেন। Rate limiting practically দেখবেন। এটা portfolio তে রাখার মতো project।',
     },
 };

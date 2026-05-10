@@ -41,8 +41,8 @@ export const amazonContent: TopicData = {
                         <p>
                             <strong>Overselling Problem:</strong> Stock = 1,
                             কিন্তু 100 user একই সময়ে "Buy Now" click করল। Race
-                            condition prevent করতে না পারলে 100 জনের order
-                            accept হবে কিন্তু deliver করা যাবে না।
+                            condition prevent করতে না পারলেন 100 জনের order
+                            accept হবে কিন্তু deliver করা যাবেন না।
                         </p>
                     ),
                 },
@@ -175,7 +175,7 @@ export const amazonContent: TopicData = {
                     content: (
                         <p className='text-muted-foreground leading-relaxed text-lg'>
                             Amazon early 2000s-এ monolith থেকে microservices-এ
-                            migrate করেছিল। এখন thousands of microservices।
+                            migrate করেছেনিল। এখন thousands of microservices।
                         </p>
                     ),
                 },
@@ -746,7 +746,7 @@ export const amazonContent: TopicData = {
                         <p>
                             Stock = 1, user A ও B একই সময়ে checkout করছে।
                             Step 2-তে যদি proper locking না থাকে দুজনই "stock
-                            available" দেখবে। Solution:{' '}
+                            available" দেখবেন। Solution:{' '}
                             <strong>Optimistic Locking</strong> বা{' '}
                             <strong>Database row lock</strong> with version
                             check।
@@ -776,7 +776,7 @@ export const amazonContent: TopicData = {
             # Success! কেউ আগে update করেনি
             return "Reserved"
         else:
-            # Conflict! কেউ আগে stock নিয়ে গেছে, retry করো
+            # Conflict! কেউ আগে stock নিয়ে গেছে, retry করুন
             continue  # বা raise error`,
                 },
                 {
@@ -788,8 +788,8 @@ export const amazonContent: TopicData = {
                             </h3>
                             <p className='text-muted-foreground leading-relaxed'>
                                 Flash sale: 100 units, 10,000 requests একসাথে।
-                                Database-এ directly পাঠালে DB crash করবে।
-                                Solution: Redis atomic counter ব্যবহার করো।
+                                Database-এ directly পাঠালে DB crash করবেন।
+                                Solution: Redis atomic counter ব্যবহার করুন।
                             </p>
                         </div>
                     ),
@@ -840,25 +840,25 @@ export const amazonContent: TopicData = {
                         ],
                         [
                             '2. Lock Inventory',
-                            'Stock reserve করো (soft lock)',
+                            'Stock reserve করুন (soft lock)',
                             'Inventory Service',
                             <span className='text-red-400'>⚠️ Very Critical</span>,
                         ],
                         [
                             '3. Payment',
-                            'Card charge করো',
+                            'Card charge করুন',
                             'Payment Service',
                             <span className='text-red-400'>⚠️ Most Critical</span>,
                         ],
                         [
                             '4. Confirm Order',
-                            'Order create করো DB-তে',
+                            'Order create করুন DB-তে',
                             'Order Service',
                             <span className='text-emerald-400 font-bold'>Critical</span>,
                         ],
                         [
                             '5. Reduce Inventory',
-                            'Actual stock deduct করো',
+                            'Actual stock deduct করুন',
                             'Inventory Service',
                             <span className='text-emerald-400 font-bold'>Critical</span>,
                         ],
@@ -878,9 +878,9 @@ export const amazonContent: TopicData = {
                         <p>
                             Distributed systems-এ traditional ACID transaction
                             নেই।{' '}
-                            <strong>SAGA Pattern</strong> use করো: প্রতিটা step
-                            এর জন্য compensating transaction define করো। Payment
-                            fail হলে → inventory unlock করো → cart restore করো।
+                            <strong>SAGA Pattern</strong> use করুন: প্রতিটা step
+                            এর জন্য compensating transaction define করুন। Payment
+                            fail হলে → inventory unlock করুন → cart restore করুন।
                             Chain of events with rollback।
                         </p>
                     ),
@@ -896,7 +896,7 @@ export const amazonContent: TopicData = {
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
-                                    Inventory Service-এ stock soft-lock করো।
+                                    Inventory Service-এ stock soft-lock করুন।
                                     Compensation:{' '}
                                     <span className='text-yellow-400'>
                                         inventory.release(cart.items)
@@ -912,7 +912,7 @@ export const amazonContent: TopicData = {
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
-                                    Payment Service-এ card charge করো।
+                                    Payment Service-এ card charge করুন।
                                     Compensation:{' '}
                                     <span className='text-yellow-400'>
                                         payment.refund(payment_id)
@@ -928,7 +928,7 @@ export const amazonContent: TopicData = {
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
-                                    Order Service DB-তে order create করো।
+                                    Order Service DB-তে order create করুন।
                                     Compensation:{' '}
                                     <span className='text-yellow-400'>
                                         order.cancel(order_id)
@@ -944,8 +944,8 @@ export const amazonContent: TopicData = {
                             ),
                             description: (
                                 <span className='text-muted-foreground'>
-                                    Event publish করো — Notification, Fulfillment
-                                    service async consume করবে।{' '}
+                                    Event publish করুন — Notification, Fulfillment
+                                    service async consume করবেন।{' '}
                                     <span className='text-emerald-400'>
                                         Non-blocking ✓
                                     </span>
@@ -1031,7 +1031,7 @@ export const amazonContent: TopicData = {
                                             <strong className='text-foreground'>
                                                 Product Cache:
                                             </strong>{' '}
-                                            Popular products Redis-এ cache করো।
+                                            Popular products Redis-এ cache করুন।
                                             80% product views cached। DB load
                                             drastically কমে।
                                         </>
@@ -1075,7 +1075,7 @@ export const amazonContent: TopicData = {
                                                 Read Replicas:
                                             </strong>{' '}
                                             Product reads অনেক বেশি। Read
-                                            replicas দিয়ে scale করো কিন্তু
+                                            replicas দিয়ে scale করুন কিন্তু
                                             replication lag এ newly added
                                             products কিছুক্ষণ দেখা না-ও যেতে
                                             পারে।
@@ -1211,7 +1211,7 @@ export const amazonContent: TopicData = {
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
                                         Payment = most critical path। Stripe বা
                                         Internal payment processor। Idempotency
-                                        key দিয়ে double charge prevent করো।
+                                        key দিয়ে double charge prevent করুন।
                                         PCI DSS compliance mandatory।
                                         Synchronous flow — user wait করে।
                                     </p>
@@ -1224,7 +1224,7 @@ export const amazonContent: TopicData = {
                                         Collaborative filtering ML model + offline
                                         batch computation। "User A এবং User B
                                         একই products কিনেছে" — pattern থেকে
-                                        suggest করো। Offline job (Spark) daily
+                                        suggest করুন। Offline job (Spark) daily
                                         compute। Real-time serving Redis থেকে।
                                     </p>
                                 </div>
@@ -1240,22 +1240,22 @@ export const amazonContent: TopicData = {
                         <div className='space-y-2'>
                             <p>
                                 <strong>1)</strong> সবসময় overselling problem
-                                mention করো এবং Optimistic Locking solution দাও।
+                                mention করুন এবং Optimistic Locking solution দিন।
                             </p>
                             <p>
                                 <strong>2)</strong> Order processing-এ SAGA
-                                pattern explain করো — distributed transaction
+                                pattern explain করুন — distributed transaction
                                 problem জানাও।
                             </p>
                             <p>
                                 <strong>3)</strong> Database choices justify
-                                করো: Orders → PostgreSQL (ACID), Cart → Redis
+                                করুন: Orders → PostgreSQL (ACID), Cart → Redis
                                 (ephemeral), Search → Elasticsearch।
                             </p>
                             <p>
                                 <strong>4)</strong> Black Friday spike-এর জন্য
                                 Auto-scaling + Queue-based processing mention
-                                করো।
+                                করুন।
                             </p>
                             <p>
                                 <strong>5)</strong> Notification async (Kafka)
@@ -1334,18 +1334,18 @@ export const amazonContent: TopicData = {
         questions: [
             {
                 id: 1,
-                text: 'Stock = 1, 100 user একই সময়ে order দিল। Overselling prevent করবে কীভাবে?',
+                text: 'Stock = 1, 100 user একই সময়ে order দিল। Overselling prevent করবেন কীভাবে?',
                 options: [
                     {
                         key: 'a',
-                        text: 'শুধু প্রথম request accept করো',
+                        text: 'শুধু প্রথম request accept করুন',
                         isCorrect: false,
                         explanation:
                             'প্রথম request detect করা distributed system-এ practically impossible — race condition তৈরি হয়।',
                     },
                     {
                         key: 'b',
-                        text: 'Queue-তে রাখো, একে একে process করো',
+                        text: 'Queue-তে রাখুন, একে একে process করুন',
                         isCorrect: false,
                         explanation:
                             'Queue slow হবে এবং guarantee করে না যে stock check atomic হবে।',
@@ -1355,11 +1355,11 @@ export const amazonContent: TopicData = {
                         text: 'Database row-level lock + version check (Optimistic Locking)',
                         isCorrect: true,
                         explanation:
-                            'সঠিক উত্তর। Optimistic Locking: UPDATE stock WHERE version=X। শুধু একটা transaction succeed করবে, বাকিগুলো retry করবে বা fail পাবে। Race condition perfectly handle করে। Production-grade solution।',
+                            'সঠিক উত্তর। Optimistic Locking: UPDATE stock WHERE version=X। শুধু একটা transaction succeed করবেন, বাকিগুলো retry করবেন বা fail পাবেন। Race condition perfectly handle করে। Production-grade solution।',
                     },
                     {
                         key: 'd',
-                        text: 'Redis-এ counter রাখো',
+                        text: 'Redis-এ counter রাখুন',
                         isCorrect: false,
                         explanation:
                             'Redis counter flash sale-এ ভালো কিন্তু full order flow-এর জন্য DB-level locking standard solution।',
@@ -1382,7 +1382,7 @@ export const amazonContent: TopicData = {
                         text: 'Redis — fast, ephemeral, TTL support',
                         isCorrect: true,
                         explanation:
-                            'সঠিক উত্তর। Cart data temporary, fast access দরকার, TTL দিয়ে abandoned cart expire করো। Redis in-memory তাই sub-millisecond read/write। Cart rarely needs complex queries — simple key-value perfect।',
+                            'সঠিক উত্তর। Cart data temporary, fast access দরকার, TTL দিয়ে abandoned cart expire করুন। Redis in-memory তাই sub-millisecond read/write। Cart rarely needs complex queries — simple key-value perfect।',
                     },
                     {
                         key: 'c',
@@ -1416,7 +1416,7 @@ export const amazonContent: TopicData = {
                         text: 'Redis — fast',
                         isCorrect: false,
                         explanation:
-                            'Redis ephemeral — Redis restart হলে orders হারিয়ে যাবে। Financial data Redis-এ রাখা dangerous।',
+                            'Redis ephemeral — Redis restart হলে orders হারিয়ে যাবেন। Financial data Redis-এ রাখা dangerous।',
                     },
                     {
                         key: 'c',
@@ -1430,7 +1430,7 @@ export const amazonContent: TopicData = {
                         text: 'Elasticsearch — search',
                         isCorrect: false,
                         explanation:
-                            'Elasticsearch search engine, transactional database নয়। Orders Elasticsearch-এ রাখা যাবে না।',
+                            'Elasticsearch search engine, transactional database নয়। Orders Elasticsearch-এ রাখা যাবেন না।',
                     },
                 ],
             },
@@ -1463,7 +1463,7 @@ export const amazonContent: TopicData = {
                         text: 'Distributed transaction pattern with compensating rollbacks',
                         isCorrect: true,
                         explanation:
-                            'সঠিক উত্তর। Microservices-এ single ACID transaction নেই। SAGA: প্রতিটা step-এর জন্য compensating action define করো। Payment fail → inventory release, order cancel। Eventual consistency with rollback capability।',
+                            'সঠিক উত্তর। Microservices-এ single ACID transaction নেই। SAGA: প্রতিটা step-এর জন্য compensating action define করুন। Payment fail → inventory release, order cancel। Eventual consistency with rollback capability।',
                     },
                 ],
             },
@@ -1507,17 +1507,17 @@ export const amazonContent: TopicData = {
                 options: [
                     {
                         key: 'a',
-                        text: 'সারা বছর 10x capacity রাখো',
+                        text: 'সারা বছর 10x capacity রাখুন',
                         isCorrect: false,
                         explanation:
                             'সারা বছর 10x capacity = massive waste of money। Cost-inefficient।',
                     },
                     {
                         key: 'b',
-                        text: 'Traffic limit করো',
+                        text: 'Traffic limit করুন',
                         isCorrect: false,
                         explanation:
-                            'Traffic limit করলে users চলে যাবে — revenue loss।',
+                            'Traffic limit করলেন users চলে যাবেন — revenue loss।',
                     },
                     {
                         key: 'c',
@@ -1537,7 +1537,7 @@ export const amazonContent: TopicData = {
             },
             {
                 id: 7,
-                text: 'Microservices-এ services-এর মধ্যে async communication কীভাবে করবে?',
+                text: 'Microservices-এ services-এর মধ্যে async communication কীভাবে করবেন?',
                 options: [
                     {
                         key: 'a',
@@ -1571,7 +1571,7 @@ export const amazonContent: TopicData = {
             },
             {
                 id: 8,
-                text: 'Product recommendations ("Customers also bought") কীভাবে implement করবে?',
+                text: 'Product recommendations ("Customers also bought") কীভাবে implement করবেন?',
                 options: [
                     {
                         key: 'a',
@@ -1589,7 +1589,7 @@ export const amazonContent: TopicData = {
                     },
                     {
                         key: 'c',
-                        text: 'Seller manually set করবে',
+                        text: 'Seller manually set করবেন',
                         isCorrect: false,
                         explanation:
                             'Manual setting scalable নয় — 350M products-এ impossible।',
@@ -1599,24 +1599,24 @@ export const amazonContent: TopicData = {
                         text: 'Collaborative filtering ML model + offline batch computation',
                         isCorrect: true,
                         explanation:
-                            'সঠিক উত্তর। Collaborative filtering: "User A এবং User B একই products কিনেছে, User A যা কিনেছে সেটা User B-কে recommend করো।" Offline batch job (Spark) প্রতিদিন compute করে। Real-time serving Redis থেকে।',
+                            'সঠিক উত্তর। Collaborative filtering: "User A এবং User B একই products কিনেছে, User A যা কিনেছে সেটা User B-কে recommend করুন।" Offline batch job (Spark) প্রতিদিন compute করে। Real-time serving Redis থেকে।',
                     },
                 ],
             },
             {
                 id: 9,
-                text: 'Flash sale (1000 items, 1 million users) efficiently handle করবে কীভাবে?',
+                text: 'Flash sale (1000 items, 1 million users) efficiently handle করবেন কীভাবে?',
                 options: [
                     {
                         key: 'a',
                         text: 'সব requests DB-তে পাঠাও',
                         isCorrect: false,
                         explanation:
-                            'DB-তে 1M requests পাঠানো মানে DB crash। Database এই load handle করতে পারবে না।',
+                            'DB-তে 1M requests পাঠানো মানে DB crash। Database এই load handle করতে পারবেন না।',
                     },
                     {
                         key: 'b',
-                        text: 'Redis-এ stock counter, DECR atomic করো। Zero হলে reject।',
+                        text: 'Redis-এ stock counter, DECR atomic করুন। Zero হলে reject।',
                         isCorrect: true,
                         explanation:
                             'সঠিক উত্তর। Redis DECR atomic operation। Counter = 1000। DECR → 999, 998... → 0। 0-এর নিচে গেলে reject। DB-তে 1M requests পাঠানো মানে DB crash। Redis in-memory তাই 1M req/sec handle করতে পারে।',
@@ -1630,7 +1630,7 @@ export const amazonContent: TopicData = {
                     },
                     {
                         key: 'd',
-                        text: 'Queue-তে সবাইকে রাখো',
+                        text: 'Queue-তে সবাইকে রাখুন',
                         isCorrect: false,
                         explanation:
                             '1M users queue-তে রাখলে memory issue হবে এবং most users কখনো served হবে না।',
@@ -1646,11 +1646,11 @@ export const amazonContent: TopicData = {
                         text: 'Synchronously — payment এর সাথে সাথে',
                         isCorrect: false,
                         explanation:
-                            'Email sending slow হতে পারে (SMTP server lag)। Checkout flow-এ block করলে user experience খারাপ হবে।',
+                            'Email sending slow হতে পারে (SMTP server lag)। Checkout flow-এ block করলেন user experience খারাপ হবে।',
                     },
                     {
                         key: 'b',
-                        text: 'User manually request করলে',
+                        text: 'User manually request করলেন',
                         isCorrect: false,
                         explanation:
                             'User manually request করা practical নয় — automatic notification দরকার।',
@@ -1660,7 +1660,7 @@ export const amazonContent: TopicData = {
                         text: 'Asynchronously via Kafka — checkout speed বাড়ানোর জন্য',
                         isCorrect: true,
                         explanation:
-                            'সঠিক উত্তর। Email sending slow হতে পারে (SMTP server lag)। Checkout flow-এ block করা যাবে না। Kafka event publish করো → notification service async-ভাবে email পাঠাবে। User fast checkout পাবে, email কিছু সেকেন্ড পরে আসবে।',
+                            'সঠিক উত্তর। Email sending slow হতে পারে (SMTP server lag)। Checkout flow-এ block করা যাবেন না। Kafka event publish করুন → notification service async-ভাবে email পাঠাবে। User fast checkout পাবেন, email কিছু সেকেন্ড পরে আসবেন।',
                     },
                     {
                         key: 'd',
@@ -1674,37 +1674,37 @@ export const amazonContent: TopicData = {
         ],
     },
     assignment: {
-        title: 'E-commerce Platform ডিজাইন করো',
+        title: 'E-commerce Platform ডিজাইন করুন',
         time: '৫-৬ ঘন্টা',
         difficulty: 'Advanced',
         tasks: [
             <span key='1'>
                 <strong>Architecture Diagram:</strong> Amazon-এর complete
-                microservices diagram আঁকো। Services: API Gateway, Product
+                microservices diagram আঁকুন। Services: API Gateway, Product
                 Service, Cart Service, Order Service, Payment Service, Inventory
                 Service, Notification Service। Event Bus (Kafka) দিয়ে async
                 connections দেখাও।
             </span>,
             <span key='2'>
                 <strong>Inventory Race Condition:</strong> 5 users একই সময়ে
-                last 1 item buy করতে চাইছে। Step-by-step trace করো Optimistic
-                Locking কীভাবে handle করে। কে জিতবে, বাকিরা কী পাবে?
+                last 1 item buy করতে চাইছে। Step-by-step trace করুন Optimistic
+                Locking কীভাবে handle করে। কে জিতবে, বাকিরা কী পাবেন?
             </span>,
             <span key='3'>
                 <strong>SAGA Implementation:</strong> Order placement SAGA-এর
-                steps লেখো (Reserve Inventory → Charge Payment → Create Order)।
-                প্রতিটা step fail হলে compensating action কী? Table বানাও।
+                steps লিখুন (Reserve Inventory → Charge Payment → Create Order)।
+                প্রতিটা step fail হলে compensating action কী? Table বানান।
             </span>,
             <span key='4'>
                 <strong>Database Selection:</strong> নিচের প্রতিটা data-এর জন্য
-                database choose করো এবং reason দাও: (ক) Product details, (খ)
+                database choose করুন এবং reason দিন: (ক) Product details, (খ)
                 Orders, (গ) Shopping cart, (ঘ) Product search index, (ঙ) User
                 session।
             </span>,
             <span key='5'>
                 <strong>Flash Sale Design:</strong> 100 items, 1 million users
                 প্রথম 1 minute-এ buy করতে চাইছে। Redis দিয়ে কীভাবে handle
-                করবে? Pseudo-code লেখো।
+                করবেন? Pseudo-code লিখুন।
             </span>,
         ],
         deliverables: [
@@ -1721,29 +1721,29 @@ export const amazonContent: TopicData = {
         subtitle: 'Inventory + Saga + Payment',
         steps: [
             {
-                title: '৩টা Mock Service বানাও',
+                title: '৩টা Mock Service বানান',
                 description:
                     'Order Service (:8000), Payment Service (:8001), Inventory Service (:8002) — প্রতিটায় reserve/release/charge/refund endpoints।',
             },
             {
-                title: 'Optimistic Locking Implement করো',
+                title: 'Optimistic Locking Implement করুন',
                 description:
-                    'Inventory service-এ version column যোগ করো। UPDATE stock WHERE version=X — concurrent requests test করো।',
+                    'Inventory service-এ version column যোগ করুন। UPDATE stock WHERE version=X — concurrent requests test করুন।',
             },
             {
-                title: 'SAGA Orchestrator লেখো',
+                title: 'SAGA Orchestrator লিখুন',
                 description:
                     'PlaceOrderSaga class: Reserve Inventory → Charge Payment → Create Order। Failure-এ backward compensation চালাও।',
             },
             {
-                title: 'Flash Sale Simulate করো',
+                title: 'Flash Sale Simulate করুন',
                 description:
-                    'Redis-এ stock counter set করো (e.g., 10)। 100 concurrent requests পাঠাও — DECR atomic করো। শুধু 10 জন succeed করবে।',
+                    'Redis-এ stock counter set করুন (e.g., 10)। 100 concurrent requests পাঠাও — DECR atomic করুন। শুধু 10 জন succeed করবেন।',
             },
             {
-                title: 'End-to-End Test করো',
+                title: 'End-to-End Test করুন',
                 description:
-                    'Happy path: order complete। Failure path: inventory out of stock → payment refund → order cancel। State transitions verify করো।',
+                    'Happy path: order complete। Failure path: inventory out of stock → payment refund → order cancel। State transitions verify করুন।',
             },
         ],
         codeBlock: {
@@ -1917,6 +1917,6 @@ if __name__ == "__main__":
     for t in threads:
         t.join()`,
         },
-        tip: 'Optimistic Locking, SAGA Pattern, এবং Redis atomic counter — এই তিনটা concept Amazon-style e-commerce-এর core। Interview-তে এগুলো confidently explain করতে পারলে senior engineer-level knowledge প্রমাণ হয়।',
+        tip: 'Optimistic Locking, SAGA Pattern, এবং Redis atomic counter — এই তিনটা concept Amazon-style e-commerce-এর core। Interview-তে এগুলো confidently explain করতে পারলেন senior engineer-level knowledge প্রমাণ হয়।',
     },
 };

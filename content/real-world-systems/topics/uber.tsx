@@ -40,9 +40,9 @@ export const uberContent: TopicData = {
                                 <strong className='text-foreground'>
                                     real-time geospatial matching
                                 </strong>{' '}
-                                — কোটি কোটি moving drivers-এর location track করো
+                                — কোটি কোটি moving drivers-এর location track করুন
                                 এবং milliseconds-এ কাছের driver-কে rider-এর সাথে
-                                match করো। এটা regular database problem না — এটা{' '}
+                                match করুন। এটা regular database problem না — এটা{' '}
                                 <strong className='text-foreground'>
                                     location-aware computing
                                 </strong>
@@ -58,7 +58,7 @@ export const uberContent: TopicData = {
                     content: (
                         <p>
                             <strong>Geospatial Problem:</strong> Driver location
-                            প্রতি 4 sec update হয়। Rider request করলে 5km
+                            প্রতি 4 sec update হয়। Rider request করলেন 5km
                             radius-এর মধ্যে available drivers খুঁজতে হবে।
                             Standard SQL database-এ lat/lng দিয়ে এই query করা
                             impractical। Special data structure দরকার —{' '}
@@ -631,7 +631,7 @@ export const uberContent: TopicData = {
                                 1.25 million location updates/second
                             </strong>
                             । এটা massive write throughput। Standard relational
-                            DB handle করতে পারবে না। Specialized time-series
+                            DB handle করতে পারবেন না। Specialized time-series
                             storage দরকার।
                         </p>
                     ),
@@ -933,8 +933,8 @@ export const uberContent: TopicData = {
                             <strong className='font-mono'>hsgtn4</strong>। কাছের
                             locations-এর geohash প্রায় same prefix হয়।
                             &quot;hsgtn&quot; prefix-এর সব drivers = Dhaka-র ওই
-                            neighborhood-এ। Database-এ string prefix query করলেই
-                            nearby drivers পাওয়া যায়।
+                            neighborhood-এ। Database-এ string prefix query করলেনই
+                            nearby drivers পানয়া যায়।
                         </p>
                     ),
                 },
@@ -957,7 +957,7 @@ def update_driver_location(driver_id: str, lat: float, lng: float):
         "updated_at": now()
     })
 
-# Rider request — nearby drivers খুঁজো
+# Rider request — nearby drivers খুঁজুন
 def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5):
     # Redis GEORADIUS: center থেকে radius-এর মধ্যে সব drivers
     nearby = r.georadius(
@@ -987,13 +987,13 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
                         <div>
                             <p>
                                 <strong>QuadTree:</strong> Map-কে 4 quadrants-এ
-                                ভাগ করো, প্রতিটাকে আবার 4 ভাগ। Dense area =
-                                deeper split। Driver খুঁজতে tree traverse করো।
+                                ভাগ করুন, প্রতিটাকে আবার 4 ভাগ। Dense area =
+                                deeper split। Driver খুঁজতে tree traverse করুন।
                             </p>
                             <br />
                             <p>
                                 <strong>Geohash:</strong> Location string-এ
-                                encode করো। Prefix = neighborhood। Simpler
+                                encode করুন। Prefix = neighborhood। Simpler
                                 implementation।
                             </p>
                             <br />
@@ -1296,7 +1296,7 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
             acceptance_score * 0.2    # 20% weight
         )
 
-    # Car type filter করো আগে
+    # Car type filter করুন আগে
     compatible = [
         d for d in nearby_drivers
         if d["car_type"] == rider_request["ride_type"]
@@ -1308,7 +1308,7 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
     # Best score = best match
     best_driver = max(compatible, key=score_driver)
 
-    # Driver-কে request push করো (WebSocket)
+    # Driver-কে request push করুন (WebSocket)
     websocket.push(best_driver["driver_id"], {
         "type": "RIDE_REQUEST",
         "rider": rider_request,
@@ -1443,7 +1443,7 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
                     title: '📌 WebSocket কেন HTTP Polling নয়?',
                     content: (
                         <p>
-                            HTTP Polling: Driver app প্রতি second check করলে =
+                            HTTP Polling: Driver app প্রতি second check করলেন =
                             5M drivers × 1 req/sec ={' '}
                             <strong>5M unnecessary requests/sec</strong>।
                             <br />
@@ -1553,7 +1553,7 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
                                     color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
                                     label: 'Strategy',
                                     title: 'City-based Sharding',
-                                    desc: 'Uber globally 63 countries-এ। প্রতিটা city আলাদাভাবে shard করো। Dhaka-র requests Dhaka shard-এ যায়, London-এর London-এ। Cross-city matching needed না।',
+                                    desc: 'Uber globally 63 countries-এ। প্রতিটা city আলাদাভাবে shard করুন। Dhaka-র requests Dhaka shard-এ যায়, London-এর London-এ। Cross-city matching needed না।',
                                 },
                                 {
                                     type: 'strategy',
@@ -1574,14 +1574,14 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
                                     color: 'text-red-400 bg-red-500/10 border-red-500/20',
                                     label: 'Trade-off',
                                     title: 'ETA Accuracy',
-                                    desc: 'Real-time traffic data + historical patterns। Google Maps API expensive at scale। Uber নিজেই map data build করেছে (Uber Movement)।',
+                                    desc: 'Real-time traffic data + historical patterns। Google Maps API expensive at scale। Uber নিজেই map data build করেছেনে (Uber Movement)।',
                                 },
                                 {
                                     type: 'tradeoff',
                                     color: 'text-red-400 bg-red-500/10 border-red-500/20',
                                     label: 'Trade-off',
                                     title: 'Driver Ghosting',
-                                    desc: 'Driver accept করে তারপর না গেলে? Timeout + automatic reassign। Penalty system। Acceptance rate track করো matching algorithm-এ।',
+                                    desc: 'Driver accept করে তারপর না গেলে? Timeout + automatic reassign। Penalty system। Acceptance rate track করুন matching algorithm-এ।',
                                 },
                             ].map((item, i) => (
                                 <div key={i} className='flex gap-3 items-start'>
@@ -1607,7 +1607,7 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
                     content: (
                         <div className='space-y-2'>
                             <p>
-                                <strong>1)</strong> সবার আগে বলো:{' '}
+                                <strong>1)</strong> সবার আগে বলুন:{' '}
                                 <strong>
                                     &quot;This is a geospatial problem&quot;
                                 </strong>{' '}
@@ -1615,21 +1615,21 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
                             </p>
                             <p>
                                 <strong>2)</strong> Redis GEO এর GEOADD এবং
-                                GEORADIUS command mention করো।
+                                GEORADIUS command mention করুন।
                             </p>
                             <p>
                                 <strong>3)</strong> City-based sharding
-                                naturally আসে — explain করো কেন cross-city data
+                                naturally আসে — explain করুন কেন cross-city data
                                 join দরকার নেই।
                             </p>
                             <p>
                                 <strong>4)</strong> Driver ghosting problem এবং
-                                solution mention করলে senior-level knowledge
+                                solution mention করলেন senior-level knowledge
                                 দেখা যায়।
                             </p>
                             <p>
                                 <strong>5)</strong> Surge pricing formula
-                                (demand/supply ratio) confidently explain করো।
+                                (demand/supply ratio) confidently explain করুন।
                             </p>
                         </div>
                     ),
@@ -1652,7 +1652,7 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
                 </span>,
                 'lat/lng → string encode। Prefix = proximity',
                 <span className='text-primary'>
-                    6-char ≈ 1.2km cell। Prefix query করো।
+                    6-char ≈ 1.2km cell। Prefix query করুন।
                 </span>,
                 'Simple, string DB query, Redis built-in',
                 'Boundary problem — edge cases',
@@ -1703,14 +1703,14 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
         questions: [
             {
                 id: 1,
-                text: 'Driver location update কোথায় store করবে?',
+                text: 'Driver location update কোথায় store করবেন?',
                 options: [
                     {
                         key: 'a',
                         text: 'MySQL',
                         isCorrect: false,
                         explanation:
-                            'MySQL disk-based। 1.25M writes/sec handle করতে পারবে না।',
+                            'MySQL disk-based। 1.25M writes/sec handle করতে পারবেন না।',
                     },
                     {
                         key: 'b',
@@ -1724,7 +1724,7 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
                         text: 'Redis GEO (in-memory)',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Redis GEO in-memory, millisecond writes, built-in geospatial commands (GEOADD, GEORADIUS)। 1.25M updates/sec হ্যান্ডেল করতে পারে। MySQL/Cassandra disk-based — এই throughput handle করবে না।',
+                            'সঠিক। Redis GEO in-memory, millisecond writes, built-in geospatial commands (GEOADD, GEORADIUS)। 1.25M updates/sec হ্যান্ডেল করতে পারে। MySQL/Cassandra disk-based — এই throughput handle করবেন না।',
                     },
                     {
                         key: 'd',
@@ -1751,7 +1751,7 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
                         text: 'lat/lng কে একটা string-এ encode করে, nearby locations-এ similar prefix থাকে',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Geohash = location string। "hsgtn4" = Dhaka-র একটা cell। String prefix = proximity। "hsgtn" prefix match = same neighborhood। Database string prefix query করলে nearby locations পাওয়া যায়।',
+                            'সঠিক। Geohash = location string। "hsgtn4" = Dhaka-র একটা cell। String prefix = proximity। "hsgtn" prefix match = same neighborhood। Database string prefix query করলেন nearby locations পানয়া যায়।',
                     },
                     {
                         key: 'c',
@@ -1769,7 +1769,7 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
             },
             {
                 id: 3,
-                text: 'Surge pricing কীভাবে calculate করবে?',
+                text: 'Surge pricing কীভাবে calculate করবেন?',
                 options: [
                     {
                         key: 'a',
@@ -1824,7 +1824,7 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
                         text: 'Random shard',
                         isCorrect: false,
                         explanation:
-                            'Random sharding-এ nearby drivers একই shard-এ থাকবে না।',
+                            'Random sharding-এ nearby drivers একই shard-এ থাকবেন না।',
                     },
                     {
                         key: 'd',
@@ -1885,7 +1885,7 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
                         text: 'MySQL',
                         isCorrect: false,
                         explanation:
-                            'MySQL single node-এ 14M trips/day write handle করবে না।',
+                            'MySQL single node-এ 14M trips/day write handle করবেন না।',
                     },
                     {
                         key: 'c',
@@ -1965,17 +1965,17 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
                         text: '~1.2 km × 0.6 km (Neighborhood level)',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। 6-character geohash ≈ 1.2km × 0.6km। Uber neighborhood/zone level-এর জন্য perfect। এই size-এ একটা cell-এ multiple drivers থাকবে। Too small = too many cells। Too large = too many irrelevant drivers। 6 characters = sweet spot।',
+                            'সঠিক। 6-character geohash ≈ 1.2km × 0.6km। Uber neighborhood/zone level-এর জন্য perfect। এই size-এ একটা cell-এ multiple drivers থাকবেন। Too small = too many cells। Too large = too many irrelevant drivers। 6 characters = sweet spot।',
                     },
                 ],
             },
             {
                 id: 9,
-                text: 'Driver accept না করলে (timeout) কী হবে?',
+                text: 'Driver accept না করলেন (timeout) কী হবে?',
                 options: [
                     {
                         key: 'a',
-                        text: 'Rider-কে error দাও',
+                        text: 'Rider-কে error দিন',
                         isCorrect: false,
                         explanation:
                             'Rider experience নষ্ট হবে। Uber এটা করে না — automatically retry।',
@@ -1985,18 +1985,18 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
                         text: '15 sec timeout → automatically next best driver-কে try',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। 15 second window। Accept না করলে → mark as "skipped" → next driver in the ranking। Multiple drivers serially try করো। Driver acceptance rate track করো — low acceptance = lower priority in future matching।',
+                            'সঠিক। 15 second window। Accept না করলেন → mark as "skipped" → next driver in the ranking। Multiple drivers serially try করুন। Driver acceptance rate track করুন — low acceptance = lower priority in future matching।',
                     },
                     {
                         key: 'c',
                         text: 'Same driver-কে infinite retry',
                         isCorrect: false,
                         explanation:
-                            'Infinite retry করলে rider অনেকক্ষণ wait করবে।',
+                            'Infinite retry করলেন rider অনেকক্ষণ wait করবেন।',
                     },
                     {
                         key: 'd',
-                        text: 'Rider-কে refund দাও',
+                        text: 'Rider-কে refund দিন',
                         isCorrect: false,
                         explanation:
                             'Refund দেওয়ার কিছু নেই — ride এখনো শুরু হয়নি।',
@@ -2038,39 +2038,39 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
         ],
     },
     assignment: {
-        title: 'Ride Sharing System ডিজাইন করো',
+        title: 'Ride Sharing System ডিজাইন করুন',
         time: '৪-৫ ঘন্টা',
         difficulty: 'Advanced',
         tasks: [
             <span>
                 <strong>Architecture Diagram:</strong> Uber-এর complete system
-                diagram আঁকো। Driver location update flow (Driver → Location
+                diagram আঁকুন। Driver location update flow (Driver → Location
                 Service → Redis GEO), Rider request flow (Rider → Trip Service →
                 Geospatial Index → Matching Service → Driver WebSocket), Payment
                 flow আলাদা দেখাও।
             </span>,
             <span>
                 <strong>Geohash Hands-on:</strong> Online Geohash tool
-                (geohash.org) use করে: (ক) তোমার বাসার location-এর 6-character
-                geohash বের করো, (খ) 1 km দূরের একটা location-এর geohash কতটুকু
-                same? (গ) Precision 4 vs 6 vs 8 — area size compare করো।
+                (geohash.org) use করে: (ক) আপনার বাসার location-এর 6-character
+                geohash বের করুন, (খ) 1 km দূরের একটা location-এর geohash কতটুকু
+                same? (গ) Precision 4 vs 6 vs 8 — area size compare করুন।
             </span>,
             <span>
                 <strong>Matching Algorithm:</strong> নিচের 3 জন driver-এর মধ্যে
-                কাকে select করবে? Rider location থেকে: Driver A: 0.5km, rating
+                কাকে select করবেন? Rider location থেকে: Driver A: 0.5km, rating
                 4.2, acceptance 90%; Driver B: 1.2km, rating 4.8, acceptance
                 95%; Driver C: 0.8km, rating 4.5, acceptance 70%। আমার scoring
-                formula দিয়ে calculate করো।
+                formula দিয়ে calculate করুন।
             </span>,
             <span>
                 <strong>Surge Pricing Calculation:</strong> একটা geohash cell-এ:
                 15 open requests, 3 available drivers। Surge multiplier কত হবে?
-                উপায়: ratio = 15/3 = 5। Surge formula design করো (min surge
+                উপায়: ratio = 15/3 = 5। Surge formula design করুন (min surge
                 1.0x, max 4.0x)।
             </span>,
             <span>
                 <strong>Phase 4 System Comparison:</strong> সব 7টা system-এর
-                জন্য একটা comparison table বানাও। Columns: System Name, Core
+                জন্য একটা comparison table বানান। Columns: System Name, Core
                 Challenge, Key Database, Key Algorithm/Pattern, Unique Insight।
             </span>,
         ],
@@ -2086,29 +2086,29 @@ def find_nearby_drivers(rider_lat: float, rider_lng: float, radius_km: float = 5
         subtitle: 'Geohash + WebSocket + Redis',
         steps: [
             {
-                title: 'Redis GEO Setup করো',
+                title: 'Redis GEO Setup করুন',
                 description:
-                    'Redis install করো। Python redis-py library দিয়ে GEOADD এবং GEORADIUS commands test করো। 5টা mock driver location add করো।',
+                    'Redis install করুন। Python redis-py library দিয়ে GEOADD এবং GEORADIUS commands test করুন। 5টা mock driver location add করুন।',
             },
             {
-                title: 'Driver Location Update Service বানাও',
+                title: 'Driver Location Update Service বানান',
                 description:
-                    'FastAPI endpoint: POST /driver/{id}/location। Body: lat, lng। Redis-এ GEOADD করো। Driver status hash update করো।',
+                    'FastAPI endpoint: POST /driver/{id}/location। Body: lat, lng। Redis-এ GEOADD করুন। Driver status hash update করুন।',
             },
             {
-                title: 'Nearby Drivers Search বানাও',
+                title: 'Nearby Drivers Search বানান',
                 description:
-                    'GET /drivers/nearby?lat=23.8&lng=90.4&radius=5। GEORADIUS query করো। Distance সহ sorted list return করো।',
+                    'GET /drivers/nearby?lat=23.8&lng=90.4&radius=5। GEORADIUS query করুন। Distance সহ sorted list return করুন।',
             },
             {
-                title: 'Matching Algorithm Implement করো',
+                title: 'Matching Algorithm Implement করুন',
                 description:
-                    'Nearby drivers list থেকে score_driver() function লেখো। Distance 50%, rating 30%, acceptance_rate 20%। Best score = winner।',
+                    'Nearby drivers list থেকে score_driver() function লিখুন। Distance 50%, rating 30%, acceptance_rate 20%। Best score = winner।',
             },
             {
-                title: 'WebSocket Notification Test করো',
+                title: 'WebSocket Notification Test করুন',
                 description:
-                    'FastAPI WebSocket endpoint বানাও। Driver connection maintain করো। Match হলে WebSocket push করো। 15 second timeout implement করো।',
+                    'FastAPI WebSocket endpoint বানান। Driver connection maintain করুন। Match হলে WebSocket push করুন। 15 second timeout implement করুন।',
             },
         ],
         codeBlock: {
@@ -2151,7 +2151,7 @@ async def update_location(driver_id: str, lat: float, lng: float):
 
 
 # ============================================================
-# 2. Find Nearby Drivers (Rider request করলে)
+# 2. Find Nearby Drivers (Rider request করলেন)
 # ============================================================
 @app.get("/drivers/nearby")
 async def find_nearby(lat: float, lng: float, radius_km: float = 5.0):
@@ -2185,7 +2185,7 @@ async def find_nearby(lat: float, lng: float, radius_km: float = 5.0):
 
 
 # ============================================================
-# 3. Matching Algorithm (Best driver select করো)
+# 3. Matching Algorithm (Best driver select করুন)
 # ============================================================
 def score_driver(driver: dict) -> float:
     """Multi-factor scoring: Distance 50%, Rating 30%, Acceptance 20%"""
@@ -2259,12 +2259,12 @@ def get_geohash(lat: float, lng: float, precision: int = 6) -> str:
     except ImportError:
         return f"gh_{lat:.3f}_{lng:.3f}"`,
         },
-        tip: 'Redis-এর GEORADIUS command হলো Uber-এর "find nearby drivers"-এর backbone। একবার এটা practically test করলে Geohash theory আর confusing লাগবে না। Live demo-তে দেখবে 5M drivers simulation করলেও Redis milliseconds-এ respond করে।',
+        tip: 'Redis-এর GEORADIUS command হলো Uber-এর "find nearby drivers"-এর backbone। একবার এটা practically test করলেন Geohash theory আর confusing লাগবে না। Live demo-তে দেখবেন 5M drivers simulation করলেনও Redis milliseconds-এ respond করে।',
     },
     phaseComplete: {
         title: '🎉 Phase 4 সম্পন্ন! Real-World Systems Mastered',
         description:
-            'তুমি ৭টি বড় real-world system design সম্পন্ন করেছো। এগুলো সবচেয়ে popular interview questions।',
+            'আপনি ৭টি বড় real-world system design সম্পন্ন করেছেনো। এগুলো সবচেয়ে popular interview questions।',
         topics: [
             { title: 'URL Shortener (TinyURL)', id: 'tinyurl' },
             { title: 'Design Twitter/X', id: 'twitter' },

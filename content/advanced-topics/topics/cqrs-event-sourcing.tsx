@@ -61,7 +61,7 @@ export const cqrsEventSourcingContent: TopicData = {
                                     {
                                         num: '03',
                                         title: 'No Audit Trail',
-                                        desc: 'UPDATE করলে পুরনো value চলে যায়। "Account balance কাল কত ছিল?" — CRUD system জানে না। History track করতে পারে না।',
+                                        desc: 'UPDATE করলেন পুরনো value চলে যায়। "Account balance কাল কত ছিল?" — CRUD system জানে না। History track করতে পারে না।',
                                         color: 'border-yellow-400/30 text-yellow-400',
                                     },
                                     {
@@ -100,14 +100,14 @@ export const cqrsEventSourcingContent: TopicData = {
                     content: (
                         <div className='space-y-2'>
                             <p>
-                                <strong>CQRS = Read ও Write কে আলাদা করো।</strong>{' '}
+                                <strong>CQRS = Read ও Write কে আলাদা করুন।</strong>{' '}
                                 Command (write) আলাদা model, Query (read) আলাদা model।
                                 প্রতিটা তার নিজের কাজ optimally করে।
                             </p>
                             <p>
-                                <strong>Event Sourcing = State নয়, Events store করো।</strong>{' '}
-                                "Balance = 5000 টাকা" না রেখে রাখো: "Deposited 10000,
-                                Withdrawn 5000"। Events replay করলে যেকোনো সময়ের state পাওয়া যায়।
+                                <strong>Event Sourcing = State নয়, Events store করুন।</strong>{' '}
+                                "Balance = 5000 টাকা" না রেখে রাখুন: "Deposited 10000,
+                                Withdrawn 5000"। Events replay করলেন যেকোনো সময়ের state পানয়া যায়।
                             </p>
                         </div>
                     ),
@@ -392,7 +392,7 @@ class GetOrderQueryHandler {
             subHeader: { index: '003', title: 'Event Sourcing' },
             title: (
                 <span className='font-heading'>
-                    Event Sourcing — State নয়, Events Store করো
+                    Event Sourcing — State নয়, Events Store করুন
                 </span>
             ),
             blocks: [
@@ -670,9 +670,9 @@ class BankAccountAggregate {
                         ],
                         ['Query Style', 'aggregateId দিয়ে events পড়ো', 'Any column দিয়ে query'],
                         ['History', 'Complete history preserved', 'Overwrite হয়ে যায়'],
-                        ['Undo', 'Compensating event তৈরি করো', 'Previous value নেই'],
+                        ['Undo', 'Compensating event তৈরি করুন', 'Previous value নেই'],
                         ['Schema', 'Flexible (JSON payload)', 'Fixed columns'],
-                        ['Time Travel', 'যেকোনো past state পাওয়া যায়', 'অসম্ভব'],
+                        ['Time Travel', 'যেকোনো past state পানয়া যায়', 'অসম্ভব'],
                     ],
                 },
                 {
@@ -783,13 +783,13 @@ class EventStore {
                     content: (
                         <div className='space-y-2'>
                             <p>
-                                <strong>Events কখনো DELETE বা UPDATE করা যাবে না।</strong>{' '}
+                                <strong>Events কখনো DELETE বা UPDATE করা যাবেন না।</strong>{' '}
                                 একবার store হলে সেটা চিরকালের জন্য সেখানে থাকে।
                                 এই immutability-ই Event Sourcing-এর সমস্ত সুবিধার ভিত্তি।
                             </p>
                             <p>
                                 ভুল হলে করতে হয়:{' '}
-                                <strong>Compensating Event</strong> — নতুন event যোগ করো
+                                <strong>Compensating Event</strong> — নতুন event যোগ করুন
                                 যা পুরনো event-এর effect উল্টে দেয়। যেমন ভুল withdrawal-এর
                                 জন্য <span className='font-mono text-primary'>WithdrawalReversed</span>{' '}
                                 event।
@@ -804,7 +804,7 @@ class EventStore {
             subHeader: { index: '005', title: 'Projections' },
             title: (
                 <span className='font-heading'>
-                    Projections — Events থেকে Views তৈরি করো
+                    Projections — Events থেকে Views তৈরি করুন
                 </span>
             ),
             blocks: [
@@ -989,7 +989,7 @@ class InventoryProjection {
                     content: (
                         <p>
                             Read model corrupt হয়ে গেলে বা নতুন view দরকার হলে —
-                            Event Store থেকে সব events শুরু থেকে replay করে projection rebuild করো।
+                            Event Store থেকে সব events শুরু থেকে replay করে projection rebuild করুন।
                             এটাই Event Sourcing-এর অন্যতম সুবিধা:{' '}
                             <strong>Read model কখনো হারিয়ে যায় না</strong>, events
                             থেকে যেকোনো সময় নতুন করে তৈরি করা যায়।
@@ -1012,7 +1012,7 @@ class InventoryProjection {
                     content: (
                         <p className='text-muted-foreground leading-relaxed text-lg'>
                             CQRS এবং Event Sourcing আলাদাভাবেও ব্যবহার করা যায়, কিন্তু একসাথে
-                            ব্যবহার করলে এরা{' '}
+                            ব্যবহার করলেন এরা{' '}
                             <strong className='text-foreground'>
                                 একে অপরকে complement করে
                             </strong>
@@ -1218,7 +1218,7 @@ class GetOrderQueryHandler {
             subHeader: { index: '007', title: 'Trade-offs' },
             title: (
                 <span className='font-heading'>
-                    Trade-offs ও কখন Use করবে?
+                    Trade-offs ও কখন Use করবেন?
                 </span>
             ),
             blocks: [
@@ -1226,15 +1226,15 @@ class GetOrderQueryHandler {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <p className='text-muted-foreground leading-relaxed text-lg'>
-                            CQRS ও Event Sourcing powerful — কিন্তু সব জায়গায় use করলে
-                            unnecessary complexity তৈরি হয়। কখন use করবে, কখন করবে না —
+                            CQRS ও Event Sourcing powerful — কিন্তু সব জায়গায় use করলেন
+                            unnecessary complexity তৈরি হয়। কখন use করবেন, কখন করবেন না —
                             এটা বোঝাটাই সত্যিকারের দক্ষতা।
                         </p>
                     ),
                 },
                 {
                     type: CONTENT_TYPES.COMPARE_TABLE,
-                    headers: ['পরিস্থিতি', 'CQRS/ES Use করো', 'CQRS/ES এড়াও'],
+                    headers: ['পরিস্থিতি', 'CQRS/ES Use করুন', 'CQRS/ES এড়াও'],
                     rows: [
                         [
                             'Read/Write Load',
@@ -1275,10 +1275,10 @@ class GetOrderQueryHandler {
                     content: (
                         <div className='space-y-2'>
                             <p>
-                                CQRS-এ Write DB-তে data যাওয়ার পর Kafka-র মাধ্যমে
+                                CQRS-এ Write DB-তে data যানয়ার পর Kafka-র মাধ্যমে
                                 Read DB-তে sync হতে{' '}
                                 <strong>কিছু milliseconds বা seconds লাগে</strong>।
-                                এই সময়ে user নতুন data দেখবে না।
+                                এই সময়ে user নতুন data দেখবেন না।
                             </p>
                             <p>
                                 <strong>Problem scenario:</strong> User order দিল (Write)।
@@ -1287,7 +1287,7 @@ class GetOrderQueryHandler {
                             </p>
                             <p>
                                 <strong>Solutions:</strong> (১) UI-তে optimistic update
-                                দেখাও, (২) Command-এর পরে short delay করো, (৩) User-কে
+                                দেখাও, (২) Command-এর পরে short delay করুন, (৩) User-কে
                                 "Processing..." দেখাও sync হওয়া পর্যন্ত।
                             </p>
                         </div>
@@ -1296,20 +1296,20 @@ class GetOrderQueryHandler {
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.TIP,
-                    title: '💡 Pragmatic Advice — Simple দিয়ে শুরু করো',
+                    title: '💡 Pragmatic Advice — Simple দিয়ে শুরু করুন',
                     content: (
                         <div className='space-y-2'>
                             <p>
                                 <strong>Rule of thumb:</strong> যদি নিশ্চিত না হও,
-                                Event Sourcing ছাড়া শুধু CQRS দিয়ে শুরু করো।
-                                Command ও Query model আলাদা করো, কিন্তু same database-এ।
-                                পরে যখন event history দরকার হবে, তখন Event Sourcing যোগ করো।
+                                Event Sourcing ছাড়া শুধু CQRS দিয়ে শুরু করুন।
+                                Command ও Query model আলাদা করুন, কিন্তু same database-এ।
+                                পরে যখন event history দরকার হবে, তখন Event Sourcing যোগ করুন।
                             </p>
                             <p>
-                                <strong>Cost:</strong> Event Sourcing যোগ করলে codebase
+                                <strong>Cost:</strong> Event Sourcing যোগ করলেন codebase
                                 complexity 2-3x বাড়ে। Debugging কঠিন হয়।
                                 Snapshot strategy দরকার হয় (replay করতে বেশি সময় লাগলে)।
-                                শুধু clear business value থাকলে use করো।
+                                শুধু clear business value থাকলে use করুন।
                             </p>
                         </div>
                     ),
@@ -1332,7 +1332,7 @@ class GetOrderQueryHandler {
                             CQRS ও Event Sourcing real production systems-এ ব্যাপকভাবে
                             ব্যবহৃত হয়। বিশেষত যেসব domain-এ{' '}
                             <strong className='text-foreground'>audit trail critical</strong>
-                            , ইতিহাস হারানো যাবে না।
+                            , ইতিহাস হারানো যাবেন না।
                         </p>
                     ),
                 },
@@ -1344,7 +1344,7 @@ class GetOrderQueryHandler {
                                 {
                                     domain: 'Banking & Finance',
                                     icon: '🏦',
-                                    why: 'Audit trail — কোন transaction কখন, কে করেছে সব track করতে হবে। Regulatory compliance।',
+                                    why: 'Audit trail — কোন transaction কখন, কে করেছেনে সব track করতে হবে। Regulatory compliance।',
                                     example: 'Account transactions, Fund transfers, Loan processing',
                                     color: 'border-emerald-500/30',
                                     textColor: 'text-emerald-400',
@@ -1399,7 +1399,7 @@ class GetOrderQueryHandler {
                         [
                             <span className='font-bold text-foreground'>Microsoft Azure</span>,
                             'CQRS + ES',
-                            'EventStoreDB তৈরি করেছে, internal services-এ ব্যবহার',
+                            'EventStoreDB তৈরি করেছেনে, internal services-এ ব্যবহার',
                         ],
                         [
                             <span className='font-bold text-foreground'>LinkedIn</span>,
@@ -1430,25 +1430,25 @@ class GetOrderQueryHandler {
                     content: (
                         <div className='space-y-2'>
                             <p>
-                                <strong>1)</strong> CQRS explain করার সময় বলো:{' '}
-                                <strong>"Read ও Write load different — আলাদা করলে
+                                <strong>1)</strong> CQRS explain করার সময় বলুন:{' '}
+                                <strong>"Read ও Write load different — আলাদা করলেন
                                     প্রতিটা independently scale করা যায়।"</strong>
                             </p>
                             <p>
                                 <strong>2)</strong> Event Sourcing-এর key insight:{' '}
-                                <strong>"Current state নয়, facts (events) store করো।
+                                <strong>"Current state নয়, facts (events) store করুন।
                                     Facts কখনো মিথ্যা হয় না।"</strong>
                             </p>
                             <p>
                                 <strong>3)</strong> Eventual consistency-র trade-off
-                                নিজে থেকে mention করো — interviewer impressed হবে।
+                                নিজে থেকে mention করুন — interviewer impressed হবে।
                             </p>
                             <p>
                                 <strong>4)</strong> Projection rebuild capability mention
-                                করো — "যেকোনো সময় নতুন read model তৈরি করা যায়।"
+                                করুন — "যেকোনো সময় নতুন read model তৈরি করা যায়।"
                             </p>
                             <p>
-                                <strong>5)</strong> কখন use করবে না সেটাও বলো —
+                                <strong>5)</strong> কখন use করবেন না সেটাও বলুন —
                                 simple CRUD app-এ overkill। Maturity দেখায়।
                             </p>
                         </div>
@@ -1469,7 +1469,7 @@ class GetOrderQueryHandler {
             ],
             [
                 <span className='font-bold text-emerald-400 font-mono'>Event Sourcing</span>,
-                'State নয়, Events store করো',
+                'State নয়, Events store করুন',
                 'Full audit trail, time travel, replay',
                 'Complex querying, event schema evolution',
                 'Banking, audit-heavy domains',
@@ -1613,7 +1613,7 @@ class GetOrderQueryHandler {
                         text: 'Events থেকে read model তৈরি করে',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Projection event stream consume করে এবং query-optimized read models (views) তৈরি করে। Same events থেকে multiple projections তৈরি করা যায় — প্রতিটা আলাদা use case-এর জন্য। Projection rebuild করলে read model নতুনভাবে তৈরি হয়।',
+                            'সঠিক। Projection event stream consume করে এবং query-optimized read models (views) তৈরি করে। Same events থেকে multiple projections তৈরি করা যায় — প্রতিটা আলাদা use case-এর জন্য। Projection rebuild করলেন read model নতুনভাবে তৈরি হয়।',
                     },
                     {
                         key: 'c',
@@ -1653,7 +1653,7 @@ class GetOrderQueryHandler {
                         text: 'Complete audit trail',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Event Sourcing-এর সবচেয়ে বড় সুবিধা হলো complete, immutable audit trail। "কে, কখন, কী করেছে" সব সময়ের জন্য preserved। Banking regulation, healthcare compliance, legal audit — এই সব domain-এ এটা invaluable। Time travel capability (past state reconstruction) এরই extension।',
+                            'সঠিক। Event Sourcing-এর সবচেয়ে বড় সুবিধা হলো complete, immutable audit trail। "কে, কখন, কী করেছেনে" সব সময়ের জন্য preserved। Banking regulation, healthcare compliance, legal audit — এই সব domain-এ এটা invaluable। Time travel capability (past state reconstruction) এরই extension।',
                     },
                     {
                         key: 'd',
@@ -1813,7 +1813,7 @@ class GetOrderQueryHandler {
                         text: 'Past state replay করা',
                         isCorrect: true,
                         explanation:
-                            'সঠিক। Event Sourcing-এ "time travel" মানে past state reconstruct করতে পারা। "৩ মাস আগে account balance কত ছিল?" — সব events January 1 থেকে March 1 পর্যন্ত replay করলে সেই সময়ের state পাওয়া যায়। EventStore.loadEventsUntil(accountId, date) করে Aggregate rehydrate করো।',
+                            'সঠিক। Event Sourcing-এ "time travel" মানে past state reconstruct করতে পারা। "৩ মাস আগে account balance কত ছিল?" — সব events January 1 থেকে March 1 পর্যন্ত replay করলেন সেই সময়ের state পানয়া যায়। EventStore.loadEventsUntil(accountId, date) করে Aggregate rehydrate করুন।',
                     },
                     {
                         key: 'd',
@@ -1826,33 +1826,33 @@ class GetOrderQueryHandler {
         ],
     },
     assignment: {
-        title: 'Banking System CQRS + Event Sourcing দিয়ে ডিজাইন করো',
+        title: 'Banking System CQRS + Event Sourcing দিয়ে ডিজাইন করুন',
         time: '৪-৫ ঘন্টা',
         difficulty: 'Expert',
         tasks: [
             <span>
-                <strong>Account Aggregate:</strong> BankAccount aggregate implement করো।
+                <strong>Account Aggregate:</strong> BankAccount aggregate implement করুন।
                 Events: AccountOpened, MoneyDeposited, MoneyWithdrawn, AccountFrozen।
-                প্রতিটা event-এ apply() method লেখো। Rehydrate করো Event Store থেকে।
-                Test: freeze করা account-এ withdraw করলে error।
+                প্রতিটা event-এ apply() method লিখুন। Rehydrate করুন Event Store থেকে।
+                Test: freeze করা account-এ withdraw করলেন error।
             </span>,
             <span>
                 <strong>Command & Query Handlers:</strong> OpenAccountCommand,
-                DepositMoneyCommand, WithdrawMoneyCommand handler লেখো।
+                DepositMoneyCommand, WithdrawMoneyCommand handler লিখুন।
                 Query: GetAccountBalance, GetTransactionHistory, GetAccountStatement।
                 Command: void return। Query: DTO return।
             </span>,
             <span>
                 <strong>Event Store Implementation:</strong> PostgreSQL দিয়ে append-only
-                event store তৈরি করো। appendEvents() (optimistic concurrency সহ),
-                loadEvents(), loadEventsUntil() implement করো।
-                Test: same version-এ দুটো concurrent write করলে ConcurrencyError।
+                event store তৈরি করুন। appendEvents() (optimistic concurrency সহ),
+                loadEvents(), loadEventsUntil() implement করুন।
+                Test: same version-এ দুটো concurrent write করলেন ConcurrencyError।
             </span>,
             <span>
-                <strong>Projection for Balance View:</strong> AccountBalanceProjection তৈরি করো।
-                Events consume করে balance_view table update করো।
+                <strong>Projection for Balance View:</strong> AccountBalanceProjection তৈরি করুন।
+                Events consume করে balance_view table update করুন।
                 GetAccountBalance query এই view থেকে পড়বে — Event Store থেকে নয়।
-                Compare করো: projection থেকে read vs event replay — কোনটা fast?
+                Compare করুন: projection থেকে read vs event replay — কোনটা fast?
             </span>,
         ],
         deliverables: [
@@ -1867,57 +1867,57 @@ class GetOrderQueryHandler {
         subtitle: 'TypeScript + EventStoreDB + PostgreSQL (read side)',
         steps: [
             {
-                title: 'EventStoreDB Setup করো',
+                title: 'EventStoreDB Setup করুন',
                 description: (
                     <span className='text-muted-foreground'>
-                        Docker দিয়ে EventStoreDB run করো:{' '}
+                        Docker দিয়ে EventStoreDB run করুন:{' '}
                         <span className='font-mono text-primary'>
                             docker run --name esdb -p 2113:2113 -p 1113:1113
                             eventstore/eventstore:latest --insecure
                         </span>
-                        । Admin UI: http://localhost:2113। @eventstore/db-client npm package install করো।
+                        । Admin UI: http://localhost:2113। @eventstore/db-client npm package install করুন।
                     </span>
                 ),
             },
             {
-                title: 'Domain Events ও Aggregate লেখো',
+                title: 'Domain Events ও Aggregate লিখুন',
                 description: (
                     <span className='text-muted-foreground'>
-                        BankAccountAggregate class তৈরি করো। Events: AccountOpened,
-                        MoneyDeposited, MoneyWithdrawn। apply() method প্রতিটা event handle করবে।
-                        rehydrate() static method events থেকে aggregate rebuild করবে।
+                        BankAccountAggregate class তৈরি করুন। Events: AccountOpened,
+                        MoneyDeposited, MoneyWithdrawn। apply() method প্রতিটা event handle করবেন।
+                        rehydrate() static method events থেকে aggregate rebuild করবেন।
                     </span>
                 ),
             },
             {
-                title: 'EventStoreDB তে Events Save করো',
+                title: 'EventStoreDB তে Events Save করুন',
                 description: (
                     <span className='text-muted-foreground'>
-                        @eventstore/db-client দিয়ে appendToStream() call করো।
+                        @eventstore/db-client দিয়ে appendToStream() call করুন।
                         Stream name: "BankAccount-ACC-001"।
                         EventData format: type, data (JSON), metadata।
-                        readStream() দিয়ে events load করো।
+                        readStream() দিয়ে events load করুন।
                     </span>
                 ),
             },
             {
-                title: 'PostgreSQL Read Model (Projection) তৈরি করো',
+                title: 'PostgreSQL Read Model (Projection) তৈরি করুন',
                 description: (
                     <span className='text-muted-foreground'>
-                        account_balance_view table তৈরি করো।
-                        EventStoreDB subscription দিয়ে events listen করো।
+                        account_balance_view table তৈরি করুন।
+                        EventStoreDB subscription দিয়ে events listen করুন।
                         MoneyDeposited → balance বাড়াও। MoneyWithdrawn → কমাও।
                         Query: SELECT balance FROM account_balance_view WHERE account_id = $1।
                     </span>
                 ),
             },
             {
-                title: 'Time Travel Test করো',
+                title: 'Time Travel Test করুন',
                 description: (
                     <span className='text-muted-foreground'>
-                        10টা transaction করো। তারপর 5th transaction পর্যন্ত events replay করো।
-                        সেই সময়ের balance compare করো current balance-এর সাথে।
-                        loadEventsUntil(accountId, timestamp) implement করো।
+                        10টা transaction করুন। তারপর 5th transaction পর্যন্ত events replay করুন।
+                        সেই সময়ের balance compare করুন current balance-এর সাথে।
+                        loadEventsUntil(accountId, timestamp) implement করুন।
                     </span>
                 ),
             },
@@ -2059,6 +2059,6 @@ async function demo() {
 
 demo().catch(console.error);`,
         },
-        tip: 'EventStoreDB Admin UI-তে streams দেখো। BankAccount-ACC-001 stream-এ সব events visible। JSON payload দেখো। এটা practically দেখলে Event Sourcing এর power বোঝা যায় — এটাই immutable, queryable audit log।',
+        tip: 'EventStoreDB Admin UI-তে streams দেখুন। BankAccount-ACC-001 stream-এ সব events visible। JSON payload দেখুন। এটা practically দেখলে Event Sourcing এর power বোঝা যায় — এটাই immutable, queryable audit log।',
     },
 };

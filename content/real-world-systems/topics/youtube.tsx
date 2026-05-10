@@ -781,7 +781,7 @@ def transcode_video(raw_video_path: str, video_id: str):
 
     for q in qualities:
         output_path = f"/tmp/{video_id}_{q['name']}.mp4"
-        # FFmpeg দিয়ে transcode করো
+        # FFmpeg দিয়ে transcode করুন
         subprocess.run([
             "ffmpeg", "-i", raw_video_path,
             "-vf", f"scale={q['width']}:{q['height']}",
@@ -789,7 +789,7 @@ def transcode_video(raw_video_path: str, video_id: str):
             "-c:v", "libx264", "-c:a", "aac",
             output_path
         ])
-        # S3-এ upload করো
+        # S3-এ upload করুন
         s3_key = f"videos/{video_id}/{q['name']}.mp4"
         s3.upload_file(output_path, "my-video-bucket", s3_key)
         output_files.append(s3_key)
@@ -1003,7 +1003,7 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
                             করে ISP-দের কাছে বিনামূল্যে দেয়। ISP
                             network-এর ভেতরে Netflix content cache থাকে।
                             Bandwidth cost কমে, speed বাড়ে। Bangladesh-এর
-                            user India বা Singapore edge থেকে video পাবে —
+                            user India বা Singapore edge থেকে video পাবেন —
                             origin US server থেকে না। Latency 200ms থেকে
                             10ms-এ নামে।
                         </p>
@@ -1067,9 +1067,9 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
                     title: '⚠️ Never Store Videos in DB',
                     content: (
                         <p>
-                            Database-এ video binary কখনো store করবে না।
+                            Database-এ video binary কখনো store করবেন না।
                             Database slow binary retrieval-এর জন্য। সর্বদা
-                            Object Storage (S3) + CDN ব্যবহার করো। DB শুধু{' '}
+                            Object Storage (S3) + CDN ব্যবহার করুন। DB শুধু{' '}
                             <strong>metadata</strong> রাখে।
                         </p>
                     ),
@@ -1098,19 +1098,19 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
                                     type: 'pro',
                                     label: 'Strategy',
                                     title: 'Parallel Transcoding',
-                                    text: 'একটা video কে segments-এ ভাগ করে parallel workers-এ transcode করো। 1-hour video → 1 worker 1 hour লাগবে, 60 workers = 1 minute!',
+                                    text: 'একটা video কে segments-এ ভাগ করে parallel workers-এ transcode করুন। 1-hour video → 1 worker 1 hour লাগবে, 60 workers = 1 minute!',
                                 },
                                 {
                                     type: 'pro',
                                     label: 'Strategy',
                                     title: 'Pre-warm CDN',
-                                    text: 'Popular video detect হলে immediately CDN edge locations-এ push করো। Viral হওয়ার আগেই ready।',
+                                    text: 'Popular video detect হলে immediately CDN edge locations-এ push করুন। Viral হওয়ার আগেই ready।',
                                 },
                                 {
                                     type: 'con',
                                     label: 'Trade-off',
                                     title: 'Storage Cost',
-                                    text: '10x storage multiplication (multiple qualities)। Storage cheap কিন্তু at 1 exabyte scale expensive হয়। Cold storage (Glacier) use করো old videos-এর জন্য।',
+                                    text: '10x storage multiplication (multiple qualities)। Storage cheap কিন্তু at 1 exabyte scale expensive হয়। Cold storage (Glacier) use করুন old videos-এর জন্য।',
                                 },
                                 {
                                     type: 'con',
@@ -1294,7 +1294,7 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
                                             →
                                         </span>
                                         <span>
-                                            Upload path এবং stream path আলাদা করো
+                                            Upload path এবং stream path আলাদা করুন
                                         </span>
                                     </li>
                                     <li className='flex gap-2'>
@@ -1302,7 +1302,7 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
                                             →
                                         </span>
                                         <span>
-                                            CDN-first strategy mention করো
+                                            CDN-first strategy mention করুন
                                         </span>
                                     </li>
                                     <li className='flex gap-2'>
@@ -1310,7 +1310,7 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
                                             →
                                         </span>
                                         <span>
-                                            Kafka দিয়ে async transcoding বলো
+                                            Kafka দিয়ে async transcoding বলুন
                                         </span>
                                     </li>
                                     <li className='flex gap-2'>
@@ -1318,7 +1318,7 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
                                             →
                                         </span>
                                         <span>
-                                            Never DB for video binary — S3 বলো
+                                            Never DB for video binary — S3 বলুন
                                         </span>
                                     </li>
                                     <li className='flex gap-2'>
@@ -1326,7 +1326,7 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
                                             →
                                         </span>
                                         <span>
-                                            ABR / HLS explain করতে পারো
+                                            ABR / HLS explain করতে পারেন
                                         </span>
                                     </li>
                                 </ul>
@@ -1437,7 +1437,7 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
                         key: 'a',
                         text: 'শুধু 1 (original)',
                         isCorrect: false,
-                        explanation: 'Original রাখলে শুধু একটা quality পাওয়া যাবে, different network speed-এ smooth playback সম্ভব হবে না।',
+                        explanation: 'Original রাখলে শুধু একটা quality পানয়া যাবেন, different network speed-এ smooth playback সম্ভব হবে না।',
                     },
                     {
                         key: 'b',
@@ -1491,7 +1491,7 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
             },
             {
                 id: 3,
-                text: 'Video binary data কোথায় store করবে?',
+                text: 'Video binary data কোথায় store করবেন?',
                 options: [
                     {
                         key: 'a',
@@ -1515,7 +1515,7 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
                         key: 'd',
                         text: 'API Server local disk',
                         isCorrect: false,
-                        explanation: 'Local disk-এ কোনো redundancy নেই, server fail করলে সব হারাবে।',
+                        explanation: 'Local disk-এ কোনো redundancy নেই, server fail করলেন সব হারাবে।',
                     },
                 ],
             },
@@ -1545,7 +1545,7 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
                         key: 'd',
                         text: 'User-এর কাছের server থেকে video deliver করে latency কমাতে',
                         isCorrect: true,
-                        explanation: 'সঠিক উত্তর: CDN edge servers globally distributed। Bangladesh-এর user India বা Singapore edge থেকে video পাবে — origin US server থেকে না। Latency 200ms থেকে 10ms-এ নামে। এটাই fast streaming-এর secret।',
+                        explanation: 'সঠিক উত্তর: CDN edge servers globally distributed। Bangladesh-এর user India বা Singapore edge থেকে video পাবেন — origin US server থেকে না। Latency 200ms থেকে 10ms-এ নামে। এটাই fast streaming-এর secret।',
                     },
                 ],
             },
@@ -1567,13 +1567,13 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
                     },
                     {
                         key: 'c',
-                        text: 'User-কে wait করতে বলো',
+                        text: 'User-কে wait করতে বলুন',
                         isCorrect: false,
                         explanation: 'YouTube-এ uploaded video 1 minute-এর মধ্যে available হওয়া দরকার।',
                     },
                     {
                         key: 'd',
-                        text: 'কম quality transcode করো',
+                        text: 'কম quality transcode করুন',
                         isCorrect: false,
                         explanation: 'কম quality = poor user experience — এটা solution নয়।',
                     },
@@ -1587,7 +1587,7 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
                         key: 'a',
                         text: 'MySQL',
                         isCorrect: false,
-                        explanation: 'MySQL billions of time-series events handle করতে struggle করবে।',
+                        explanation: 'MySQL billions of time-series events handle করতে struggle করবেন।',
                     },
                     {
                         key: 'b',
@@ -1611,23 +1611,23 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
             },
             {
                 id: 7,
-                text: '"Resume from where you left off" feature implement করবে কীভাবে?',
+                text: '"Resume from where you left off" feature implement করবেন কীভাবে?',
                 options: [
                     {
                         key: 'a',
-                        text: 'User-এর last watch position DB-তে save, start করলে সেখান থেকে',
+                        text: 'User-এর last watch position DB-তে save, start করলেন সেখান থেকে',
                         isCorrect: true,
-                        explanation: 'সঠিক উত্তর: Periodic position save করো (every 10 seconds)। user_id + video_id → last_position_seconds। Video load হলে এই position থেকে HLS chunk request করো। Simple but effective।',
+                        explanation: 'সঠিক উত্তর: Periodic position save করুন (every 10 seconds)। user_id + video_id → last_position_seconds। Video load হলে এই position থেকে HLS chunk request করুন। Simple but effective।',
                     },
                     {
                         key: 'b',
-                        text: 'Browser cookie-তে রাখো',
+                        text: 'Browser cookie-তে রাখুন',
                         isCorrect: false,
                         explanation: 'Cookie শুধু same browser-এ কাজ করে — mobile app বা অন্য device-এ resume হবে না।',
                     },
                     {
                         key: 'c',
-                        text: 'Video re-encode করো',
+                        text: 'Video re-encode করুন',
                         isCorrect: false,
                         explanation: 'Video re-encoding resume feature-এর সাথে সম্পর্কহীন।',
                     },
@@ -1635,7 +1635,7 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
                         key: 'd',
                         text: 'Possible না',
                         isCorrect: false,
-                        explanation: 'YouTube এই feature implement করেছে — DB-তে position save করে।',
+                        explanation: 'YouTube এই feature implement করেছেনে — DB-তে position save করে।',
                     },
                 ],
             },
@@ -1677,7 +1677,7 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
                         key: 'a',
                         text: 'Entire video একসাথে download করে',
                         isCorrect: false,
-                        explanation: 'Entire video download করলে buffering হবে এবং শুরু হতে দেরি হবে।',
+                        explanation: 'Entire video download করলেন buffering হবে এবং শুরু হতে দেরি হবে।',
                     },
                     {
                         key: 'b',
@@ -1701,19 +1701,19 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
             },
             {
                 id: 10,
-                text: 'Viral video (suddenly 10M views in 1 hour) — system কীভাবে handle করবে?',
+                text: 'Viral video (suddenly 10M views in 1 hour) — system কীভাবে handle করবেন?',
                 options: [
                     {
                         key: 'a',
-                        text: 'Server upgrade করো',
+                        text: 'Server upgrade করুন',
                         isCorrect: false,
-                        explanation: 'Vertical scaling reactive approach — viral হওয়ার পরে upgrade করলে দেরি হবে।',
+                        explanation: 'Vertical scaling reactive approach — viral হওয়ার পরে upgrade করলেন দেরি হবে।',
                     },
                     {
                         key: 'b',
-                        text: 'Video temporarily block করো',
+                        text: 'Video temporarily block করুন',
                         isCorrect: false,
-                        explanation: 'Video block করলে user experience নষ্ট হবে এবং এটা কোনো solution নয়।',
+                        explanation: 'Video block করলেন user experience নষ্ট হবে এবং এটা কোনো solution নয়।',
                     },
                     {
                         key: 'c',
@@ -1723,22 +1723,22 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
                     },
                     {
                         key: 'd',
-                        text: 'Origin server direct serve করো',
+                        text: 'Origin server direct serve করুন',
                         isCorrect: false,
-                        explanation: 'Origin server direct serve করলে 10M requests handle করতে পারবে না — crash হবে।',
+                        explanation: 'Origin server direct serve করলেন 10M requests handle করতে পারবেন না — crash হবে।',
                     },
                 ],
             },
         ],
     },
     assignment: {
-        title: 'Video Streaming Platform ডিজাইন করো',
+        title: 'Video Streaming Platform ডিজাইন করুন',
         time: '৪-৫ ঘন্টা',
         difficulty: 'Advanced',
         tasks: [
             <span key='1'>
                 <strong>Architecture Diagram:</strong> YouTube-এর complete
-                system diagram আঁকো। Upload path এবং Stream path আলাদা রঙে
+                system diagram আঁকুন। Upload path এবং Stream path আলাদা রঙে
                 দেখাও। Components: Creator → Upload Service → Raw S3 → Kafka
                 → Transcoding Workers → Processed S3 → CDN → Viewer।
             </span>,
@@ -1750,19 +1750,19 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
             </span>,
             <span key='3'>
                 <strong>HLS Playlist:</strong> নিজে একটা simple .m3u8 master
-                playlist file লেখো 3টা quality-র জন্য (360p, 720p, 1080p)।
+                playlist file লিখুন 3টা quality-র জন্য (360p, 720p, 1080p)।
                 Format দেখে উপরের example থেকে।
             </span>,
             <span key='4'>
                 <strong>CDN Strategy:</strong> Bangladesh-এর user যখন YouTube
                 video দেখে, request কোথা থেকে serve হওয়া উচিত? CDN edge
-                location কোথায় থাকলে best? Explain করো।
+                location কোথায় থাকলে best? Explain করুন।
             </span>,
             <span key='5'>
                 <strong>Cost Analysis:</strong> যদি প্রতিদিন 1 petabyte video
                 store করতে হয়, AWS S3 standard pricing (~$23/TB/month) এ
                 monthly cost কত? Cold storage (Glacier, ~$4/TB/month) use
-                করলে পুরনো videos-এর জন্য কত save হবে?
+                করলেন পুরনো videos-এর জন্য কত save হবে?
             </span>,
         ],
         deliverables: [
@@ -1781,29 +1781,29 @@ https://cdn.youtube.com/video123/1080p/playlist.m3u8
         subtitle: 'FFmpeg + S3 + CloudFront',
         steps: [
             {
-                title: 'FFmpeg + boto3 Setup করো',
+                title: 'FFmpeg + boto3 Setup করুন',
                 description:
-                    'Python environment-এ ffmpeg-python, boto3 install করো। AWS credentials configure করো। S3 bucket তৈরি করো raw-videos এবং processed-videos-এর জন্য।',
+                    'Python environment-এ ffmpeg-python, boto3 install করুন। AWS credentials configure করুন। S3 bucket তৈরি করুন raw-videos এবং processed-videos-এর জন্য।',
             },
             {
-                title: 'Upload Endpoint বানাও',
+                title: 'Upload Endpoint বানান',
                 description:
-                    'FastAPI দিয়ে /upload endpoint। Multipart file accept করো। Raw S3 bucket-এ save করো। Kafka-তে video_uploaded event publish করো।',
+                    'FastAPI দিয়ে /upload endpoint। Multipart file accept করুন। Raw S3 bucket-এ save করুন। Kafka-তে video_uploaded event publish করুন।',
             },
             {
-                title: 'Transcoding Worker লেখো',
+                title: 'Transcoding Worker লিখুন',
                 description:
-                    'Kafka consumer যেটা video_uploaded event শুনবে। FFmpeg দিয়ে 360p, 720p, 1080p transcode করবে। Processed S3-এ upload করবে। Metadata DB update করবে।',
+                    'Kafka consumer যেটা video_uploaded event শুনবে। FFmpeg দিয়ে 360p, 720p, 1080p transcode করবেন। Processed S3-এ upload করবেন। Metadata DB update করবেন।',
             },
             {
-                title: 'HLS Playlist Generate করো',
+                title: 'HLS Playlist Generate করুন',
                 description:
-                    'FFmpeg দিয়ে .ts segment files এবং .m3u8 playlist তৈরি করো। master.m3u8 file-এ সব quality-র reference রাখো। S3-এ upload করো।',
+                    'FFmpeg দিয়ে .ts segment files এবং .m3u8 playlist তৈরি করুন। master.m3u8 file-এ সব quality-র reference রাখুন। S3-এ upload করুন।',
             },
             {
-                title: 'CloudFront CDN Connect করো',
+                title: 'CloudFront CDN Connect করুন',
                 description:
-                    'S3 bucket-এ CloudFront distribution create করো। CDN URL দিয়ে video serve করো। Test করো — বিভিন্ন quality switch করে দেখো।',
+                    'S3 bucket-এ CloudFront distribution create করুন। CDN URL দিয়ে video serve করুন। Test করুন — বিভিন্ন quality switch করে দেখুন।',
             },
         ],
         codeBlock: {
@@ -1820,14 +1820,14 @@ RAW_BUCKET = "yt-raw-videos"
 PROCESSED_BUCKET = "yt-processed-videos"
 
 def upload_raw_video(file_path: str, video_id: str) -> str:
-    """Step 1: Raw video S3-এ upload করো"""
+    """Step 1: Raw video S3-এ upload করুন"""
     s3_key = f"raw/{video_id}/original.mp4"
     s3.upload_file(file_path, RAW_BUCKET, s3_key)
     print(f"✅ Raw video uploaded: s3://{RAW_BUCKET}/{s3_key}")
     return s3_key
 
 def transcode_to_hls(raw_path: str, video_id: str) -> dict:
-    """Step 2: FFmpeg দিয়ে HLS segments তৈরি করো"""
+    """Step 2: FFmpeg দিয়ে HLS segments তৈরি করুন"""
     output_dir = f"/tmp/{video_id}"
     Path(output_dir).mkdir(exist_ok=True)
 
@@ -1842,7 +1842,7 @@ def transcode_to_hls(raw_path: str, video_id: str) -> dict:
         out_path = f"{output_dir}/{q['name']}"
         Path(out_path).mkdir(exist_ok=True)
 
-        # FFmpeg HLS output তৈরি করো
+        # FFmpeg HLS output তৈরি করুন
         subprocess.run([
             "ffmpeg", "-i", raw_path,
             "-vf", f"scale={q['width']}:{q['height']}",
@@ -1855,7 +1855,7 @@ def transcode_to_hls(raw_path: str, video_id: str) -> dict:
             f"{out_path}/playlist.m3u8"
         ], check=True)
 
-        # S3-এ upload করো
+        # S3-এ upload করুন
         for file in Path(out_path).glob("*"):
             key = f"processed/{video_id}/{q['name']}/{file.name}"
             s3.upload_file(str(file), PROCESSED_BUCKET, key,
@@ -1867,7 +1867,7 @@ def transcode_to_hls(raw_path: str, video_id: str) -> dict:
     return playlists
 
 def generate_master_playlist(video_id: str, playlists: list) -> str:
-    """Step 3: Master m3u8 playlist তৈরি করো"""
+    """Step 3: Master m3u8 playlist তৈরি করুন"""
     bandwidth_map = {"360p": 400000, "720p": 2800000, "1080p": 5000000}
     resolution_map = {"360p": "640x360", "720p": "1280x720", "1080p": "1920x1080"}
 
@@ -1878,7 +1878,7 @@ def generate_master_playlist(video_id: str, playlists: list) -> str:
         content += f"#EXT-X-STREAM-INF:BANDWIDTH={bw},RESOLUTION={res}\\n"
         content += f"{p['url']}\\n\\n"
 
-    # Master playlist S3-এ save করো
+    # Master playlist S3-এ save করুন
     master_key = f"processed/{video_id}/master.m3u8"
     s3.put_object(
         Bucket=PROCESSED_BUCKET, Key=master_key,

@@ -24,18 +24,18 @@ export const scalabilityContent: TopicData = {
                     content: (
                         <div className='space-y-6'>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
-                                তুমি একটা app বানালে। শুরুতে ১০০ user। সব ঠিকঠাক
+                                ধরুন আপনি একটা অ্যাপ বানালেনন। শুরুতে ১০০ ইউজার। সব ঠিকঠাক
                                 চলছে। কিন্তু হঠাৎ TechCrunch এ feature হলো — ১০
-                                লক্ষ user একসাথে ঢুকলো। Server crash। App down।
+                                লক্ষ ইউজার একসাথে ঢুকলো। Server crash। App down।
                             </p>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
                                 এই সমস্যার নাম হলো{' '}
                                 <strong className='text-foreground'>
                                     Scalability problem
                                 </strong>
-                                । একজন system engineer হিসেবে তোমাকে আগে থেকেই
+                                । একজন system engineer হিসেবে আপনাকে আগে থেকেই
                                 plan করতে হবে — আমার system যদি ১০x, ১০০x, ১০০০x
-                                বড় হয়, তখনও কি এটা কাজ করবে?
+                                বড় হয়, তখনও কি এটা কাজ করবেন?
                             </p>
                         </div>
                     ),
@@ -66,7 +66,7 @@ export const scalabilityContent: TopicData = {
                     type: CONTENT_TYPES.HTML,
                     content: (
                         <p className='text-muted-foreground leading-relaxed mb-10 text-lg'>
-                            Vertical scaling মানে তোমার existing server কে আরো
+                            Vertical scaling মানে আপনার existing server কে আরো
                             powerful বানানো। বেশি RAM, বেশি CPU, বেশি storage।
                         </p>
                     ),
@@ -135,7 +135,7 @@ export const scalabilityContent: TopicData = {
             subHeader: { index: '003', title: 'Horizontal Scaling' },
             title: (
                 <span className='font-heading'>
-                    Scale Out — বেশি মেশিন যোগ করো
+                    Scale Out — বেশি মেশিন যোগ করুন
                 </span>
             ),
             blocks: [
@@ -160,8 +160,8 @@ export const scalabilityContent: TopicData = {
                     content: (
                         <>
                             Horizontal scaling এর সবচেয়ে বড় সুবিধা হলো{' '}
-                            <strong>theoretically unlimited</strong> — তুমি
-                            যতখুশি server যোগ করতে পারো। Google, Facebook এর
+                            <strong>theoretically unlimited</strong> — আপনি
+                            যতখুশি server যোগ করতে পারেন। Google, Facebook এর
                             লক্ষ লক্ষ server এভাবেই কাজ করে।
                         </>
                     ),
@@ -174,10 +174,10 @@ export const scalabilityContent: TopicData = {
                                 Stateless vs Stateful — গুরুত্বপূর্ণ পার্থক্য
                             </h3>
                             <p className='text-muted-foreground leading-relaxed mb-8 text-lg'>
-                                Horizontal scaling সফলভাবে করতে হলে তোমার
+                                Horizontal scaling সফলভাবে করতে হলে আপনার
                                 servers কে <strong>stateless</strong> হতে হবে।
                                 মানে, যেকোনো server যেকোনো request handle করতে
-                                পারবে।
+                                পারবেন।
                             </p>
                         </>
                     ),
@@ -188,8 +188,8 @@ export const scalabilityContent: TopicData = {
                     rows: [
                         [
                             'Session data',
-                            'Redis/DB তে রাখো',
-                            'Server memory তে রাখো',
+                            'Redis/DB তে রাখুন',
+                            'Server memory তে রাখুন',
                         ],
                         [
                             'Scale করা যায়?',
@@ -220,23 +220,23 @@ export const scalabilityContent: TopicData = {
                     type: CONTENT_TYPES.CODE_BLOCK,
                     language: 'javascript',
                     filename: 'stateless-auth.js',
-                    code: `// ❌ STATEFUL — এটা করো না (horizontal scaling এ সমস্যা)
+                    code: `// ❌ STATEFUL — এটা করুন না (horizontal scaling এ সমস্যা)
 const sessions = {}; // Server memory তে session রাখা = BAD
 
 app.post('/login', (req, res) => {
   sessions[userId] = { loggedIn: true, cart: [...] };
-  // User 2nd request করলে অন্য server এ গেলে session নেই!
+  // User 2nd request করলেন অন্য server এ গেলে session নেই!
 });
 
-// ✅ STATELESS — এটা করো (horizontal scaling এর জন্য ready)
+// ✅ STATELESS — এটা করুন (horizontal scaling এর জন্য ready)
 const redis = require('redis');
 const jwt = require('jsonwebtoken');
 
 app.post('/login', async (req, res) => {
-  // Session Redis এ রাখো — যেকোনো server access করতে পারবে
+  // Session Redis এ রাখুন — যেকোনো server access করতে পারবেন
   await redis.set(\`session:\${userId}\`, JSON.stringify(sessionData));
   
-  // অথবা JWT use করো — server এ কিছুই রাখতে হবে না
+  // অথবা JWT use করুন — server এ কিছুই রাখতে হবে না
   const token = jwt.sign({ userId, role }, process.env.SECRET);
   res.json({ token });
 });`,
@@ -260,7 +260,7 @@ app.post('/login', async (req, res) => {
                         'Horizontal Scaling',
                     ],
                     rows: [
-                        ['সংজ্ঞা', 'একটা মেশিন বড় করো', 'বেশি মেশিন যোগ করো'],
+                        ['সংজ্ঞা', 'একটা মেশিন বড় করুন', 'বেশি মেশিন যোগ করুন'],
                         [
                             'Cost',
                             <span className='text-red-400'>
@@ -303,7 +303,7 @@ app.post('/login', async (req, res) => {
                             </span>,
                         ],
                         [
-                            'কখন ব্যবহার করো',
+                            'কখন ব্যবহার করুন',
                             'DB servers, quick fix',
                             'Web servers, API, large scale',
                         ],
@@ -312,11 +312,11 @@ app.post('/login', async (req, res) => {
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.IMPORTANT,
-                    title: 'Interview এ এটা বলো',
+                    title: 'Interview এ এটা বলুন',
                     content: (
                         <>
                             &quot;আমি সবসময় vertical scaling দিয়ে শুরু করবো
-                            কারণ এটা simpler। কিন্তু যখন hardware limit আসবে বা
+                            কারণ এটা simpler। কিন্তু যখন hardware limit আসবেন বা
                             single point of failure acceptable না হবে, তখন
                             horizontal scaling এ shift করবো।&quot; — এটাই সঠিক
                             industry approach।
@@ -373,7 +373,7 @@ app.post('/login', async (req, res) => {
                     content: (
                         <>
                             &quot;Always horizontal scale&quot; — এটা ভুল। Use
-                            case বুঝে decide করো। Stack Overflow মাত্র ৯টা web
+                            case বুঝে decide করুন। Stack Overflow মাত্র ৯টা web
                             server দিয়ে বিশাল traffic handle করে। কিন্তু
                             Netflix এর ১০,০০০+ server দরকার।
                         </>
@@ -406,7 +406,7 @@ upstream backend {
     server 192.168.1.11:3000;
     server 192.168.1.12:3000;
     
-    # Health check — কোনো server down হলে automatically বাদ দাও
+    # Health check — কোনো server down হলে automatically বাদ দিন
     keepalive 32;
 }
 
@@ -447,7 +447,7 @@ server {
                 },
                 {
                     type: CONTENT_TYPES.COMPARE_TABLE,
-                    headers: ['Approach', 'কীভাবে কাজ করে', 'কখন ব্যবহার করো'],
+                    headers: ['Approach', 'কীভাবে কাজ করে', 'কখন ব্যবহার করুন'],
                     rows: [
                         [
                             'Read Replica',
@@ -456,13 +456,13 @@ server {
                         ],
                         [
                             'Database Sharding',
-                            'Data টুকরো টুকরো করে ভাগ করো',
+                            'Data টুকরুন টুকরুন করে ভাগ করুন',
                             'Massive data (billions of rows)',
                         ],
                         [
                             'Caching Layer',
                             'Redis/Memcached দিয়ে DB hit কমাও',
-                            'সবসময় (DB এর সামনে cache রাখো)',
+                            'সবসময় (DB এর সামনে cache রাখুন)',
                         ],
                     ],
                 },
@@ -481,9 +481,9 @@ server {
                     content: (
                         <>
                             System সবসময় তার সবচেয়ে slow component এর speed এ
-                            চলে। তুমি ১০০০ web server দিলেও যদি database slow
+                            চলে। আপনি ১০০০ web server দিলেও যদি database slow
                             থাকে, পুরো system slow।{' '}
-                            <strong>Bottleneck খোঁজো, সেটা fix করো।</strong>
+                            <strong>Bottleneck খুঁজুন, সেটা fix করুন।</strong>
                         </>
                     ),
                 },
@@ -495,9 +495,9 @@ server {
                                 3. Auto-Scaling
                             </h3>
                             <p className='text-muted-foreground leading-relaxed mb-8 text-lg'>
-                                Modern cloud এ (AWS, GCP) তুমি auto-scaling set
-                                করতে পারো। Traffic বাড়লে automatically নতুন
-                                server আসবে, কমলে চলে যাবে। এতে cost optimize
+                                Modern cloud এ (AWS, GCP) আপনি auto-scaling set
+                                করতে পারেন। Traffic বাড়লে automatically নতুন
+                                server আসবেন, কমলে চলে যাবেন। এতে cost optimize
                                 হয়।
                             </p>
                         </>
@@ -514,10 +514,10 @@ aws autoscaling create-auto-scaling-group \\
   --max-size 20 \\       # maximum 20 server পর্যন্ত বাড়াও
   --desired-capacity 3  # শুরুতে 3 server
 
-# Scaling Policy: CPU > 70% হলে নতুন server যোগ করো
+# Scaling Policy: CPU > 70% হলে নতুন server যোগ করুন
 aws autoscaling put-scaling-policy \\
   --policy-name "scale-out" \\
-  --scaling-adjustment 2 \\  # 2টা server যোগ করো
+  --scaling-adjustment 2 \\  # 2টা server যোগ করুন
   --adjustment-type ChangeInCapacity`,
                 },
             ],
@@ -540,7 +540,7 @@ aws autoscaling put-scaling-policy \\
                 <span className='font-bold text-primary'>
                     Horizontal Scaling
                 </span>,
-                'বেশি মেশিন যোগ করো, unlimited কিন্তু stateless দরকার',
+                'বেশি মেশিন যোগ করুন, unlimited কিন্তু stateless দরকার',
             ],
             [
                 <span className='font-bold text-primary'>Stateless</span>,
@@ -552,7 +552,7 @@ aws autoscaling put-scaling-policy \\
             ],
             [
                 <span className='font-bold text-primary'>Bottleneck</span>,
-                'System এর সবচেয়ে slow part — সেটাই fix করো আগে',
+                'System এর সবচেয়ে slow part — সেটাই fix করুন আগে',
             ],
         ],
     },
@@ -560,7 +560,7 @@ aws autoscaling put-scaling-policy \\
         questions: [
             {
                 id: 1,
-                text: 'একটি e-commerce app এর database server এর CPU usage ৯০% হয়ে গেছে। তুমি দ্রুততম সমাধান হিসেবে কী করবে?',
+                text: 'একটি e-commerce app এর database server এর CPU usage ৯০% হয়ে গেছে। আপনি দ্রুততম সমাধান হিসেবে কী করবেন?',
                 options: [
                     {
                         key: 'A',
@@ -613,7 +613,7 @@ aws autoscaling put-scaling-policy \\
                         text: 'Application কে Stateless বানানো',
                         isCorrect: true,
                         explanation:
-                            'Stateless architecture ছাড়া horizontal scaling কাজ করবে না।',
+                            'Stateless architecture ছাড়া horizontal scaling কাজ করবেন না।',
                     },
                     {
                         key: 'D',
@@ -663,7 +663,7 @@ aws autoscaling put-scaling-policy \\
         tasks: [
             <span key='1'>
                 <strong>Scenario Analysis:</strong> নিচের ৩টা company এর জন্য
-                বলো কোনটা Vertical, কোনটা Horizontal scaling উপযুক্ত এবং কেন:
+                বলুন কোনটা Vertical, কোনটা Horizontal scaling উপযুক্ত এবং কেন:
                 (ক) একটি ছোট startup এর blog site — ১,০০০ daily users (খ) একটি
                 live cricket score app — match এর সময় ১০ লক্ষ concurrent users
                 (গ) একটি hospital এর patient database — ৫০০ internal users।
@@ -671,24 +671,24 @@ aws autoscaling put-scaling-policy \\
             <span key='2'>
                 <strong>Diagram Drawing:</strong> Excalidraw (excalidraw.com) বা
                 draw.io ব্যবহার করে একটা horizontal scaling architecture diagram
-                আঁকো — Users → Load Balancer → [3 Web Servers] → Database। লেবেল
-                দাও প্রতিটা component এ।
+                আঁকুন — Users → Load Balancer → [3 Web Servers] → Database। লেবেল
+                দিন প্রতিটা component এ।
             </span>,
             <span key='3'>
                 <strong>Code Reading:</strong> উপরে দেওয়া Nginx config টা পড়ো
-                এবং explain করো: (ক) <code>upstream backend</code> block কী করে?
-                (খ) যদি ১২টা server থাকে সেটা কীভাবে add করবে? (গ) একটা server
+                এবং explain করুন: (ক) <code>upstream backend</code> block কী করে?
+                (খ) যদি ১২টা server থাকে সেটা কীভাবে add করবেন? (গ) একটা server
                 down হলে কী হবে?
             </span>,
             <span key='4'>
-                <strong>Research Task:</strong> Google করে বের করো — Netflix
+                <strong>Research Task:</strong> Google করে বের করুন — Netflix
                 কতটা server ব্যবহার করে এবং তারা কোন cloud provider ব্যবহার করে।
-                ৩-৪ লাইনে লেখো。
+                ৩-৪ লাইনে লিখুন。
             </span>,
             <span key='5'>
-                <strong>Reflection:</strong> তুমি এখন যে company তে কাজ করো বা
-                পরিচিত কোনো app — সেটা কীভাবে scale করে বলে তোমার মনে হয়? ৫
-                লাইন লেখো।
+                <strong>Reflection:</strong> আপনি এখন যে company তে কাজ করুন বা
+                পরিচিত কোনো app — সেটা কীভাবে scale করে বলে আপনার মনে হয়? ৫
+                লাইন লিখুন।
             </span>,
         ],
         deliverables: [
@@ -704,33 +704,33 @@ aws autoscaling put-scaling-policy \\
         subtitle: 'Mini Load Balancer Setup (Docker)',
         steps: [
             {
-                title: 'Docker install করো',
+                title: 'Docker install করুন',
                 description:
-                    'docker.com থেকে Docker Desktop install করো। Windows/Mac/Linux সব সাপোর্ট করে।',
+                    'docker.com থেকে Docker Desktop install করুন। Windows/Mac/Linux সব সাপোর্ট করে।',
             },
             {
-                title: 'Simple Node.js server বানাও',
+                title: 'Simple Node.js server বানান',
                 description:
-                    'server.js — শুধু "Hello from Server X" return করবে, X হবে server এর নাম।',
+                    'server.js — শুধু "Hello from Server X" return করবেন, X হবে server এর নাম।',
             },
             {
-                title: 'docker-compose.yml লেখো',
+                title: 'docker-compose.yml লিখুন',
                 description:
-                    '৩টা app service এবং ১টা nginx service define করো।',
+                    '৩টা app service এবং ১টা nginx service define করুন।',
             },
             {
-                title: 'Nginx config লেখো',
-                description: 'upstream block এ ৩টা server add করো।',
+                title: 'Nginx config লিখুন',
+                description: 'upstream block এ ৩টা server add করুন।',
             },
             {
-                title: 'Test করো',
+                title: 'Test করুন',
                 description:
-                    'Browser এ localhost এ বারবার refresh করো — দেখো কোন server respond করছে।',
+                    'Browser এ localhost এ বারবার refresh করুন — দেখুন কোন server respond করছে।',
             },
             {
-                title: 'Bonus: একটা server kill করো',
+                title: 'Bonus: একটা server kill করুন',
                 description:
-                    'docker stop দিয়ে একটা server বন্ধ করো। দেখো অন্য দুটো তখন কাজ করছে কিনা।',
+                    'docker stop দিয়ে একটা server বন্ধ করুন। দেখুন অন্য দুটো তখন কাজ করছে কিনা।',
             },
         ],
         codeBlock: {
@@ -759,7 +759,7 @@ services:
     environment:
       SERVER_NAME: "Server-3"`,
         },
-        tip: 'Theoretical না — actually দেখবে Load Balancer কীভাবে traffic ভাগ করে। একটা server kill করলে দেখবে system তখনও চলছে। এটাই horizontal scaling এর power।',
+        tip: 'Theoretical না — actually দেখবেন Load Balancer কীভাবে traffic ভাগ করে। একটা server kill করলেন দেখবেন system তখনও চলছে। এটাই horizontal scaling এর power।',
     },
 };
 

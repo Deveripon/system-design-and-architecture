@@ -29,7 +29,7 @@ export const databasesContent: TopicData = {
                             <p className='text-muted-foreground leading-relaxed text-lg'>
                                 একটা system এর performance এর ৮০% নির্ভর করে
                                 database design এর উপর। ভুল database choose
-                                করলে, index না দিলে, বা wrong schema করলে — ১০০
+                                করলেন, index না দিলে, বা wrong schema করলেন — ১০০
                                 জন user এলেই সব crash করে।
                             </p>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
@@ -54,7 +54,7 @@ export const databasesContent: TopicData = {
                             <strong>Database</strong> হলো organized data storage
                             system। শুধু store নয় — efficiently retrieve,
                             update, delete এবং manage করাই database এর কাজ। একই
-                            query milliseconds এ return করবে নাকি seconds এ —
+                            query milliseconds এ return করবেন নাকি seconds এ —
                             সেটা নির্ভর করে database design এর উপর।
                         </p>
                     ),
@@ -196,7 +196,7 @@ export const databasesContent: TopicData = {
                 {
                     type: CONTENT_TYPES.INFO_BOX,
                     variant: INFO_BOX_VARIANTS.IMPORTANT,
-                    title: '🎯 Interview এ এটা বলো',
+                    title: '🎯 Interview এ এটা বলুন',
                     content: (
                         <p>
                             &quot;আমি SQL দিয়ে শুরু করবো কারণ ACID guarantee
@@ -224,7 +224,7 @@ export const databasesContent: TopicData = {
                     content: (
                         <p className='text-muted-foreground leading-relaxed mb-10 text-lg'>
                             ACID মানে Atomicity, Consistency, Isolation,
-                            Durability। Bank transfer ভাবো — টাকা একটা account
+                            Durability। Bank transfer ভাবুন — টাকা একটা account
                             থেকে কাটলে অবশ্যই অন্যটায় যোগ হতে হবে। এই guarantee
                             দেয় ACID।
                         </p>
@@ -251,11 +251,11 @@ IF (SELECT balance FROM accounts WHERE account_id = 101) < 0 THEN
     RAISE EXCEPTION 'Insufficient balance';
 END IF;
 
--- Step 3: Receiver এ টাকা যোগ করো
+-- Step 3: Receiver এ টাকা যোগ করুন
 UPDATE accounts SET balance = balance + 5000
 WHERE account_id = 202;
 
--- Step 4: Audit log রাখো
+-- Step 4: Audit log রাখুন
 INSERT INTO transfer_log (from_id, to_id, amount, created_at)
 VALUES (101, 202, 5000, NOW());
 
@@ -277,7 +277,7 @@ COMMIT;  -- সব ঠিক থাকলে permanent save — Durability!`,
                     content: (
                         <p className='text-muted-foreground leading-relaxed mb-10 text-lg'>
                             Index হলো book এর index page এর মতো। পুরো book না
-                            পড়ে সরাসরি page এ যাওয়া যায়। Database এ index না
+                            পড়ে সরাসরি page এ যানয়া যায়। Database এ index না
                             থাকলে প্রতিটি query তে পুরো table scan করতে হয় — ১০
                             লক্ষ row এ এটা অনেক slow।
                         </p>
@@ -294,7 +294,7 @@ COMMIT;  -- সব ঠিক থাকলে permanent save — Durability!`,
                             <div className='p-8 border-r border-border bg-card/30'>
                                 <h4 className='font-bold text-foreground mb-4 flex items-center gap-3 font-mono uppercase tracking-widest text-[10px]'>
                                     <span className='w-1.5 h-1.5 bg-emerald-500' />
-                                    ✅ Index দাও যখন
+                                    ✅ Index দিন যখন
                                 </h4>
                                 <p className='text-sm text-muted-foreground leading-relaxed'>
                                     WHERE clause এ frequently query হয়। High
@@ -324,14 +324,14 @@ COMMIT;  -- সব ঠিক থাকলে permanent save — Durability!`,
                     code: `-- 1. Basic index — single column
 CREATE INDEX idx_users_email ON users(email);
 
--- 2. Composite index — দুটো column একসাথে filter করলে
+-- 2. Composite index — দুটো column একসাথে filter করলেন
 --    WHERE email = ? AND created_at > ?
 CREATE INDEX idx_users_email_date ON users(email, created_at);
 
 -- 3. Partial index — শুধু active users (ছোট এবং fast)
 CREATE INDEX idx_active_users ON users(email) WHERE status = 'active';
 
--- 4. Query plan দেখো — index use হচ্ছে কি?
+-- 4. Query plan দেখুন — index use হচ্ছে কি?
 EXPLAIN ANALYZE
 SELECT * FROM users WHERE email = 'test@example.com';
 -- "Index Scan" → ভালো ✅  |  "Seq Scan" → index নেই ⚠️`,
@@ -354,9 +354,9 @@ SELECT * FROM users WHERE email = 'test@example.com';
                             </h3>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
                                 সব database operation এর ৮০-৯০% হলো READ।
-                                Primary database এর copy (Replica) রাখো — Read
+                                Primary database এর copy (Replica) রাখুন — Read
                                 requests Replica তে পাঠাও। Primary শুধু Write
-                                handle করবে। এভাবে Primary এর load অনেক কমে।
+                                handle করবেন। এভাবে Primary এর load অনেক কমে।
                             </p>
                         </div>
                     ),
@@ -370,7 +370,7 @@ SELECT * FROM users WHERE email = 'test@example.com';
                     content: (
                         <div className='space-y-6'>
                             <h3 className='text-xl font-bold mt-12 mb-4'>
-                                Sharding — Write Load ভাগ করো
+                                Sharding — Write Load ভাগ করুন
                             </h3>
                             <p className='text-muted-foreground leading-relaxed text-lg'>
                                 একটা বড় table কে multiple databases এ ভাগ করা।
@@ -382,7 +382,7 @@ SELECT * FROM users WHERE email = 'test@example.com';
                 },
                 {
                     type: CONTENT_TYPES.COMPARE_TABLE,
-                    headers: ['Approach', 'কীভাবে কাজ করে', 'কখন ব্যবহার করো'],
+                    headers: ['Approach', 'কীভাবে কাজ করে', 'কখন ব্যবহার করুন'],
                     rows: [
                         [
                             'Read Replica',
@@ -410,8 +410,8 @@ SELECT * FROM users WHERE email = 'test@example.com';
                             Cross-shard JOIN কঠিন — User A Shard 1 এ, User B
                             Shard 3 এ, এদের data JOIN করতে application layer এ
                             করতে হয়। Resharding complex। Hotspot shard হতে
-                            পারে। তাই Sharding সবচেয়ে শেষে করো — আগে Read
-                            Replica, Caching, Query optimization দিয়ে দেখো।
+                            পারে। তাই Sharding সবচেয়ে শেষে করুন — আগে Read
+                            Replica, Caching, Query optimization দিয়ে দেখুন।
                         </p>
                     ),
                 },
@@ -451,7 +451,7 @@ const cache = redis.createClient();
 async function getUser(userId) {
   const cacheKey = \`user:\${userId}\`;
 
-  // 1. Cache check করো
+  // 1. Cache check করুন
   const cached = await cache.get(cacheKey);
   if (cached) return JSON.parse(cached);  // Cache HIT ✅
 
@@ -461,7 +461,7 @@ async function getUser(userId) {
   );
   const user = result.rows[0];
 
-  // 3. Cache এ store করো (TTL: 1 hour)
+  // 3. Cache এ store করুন (TTL: 1 hour)
   await cache.setEx(cacheKey, 3600, JSON.stringify(user));
 
   return user;
@@ -470,7 +470,7 @@ async function getUser(userId) {
 // Write — Primary তে
 async function updateUser(userId, data) {
   await primaryDB.query('UPDATE users SET name=$1 WHERE id=$2', [data.name, userId]);
-  await cache.del(\`user:\${userId}\`);  // Cache invalidate করো!
+  await cache.del(\`user:\${userId}\`);  // Cache invalidate করুন!
 }`,
                 },
             ],
@@ -480,7 +480,7 @@ async function updateUser(userId, data) {
             subHeader: { index: '007', title: 'Tools Comparison' },
             title: (
                 <span className='font-heading'>
-                    Database Tools — কোনটা কখন ব্যবহার করবে
+                    Database Tools — কোনটা কখন ব্যবহার করবেন
                 </span>
             ),
             blocks: [
@@ -538,7 +538,7 @@ async function updateUser(userId, data) {
             subHeader: { index: '008', title: 'Real World Examples' },
             title: (
                 <span className='font-heading'>
-                    বড় কোম্পানিগুলো কীভাবে করেছে
+                    বড় কোম্পানিগুলো কীভাবে করেছেনে
                 </span>
             ),
             blocks: [
@@ -552,7 +552,7 @@ async function updateUser(userId, data) {
                                     Instagram এর Database Journey
                                 </h3>
                                 <p className='text-muted-foreground leading-relaxed'>
-                                    Instagram শুরু করেছিল PostgreSQL দিয়ে। User
+                                    Instagram শুরু করেছেনিল PostgreSQL দিয়ে। User
                                     base ১০M থেকে ১B+ হওয়ার সময় PostgreSQL
                                     sharding করে। User ID based consistent
                                     hashing দিয়ে ১০০০+ shards। Photos (media
@@ -602,7 +602,7 @@ async function updateUser(userId, data) {
         rows: [
             [
                 <span className='font-bold text-primary'>SQL vs NoSQL</span>,
-                'SQL = ACID, structured। NoSQL = flexible, scale। Use case দেখে choose করো',
+                'SQL = ACID, structured। NoSQL = flexible, scale। Use case দেখে choose করুন',
             ],
             [
                 <span className='font-bold text-primary'>ACID</span>,
@@ -618,11 +618,11 @@ async function updateUser(userId, data) {
             ],
             [
                 <span className='font-bold text-primary'>Sharding</span>,
-                'Table rows ভাগ করো। Write scale করো। Cross-shard JOIN কঠিন',
+                'Table rows ভাগ করুন। Write scale করুন। Cross-shard JOIN কঠিন',
             ],
             [
                 <span className='font-bold text-primary'>N+1 Problem</span>,
-                'Loop এ query করো না। JOIN বা eager loading ব্যবহার করো',
+                'Loop এ query করুন না। JOIN বা eager loading ব্যবহার করুন',
             ],
         ],
     },
@@ -673,18 +673,18 @@ async function updateUser(userId, data) {
         tasks: [
             <span key='1'>
                 <strong>Index Benchmark:</strong> PostgreSQL এ ১ million fake
-                user insert করো। <code>email</code> column এ index ছাড়া এবং
-                index সহ query time measure করো।
+                user insert করুন। <code>email</code> column এ index ছাড়া এবং
+                index সহ query time measure করুন।
             </span>,
             <span key='2'>
                 <strong>ACID Transaction:</strong> Node.js দিয়ে একটা Bank
-                Transfer system তৈরি করো। BEGIN/COMMIT/ROLLBACK দিয়ে
-                transaction implement করো।
+                Transfer system তৈরি করুন। BEGIN/COMMIT/ROLLBACK দিয়ে
+                transaction implement করুন।
             </span>,
             <span key='3'>
                 <strong>Database Choice:</strong> bKash, Facebook feed, Uber
                 driver location, Amazon product catalog — কোনটির জন্য কোন DB
-                choose করবে এবং কেন লেখো।
+                choose করবেন এবং কেন লিখুন।
             </span>,
         ],
         deliverables: [
@@ -705,16 +705,16 @@ async function updateUser(userId, data) {
             {
                 title: 'PostgreSQL — Users & Orders',
                 description:
-                    'ACID transaction দিয়ে order place করো। Index যোগ করো।',
+                    'ACID transaction দিয়ে order place করুন। Index যোগ করুন।',
             },
             {
                 title: 'MongoDB — Products',
                 description:
-                    'Products collection তৈরি করো — flexible schema (Phone আলাদা, T-shirt আলাদা)।',
+                    'Products collection তৈরি করুন — flexible schema (Phone আলাদা, T-shirt আলাদা)।',
             },
             {
                 title: 'Redis — Shopping Cart',
-                description: 'HASH দিয়ে cart implement করো। TTL = 1 hour।',
+                description: 'HASH দিয়ে cart implement করুন। TTL = 1 hour।',
             },
         ],
         codeBlock: {
@@ -737,7 +737,7 @@ services:
     image: redis:7-alpine
     ports: ["6379:6379"]`,
         },
-        tip: 'Theoretical না — actually দেখবে PostgreSQL এ ACID transaction কীভাবে checkout handle করে এবং Redis কেন cart এ better।',
+        tip: 'Theoretical না — actually দেখবেন PostgreSQL এ ACID transaction কীভাবে checkout handle করে এবং Redis কেন cart এ better।',
     },
 };
 
