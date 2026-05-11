@@ -94,7 +94,7 @@ export function ProConItem({ title, badge, children, isLast = false, type = "pos
 export function ConceptHeading({ children, className, color = "blue" }: { children: React.ReactNode; className?: string; color?: "blue" | "emerald" | "purple" | "primary" }) {
     const textColor = color === "blue" ? "text-blue-400" : color === "emerald" ? "text-emerald-400" : color === "purple" ? "text-purple-400" : "text-primary";
     return (
-        <h3 className={cn("text-xs font-mono font-bold uppercase tracking-[0.3em] mb-10 mt-20", textColor, className)}>
+        <h3 className={cn("text-xs font-mono font-bold uppercase  mb-10 mt-20", textColor, className)}>
             {children}
         </h3>
     );
@@ -116,23 +116,65 @@ import Image from 'next/image';
 /**
  * High-end image container for content
  */
-export function ContentImage({ src, alt, caption, width = 1408, height = 768 }: { src: string; alt: string; caption?: string; width?: number; height?: number }) {
+export function ContentImage({ 
+    src, 
+    alt, 
+    caption, 
+    width = 1408, 
+    height = 768, 
+    aspectRatio = "aspect-video",
+    maxWidth = "max-w-4xl"
+}: { 
+    src: string; 
+    alt: string; 
+    caption?: string; 
+    width?: number; 
+    height?: number;
+    aspectRatio?: string;
+    maxWidth?: string;
+}) {
     return (
-        <div className='my-10 border border-border bg-card p-2 rounded-xl overflow-hidden shadow-2xl group'>
-            <div className="relative overflow-hidden rounded-lg">
+        <div className={cn("my-12 mx-auto border border-border bg-card p-2 rounded-2xl overflow-hidden shadow-2xl group", maxWidth)}>
+            <div className={cn("relative overflow-hidden rounded-xl", aspectRatio)}>
                 <Image
                     src={src}
                     alt={alt}
                     width={width}
                     height={height}
-                    className='w-full h-auto transition-transform duration-500 group-hover:scale-[1.02]'
+                    className='w-full h-full object-cover transition-transform duration-700'
                 />
+                {caption && (
+                    <div className='absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500'>
+                        <p className='text-sm text-white/90 font-medium'>
+                            {caption}
+                        </p>
+                    </div>
+                )}
             </div>
-            {caption && (
-                <p className='text-[10px] text-center mt-3 font-mono uppercase tracking-widest opacity-50'>
-                    {caption}
-                </p>
-            )}
+    
         </div>
+    );
+}
+
+/**
+ * Standard bullet list for content
+ */
+export function ContentList({ children, className }: { children: React.ReactNode; className?: string }) {
+    return (
+        <ul className={cn("space-y-4 my-10", className)}>
+            {children}
+        </ul>
+    );
+}
+
+/**
+ * Individual item for ContentList
+ */
+export function ListItem({ children, icon = "✓", iconColor = "text-primary", className }: { children: React.ReactNode; icon?: string | React.ReactNode; iconColor?: string; className?: string }) {
+    return (
+        <li className={cn("flex gap-4 text-muted-foreground text-lg leading-relaxed", className)}>
+            <span className={cn("shrink-0 font-bold", iconColor)}>{icon}</span>
+            <span>{children}</span>
+        </li>
     );
 }

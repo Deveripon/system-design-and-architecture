@@ -32,7 +32,7 @@ export const introductionContent: TopicData = {
                     যাচ্ছে।
                 </ContentParagraph>
                 <ContentImage
-                    src='/expectation-vs-reality.png'
+                    src='/topics/introduction/expectation-vs-reality.png'
                     alt='Expectation vs Reality of System Success'
                 />
                 <ContentParagraph>
