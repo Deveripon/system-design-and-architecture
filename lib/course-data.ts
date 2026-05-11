@@ -114,6 +114,25 @@ export const courseData: CoursePhase[] = [
                 ],
             },
             {
+                id: 'load-balancing',
+                title: 'Load Balancing',
+                icon: Scale,
+                tag: 'HIGH IMPACT',
+                time: '৩০-৪৫ মিনিট',
+                level: 'Intermediate',
+                type: 'Traffic Management',
+                summary:
+                    'Traffic কীভাবে distribute করবেন — algorithms, health checks, sticky sessions।',
+                details:
+                    'Round Robin, Least Connections algorithms। L4 vs L7 balancing। Health checks এবং SSL termination।',
+                tools: ['Nginx', 'HAProxy', 'AWS ALB'],
+                useCases: [
+                    'Equal spec servers: Round Robin',
+                    'Variable spec: Weighted RR',
+                    'Sticky sessions: IP Hash',
+                ],
+            },
+            {
                 id: 'networking',
                 title: 'Networking Basics for Engineers',
                 icon: Network,
@@ -133,6 +152,32 @@ export const courseData: CoursePhase[] = [
                 ],
             },
             {
+                id: 'cdn-storage',
+                title: 'CDN & Object Storage',
+                icon: Cloud,
+                tag: 'PRACTICAL',
+                time: '৩০-৪৫ মিনিট',
+                level: 'Beginner',
+                type: 'Static Assets',
+                summary:
+                    'Static assets, images, videos globally fast serve করার জন্য। S3, CloudFront মাস্ট।',
+                details:
+                    'Edge caching, Cache-Control headers। S3 buckets, presigned URLs, and lifecycle policies।',
+                tools: ['AWS S3', 'CloudFront', 'Cloudflare'],
+                useCases: [
+                    'Global image serving: CDN',
+                    'File storage: S3',
+                    'Video streaming: HLS/CDN',
+                ],
+            },
+        ],
+    },
+    {
+        id: 'phase-2',
+        title: 'Core Components — মূল বিল্ডিং ব্লক',
+        duration: '৬-৮ সপ্তাহ',
+        topics: [
+            {
                 id: 'databases',
                 title: 'Database Fundamentals',
                 icon: Database,
@@ -149,6 +194,43 @@ export const courseData: CoursePhase[] = [
                     'Relational data: PostgreSQL',
                     'Flexible schema: MongoDB',
                     'Fast lookup: Redis',
+                ],
+            },
+            {
+                id: 'caching',
+                title: 'Caching Strategy',
+                icon: Cpu,
+                tag: 'HIGH IMPACT',
+                time: '৪৫-৬০ মিনিট',
+                level: 'Intermediate',
+                type: 'Performance Optimization',
+                summary:
+                    'Cache এর সঠিক ব্যবহারে system ১০-১০০x ফাস্ট হয়। এটা না জানলে চলবে না।',
+                details:
+                    'Cache-Aside, Write-Through, Write-Back patterns। LRU/LFU eviction policies। Cache stampede এবং avalanche problems।',
+                tools: ['Redis', 'Memcached', 'CloudFront'],
+                useCases: [
+                    'Read-heavy apps: Caching',
+                    'Session storage: Redis',
+                    'Global assets: CDN',
+                ],
+            },
+            {
+                id: 'db-sharding',
+                title: 'Database Sharding & Replication',
+                icon: Server,
+                tag: 'ADVANCED',
+                time: '৬০-৯০ মিনিট',
+                level: 'Advanced',
+                type: 'Database Scaling',
+                summary:
+                    'Large-scale database management — horizontal partitioning এবং data redundancy।',
+                details:
+                    'Range-based, Hash-based, Consistent hashing strategies। Master-Slave এবং Multi-region replication।',
+                useCases: [
+                    'Viral content handling: Sharding',
+                    'High availability: Replication',
+                    'Global low latency: Geo-sharding',
                 ],
             },
             {
@@ -172,48 +254,10 @@ export const courseData: CoursePhase[] = [
         ],
     },
     {
-        id: 'phase-2',
-        title: 'Core Components — মূল বিল্ডিং ব্লক',
+        id: 'phase-3',
+        title: 'Distributed Systems — ডিস্ট্রিবিউটেড সিস্টেম',
         duration: '৬-৮ সপ্তাহ',
         topics: [
-            {
-                id: 'caching',
-                title: 'Caching Strategy',
-                icon: Cpu,
-                tag: 'HIGH IMPACT',
-                time: '৪৫-৬০ মিনিট',
-                level: 'Intermediate',
-                type: 'Performance Optimization',
-                summary:
-                    'Cache এর সঠিক ব্যবহারে system ১০-১০০x ফাস্ট হয়। এটা না জানলে চলবে না।',
-                details:
-                    'Cache-Aside, Write-Through, Write-Back patterns। LRU/LFU eviction policies। Cache stampede এবং avalanche problems।',
-                tools: ['Redis', 'Memcached', 'CloudFront'],
-                useCases: [
-                    'Read-heavy apps: Caching',
-                    'Session storage: Redis',
-                    'Global assets: CDN',
-                ],
-            },
-            {
-                id: 'load-balancing',
-                title: 'Load Balancing',
-                icon: Scale,
-                tag: 'HIGH IMPACT',
-                time: '৩০-৪৫ মিনিট',
-                level: 'Intermediate',
-                type: 'Traffic Management',
-                summary:
-                    'Traffic কীভাবে distribute করবেন — algorithms, health checks, sticky sessions।',
-                details:
-                    'Round Robin, Least Connections, IP Hash algorithms। L4 vs L7 balancing। Health checks এবং SSL termination।',
-                tools: ['Nginx', 'HAProxy', 'AWS ALB'],
-                useCases: [
-                    'Equal spec servers: Round Robin',
-                    'Variable spec: Weighted RR',
-                    'Sticky sessions: IP Hash',
-                ],
-            },
             {
                 id: 'message-queues',
                 title: 'Message Queues & Event Streaming',
@@ -252,50 +296,6 @@ export const courseData: CoursePhase[] = [
                     'Service-to-service: gRPC',
                 ],
             },
-            {
-                id: 'db-sharding',
-                title: 'Database Sharding & Replication',
-                icon: Server,
-                tag: 'ADVANCED',
-                time: '৬০-৯০ মিনিট',
-                level: 'Advanced',
-                type: 'Database Scaling',
-                summary:
-                    'Large-scale database management — horizontal partitioning এবং data redundancy।',
-                details:
-                    'Range-based, Hash-based, Consistent hashing strategies। Master-Slave এবং Multi-region replication।',
-                useCases: [
-                    'Viral content handling: Sharding',
-                    'High availability: Replication',
-                    'Global low latency: Geo-sharding',
-                ],
-            },
-            {
-                id: 'cdn-storage',
-                title: 'CDN & Object Storage',
-                icon: Cloud,
-                tag: 'PRACTICAL',
-                time: '৩০-৪৫ মিনিট',
-                level: 'Beginner',
-                type: 'Static Assets',
-                summary:
-                    'Static assets, images, videos globally fast serve করার জন্য। S3, CloudFront মাস্ট।',
-                details:
-                    'Edge caching, Cache-Control headers। S3 buckets, presigned URLs, and lifecycle policies।',
-                tools: ['AWS S3', 'CloudFront', 'Cloudflare'],
-                useCases: [
-                    'Global image serving: CDN',
-                    'File storage: S3',
-                    'Video streaming: HLS/CDN',
-                ],
-            },
-        ],
-    },
-    {
-        id: 'phase-3',
-        title: 'Distributed Systems — ডিস্ট্রিবিউটেড সিস্টেম',
-        duration: '৬-৮ সপ্তাহ',
-        topics: [
             {
                 id: 'microservices',
                 title: 'Microservices Architecture',
@@ -671,5 +671,3 @@ export const courseData: CoursePhase[] = [
         ],
     },
 ];
-
-
