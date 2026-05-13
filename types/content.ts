@@ -86,6 +86,7 @@ export interface TopicData {
         subtitle: string;
         steps: { title: ReactNode; description: ReactNode }[];
         codeBlock?: { language: string; filename: string; code: string };
+        codeBlocks?: { language: string; filename: string; code: string }[];
         tip?: ReactNode;
     };
     phaseComplete?: {

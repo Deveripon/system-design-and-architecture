@@ -11,6 +11,7 @@ import {
     HorizontalScalingDiagram,
     VerticalScalingDiagram,
 } from '../../../components/course/topics/scalability/diagrams';
+import { CollapsibleCodeExample } from '../../../components/course/collapsible-code-example';
 import {
     CONTENT_TYPES,
     INFO_BOX_VARIANTS,
@@ -463,6 +464,195 @@ app.post('/login', async (req, res) => {
                 },
             ],
         },
+        {
+            id: 'practical-node-lab',
+            subHeader: { index: '006', title: 'Hands-on Lab' },
+            title: (
+                <SectionTitle>
+                    Node.js Multi-Server + Load Balancer Setup
+                </SectionTitle>
+            ),
+            blocks: [
+                {
+                    type: CONTENT_TYPES.HTML,
+                    content: (
+                        <ContentParagraph>
+                            থিয়োরি তো জানলাম, এবার চলুন একটি কাস্টম Node.js Load Balancer
+                            এবং একাধিক সার্ভার সেটআপ করে দেখি। নিচে ধাপে ধাপে
+                            কোড দেওয়া হলো:
+                        </ContentParagraph>
+                    ),
+                },
+                {
+                    type: CONTENT_TYPES.CUSTOM,
+                    component: (
+                        <CollapsibleCodeExample
+                            title='Practical Implementation Guide'
+                            subtitle='Node.js Multi-Server & Load Balancing'
+                            examples={[
+                                {
+                                    filename: 'server.js',
+                                    language: 'javascript',
+                                    description:
+                                        'এটি একটি সাধারণ Node.js সার্ভার যা তার নিজস্ব ID এবং Port রিটার্ন করে।',
+                                    code: `const express = require('express');
+const app = express();
+
+const PORT = process.env.PORT || 3000;
+const SERVER_ID = process.env.SERVER_ID || 'S1';
+
+app.get('/', (req, res) => {
+  res.json({
+    message: \`Hello from \${SERVER_ID}\`,
+    pid: process.pid,
+    port: PORT
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(\`[\${SERVER_ID}] Running on port \${PORT}\`);
+});`,
+                                },
+                                {
+                                    filename: 'start-all.js',
+                                    language: 'javascript',
+                                    description:
+                                        'এখন এই একটা Node.js Application ব্যবহার করে একসাথে ৩টি সার্ভার আলাদা আলাদা পোর্টে (৩০০১, ৩০০২, ৩০০৩) রান করি',
+                                    code: `const { spawn } = require('child_process');
+
+const servers = [
+  { id: 'S1', port: 3001 },
+  { id: 'S2', port: 3002 },
+  { id: 'S3', port: 3003 },
+];
+
+servers.forEach(({ id, port }) => {
+  const proc = spawn('node', ['server.js'], {
+    env: { ...process.env, PORT: port, SERVER_ID: id },
+    stdio: 'inherit'
+  });
+
+  proc.on('exit', (code) => {
+    console.log(\`\${id} exited with code \${code}\`);
+  });
+});`,
+                                },
+                                {
+                                    filename: 'load-balancer.js',
+                                    language: 'javascript',
+                                    description:
+                                        'Round-robin অ্যালগরিদম ব্যবহার করে একটি কাস্টম Load Balancer বানাই। এটি ৮০৮০ পোর্টে চলবে।',
+                                    code: `const express = require('express');
+const { createProxyMiddleware } = require('http-proxy-middleware');
+
+const app = express();
+
+const servers = [
+  'http://localhost:3001',
+  'http://localhost:3002',
+  'http://localhost:3003',
+];
+
+let currentIndex = 0;
+
+function getNextServer() {
+  const server = servers[currentIndex];
+  currentIndex = (currentIndex + 1) % servers.length;
+  return server;
+}
+
+app.use('/', (req, res, next) => {
+  const target = getNextServer();
+  console.log(\`→ Routing to: \${target}\`);
+
+  createProxyMiddleware({ target, changeOrigin: true })(req, res, next);
+});
+
+app.listen(8080, () => {
+  console.log('Load Balancer running on port 8080');
+});`,
+                                },
+                                {
+                                    filename: 'cluster.js',
+                                    language: 'javascript',
+                                    description:
+                                        'Node.js-এর built-in cluster মডিউল ব্যবহার করে এক পোর্টে মাল্টিপল কোর ব্যবহার করা দেখি চলুন ।',
+                                    code: `const cluster = require('cluster');
+const os = require('os');
+const express = require('express');
+
+if (cluster.isPrimary) {
+  const numCPUs = os.cpus().length;
+  console.log(\`Primary PID: \${process.pid}, forking \${numCPUs} workers...\`);
+
+  for (let i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+
+  cluster.on('exit', (worker) => {
+    console.log(\`Worker \${worker.process.pid} died → Restarting...\`);
+    cluster.fork();
+  });
+
+} else {
+  const app = express();
+  app.get('/', (req, res) => {
+    res.json({ worker: process.pid });
+  });
+  app.listen(3000);
+}`,
+                                },
+                                {
+                                    filename: 'Terminal Test',
+                                    language: 'bash',
+                                    description:
+                                        'সার্ভারগুলো রান করার পর যেভাবে টেস্ট করবেন।',
+                                    code: `# Terminal 1: সার্ভারগুলো চালু করুন
+node start-all.js
+
+# Terminal 2: Load balancer চালু করুন
+node load-balancer.js
+
+# Terminal 3: বারবার রিকোয়েস্ট পাঠিয়ে চেক করুন
+curl http://localhost:8080`,
+                                },
+                                {
+                                    filename: 'smart-load-balancer.js',
+                                    language: 'javascript',
+                                    description:
+                                        'আগের সেটআপে একটা সার্ভার ডাউন হলে Load Balancer ভুল করে সেখানে ট্র্যাফিক পাঠাচ্ছিলো। এটি সলভ করার জন্য চলুন একটি Health Check মেকানিজম যোগ করা যাক।',
+                                    code: `const servers = [
+  { url: 'http://localhost:3001', alive: true },
+  { url: 'http://localhost:3002', alive: true },
+  { url: 'http://localhost:3003', alive: true },
+];
+
+let currentIndex = 0;
+
+setInterval(async () => {
+  for (const server of servers) {
+    try {
+      await fetch(server.url + '/health');
+      server.alive = true;
+    } catch {
+      server.alive = false;
+      console.log(\`❌ \${server.url} is DOWN\`);
+    }
+  }
+}, 5000);
+
+function getNextServer() {
+  const alive = servers.filter(s => s.alive);
+  if (!alive.length) throw new Error('All servers down!');
+  return alive[currentIndex % alive.length].url;
+}`,
+                                },
+                            ]}
+                        />
+                    ),
+                },
+            ],
+        },
     ],
     summary: {
         headers: ['Concept', 'এক লাইনে'],
@@ -563,25 +753,25 @@ app.post('/login', async (req, res) => {
         ],
     },
     practicalLab: {
-        title: 'Hands-On Task',
-        subtitle: 'Exploring Load Balancing',
+        title: 'Node.js Multi-Server & Load Balancer',
+        subtitle: 'Practical Implementation of Horizontal Scaling',
         steps: [
             {
-                title: 'Docker Setup',
-                description: 'আপনার কম্পিউটারে ডকার সেটআপ করুন।',
+                title: 'Project Structure',
+                description: 'server.js, start-all.js, এবং load-balancer.js ফাইলগুলো তৈরি করুন।',
             },
             {
-                title: 'Multi-Port Server',
+                title: 'Server Setup',
                 description:
-                    '৩টি আলাদা পোর্টে আপনার অ্যাপ রান করে ট্রাফিক ভাগ করার চেষ্টা করুন।',
+                    'একাধিক পোর্টে সার্ভার রান করে চেক করুন রিকোয়েস্ট ভাগ হচ্ছে কিনা।',
             },
             {
-                title: 'Observations',
+                title: 'Health Check',
                 description:
-                    'একটি পোর্ট বন্ধ করে দিয়ে দেখুন সিস্টেম কাজ করছে কিনা।',
+                    'স্মার্ট লোড ব্যালেন্সার ব্যবহার করে সার্ভার ডাউন হলে তা হ্যান্ডেল করুন।',
             },
         ],
-        tip: 'বাস্তবে কাজ করে দেখা থিওরি পড়ার চেয়ে অনেক বেশি কার্যকরী!',
+        tip: 'বাস্তবে কোড লিখে রান করার মাধ্যমে আপনি ডিস্ট্রিবিউটেড সিস্টেমের আসল চ্যালেঞ্জগুলো বুঝতে পারবেন।',
     },
 };
 

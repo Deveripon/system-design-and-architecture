@@ -128,6 +128,16 @@ export const PracticalLabSection = React.memo(
                                         </div>
                                     )}
 
+                                    {data.codeBlocks && data.codeBlocks.map((block, idx) => (
+                                        <div key={idx} className='mt-8'>
+                                            <CodeBlock
+                                                language={block.language}
+                                                filename={block.filename}
+                                                code={block.code}
+                                            />
+                                        </div>
+                                    ))}
+
                                     {data.tip && (
                                         <div className='mt-8'>
                                             <InfoBox variant='tip' title='Pro Tip'>
