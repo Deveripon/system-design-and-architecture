@@ -38,7 +38,8 @@ export type ContentBlock =
       }
     | {
           type: typeof CONTENT_TYPES.STEP_FLOW;
-          steps: { number?: string; title: ReactNode; description: ReactNode }[];
+          stepName?: string;
+          steps: { title: ReactNode; description: ReactNode }[];
       }
     | { type: typeof CONTENT_TYPES.CUSTOM; component: ReactNode };
 
@@ -85,6 +86,7 @@ export interface TopicData {
         title: string;
         subtitle: string;
         steps: { title: ReactNode; description: ReactNode }[];
+        stepName?: string;
         codeBlock?: { language: string; filename: string; code: string };
         codeBlocks?: { language: string; filename: string; code: string }[];
         tip?: ReactNode;

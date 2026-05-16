@@ -1,11 +1,8 @@
-import React from 'react';
 /* eslint-disable react/jsx-key */
 import {
-    SectionTitle,
+    ContentImage,
     ContentParagraph,
-    FeatureGrid,
-    FeatureCard,
-    GradientText,
+    SectionTitle,
 } from '../../../components/course/content-components';
 import {
     CONTENT_TYPES,
@@ -19,9 +16,7 @@ export const loadBalancingContent: TopicData = {
         {
             id: 'core-concept',
             subHeader: { index: '001', title: 'Core Concept' },
-            title: (
-                <SectionTitle>Load Balancer কী?</SectionTitle>
-            ),
+            title: <SectionTitle>Load Balancer কী?</SectionTitle>,
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
@@ -41,10 +36,31 @@ export const loadBalancingContent: TopicData = {
                                 যান।&quot; প্রতিটা counter সমান কাজ পায়, কেউ
                                 overwhelmed না।
                             </ContentParagraph>
+                            <ContentImage
+                                src='/topics/load-balancer/load-balancer-bank.png'
+                                alt='Load Balancer'
+                            />
                             <ContentParagraph>
-                                সেরকমভাবে, যখন লক্ষ লক্ষ user আপনার app এ
-                                request পাঠায়, Load Balancer সেই request গুলো
-                                বিভিন্ন server এ distribute করে দেয়।
+                                এপ্লিকেশনের ক্ষেত্রেও সেম ঘটনা ঘটে।
+                                <br /> <br />
+                                ১. বিশ্বের বিভিন্ন প্রান্ত থেকে বিভিন্ন ইউজাররা
+                                অনেক অনেক রিকুয়েস্ট করে, প্রতিটা রিকুয়েস্ট
+                                সরাসরি সার্ভারের কাছে যায়না। রিকুয়েস্টগুলো
+                                সর্বপ্রথম লোড ব্যালেন্সার এর কাছে যায় ।
+                                <br /> <br />
+                                ২. লোড ব্যালেন্সার সর্বপ্রথম রিকুয়েস্টগুলো রিসিভ
+                                করে এবং সে ডিসিশন নেয় কোন রিকুয়েস্ট কোন সার্ভারে
+                                পাঠাবে এবং কোন সার্ভার রিকুয়েস্টা রিসিভ করার
+                                জন্য উপযুক্ত। তারপর সে রেকুয়েস্ট গুলোকে যথাযথ
+                                সার্ভারের কাছে ফরোয়ার্ড করে। (এই কাজটা লোড
+                                ব্যালেন্সার বিভিন্ন ওয়েতে করে থাকে, সেগুলোর
+                                ব্যাপারে আমরা পরে জানবো)
+                                <br /> <br />
+                                ৩. সার্ভার কাজ শেষ করে রেসপন্সটা আবার লোড
+                                ব্যালেন্সারের কাছেই ফেরত পাঠায়, এবং লোড
+                                ব্যালেন্সার সেটা ইউজারের কাছে পৌঁছে দেয়। ইউজার
+                                কখনো জানতে পারে না যে ভেতরে একাধিক সার্ভার কাজ
+                                করছে, সে শুধু লোড ব্যালেন্সারকেই চেনে।
                             </ContentParagraph>
                         </div>
                     ),
@@ -57,9 +73,8 @@ export const loadBalancingContent: TopicData = {
                         <p>
                             <strong>Load Balancer</strong> হলো এমন একটি
                             component যা incoming network traffic কে multiple
-                            servers এর মধ্যে distribute করে। এটা নিশ্চিত করে
-                            যে কোনো একটা server অতিরিক্ত load এ overwhelmed
-                            না হয়।
+                            servers এর মধ্যে distribute করে। এটা নিশ্চিত করে যে
+                            কোনো একটা server অতিরিক্ত load এ overwhelmed না হয়।
                         </p>
                     ),
                 },
@@ -99,13 +114,188 @@ export const loadBalancingContent: TopicData = {
             ],
         },
         {
-            id: 'l4-vs-l7',
-            subHeader: { index: '002', title: 'L4 vs L7' },
+            id: 'how-load-balancer-works',
+            subHeader: { index: '002', title: 'How Load Balancer Works' },
+            title: <SectionTitle>Load Balancer কীভাবে কাজ করে?</SectionTitle>,
+            blocks: [
+                {
+                    type: CONTENT_TYPES.HTML,
+                    content: (
+                        <div className='space-y-6'>
+                            <ContentParagraph>
+                                আমরা তো জানলাম যে লোড ব্যালেন্সার একটা
+                                রিকোয়েস্ট রিসিভ করে সেটাকে
+                                &quot;ফরোয়ার্ড&quot; করে দেয় সার্ভারের কাছে।
+                                কিন্তু কাজটা কি আসলে এতই সহজ? মোটেও না!
+                                <br />
+                                <br />
+                                ধরুন, &quot;আপনার ১০টা সার্ভার আছে। এখন প্রথম
+                                ইউজার আসলে তাকে কোন সার্ভারে পাঠাবেন? প্রথমটায়
+                                নাকি শেষটায়?&quot;এই ডিসিশনটাই বা কিভাবে নিবেন?
+                                এই ডিসিশন নেওয়ার জন্যই লোড ব্যালেন্সারের কিছু
+                                নিয়ম বা অ্যালগরিদম সেট করা থাকে। নিচে এর মধ্যে
+                                সবচেয়ে জনপ্রিয় কিছু অ্যালগরিদম নিয়ে আমরা
+                                বিস্তারিত জানবো।
+                            </ContentParagraph>
+                        </div>
+                    ),
+                },
+                {
+                    type: CONTENT_TYPES.STEP_FLOW,
+                    stepName: 'ALGORITHM',
+                    steps: [
+                        {
+                            title: 'Round Robin ',
+                            description:
+                                'অ্যালগরিদম অনুযায়ী লোড ব্যালেন্সার ক্রমান্বয়ে প্রতিটি সার্ভারে রিকোয়েস্ট পাঠায়। প্রথম রিকোয়েস্ট যাবে সার্ভার ১-এ, দ্বিতীয়টি সার্ভার ২-এ, তৃতীয়টি সার্ভার ৩-এ এবং এভাবে চলতেই থাকবে। সার্ভারের সংখ্যা শেষ হলে আবার প্রথম সার্ভার থেকে শুরু হয়।',
+                        },
+                        {
+                            title: 'Weighted Round Robin',
+                            description:
+                                'এই পদ্ধতিতে প্রতিটি সার্ভারকে একটি নির্দিষ্ট Weight বা গুরুত্ব অনুযায়ী রিকোয়েস্ট পাঠানো হয়। যে সার্ভারের Weight যত বেশি, সে তত বেশি রিকোয়েস্ট পায়।',
+                        },
+                        {
+                            title: 'Least Connection',
+                            description:
+                                'যে সার্ভারে বর্তমানে সবচেয়ে কম কানেকশন আছে, লোড ব্যালেন্সার নতুন রিকোয়েস্টটি সেই সার্ভারে পাঠায়। এটি রাউন্ড রবিন থেকে ভালো, কারণ এটি সার্ভারের লোড ব্যালেন্স করে।',
+                        },
+                        {
+                            title: 'Least Response Time',
+                            description:
+                                'যে সার্ভার সবচেয়ে কম সময়ে উত্তর দেয় (Least Response Time), লোড ব্যালেন্সার নতুন রিকোয়েস্টটি সেই সার্ভারে পাঠায়। এটি সার্ভারগুলোর পারফরম্যান্সের উপর ভিত্তি করে লোড ভাগ করে দেয়।',
+                        },
+                        {
+                            title: 'Least Bandwidth',
+                            description:
+                                'যে সার্ভারে সবচেয়ে কম bandwidth ব্যবহার হচ্ছে (Least Bandwidth), লোড ব্যালেন্সার নতুন রিকোয়েস্টটি সেই সার্ভারে পাঠায়। এটি সার্ভারগুলোর পারফরম্যান্সের উপর ভিত্তি করে লোড ভাগ করে দেয়।',
+                        },
+                        {
+                            title: 'IP Hash',
+                            description:
+                                'এই পদ্ধতিতে ইউজার আইপি (IP) অ্যাড্রেসকে Hash করে একটি নির্দিষ্ট সার্ভারে ম্যাপ করা হয়। ফলে, একই আইপি থেকে বারবার আসলে একই সার্ভারে রিকোয়েস্ট যায়, যা সেশন স্টিকিনেস (Session Stickiness) বজায় রাখতে সাহায্য করে।',
+                        },
+                    ],
+                },
+            ],
+        },
+        {
+            id: 'round-robin',
+            subHeader: { index: '02.1', title: 'Round Robin' },
             title: (
-                <SectionTitle>
-                    L4 vs L7 Load Balancing
+                <SectionTitle className='text-[30px]!'>
+                    Round Robin
                 </SectionTitle>
             ),
+            blocks: [
+                {
+                    type: CONTENT_TYPES.HTML,
+                    content: (
+                        <div className='space-y-6'>
+                            <ContentParagraph>{''}</ContentParagraph>
+                        </div>
+                    ),
+                },
+            ],
+        },
+        {
+            id: 'weighted-round-robin',
+            subHeader: { index: '02.2', title: 'Weighted Round Robin' },
+            title: (
+                <SectionTitle className='text-[30px]!'>
+                    Weighted Round Robin
+                </SectionTitle>
+            ),
+            blocks: [
+                {
+                    type: CONTENT_TYPES.HTML,
+                    content: (
+                        <div className='space-y-6'>
+                            <ContentParagraph>{''}</ContentParagraph>
+                        </div>
+                    ),
+                },
+            ],
+        },
+        {
+            id: 'least-connection',
+            subHeader: { index: '02.3', title: 'Least Connection' },
+            title: (
+                <SectionTitle className='text-[30px]!'>
+                    Least Connection
+                </SectionTitle>
+            ),
+            blocks: [
+                {
+                    type: CONTENT_TYPES.HTML,
+                    content: (
+                        <div className='space-y-6'>
+                            <ContentParagraph>{''}</ContentParagraph>
+                        </div>
+                    ),
+                },
+            ],
+        },
+        {
+            id: 'least-response-time',
+            subHeader: { index: '02.4', title: 'Least Response Time' },
+            title: (
+                <SectionTitle className='text-[30px]!'>
+                    Least Response Time
+                </SectionTitle>
+            ),
+            blocks: [
+                {
+                    type: CONTENT_TYPES.HTML,
+                    content: (
+                        <div className='space-y-6'>
+                            <ContentParagraph>{''}</ContentParagraph>
+                        </div>
+                    ),
+                },
+            ],
+        },
+        {
+            id: 'least-bandwidth',
+            subHeader: { index: '02.5', title: 'Least Bandwidth' },
+            title: (
+                <SectionTitle className='text-[30px]!'>
+                    Least Bandwidth
+                </SectionTitle>
+            ),
+            blocks: [
+                {
+                    type: CONTENT_TYPES.HTML,
+                    content: (
+                        <div className='space-y-6'>
+                            <ContentParagraph>{''}</ContentParagraph>
+                        </div>
+                    ),
+                },
+            ],
+        },
+        {
+            id: 'ip-hash',
+            subHeader: { index: '02.6', title: 'IP Hash' },
+            title: (
+                <SectionTitle className='text-[30px]!'>
+                    IP Hash
+                </SectionTitle>
+            ),
+            blocks: [
+                {
+                    type: CONTENT_TYPES.HTML,
+                    content: (
+                        <div className='space-y-6'>
+                            <ContentParagraph>{''}</ContentParagraph>
+                        </div>
+                    ),
+                },
+            ],
+        },
+        {
+            id: 'l4-vs-l7',
+            subHeader: { index: '002', title: 'L4 vs L7' },
+            title: <SectionTitle>L4 vs L7 Load Balancing</SectionTitle>,
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
@@ -121,9 +311,9 @@ export const loadBalancingContent: TopicData = {
                                         </span>
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
-                                        শুধু IP address + Port দেখে routing
-                                        করে। HTTP content দেখে না। অনেক fast
-                                        কারণ packet inspect করে না। কিন্তু
+                                        শুধু IP address + Port দেখে routing করে।
+                                        HTTP content দেখে না। অনেক fast কারণ
+                                        packet inspect করে না। কিন্তু
                                         content-aware না — URL বা header দেখে
                                         decision নিতে পারে না।
                                     </p>
@@ -139,9 +329,9 @@ export const loadBalancingContent: TopicData = {
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
                                         পুরো HTTP request পড়তে পারে — URL,
                                         headers, cookies, body। Smart routing
-                                        করতে পারে। যেমন{' '}
-                                        <code>/api/*</code> → API servers,{' '}
-                                        <code>/static/*</code> → CDN।
+                                        করতে পারে। যেমন <code>/api/*</code> →
+                                        API servers, <code>/static/*</code> →
+                                        CDN।
                                     </p>
                                 </div>
                             </div>
@@ -210,11 +400,7 @@ export const loadBalancingContent: TopicData = {
         {
             id: 'algorithms',
             subHeader: { index: '003', title: 'Algorithms' },
-            title: (
-                <SectionTitle>
-                    Load Balancing Algorithms
-                </SectionTitle>
-            ),
+            title: <SectionTitle>Load Balancing Algorithms</SectionTitle>,
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
@@ -237,10 +423,10 @@ export const loadBalancingContent: TopicData = {
                                         Weighted Round Robin
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
-                                        Server এর capacity অনুযায়ী weight assign
-                                        করুন। Server A (weight=3) → Server B
-                                        (weight=1)। বড় server বেশি traffic পাবেন।
-                                        Mixed hardware এ ভালো।
+                                        Server এর capacity অনুযায়ী weight
+                                        assign করুন। Server A (weight=3) →
+                                        Server B (weight=1)। বড় server বেশি
+                                        traffic পাবেন। Mixed hardware এ ভালো।
                                     </p>
                                 </div>
                                 <div className='p-8 border-r border-b border-border bg-card/30'>
@@ -250,9 +436,9 @@ export const loadBalancingContent: TopicData = {
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
                                         যে server এর active connections সবচেয়ে
                                         কম, তাকে request পাঠাও। Long-lived
-                                        connections (WebSocket, database) এর জন্য
-                                        সবচেয়ে ভালো। Variable request duration
-                                        handle করে।
+                                        connections (WebSocket, database) এর
+                                        জন্য সবচেয়ে ভালো। Variable request
+                                        duration handle করে।
                                     </p>
                                 </div>
                                 <div className='p-8 border-b border-border bg-card/30'>
@@ -260,10 +446,10 @@ export const loadBalancingContent: TopicData = {
                                         IP Hash
                                     </h4>
                                     <p className='text-sm text-muted-foreground leading-relaxed'>
-                                        Client এর IP address hash করে always same
-                                        server এ পাঠাও। Session persistence এর
-                                        জন্য দরকার। Same user সবসময় same server
-                                        এ যাবেন।
+                                        Client এর IP address hash করে always
+                                        same server এ পাঠাও। Session persistence
+                                        এর জন্য দরকার। Same user সবসময় same
+                                        server এ যাবেন।
                                     </p>
                                 </div>
                                 <div className='p-8 border-r border-border bg-card/30'>
@@ -336,11 +522,7 @@ export const loadBalancingContent: TopicData = {
         {
             id: 'health-check',
             subHeader: { index: '004', title: 'Health Check' },
-            title: (
-                <SectionTitle>
-                    Health Check ও Failover
-                </SectionTitle>
-            ),
+            title: <SectionTitle>Health Check ও Failover</SectionTitle>,
             blocks: [
                 {
                     type: CONTENT_TYPES.HTML,
@@ -382,8 +564,7 @@ export const loadBalancingContent: TopicData = {
                                     Custom Script:
                                 </strong>{' '}
                                 Database connection, disk space ইত্যাদি check
-                                করতে পারে। সাধারণত{' '}
-                                <code>/health</code> বা{' '}
+                                করতে পারে। সাধারণত <code>/health</code> বা{' '}
                                 <code>/ping</code> endpoint ব্যবহার করুন।
                             </li>
                         </ul>
@@ -433,11 +614,7 @@ server {
         {
             id: 'tools-comparison',
             subHeader: { index: '005', title: 'Tools' },
-            title: (
-                <SectionTitle>
-                    Popular Load Balancers — তুলনা
-                </SectionTitle>
-            ),
+            title: <SectionTitle>Popular Load Balancers — তুলনা</SectionTitle>,
             blocks: [
                 {
                     type: CONTENT_TYPES.COMPARE_TABLE,
@@ -521,9 +698,7 @@ server {
             id: 'code-examples',
             subHeader: { index: '006', title: 'Code Examples' },
             title: (
-                <SectionTitle>
-                    Load Balancer Code Implementation
-                </SectionTitle>
+                <SectionTitle>Load Balancer Code Implementation</SectionTitle>
             ),
             blocks: [
                 {
@@ -704,11 +879,10 @@ Promise.all([
                                 </h4>
                                 <p className='text-sm text-muted-foreground leading-relaxed'>
                                     AWS ALB (L7) ব্যবহার করে microservices
-                                    routing এর জন্য।{' '}
-                                    <code>/stream/*</code> → Streaming service,{' '}
-                                    <code>/search/*</code> → Search service।
-                                    Path-based routing দিয়ে হাজারো microservice
-                                    manage করে।
+                                    routing এর জন্য। <code>/stream/*</code> →
+                                    Streaming service, <code>/search/*</code> →
+                                    Search service। Path-based routing দিয়ে
+                                    হাজারো microservice manage করে।
                                 </p>
                             </div>
                             <div className='p-8 border-b border-border bg-card/30'>
@@ -753,11 +927,7 @@ Promise.all([
         {
             id: 'interview-prep',
             subHeader: { index: '008', title: 'Interview Prep' },
-            title: (
-                <SectionTitle>
-                    Interview এ যা জিজ্ঞেস করে
-                </SectionTitle>
-            ),
+            title: <SectionTitle>Interview এ যা জিজ্ঞেস করে</SectionTitle>,
             blocks: [
                 {
                     type: CONTENT_TYPES.INFO_BOX,
@@ -1020,8 +1190,7 @@ Promise.all([
                         key: 'A',
                         text: 'Server এর CPU usage optimize করে',
                         isCorrect: false,
-                        explanation:
-                            'Health check CPU optimize করে না।',
+                        explanation: 'Health check CPU optimize করে না।',
                     },
                     {
                         key: 'B',
@@ -1034,8 +1203,7 @@ Promise.all([
                         key: 'C',
                         text: 'Server এর code deploy করে',
                         isCorrect: false,
-                        explanation:
-                            'Health check deployment করে না।',
+                        explanation: 'Health check deployment করে না।',
                     },
                     {
                         key: 'D',
@@ -1107,8 +1275,7 @@ Promise.all([
                         key: 'D',
                         text: 'Load Balancer ব্যবহার বন্ধ করুন',
                         isCorrect: false,
-                        explanation:
-                            'LB না থাকলে horizontal scaling সম্ভব না।',
+                        explanation: 'LB না থাকলে horizontal scaling সম্ভব না।',
                     },
                 ],
             },
@@ -1168,8 +1335,7 @@ Promise.all([
                         key: 'C',
                         text: 'A=4, B=0',
                         isCorrect: false,
-                        explanation:
-                            'B এর weight 1 তাই B কিছু request পাবেনই।',
+                        explanation: 'B এর weight 1 তাই B কিছু request পাবেনই।',
                     },
                     {
                         key: 'D',
@@ -1222,38 +1388,36 @@ Promise.all([
         difficulty: 'Junior Level',
         tasks: [
             <span key='1'>
-                <strong>Algorithm Selection:</strong> নিচের ৩টা scenario তে
-                কোন Load Balancing algorithm ব্যবহার করবেন এবং কেন: (ক) একটি
-                chat application যেখানে WebSocket connections long-lived —
-                প্রতিটা connection ঘণ্টার পর ঘণ্টা active থাকে। (খ) একটি
-                e-commerce site যেখানে ৩টা server আছে: 32-core, 16-core,
-                8-core। (গ) একটি banking app যেখানে user এর transaction history
-                শুধু নির্দিষ্ট server এ আছে।
+                <strong>Algorithm Selection:</strong> নিচের ৩টা scenario তে কোন
+                Load Balancing algorithm ব্যবহার করবেন এবং কেন: (ক) একটি chat
+                application যেখানে WebSocket connections long-lived — প্রতিটা
+                connection ঘণ্টার পর ঘণ্টা active থাকে। (খ) একটি e-commerce site
+                যেখানে ৩টা server আছে: 32-core, 16-core, 8-core। (গ) একটি
+                banking app যেখানে user এর transaction history শুধু নির্দিষ্ট
+                server এ আছে।
             </span>,
             <span key='2'>
                 <strong>Nginx Config লিখুন:</strong> একটা Nginx configuration
-                লিখুন যেখানে: ৩টা backend server (192.168.1.10, .11, .12 সব
-                port 3000), Least Connections algorithm, Health check — 3 fails
-                এর পর বাদ দিন, Weighted — প্রথম server এর weight 2, বাকি দুটো
-                1।
+                লিখুন যেখানে: ৩টা backend server (192.168.1.10, .11, .12 সব port
+                3000), Least Connections algorithm, Health check — 3 fails এর পর
+                বাদ দিন, Weighted — প্রথম server এর weight 2, বাকি দুটো 1।
             </span>,
             <span key='3'>
                 <strong>Diagram বানান:</strong> Excalidraw বা draw.io তে একটা
-                diagram আঁকুন যেখানে দেখাবে: Users → L7 Load Balancer →
-                [Web Server 1, 2, 3] → [Redis Cache] → [Database Primary →
-                Database Replica]। Label দিন প্রতিটা component এ।
+                diagram আঁকুন যেখানে দেখাবে: Users → L7 Load Balancer → [Web
+                Server 1, 2, 3] → [Redis Cache] → [Database Primary → Database
+                Replica]। Label দিন প্রতিটা component এ।
             </span>,
             <span key='4'>
-                <strong>AWS Pricing Research:</strong> AWS console বা
-                calculator তে দেখুন AWS ALB এবং NLB এর pricing কীভাবে আলাদা।
-                কোনটা কখন cost-effective সেটা ৩-৪ লাইনে লিখুন।
+                <strong>AWS Pricing Research:</strong> AWS console বা calculator
+                তে দেখুন AWS ALB এবং NLB এর pricing কীভাবে আলাদা। কোনটা কখন
+                cost-effective সেটা ৩-৪ লাইনে লিখুন।
             </span>,
             <span key='5'>
                 <strong>Code পড়ো:</strong> উপরের Python RoundRobinLoadBalancer
-                code পড়ো এবং explain করুন: (ক){' '}
-                <code>itertools.cycle</code> কী করে? (খ){' '}
-                <code>threading.Lock()</code> কেন দরকার? (গ) Server down হলে
-                কী হয় এবং কীভাবে handle করা হয়েছে?
+                code পড়ো এবং explain করুন: (ক) <code>itertools.cycle</code> কী
+                করে? (খ) <code>threading.Lock()</code> কেন দরকার? (গ) Server
+                down হলে কী হয় এবং কীভাবে handle করা হয়েছে?
             </span>,
         ],
         deliverables: [
@@ -1329,3 +1493,9 @@ services:
         tip: 'Artificial delay দিয়ে দেখবেন Least Connections কতটা smart। Server-2 ধীর তাই সে কম request পাবেন — Round Robin এ সে সমান পেতো। এটাই real world এ Least Connections এর power।',
     },
 };
+
+
+
+
+
+

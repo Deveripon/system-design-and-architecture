@@ -9,9 +9,10 @@ interface Step {
 
 interface StepFlowProps {
     steps: Step[];
+    stepName?: string;
 }
 
-export function StepFlow({ steps = [] }: StepFlowProps) {
+export function StepFlow({ steps = [],stepName="STEP" }: StepFlowProps) {
     const stepCount = steps.length;
     const gridCols = 
         stepCount === 1 ? 'grid-cols-1' :
@@ -26,7 +27,7 @@ export function StepFlow({ steps = [] }: StepFlowProps) {
                     className='p-6 md:p-10 border-r border-b border-border bg-card hover:bg-white/2 transition-colors group'>
                     <div className='flex flex-col gap-6 md:gap-8'>
                         <SubHeader
-                            index={`STEP 0${idx + 1}`}
+                            index={`${stepName} 0${idx + 1}`}
                             title={`${step.title || 'System Task'}`}
                         />
                         <div className='space-y-3 md:space-y-4'>

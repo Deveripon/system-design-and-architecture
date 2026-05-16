@@ -201,7 +201,7 @@ function BlockRenderer({ block }: { block: ContentBlock }) {
         case CONTENT_TYPES.STEP_FLOW:
             return (
                 <div className='mb-8'>
-                    <StepFlow steps={block.steps} />
+                    <StepFlow steps={block.steps} stepName={block.stepName} />
                 </div>
             );
         case CONTENT_TYPES.CUSTOM:

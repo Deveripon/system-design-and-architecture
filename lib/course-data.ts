@@ -174,7 +174,7 @@ export const courseData: CoursePhase[] = [
     },
     {
         id: 'phase-2',
-        title: 'Core Components — মূল বিল্ডিং ব্লক',
+        title: 'Databases & Storage — ডেটাবেস এবং স্টোরেজ',
         duration: '৬-৮ সপ্তাহ',
         topics: [
             {

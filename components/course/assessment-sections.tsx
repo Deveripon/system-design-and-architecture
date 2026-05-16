@@ -116,7 +116,7 @@ export const PracticalLabSection = React.memo(
                                         {data.subtitle}
                                     </p>
 
-                                    <StepFlow steps={data.steps} />
+                                    <StepFlow steps={data.steps} stepName={data.stepName} />
 
                                     {data.codeBlock && (
                                         <div className='mt-8'>
